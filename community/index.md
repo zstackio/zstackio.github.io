@@ -23,7 +23,7 @@ yours.
 
 <h3><i class="fa fa-github-alt">&nbsp; GitHub</i></h3>
 
-You can also submit questions as issues to [GitHub](https://github.com/zstackorg/zstack/issues). Please ensure your questions are labeled as <span class="label label-success">Question</span>,
+You can also submit questions as issues to [GitHub](https://github.com/zstackorg/zstack/issues). Please ensure your questions are labeled as <img src="../images/question-mark.png">
 otherwise we may not notice you are asking questions and may not be able to reply in time. 
 
 <hr>
