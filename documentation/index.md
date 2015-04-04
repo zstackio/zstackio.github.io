@@ -104,6 +104,6 @@ Check out [blog](../blog/) for articles about major architectural design princip
 
 [The Automation Testing System 3: Model-based Testing](../blog/model-based-testing.html)
 
-
+<hr>
 
 

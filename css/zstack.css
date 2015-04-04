@@ -150,8 +150,11 @@ h5, .h5 {
 
 a.contact-icon {
   color: #BBB;
-  font-size: 1.5em;
   text-decoration: none;
+}
+
+a.contact-icon-size {
+  font-size: 1.3em;
 }
 
 a.contact-icon:hover {
@@ -167,7 +170,13 @@ a.contact-icon:hover {
 
 .zstack-footer-before::before {
   content: "zstack";
-  font-size: 10px;
+  font-size: 12px;
+  visibility: hidden;
+}
+
+.zstack-footer-before2::before {
+  content: "zstack";
+  height: 0.5em;
   visibility: hidden;
 }
 
