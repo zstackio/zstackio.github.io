@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="col-xs-8">
+      
+      <div>
+          <a href="/blog/asynchronous-architecture.html"><h3>ZStack's Scalability Secrets Part 1: Asynchronous Architecture</h3></a>
+          <p><em>ZStack offers an architecture that 99% tasks are executed asynchronously, which is a key design that a single management
+node can manage hundreds of thousands of physical servers, millions of virtual machines, and handle tens of thousands of concurrent tasks.</em></p>
+
+          <a href="/blog/asynchronous-architecture.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
+          <p>Three years ago, when I was working on another IaaS software, my friend joked: "you guys are making a product
+killing IT administrators' job." I did think so then. In my opinion, enterprises could
+be liberated from boring tasks of maintaining old-fashion datacenters, by adopting IaaS technology and moving
+every underlying infrastructure to software-defined datacenter. Thereby, manpower is transferred to more revenue-driven work such as
+applications that drive companies' core business, and leaves only a few in operations team in charge of running the entire infrastructure.
+However, three years later, IaaS software has not impacted the administrators' job. Ironically, it has created a lot of new jobs.
+Nowadays, businesses adopting private clouds based on IaaS need not only an operations team to daily maintain their
+infrastructure, but also a dev team or a consultant company to maintain the IaaS software itself. This may be good for
+engineers, as people with such skills are easier to get good pay (searching OpenStack on online hiring websites
+will prove this), but sad for developers like me who are supposed to create something to relieve life.</p>
+
+          <a href="/blog/why-zstack.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/stateless-clustering.html"><h3>ZStack's Scalability Secrets Part 2: Stateless Services</h3></a>
+          <p><em>Every ZStack service is stateless. Making services high available and scaled out can be as easy as starting
+redundant service instances then load balancing them; furthermore, ZStack encloses all services into a single process called management node,
+which makes deploying and managing services extremely simple.</em></p>
+
+          <a href="/blog/stateless-clustering.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/lock-free.html"><h3>ZStack's Scalability Secrets Part 3: Lock-free Architecture</h3></a>
+          <p><em>Lots of tasks in IaaS software need to execute in sequence; for example, when a task of starting a virtual machine is running,
+a stopping task of the same virtual machine must wait for the previous starting task to finish. On the other side,
+some tasks should be able to run in parallel; for example, 20 tasks of creating virtual machines on the same host can run simultaneously.
+Synchronization and fine-grained parallelization in a distributed system are not easy and usually require a distributed coordination software.
+Rising to the challenge, ZStack offers a lock-free architecture built on queues, allowing tasks to control their parallelism
+level easily from 1(synchronized) to N(parallel).</em></p>
+
+          <a href="/blog/lock-free.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/microservices.html"><h3>The In-Process Microservices Architecture</h3></a>
+          <p><em>To tackle challenges such as significant operations overhead, duplication of effort, testability that microservices usually faces, and
+to achieve the benefits such as code decoupling, easy to scale-out that microservices brings in, ZStack encompasses all services in
+a single process called management node, building a in-process microservices architecture.</em></p>
+
+          <a href="/blog/microservices.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/plugin.html"><h3>The Versatile Plugin System</h3></a>
+          <p><em>Current IaaS software are more like cloud controller software that still lack lots of features to be complete cloud solutions. As an evolving
+technology, predicting what features will make up a complete solution is hard, so an IaaS software cannot build all features it will
+need from the very beginning. Given those facts, the architecture of an IaaS software must be able to keep core orchestration stable from adding new features.
+ZStack, with a versatile plugin system, allows features to be implemented as plugins(both in-process or out-of-process)
+which can not only extend ZStack's functionality, but also hook into business logic to change default behaviours.</em></p>
+
+          <a href="/blog/plugin.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/tag.html"><h3>The Tag System</h3></a>
+          <p><em>Tags in ZStack not only help users aggregate resources but also control behaviors of the software. ZStack has a
+complete specification defining category, form, and usage of tags. Besides users, plugins can create their tags too,
+in order to record metadata and extend properties of existing resources; by all these means, tags can help plugins to
+introduce new features without changing ZStack's database schema, diminishing the need for database migration in software upgrade.</em></p>
+
+          <a href="/blog/tag.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/workflow.html"><h3>The Workflow Engine</h3></a>
+          <p><em>Tasks in IaaS software normally have long execution paths; an error may happen at any given step. In order to keep the integrity of the system,
+an IaaS software must provide a mechanism that can roll back prior executed steps. With a workflow engine, every step in ZStack
+wrapped in individual flow can be rolled back on error. Besides, key execution paths can be configured by assembling workflows
+in configuration files, which decouples the architecture further.</em></p>
+
+          <a href="/blog/workflow.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/cascade.html"><h3>The Cascade Framework</h3></a>
+          <p><em>Resources in a cloud have relations to each other. An operation to one resource may usually set off a chain
+effect to others; for example, when deleting a cluster, it makes sense to delete all hosts belonging to that
+cluster and to stop all VMs running on those hosts. Traditional IaaS software either hard code chain effects
+or simply deny those operations, for example, prohibiting users from deleting a cluster that has VM running. ZStack offers
+a cascade framework that can spread an operation from one resource to all related resources. Resources can choose to join
+the cascade framework by implementing a simple extension point, which decouples the framework from resources' business logic.</em></p>
+
+          <a href="/blog/cascade.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/query.html"><h3>The Query API</h3></a>
+          <p><em>A common challenge for users of IaaS software is how to find a wanted resource quickly and precisely; for example,
+finding the VM that has EIP(16.16.16.16) from 10,000 VMs. Most IaaS software solves this problem by ad-hoc query logic in APIs.
+ZStack, instead of ad-hoc, equips with a framework that can automatically generate queries for every field of every resource,
+and join queries that span multiple resources, helping users to manage enormous resources in the cloud.</em></p>
+
+          <a href="/blog/query.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/ansible.html"><h3>Full Automation By Ansible</h3></a>
+          <p><em>Agent is a common way that IaaS software manage devices; for example, ZStack uses Python agents to manage KVM hosts.
+With massive devices, installing and upgrading agents become huge challenges, so most IaaS software leave this problem
+to customers or distribution vendors, which leads to fragile solutions because of lacking support from IaaS software themselves.
+ZStack took this problem into account in the very beginning, tried out Puppet, Salt, and Ansible successively,
+and finally integrated with Ansible seamlessly and transparently. All ZStack agents are automatically deployed, configured,
+and upgraded by Ansible; users may not even notice their existences.</em></p>
+
+          <a href="/blog/ansible.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
+          <p><em>ZStack abstracts the networking model into L2 and L3 networks. An L2 network provides a type of L2 isolation method, while an L3 network
+basically represents a subnet associated with OSI layer 4 ~ layer 7 network services. The idea is to use terms and
+concepts with which administrators have been familiar to describe ZStack's networking model, allowing administrators to
+create networking topologies easily and precisely.</em></p>
+
+          <a href="/blog/network-l2.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
+          <p><em>In ZStack's networking model, OSI layer 4 ~ 7 network services are implemented as small plugins from different service providers.
+The default provider, called virtual router provider, uses a customized Linux VM as a virtual appliance to provide
+network services including DHCP, DNS, SNAT, EIP, and Port Forwarding for every L3 network. The way of using virtual router VMs has advantages
+of no single failure point, and no special requirements for physical infrastructure so that users can realize various network services
+on commodity hardware without purchasing expensive equipments.</em></p>
+
+          <a href="/blog/virtual-router.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/storage.html"><h3>Storage Model: Primary Storage and Backup Storage</h3></a>
+          <p><em>ZStack abstracts storage systems, by their logical functionality, into primary storage and backup storage. A primary storage is a storage
+pool on which VM volumes locate; a backup storage is the storage that users store image templates and backup volumes and
+snapshots. Primary storage and backup storage can be physically separate storage systems or the same storage system playing both roles, storage
+vendors can easily plug in their products by implementing corresponding storage plugins.</em></p>
+
+          <a href="/blog/storage.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
+          <p><em>Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack
+is fully automated. The automation testing system consists of three parts: integration testing, system testing, and model-based
+testing. The integration testing system is built based on JUnit using simulators. With various utilities the integration testing
+system supplies, developers can quickly write test cases to validate a new feature or a bug fix.</em></p>
+
+          <a href="/blog/integration-testing.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
+          <p><em>ZStack's <a href="http://en.wikipedia.org/wiki/System_testing">system testing</a>
+system runs test cases in real hardware environment; like integration testing,
+the system testing is full automated and covers aspects of functional tests,
+stress tests, and performance tests.</em></p>
+
+          <a href="/blog/system-testing.html">Read more >></a>
+      </div>
+      <hr>
+      
+      <div>
+          <a href="/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
+          <p><em>The <a href="http://en.wikipedia.org/wiki/Model-based_testing">model-based testing</a> system
+is a sub-project in zstack-woodpecker. With finite-state machines and
+action selection strategies, it can generate random API operations that may run forever
+unless a defect is found, or pre-defined exit conditions are met. ZStack relies on model-based testing to test
+corner cases that hardly happen in real world, which compensates integration testing and
+system testing in terms of test coverage.</em></p>
+
+          <a href="/blog/model-based-testing.html">Read more >></a>
+      </div>
+      <hr>
+      
+  </div>
+  <div class="col-xs-4" style="margin-top: 25px">
+    <ul class="nav nav-pills nav-stacked left-slider">
+      <ol>
+        
+        <li style="padding: 10px"><a href="/blog/asynchronous-architecture.html">ZStack's Scalability Secrets Part 1: Asynchronous Architecture</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/stateless-clustering.html">ZStack's Scalability Secrets Part 2: Stateless Services</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/microservices.html">The In-Process Microservices Architecture</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/plugin.html">The Versatile Plugin System</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/tag.html">The Tag System</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/workflow.html">The Workflow Engine</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/cascade.html">The Cascade Framework</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/query.html">The Query API</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/ansible.html">Full Automation By Ansible</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/storage.html">Storage Model: Primary Storage and Backup Storage</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
+        
+        <li style="padding: 10px"><a href="/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
+        
+      </ol>
+    </ul>
+  </div>
+</div>
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+<body>
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container doc big-font">
+  <h2 id="manual">Getting Started With Manual Installation</h2>
+
+
+<p>Once you have installed ZStack on a Linux machine following instructions in <a href="../installation/manual.html">Manual Installation</a>, you are
+ready to configure and start the management node using <code>zstack-ctl</code> which is ZStack control tool installed on the machine
+that ZStack management node is installed.</p>
+
+<h3>zstack.properties</h3>
+
+<p>All configurations about ZStack management node such as database URL, database password, RabbitMQ server IP and so on are stored
+in zstack.properties that is a standard Java properties file. You can retrieve its path by:</p>
+
+<pre><code>zstack-ctl status
+</code></pre>
+
+<p>You can manually edit this file just as a normal text file, however, most <code>zstack-ctl</code> commands will update corresponding entries
+automatically, which you will see soon in following sections.</p>
+
+<h3>1. Deploy database</h3>
+
+<p>First of all, you need to deploy a fresh ZStack database:</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine --root-password=root_password_of_mysql --zstack-password=password_for_mysql_user_zstack
+
+Example: zstack-ctl deploydb --host=192.168.0.212 --root-password=abcd --zstack-password=1234
+</code></pre>
+
+<p>if the MySQL is installed by <code>zstack-ctl install_db</code> the default root password is empty, you can omit <code>--root-password</code> then:</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine --zstack-password=password_for_mysql_user_zstack
+
+Example: zstack-ctl deploydb --host=192.168.0.212 --zstack-password=1234
+</code></pre>
+
+<p>or you want to use empty password for user <code>zstack</code> in a POC environment, you can omit <code>--zstack-password</code> then:</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine 
+
+Example: zstack-ctl deploydb --host=192.168.0.212
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>This command will update zstack.properties</h4>
+  User <code>zstack</code> is the MySQL username that ZStack management nodes use to access database.
+  <code>deploydb</code> command will update zstack.properties for entries: <code>DbFacadeDataSource.jdbcUrl</code>, <code>DbFacadeDataSource.user</code>,
+  <code>DbFacadeDataSource.password</code>, and <code>RESTApiDataSource.jdbcUrl</code>.
+</div>
+
+
+<h3>2. Configure RabbitMQ</h3>
+
+<p>If you installed RabbitMQ message broker using command <code>zstack-ctl install_rabbitmq</code>, you don't have to do any configuration
+because the command has automatically updated entry <code>CloudBus.serverIp.0</code> with the IP of RabbitMQ machine. If you installed
+RabbitMQ manually, please edit zstack.properties updating <code>CloudBus.serverIp.0</code> to the IP of RabbitMQ machine.</p>
+
+<h3>3. Start management node</h3>
+
+<p>You can start the management node by:</p>
+
+<pre><code>zstack-ctl start_node
+</code></pre>
+
+<p>or use the service file in init.d/:</p>
+
+<pre><code>/etc/init.d/zstack-server start
+</code></pre>
+
+<h3>4. Start web UI</h3>
+
+<p>You can start the web UI by:</p>
+
+<pre><code>/etc/init.d/zstack-dashboard start
+</code></pre>
+
+<p>the web UI will listen on port <code>5000</code>, you can visit it with URL <code>http://ip_of_ui_machine:5000</code>.</p>
+
+<h3>Useful zstack-ctl commands</h3>
+
+<p>You can stop a management node by:</p>
+
+<pre><code>zstack-ctl stop_node
+</code></pre>
+
+<p>The log file of ZStack management node locates at <code>/var/log/zstack/management-server.log</code>, you can view it by:</p>
+
+<pre><code>zstack-ctl taillog
+</code></pre>
+
+<p>which essentially runs <code>tail -f /var/log/zstack/management-server.log</code>.</p>
+
+<p>You can add or update a property in zstack.properties by:</p>
+
+<pre><code>zstack-ctl configure property_name=property_value
+
+Example: zstack-ctl configure CloudBus.serverIp.0=192.168.0.225
+</code></pre>
+
+<h3>Use Command Line Tool</h3>
+
+<p>You can launch ZStack command line tool by:</p>
+
+<pre><code>zstack-cli
+</code></pre>
+
+<p>Now your ZStack environment is ready, please visit <a href="../tutorials">Tutorials</a> to create your first cloud deployment
+using either web UI or command line tool, or check out <a href="http://zdoc.readthedocs.org/en/latest/">User Manual</a> for a full reference.</p>
+
+</div>
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+
+</body>
+
+</html>

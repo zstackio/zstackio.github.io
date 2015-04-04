@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">The Workflow Engine</h2>
+    <p class="post-meta">Apr 16, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><em>Tasks in IaaS software normally have long execution paths; an error may happen at any given step. In order to keep the integrity of the system,
+an IaaS software must provide a mechanism that can roll back prior executed steps. With a workflow engine, every step in ZStack
+wrapped in individual flow can be rolled back on error. Besides, key execution paths can be configured by assembling workflows
+in configuration files, which decouples the architecture further.</em></p>
+
+<h3>The motivation</h3>
+
+<p>A datacenter is made up of massive, various resources that can be both physical(e.g. storage, servers) and virtual(e.g. virtual machines).
+The IaaS software is essentially managing states of different resources; for example, creating a VM will normally change state of storage(a
+new volume is created on the storage), state of network(DHCP/DNS/SNAT related information are set on the network), and state of
+hypervisor(a new VM is created on the hypervisor). Unlike ordinary applications which largely manage own states stored in memory
+or database, IaaS software have to manage states scattered on every device in order to reflect the overall state of the datacenter, leading
+to long execution paths. A task of IaaS software will typically involve changing states on multiple devices, an error may happen at
+any step then leave the system in an intermediate stage where some devices have changed states while some have not. For example, when creating
+a VM, an IaaS software usually configures VM's network in order of DHCP --> DNS --> SNAT, if an error happens when creating
+SNAT, DHCP and DNS configured before will most likely remain in the system because they have been successfully applied, even
+the VM fails to be created at last. This kind of state inconsistent problem usually entails an unstable cloud.</p>
+
+<p>On the other side, the hard-coded business logic in traditional IaaS software is inflexible for changes; developers often have to
+rewrite or modify existing code in order to change some established behaviors, which hurts the stability of the software.</p>
+
+<p>The cure for those issues is to introduce the concept of workflow that can break monolithic business logic into fine-grained, rollbackable steps,
+allowing the software to clean up applied states on error and making the software configurable.</p>
+
+<blockquote><p><em><strong>Note</strong>: In ZStack, we call each step in the workflow as a 'flow'; in following context, steps and flows are used interchangeable.</em></p></blockquote>
+
+<h3>The problem</h3>
+
+<p>Error handling is always a headache in software design. Though nearly every software engineer knows the importance of error handling, but in reality,
+they keep finding excuses for ignoring it. Elegant error handling is hard, especially in a system that a task may span separate components. Even if
+skilled engineers may take care of errors in their own code, they are not able to spread the effort to components not written by themselves if the architecture
+doesn't enforce a unified mechanism that can consolidate error handling globally. Ignoring error handling is particularly
+harmful in an IaaS software; unlike consuming applications that can be rebooted to recover all states, an IaaS software typically
+has no way to recover states itself, and will need administrators to manually correct states both in database and external devices. A solo
+state inconsistency may not cause any big problem and may not even be observed, but accumulated state inconsistencies will finally bring down the cloud
+at some point.</p>
+
+<h3>Workflow engine</h3>
+
+<p>Workflow is a way that breaks cumbersome method calls into small granularity steps that each step only focuses on one thing,
+and that are driven by either sequence or state-machine to complete a whole task. With rollback handlers installed,
+a workflow can rollback all prior executed steps and abort the execution when an error or a unhandled exception happens
+in a step. Cite creating VM as an example, the major workflow looks like:</p>
+
+<p><img src="../../images/blogs/scalability/workflow1.png" class="center-img img-responsive"></p>
+
+<p>Sequential workflow, which is originated from <a href="http://en.wikipedia.org/wiki/Chain-of-responsibility_pattern">Chain pattern</a> and
+has predictable execution order, is the basis of ZStack workflow. A flow, essentially a Java interface, can contain sub-workflow
+and can execute only after all ahead flows finish.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Flow</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">);</span>
+
+    <span class="kt">void</span> <span class="nf">rollback</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">);</span>
+<span class="o">}</span></code></pre></div>
+
+
+<p>In the <code>Flow</code> interface, the <code>run(FlowTrigger trigger, Map data)</code> method is called when the workflow has proceeded to this flow;
+the parameter <code>Map data</code> can be used to retrieve data from previous flows and pass data to later flows. When finishing, a flow calls <code>trigger.next()</code> to instruct
+the workflow to move to the next; if an error happens, the flow should call <code>trigger.fail(ErrorCode error)</code> to abort the
+execution, notifying the workflow to rollback accomplished flows(including the failure flow itself) invoking <code>rollback()</code> method of them.</p>
+
+<p>Flows are organized in <code>FlowChain</code> interface that represents an entire workflow. There are two ways to create a <code>FlowChain</code>:</p>
+
+<h4>1. Declarative way</h4>
+
+<p>Flows can be configured in a component's Spring configuration file, a <code>FlowChain</code> can be created by feeding a list of flow class names
+to <code>FlowChainBuilder</code>.</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;VmInstanceManager&quot;</span> <span class="na">class=</span><span class="s">&quot;org.zstack.compute.vm.VmInstanceManagerImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;createVmWorkFlowElements&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;list&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocateHostFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmImageSelectBackupStorageFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocatePrimaryStorageFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocateVolumeFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocateNicFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmInstantiateResourcePreFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmCreateOnHypervisorFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmInstantiateResourcePostFlow<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+    
+    <span class="c">&lt;!--only a part of configuration is showed --&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></div>
+
+
+
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FlowChainBuilder</span> <span class="n">createVmFlowBuilder</span> <span class="o">=</span> <span class="n">FlowChainBuilder</span><span class="o">.</span><span class="na">newBuilder</span><span class="o">().</span><span class="na">setFlowClassNames</span><span class="o">(</span><span class="n">createVmWorkFlowElements</span><span class="o">).</span><span class="na">construct</span><span class="o">();</span>
+<span class="n">FlowChain</span> <span class="n">chain</span> <span class="o">=</span> <span class="n">createVmFlowBuilder</span><span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></div>
+
+
+<p>This is a typical way to create serious, configurable workflow containing reusable flows. In above example, the workflow is for creating user VM;
+a so-called appliance VM has basically the same flows except the one allocating VM nics, so a separate flow configuration for appliance VM
+can have most flows mutual to user VM's:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">&quot;ApplianceVmFacade&quot;</span>
+    <span class="na">class=</span><span class="s">&quot;org.zstack.appliancevm.ApplianceVmFacadeImpl&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;createApplianceVmWorkFlow&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;list&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocateHostFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmImageSelectBackupStorageFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocatePrimaryStorageFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmAllocateVolumeFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.appliancevm.ApplianceVmAllocateNicFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmInstantiateResourcePreFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmCreateOnHypervisorFlow<span class="nt">&lt;/value&gt;</span>
+            <span class="nt">&lt;value&gt;</span>org.zstack.compute.vm.VmInstantiateResourcePostFlow<span class="nt">&lt;/value&gt;</span>
+        <span class="nt">&lt;/list&gt;</span>
+    <span class="nt">&lt;/property&gt;</span>
+
+    <span class="nt">&lt;zstack:plugin&gt;</span>
+        <span class="nt">&lt;zstack:extension</span> <span class="na">interface=</span><span class="s">&quot;org.zstack.header.Component&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;zstack:extension</span> <span class="na">interface=</span><span class="s">&quot;org.zstack.header.Service&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/zstack:plugin&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></div>
+
+
+<blockquote><p><em><strong>Note</strong>: In the former picture, we have highlighted the flow <code>ApplianceVmAllocateNicFlow</code> in green; that is the only flow that differentiates
+creational workflow of user VM and appliance VM.</em></p></blockquote>
+
+<h4>2. Programmatic way</h4>
+
+<p>A <code>FlowChain</code> can also be created in a programmatic way. Usually when a workflow is trivial, and flows are nonreusable.</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FlowChain</span> <span class="n">chain</span> <span class="o">=</span> <span class="n">FlowChainBuilder</span><span class="o">.</span><span class="na">newSimpleFlowChain</span><span class="o">();</span>
+<span class="n">chain</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">);</span>
+<span class="n">chain</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="k">new</span> <span class="nf">HashMap</span><span class="o">());</span>
+<span class="n">chain</span><span class="o">.</span><span class="na">then</span><span class="o">(</span><span class="k">new</span> <span class="nf">Flow</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">__name__</span> <span class="o">=</span> <span class="s">&quot;flow1&quot;</span><span class="o">;</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* do some business */</span>
+        <span class="n">trigger</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">rollback</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* rollback something */</span>
+        <span class="n">trigger</span><span class="o">.</span><span class="na">rollback</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}).</span><span class="na">then</span><span class="o">(</span><span class="k">new</span> <span class="nf">Flow</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">__name__</span> <span class="o">=</span> <span class="s">&quot;flow2&quot;</span><span class="o">;</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* do some business */</span>
+        <span class="n">trigger</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">rollback</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* rollback something */</span>
+        <span class="n">trigger</span><span class="o">.</span><span class="na">rollback</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}).</span><span class="na">done</span><span class="o">(</span><span class="k">new</span> <span class="nf">FlowDoneHandler</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* the workflow has successfully done */</span>
+    <span class="o">}</span>
+<span class="o">}).</span><span class="na">error</span><span class="o">(</span><span class="k">new</span> <span class="nf">FlowErrorHandler</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">ErrorCode</span> <span class="n">errCode</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* the workflow has failed with error */</span>
+    <span class="o">}</span>
+<span class="o">}).</span><span class="na">start</span><span class="o">();</span></code></pre></div>
+
+
+<p>The above form is not handy because the data interchange amid flows is through a map <code>data</code>, every flow has to call
+<code>data.get()</code> and <code>data.put()</code>, which is very verbose. With a way <a href="http://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>
+alike, flows can share data through variables:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FlowChain</span> <span class="n">chain</span> <span class="o">=</span> <span class="n">FlowChainBuilder</span><span class="o">.</span><span class="na">newShareFlowChain</span><span class="o">();</span>
+<span class="n">chain</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">&quot;test&quot;</span><span class="o">);</span>
+<span class="n">chain</span><span class="o">.</span><span class="na">then</span><span class="o">(</span><span class="k">new</span> <span class="nf">ShareFlow</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">data1</span> <span class="o">=</span> <span class="s">&quot;data can be defined as class variables&quot;</span><span class="o">;</span>
+
+    <span class="o">{</span>
+        <span class="n">data1</span> <span class="o">=</span> <span class="s">&quot;data can be iintialized in object initializer&quot;</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setup</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="n">String</span> <span class="n">data2</span> <span class="o">=</span> <span class="s">&quot;data can also be defined in method scope, but it has to be final&quot;</span><span class="o">;</span>
+
+        <span class="n">flow</span><span class="o">(</span><span class="k">new</span> <span class="nf">Flow</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">__name__</span> <span class="o">=</span> <span class="s">&quot;flow1&quot;</span><span class="o">;</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">data1</span> <span class="o">=</span> <span class="s">&quot;we can change data here&quot;</span><span class="o">;</span>
+                <span class="n">String</span> <span class="n">useData2</span> <span class="o">=</span> <span class="n">data2</span><span class="o">;</span>
+
+                <span class="cm">/* do something */</span>
+                <span class="n">trigger</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+            <span class="o">}</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">rollback</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="cm">/* do some rollback */</span>
+                <span class="n">trigger</span><span class="o">.</span><span class="na">rollback</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="n">flow</span><span class="o">(</span><span class="k">new</span> <span class="nf">NoRollbackFlow</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">__name__</span> <span class="o">=</span> <span class="s">&quot;flow2&quot;</span><span class="o">;</span>
+            
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">(</span><span class="n">FlowTrigger</span> <span class="n">trigger</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="cm">/* data1 is the value of what we have changed in flow1 */</span>
+                <span class="n">String</span> <span class="n">useData1</span> <span class="o">=</span> <span class="n">data1</span><span class="o">;</span>
+
+                <span class="cm">/* do something */</span>
+                <span class="n">trigger</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="n">done</span><span class="o">(</span><span class="k">new</span> <span class="nf">FlowDoneHandler</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="cm">/* the workflow has successfully done */</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="n">error</span><span class="o">(</span><span class="k">new</span> <span class="nf">FlowErrorHandler</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handle</span><span class="o">(</span><span class="n">ErrorCode</span> <span class="n">errCode</span><span class="o">,</span> <span class="n">Map</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+                <span class="cm">/*the workflow has failed with error */</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">}).</span><span class="na">start</span><span class="o">();</span></code></pre></div>
+
+
+<h3>Summary</h3>
+
+<p>In this article, we demonstrated ZStack's workflow engine. With it, ZStack can elegantly keep states of the system consistent when errors happen, in 99%
+time. Note we say 99% time; though workflow is a great tool to handle most errors, there are still some cases it can't handle, for example,
+failures in rollback handlers. ZStack is also equipped with a garbage collection system that we will introduce in another article in future.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

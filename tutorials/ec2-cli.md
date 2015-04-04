@@ -1,0 +1,632 @@
+---
+title: ZStack Tutorials
+layout: tutorialDetailPage
+sections:
+  - id: overview 
+    title: Overview
+  - id: prerequisites 
+    title: Prerequisites
+  - id: login 
+    title: LogIn
+  - id: createZone 
+    title: Create Zone
+  - id: createCluster 
+    title: Create Cluster
+  - id: addHost 
+    title: Add Host
+  - id: addPrimaryStorage
+    title: Add Primary Storage
+  - id: addBackupStorage
+    title: Add Backup Storage
+  - id: addImage
+    title: Add Image
+  - id: createL2Network
+    title: Create L2 Network
+  - id: createL3Network
+    title: Create L3 Network
+  - id: createInstanceOffering
+    title: Create Instance Offering
+  - id: createVirtualRouterOffering
+    title: Create Virtual Router Offering
+  - id: createVM
+    title: Create Virtual Machine
+  - id: createVIP
+    title: Create VIP
+  - id: createEIP
+    title: Create EIP
+  - id: rebindEIP
+    title: Rebind The EIP To Another VM 
+---
+
+### Amazon EC2 classic EIP zone
+
+<h4 id="overview">1. Overview</h4>
+<img class="img-responsive" src="../images/eip.png">
+
+Amazon EC2 is the well-known and maybe the most popular public cloud in the world; in EC2 classic, users can create a VM instance
+with a private IP address, and acquire an elastic IP(EIP) that is usually a public IP and can be dynamically bound to the VM.
+If there are more than one VMs, users can unbind and bind the EIP to VMs on demand.
+
+In this example, we will create a deployment that has a public network a private network, and that allows users to bind an EIP created
+from the public network to VM nics that are on the private network.
+
+<hr>
+
+<h4 id="prerequisites">2. Prerequisites</h4>
+
+We assume you have followed [installation guide](../installation/index.html) to install ZStack on a single Linux machine, and
+the ZStack management node is up and running. To access the ZStack Command Line Interface, type below command in your shell terminal:
+
+    # zstack-cli
+    
+<img class="img-responsive" src="../images/tutorials/t1/zstackCli.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>Connect to a remote management node</h4>
+  By default, zstack-cli connects to the ZStack management node on the local machine. To connect
+  to a remote node, using option '-H ZSTACK_NODE_HOST_IP'; for example: zstack-cli -H 192.168.0.224
+</div>
+
+To make things simple, we assume you have only one Linux machine with one network card that can access the internet; besides, there are
+some other requirements:
+
++ At least 20G free disk that can be used as primary storage and backup storage
++ At least 1G free memory for creating new virtual machine (VM)
++ Several free IPs that can access the internet
++ NFS server is enabled on the machine (see end of this section for automatically setup NFS)
++ SSH credentials for user root
+
+<div class="bs-callout bs-callout-info">
+  <h4>Configure root user</h4>
+  The KVM host will need root user credentials of SSH, to allow Ansible to install necessary packages and to give the KVM agent full control
+  of the host. As this tutorial use a single machine for both ZStack management node and KVM host, you will need to configure credentials for
+  the root user.
+  
+  <h5>CentOS:</h5>
+  <pre><code>sudo su
+passwd root</code></pre>
+
+  <h5>Ubuntu:</h5>
+  You need to also enable root user in SSHD configuration.
+  <pre><code>1. sudo su
+2. passwd root
+3. edit /etc/ssh/sshd_config
+4. comment out 'PermitRootLogin without-password'
+5. add 'PermitRootLogin yes'
+6. restart SSH: 'service ssh restart'</code></pre>
+</div>
+
+Based on those requirements, we assume below setup information (you should change the IP address and other configurations to align with your local environment.):
+
++ ethernet device names: eth0 (The default route will use eth0)
++ eth0 IP: 10.0.101.20
++ free IP range: 10.0.101.100 ~ 10.0.101.150
++ primary storage folder: 10.0.101.1:/home/nfs
++ backup storage folder: /home/sftpBackupStorage
+  
+<div class="bs-callout bs-callout-warning">
+  <h4>Slow VM stopping due to lack of ACPID:</h4>
+    Though we don't show the example of stopping VM, you may find stopping a VM takes more than 60s. That's 
+    because the 15M ttylinux we use in the tutorial doesn't support ACPID that receives KVM's shutdown event, ZStack has to
+    wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
+</div>
+    
+<hr>
+
+<h4 id="login">3. LogIn</h4>
+
+open zstack-cli and login with admin/password:
+
+	>>> LogInByAccount accountName=admin password=password	
+
+<img class="img-responsive" src="../images/tutorials/t1/cliLogin.png">
+
+<hr>
+
+<h4 id="createZone">4. Create Zone</h4>
+
+create a zone with name 'ZONE1' and description 'zone 1':
+
+	>>> CreateZone name=ZONE1 description='zone 1'
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateZone.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>Substitute your UUIDs for those in this tutorial</h4>
+  Resources are all referred by UUIDs in CLI tutorials. The UUIDs are generated by ZStack when you create a resource, so they
+  may vary from what you see in tutorials. UUIDs of resources will be printed out in a JSON object to the screen after resources
+  are created; however, it's inconvenient to scroll up screen to find UUIDs of resources that are created very early. We add
+  buttons <img src="../images/tutorials/find-uuid.png" style="border:none"> to sections, which will show you commands of retrieving UUIDs of resources,
+  so please make sure you replace UUIDs in tutorials with yours.
+</div>
+
+<hr>
+
+<h4 id="createCluster">5. Create Cluster</h4>
+
+create a cluster with name 'CLUSTER1' and hypervisorType 'KVM' under zone 'ZONE1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#5">Find UUID</button>
+
+<div id="5" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=69b5be02a15742a08c1b7518e32f442a
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateCluster.png">
+
+<hr>
+
+<h4 id="addHost">6. Create Host</h4>
+
+add KVM Host 'HOST1' under 'CLUSTER1' with correct host IP address and root username and password:
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#6">Find UUID</button>
+
+<div id="6" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+</div>
+
+	>>> AddKVMHost name=HOST1 managementIp=10.0.101.20 username=root password=password clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateHost.png">
+
+<div class="bs-callout bs-callout-warning">
+  <h4>A little slow when first time adding a host</h4>
+  It may take a few minutes to add a host because Ansible will install all dependent packages, for example, KVM, on the host.
+</div>
+
+<hr>
+
+<h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
+
+add Primary Storage 'PRIMARY-STORAGE1' with NFS URI '10.0.101.20:/usr/local/zstack/nfs_root' under zone 'ZONE1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#7">Find UUID</button>
+
+<div id="7" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> AddNfsPrimaryStorage name=PRIMARY-STORAGE1 url=10.0.101.20:/usr/local/zstack/nfs_root zoneUuid=69b5be02a15742a08c1b7518e32f442a
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddPrimaryStorage.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>Format of NFS URL</h4>
+  The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
+</div>
+
+<hr>
+
+attach 'PRIMARY-STORAGE1' to 'CLUSTER1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#7_1">Find UUID</button>
+
+<div id="7_1" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+<pre><code>QueryPrimaryStorage fields=uuid, name=PRIMARY-STORAGE1</code></pre>
+</div>
+
+	>>> AttachPrimaryStorageToCluster primaryStorageUuid=35405cbbb25d497c94b8484e487f2496 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachPrimaryStorageToCluster.png">
+
+<hr>
+
+<h4 id="addBackupStorage">8. Add Backup Storage</h4>
+
+add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('10.0.101.20'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):
+
+	>>> AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=10.0.101.20 username=root password=password url=/home/sftpBackupStorage
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddBackupStorage.png">
+
+<hr>
+
+attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#8">Find UUID</button>
+
+<div id="8" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
+</div>
+
+	>>> AttachBackupStorageToZone backupStorageUuid=e5dfe0824d8a4503bbc1b6b51782b5a3 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachBackupStorageToZone.png">
+
+
+<hr>
+
+<h4 id="addImage">9. Add Image</h4>
+
+add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/ttylinux.qcow2') to backup storage ('BACKUP-STORAGE1'):
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
+
+<div id="9_1" class="collapse">
+<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
+</div>
+
+<div class="bs-callout bs-callout-success">
+  <h4>Fast link for users of Mainland China</h4>
+  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  
+  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/ttylinux.qcow2</code></pre>
+</div>
+
+	>>> AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/ttylinux.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddImage.png">
+
+this image will be used as user VM image.
+
+
+<hr>
+
+add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2') to backup storage ('BACKUP-STORAGE1'):
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
+
+<div id="9_2" class="collapse">
+<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
+</div>
+
+<div class="bs-callout bs-callout-success">
+  <h4>Fast link for users of Mainland China</h4>
+  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  
+  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.6.qcow2</code></pre>
+</div>
+
+	>>> AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddVRImage.png">
+
+this image will be used as Virtual Router VM image.
+
+<div class="bs-callout bs-callout-info">
+  <h4>Cache images in your local HTTP server</h4>
+  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
+  to store it and images created by yourself.
+</div>
+
+<hr>
+
+<h4 id="createL2Network">10. Create L2 Network</h4>
+
+create No Vlan L2 Network 'PUBLIC-MANAGEMENT-L2' with physical interface as 'eth0' under 'ZONE1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_1">Find UUID</button>
+
+<div id="10_1" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> CreateL2NoVlanNetwork name=PUBLIC-MANAGEMENT-L2 physicalInterface=eth0 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateL2NoVlan.png">
+
+<hr>
+
+attach 'PUBLIC-MANAGEMENT-L2' to 'CLUSTER1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_2">Find UUID</button>
+
+<div id="10_2" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+<pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
+</div>
+
+	>>> AttachL2NetworkToCluster l2NetworkUuid=fb76e28e60844dfca1fb71caff37baf2 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachNoVlanL2toCluster.png">
+
+<hr>
+
+create new private Vlan L2 network 'PRIVATE-L2' with physical interface as 'eth0' and vlan '100' under 'ZONE1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_3">Find UUID</button>
+
+<div id="10_3" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> CreateL2VlanNetwork name=PRIVATE-L2 physicalInterface=eth0 vlan=100 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateL2Vlan.png">
+
+<hr>
+
+attach 'PRIVATE-L2' to 'CLUSTER1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_4">Find UUID</button>
+
+<div id="10_4" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+<pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
+</div>
+
+	>>> AttachL2NetworkToCluster l2NetworkUuid=426017fa734d435bbf3fb99ad5f1b807 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachVlanL2toCluster.png">
+
+<hr>
+
+<h4 id="createL3Network">11. Create L3 Network</h4>
+
+on L2 'PUBLIC-MANAGEMENT-L2', create a Public Management L3 'PUBLIC-MANAGEMENT-L3' with system set to 'True':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_1">Find UUID</button>
+
+<div id="11_1" class="collapse">
+<pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
+</div>
+
+	>>> CreateL3Network name=PUBLIC-MANAGEMENT-L3 l2NetworkUuid=fb76e28e60844dfca1fb71caff37baf2 system=true
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateL3NoVlan.png">
+
+<hr>
+
+create IP Range for 'PUBLIC-MANAGEMENT-L3':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_2">Find UUID</button>
+
+<div id="11_2" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PUBLIC-MANAGEMENT-L3</code></pre>
+</div>
+
+	>>> AddIpRange name=PUBLIC-IP-RANGE l3NetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 startIp=10.0.101.100 endIp=10.0.101.150 netmask=255.255.255.0 gateway=10.0.101.1
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddIpRange1.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>No network services needed for PUBLIC-MANAGEMENT-L3'</h4>
+  No user VMs will be created on the public L3 network in this tutorial, so we don't specify any network services for it.
+</div>
+
+<hr>
+
+on L2 network 'PRIVATE-L2', create a new guest VM L3 'PRIVATE-L3' with domain 'tutorials.zstack.org':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_3">Find UUID</button>
+
+<div id="11_3" class="collapse">
+<pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
+</div>
+
+	>>> CreateL3Network name=PRIVATE-L3 l2NetworkUuid=426017fa734d435bbf3fb99ad5f1b807 dnsDomain=tutorials.zstack.org
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateL3Vlan.png">
+
+<hr>
+
+create an IP Range for 'PRIVATE-L3':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_4">Find UUID</button>
+
+<div id="11_4" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
+</div>
+
+	>>> AddIpRange name=PRIVATE-RANGE l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d startIp=10.0.0.2 endIp=10.0.0.254 netmask=255.255.255.0 gateway=10.0.0.1
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddIpRange2.png">
+
+<hr>
+
+add DNS for 'PRIVATE-L3':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_5">Find UUID</button>
+
+<div id="11_5" class="collapse">
+<pre><code>QueryL3Network fields=uuid name=PRIVATE-L3</code></pre>
+</div>
+
+	>>> AddDnsToL3Network l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d dns=8.8.8.8
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAddDns.png">
+
+<hr>
+
+we need to get available network service provider UUID, before add any virtual router service to L3 network:
+
+	>>> QueryNetworkServiceProvider
+
+<img class="img-responsive" src="../images/tutorials/t1/cliQueryNetworkServiceProvider.png">
+
+there are 2 available network service providers. In this tutorial, we just need the Virtual Router provider which provides 'DHCP', 'SNAT', 'DNS', 'PortForwarding' and 'Eip'.
+
+<hr>
+
+attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'Eip' to 'PRIVATE-L3':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_6">Find UUID</button>
+
+<div id="11_6" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
+<pre><code>QueryNetworkServiceProvider fields=uuid, name=VirtualRouter</code></pre>
+</div>
+
+	>>> AttachNetworkServiceToL3Network networkServices="{'96c5fbe222ad4b6586d35086b67ec07a':['DHCP','DNS','Eip','SNAT']}" l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d 
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachNetworkServiceToL3.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>Structure of parameter networkServices</h4>
+  It's a JSON object of map that key is UUID of network service provider and value is a list of network service types.
+</div>
+
+<hr>
+
+<h4 id="createInstanceOffering">12. Create Instance Offering</h4>
+
+create a guest VM instance offering 'small-instance' with 1 512Mhz CPU and 128MB memory:
+
+	>>> CreateInstanceOffering name=small-instance cpuNum=1 cpuSpeed=512 memorySize=134217728
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateInstanceOffering.png">
+
+<hr>
+
+<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
+
+create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button>
+
+<div id="13" class="collapse">
+<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,PRIVATE-L3</code></pre>
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 cpuSpeed=512 memorySize=536870912 imageUuid=854801a869e149b092281e0ef65585f9 managementNetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 publicNetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 isDefault=True zoneUuid=69b5be02a15742a08c1b7518e32f442a	
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateVirtualRouterOffering.png">
+
+<hr>
+
+<h4 id="createVM">14. Create Virtual Machine</h4>
+
+create a new guest VM instance with configuration:
+
+1. instance offering 'small-instance'
+2. image 'ttylinux'
+3. L3 network 'PRIVATE-L3'
+4. name 'VM1'
+
+<hr>
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#14">Find UUID</button>
+
+<div id="14" class="collapse">
+<pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
+<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
+</div>
+
+	>>> CreateVmInstance name=VM1 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=ca17c4f3425e44ff9d77b9817b76aa7d systemTags=hostname::vm1
+
+<img class="img-responsive" src="../images/tutorials/t1/cliVmCreation.png">
+
+the new VM has 1 NIC ('585bb3322f444f2296eb12f3f06e4f89') with IP address: 10.0.0.210.
+
+<div class="bs-callout bs-callout-warning">
+  <h4>The first user VM takes more time to create</h4>
+  For the first user VM, ZStack needs to download the image from the backup storage to the primary storage and create a virtual router VM on
+  the private L3 network, so it takes about 1 ~ 2 minutes to finish.
+</div>
+
+<hr>
+
+<h4 id="createVIP">15. Create VIP</h4>
+
+create a new VIP 'VIP1' on 'PUBLIC-MANAGEMENT-L3':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#15">Find UUID</button>
+
+<div id="15" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PUBLIC-MANAGEMENT-L3</code></pre>
+</div>
+
+	>>> CreateVip name=VIP1 l3NetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateVip.png">
+
+once it finishes, you should be able to see the new IP address, which will be used in EIP; in our case, the VIP is '10.0.101.138'.
+
+<hr>
+
+<h4 id="createEIP">16. Create EIP</h4>
+
+create a new EIP 'EIP1' with 'VIP1' for 'VM1' NIC UUID '585bb3322f444f2296eb12f3f06e4f89': 
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#16">Find UUID</button>
+
+<div id="16" class="collapse">
+<pre><code>QueryVip fields=uuid name=VIP1</code></pre>
+<pre><code>QueryVmNic fields=uuid vmInstance.name=VM1</code></pre>
+</div>
+
+	>>> CreateEip name=EIP1 vipUuid=2bad3299657544418d1cb776cac4493b vmNicUuid=585bb3322f444f2296eb12f3f06e4f89
+
+<img class="img-responsive" src="../images/tutorials/t1/cliCreateEip.png">
+
+<hr>
+
+use on machine that can reach subnet 10.0.101.0/24 to SSH the IP '10.0.101.138', you should be able to login the VM and see its hostname and guest private IP address:
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#16_1">Find IP</button>
+
+<div id="16_1" class="collapse">
+<pre><code>QueryVmNic fields=ip vmInstance.name=VM1</code></pre>
+</div>
+
+	# ssh root@10.0.101.138 
+
+<img class="img-responsive" src="../images/tutorials/t1/cliSshEip.png">
+
+<hr>
+
+<h4 id="rebindEIP">17. Rebind The EIP To Another VM</h4>
+
+follow instructions in section <a href="#createVM">16. Create Virtual Machine</a> to create another VM(VM2) on the private
+L3 network:
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#17">Find UUID</button>
+
+<div id="17" class="collapse">
+<pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
+<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
+</div>
+
+	>>> CreateVmInstance name=VM2 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=ca17c4f3425e44ff9d77b9817b76aa7d systemTags=hostname::vm2
+
+<img class="img-responsive" src="../images/tutorials/t1/cliVmCreation2.png">
+
+<div class="bs-callout bs-callout-info">
+  <h4>Subsequent VMs are created extremely fast</h4>
+  As the image has been downloaded to the image cache of the primary storage and the virtual router VM has been created,
+  new VMs will be created extremely fast, usually less than 3 seconds. 
+</div>
+
+<hr>
+
+then detach 'EIP1':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#17_2">Find UUID</button>
+
+<div id="17_2" class="collapse">
+<pre><code>QueryEip fields=uuid name=EIP1</code></pre>
+</div>
+
+	>>> DetachEip eipUuid=a29afb607d5c4928bfc560f00f05f379
+
+<img class="img-responsive" src="../images/tutorials/t1/cliDetachEip.png">
+
+<hr>
+
+after detaching, attach the 'EIP1' to the nic of VM2:
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#17_3">Find UUID</button>
+
+<div id="17_3" class="collapse">
+<pre><code>QueryEip fields=uuid name=EIP1</code></pre>
+<pre><code>QueryVmNic fields=uuid vmInstance.name=VM2</code></pre>
+</div>
+
+	>>> AttachEip eipUuid=a29afb607d5c4928bfc560f00f05f379 vmNicUuid=8faf3fcf62f34c33b67d4f03f1a2ea7d
+
+<img class="img-responsive" src="../images/tutorials/t1/cliAttachEip.png">
+
+SSH login to the EIP '10.0.101.138' again and run command 'ifconfig', you should see 'VM2' hostname and guest private IP address:
+
+	# ssh 10.0.101.138
+
+<img class="img-responsive" src="../images/tutorials/t1/cliSshEip2.png">

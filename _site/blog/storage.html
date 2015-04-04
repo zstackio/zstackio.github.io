@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">Storage Model: Primary Storage and Backup Storage</h2>
+    <p class="post-meta">Apr 22, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><em>ZStack abstracts storage systems, by their logical functionality, into primary storage and backup storage. A primary storage is a storage
+pool on which VM volumes locate; a backup storage is the storage that users store image templates and backup volumes and
+snapshots. Primary storage and backup storage can be physically separate storage systems or the same storage system playing both roles, storage
+vendors can easily plug in their products by implementing corresponding storage plugins.</em></p>
+
+<h3>Overview</h3>
+
+<p>Storage systems in a cloud can be divided into two categories by their logical functionality. One class works as storage pools
+that store volumes of VMs and will be accessed by running VMs; this kind of storage can be filesystem based that
+volumes are stored as files, or block storage based that volumes are block devices. In ZStack terms,
+this sort of storage is called as <strong>Primary Storage</strong> which can be either network shared storage such as NFS, ISCSI:</p>
+
+<p><img src="../../images/blogs/scalability/storage1.png" class="center-img img-responsive"></p>
+
+<p>or local storage such as hard drives of physical hosts:</p>
+
+<p><img src="../../images/blogs/scalability/storage2.png" class="center-img img-responsive"></p>
+
+<p>Another class of storage system works as warehouses that store image templates containing operating systems, and that backup
+volumes and snapshots; this kind of storage can be filesystem based that entities are stored as files,
+or object-store based that entities are stored as objects. In ZStack terms, this sort of storage is called as <strong>Backup Storage</strong> that
+is not directly accessible to VMs, and that can be only network shared storage:</p>
+
+<p><img src="../../images/blogs/scalability/storage3.png" class="center-img img-responsive"></p>
+
+<p>Both primary storage and backup storage are logical concepts, in reality, they can be individual storage systems using totally
+different protocols, for example, ISCSI primary storage and NFS backup storage, or the same storage system that can play pair roles,
+for example, <a href="http://ceph.com/">ceph</a>, whose block part is competent for primary storage while object part can take the role of backup storage.
+Storage vendors can easily plug in their storage systems in ZStack by implementing storage plugins, for both primary storage and backup storage.</p>
+
+<h3>Implementation inside</h3>
+
+<p>Primary storage and backup storage are not working separately; they need to cooperate with each other in order to conduct storage
+relevant activities. The most important activity is for creating a new VM; when a VM is the first time created on a primary storage, its
+image template will be downloaded from a backup storage to the image cache of the primary storage; as most hypervisors use a technology
+called <a href="https://www.vmware.com/support/ws55/doc/ws_clone_overview.html">linked clone</a>, once the image template has been downloaded,
+it works as a base volume for all VMs using the same image template and having the root volume in the same primary storage;</p>
+
+<p><img src="../../images/blogs/scalability/storage4.png" class="center-img img-responsive"></p>
+
+<p>Besides downloading template, primary storage can also upload entities like volumes, snapshots to backup storage; those
+uploading activities are all backup related; for example, when users backup a data volume, a copy of the data volume will be uploaded
+to a backup storage as an image template, which can be downloaded to a primary storage later for creating new data volumes.</p>
+
+<p>In the source code, primary storage and backup storage are implemented in different plugins. In terms of complexity, backup storage
+is more straightforward because they only deal with own business. The major activities of backup storage are downloading, uploading, and deleting.
+A backup storage needs to define protocols that how primary storage download and upload entities, but it doesn't need to know details of
+primary storage, because it's responsibility of primary storage to use these protocols to conduct these activities. Besides, backup storage must
+implement protocols allowing the image service to register and delete image templates. Similar to all other resources, the backup storage has an abstract base
+class <code>BackupStorageBase</code> that has already implemented most generic business logic, vendors only need to implement operations that directly relates to
+their backend storage systems, usually by invoking SDK or calling agents.</p>
+
+<p>Primary storage is more complex. The complexity stems from the fact that its business logic is not only backup storage dependent but also hypervisor
+specific. A primary storage, first of all, must understand protocols of backup storage to download and upload entities; for instance, a NfsPrimaryStorage
+must know the protocols of SftpBackupStorage, AmazonS3BackupStorage, and SwiftBackupStorage if it plans to support all of them. On the other side, the usages
+of protocols to the same backup storage vary for different hypervisors; for example, NfsPrimaryStorage can call the KVM agent to download an image
+template from AmazonS3BackupStorage using <a href="http://s3tools.org/s3cmd">s3tool</a>; however, as VMWare has a closed ecosystem, the only way NfsPrimaryStorage does
+the same thing may have to go through VMWare's SDK. Given those facts, the complexity of primary storage is <em>M x N</em> where M is the number of backup storage
+and N is the number of hypervisors it supports.</p>
+
+<p>As stated in <a href="plugin.html">The Versatile Plugin System</a>, ZStack is a plugin system that every feature is made as a small plugin; a primary storage
+needs to define two interfaces to crack the complexity. The first one is a hypervisor backend that deals with activities only related to hypervisors;
+for example, NfsPrimaryStorage has an interface <code>NfsPrimaryStorageBackend</code> defined, for each supported hypervisor there will be a concrete class like
+<code>NfsPrimaryStorageKVMBackend</code> for KVM. The second one, called <code>PrimaryToBackupStorageMediator</code>, is a hypervisor-to-backup-storage backend that handles activities
+involving both hypervisors and backup storage; for example, NfsPrimaryStorage has an implementation <code>NfsPrimaryToSftpBackupKVMBackend</code> supporting SftpBackupStorage for KVM.</p>
+
+<p>It sounds terrible that a primary storage has to implement so many things; however, in reality, a primary storage may not need
+to support all backup storage for all hypervisors; for example, it is worth nothing supporting SftpBackupStorage for VMWare as VMWare SDK
+has a fat chance allowing scp a file to its datastore (though it may be doable by bypassing SDK, we don't view it as a reliable way). And the
+prevailing protocols of network shared storage are not too many, most use cases can be handled once we have NfsPrimaryStorage and IscsiPrimaryStorage
+in place.</p>
+
+<blockquote><p><em><strong>Note</strong>: In current ZStack version(0.6), only NfsPrimaryStorage and SftpBackupStorage are implemented.</em></p></blockquote>
+
+<h3>Summary</h3>
+
+<p>In this article, we demonstrated ZStack's storage model. By dividing the storage functionality logically into primary storage and
+backup storage, ZStack provides a great flexibility that storage vendors can selectively plug in their storage system with different intentions.
+And with more and more common storage protocols such as NFS, ISCSI, S3, Swift being added as default plugins, users will not worry
+about they cannot find a proper combination for their existing storage systems.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

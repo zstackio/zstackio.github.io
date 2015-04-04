@@ -1,0 +1,19 @@
+# Site settings
+title: ZStack
+email: zstack721@gmail.com
+
+name: "zstack"
+description: "A open source, scalable, easy IaaS software"
+
+#contacts
+twitter_username: "zstack_org"
+
+baseurl: ""
+url: "http://zstack.org"
+
+
+# Build settings
+markdown: rdiscount
+permalink: none
+highlighter: pygments
+relative_permalinks: false

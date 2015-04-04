@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">The Automation Testing System 1: Integration Testing</h2>
+    <p class="post-meta">Apr 23, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><em>Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack
+is fully automated. The automation testing system consists of three parts: integration testing, system testing, and model-based
+testing. The integration testing system is built based on JUnit using simulators. With various utilities the integration testing
+system supplies, developers can quickly write test cases to validate a new feature or a bug fix.</em></p>
+
+<h3>Overview</h3>
+
+<p>The crucial factor in making a reliable, mature, and maintainable software product is the architecture; this is the design principle<br/>
+we believe in throughout. ZStack has made a lot of efforts in conceiving an architecture that can keep the software stable from
+adding new features, routine operational mistakes, and tailoring for special needs; our former articles <a href="microservices.html">The In-Process Microservices Architecture</a>,
+<a href="plugin.html">The Versatile Plugin System</a>, <a href="workflow.html">The Workflow Engine</a>, and <a href="tag.html">The Tag System</a> have revealed some
+of our attempts. However, we also fully understand the importance of testing in the software development. ZStack, at the day one,
+set the goal that every feature must be guarded by test cases, testing must be entirely automated, and writing test cases should
+be the only way to validate a new feature or any code change.</p>
+
+<p>To achieve the goal, we split our testing system into three components: integration testing, system testing, and model-based testing,
+by their focus and functionality:</p>
+
+<ul>
+<li><p><strong>Integration Testing System</strong> is constructed based on <a href="http://en.wikipedia.org/wiki/JUnit">JUnit</a> all using simulators; test cases reside
+in ZStack Java source code; developers can easily use regular JUnit commands to start testing suites.</p></li>
+<li><p><strong>System Testing System</strong> is an individual Python project called <em>zstack-woodpecker</em>, which is built based on ZStack APIs, and which tests everything
+in a real hardware environment.</p></li>
+<li><p><strong>Model-based Testing system</strong> is based on the theory of <a href="http://en.wikipedia.org/wiki/Model-based_testing">Model-based Testing</a> and is a sub-project
+in <em>zstack-woodpecker</em>. Test cases in this system will continuously executing APIs in a random manner until some predefined conditions meet.</p></li>
+</ul>
+
+
+<p>Beginning this one, we will have a series of three articles elaborating our testing architecture, to show you the way we guard every
+ZStack feature.</p>
+
+<h3>A little words for unit testing</h3>
+
+<p>Curious people may have asked in the heart that why we don't mention <a href="http://en.wikipedia.org/wiki/Unit_testing">Unit Testing</a>, which may be
+the most famous testing concept every sober testing driven developer will emphasize. We do have unit testing, if you look at the later section
+<em>Testing Framework</em>, you may get puzzled that why names used in commands are called <em>UnitTest</em> something but this article is named as integration testing.</p>
+
+<p>Initially we thought our testing is unit testing, because every case is to verify a unique component instead of the whole software; for example,
+the case <code>TestCreateZone</code> only tests the zone service, other components like VM service, storage service will not even get loaded. However, our way
+doing the testing does differentiate from the traditional unit testing concept that is to test a small piece of code, that is normally
+white box testing that aims to internal structures, and that is using methodology of mocking and stubbing; current ZStack has about 120 cases that match
+this definition while the rest 500+ cases don't. Most test cases, even focusing on individual services or components, are more like integration
+testing cases that will load multiple dependent services/components in order to conduct a testing activity; for example, to test the VM service, the storage
+and network related services must be loaded. On the other side, many our test cases based on simulators are actually testing at the API level, which in
+unit testing definition is a black-box testing apt to integration testing. Given those facts, we finally change our mind that
+we are doing the integration testing while leaving many old names stay to UnitTest-wise.</p>
+
+<h3>Integration Testing</h3>
+
+<p>From our prior experience, we deeply understand that a main reason developers keep ignoring testing is <strong><em>writing test cases is too hard, sometimes
+even harder than implementing a feature</em></strong>. When we design the integration testing system, a deliberate consideration is taking the burden
+off developers as much as possible, and letting the system itself do most boring, cumbersome work.</p>
+
+<p>There are two kind of repeated work for almost every test case. The one is preparing a minimal but workable software; for example, to test creating a zone, you
+only need core libraries and the zone service loaded, it's not necessary to load other services as we don't need them. The another is preparing environment; for example,
+a case of testing VM creation will need an environment that has a zone, a cluster, a host, storage, networks and all other necessary resources ready;
+developers won't want to repeat boring things like creating a zone, adding a host before they can really test their stuff; ideally they can get a ready environment
+with minor effort to concentrate on things they want to test.</p>
+
+<h4>Component Loader</h4>
+
+<p>We solve all these problems by a framework built upon JUnit. First of all, as ZStack manages all components using <a href="https://spring.io/">Spring</a>,
+we create a <code>BeanConstructor</code> that testers can on demand specify components they want to load:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestCreateZone</span> <span class="o">{</span>
+    <span class="n">Api</span> <span class="n">api</span><span class="o">;</span>
+    <span class="n">ComponentLoader</span> <span class="n">loader</span><span class="o">;</span>
+    <span class="n">DatabaseFacade</span> <span class="n">dbf</span><span class="o">;</span>
+
+    <span class="nd">@Before</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">DBUtil</span><span class="o">.</span><span class="na">reDeployDB</span><span class="o">();</span>
+        <span class="n">BeanConstructor</span> <span class="n">con</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">BeanConstructor</span><span class="o">();</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="na">addXml</span><span class="o">(</span><span class="s">&quot;PortalForUnitTest.xml&quot;</span><span class="o">).</span><span class="na">addXml</span><span class="o">(</span><span class="s">&quot;ZoneManager.xml&quot;</span><span class="o">).</span><span class="na">addXml</span><span class="o">(</span><span class="s">&quot;AccountManager.xml&quot;</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">dbf</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="na">getComponent</span><span class="o">(</span><span class="n">DatabaseFacade</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Api</span><span class="o">();</span>
+        <span class="n">api</span><span class="o">.</span><span class="na">startServer</span><span class="o">();</span>
+    <span class="o">}</span></code></pre></div>
+
+
+<p>In above example, we add three Spring configuration files to <code>BeanConstructor</code>, which implied by their names will load components for
+the account service, the zone service, and other necessary libraries included in <code>PortalForUnitTest.xml</code>. By this way, testers can tailor
+the software to a minimal size that only contains needed components, in order to fast the testing process and make things easy to debug.</p>
+
+<h4>Environment Deployer</h4>
+
+<p>To help testers prepare an environment that has all necessary dependencies for activities to be tested, we create a <code>Deployer</code> that
+can read an XML configuration file to deploy a complete simulator environment:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestCreateVm</span> <span class="o">{</span>
+    <span class="n">Deployer</span> <span class="n">deployer</span><span class="o">;</span>
+    <span class="n">Api</span> <span class="n">api</span><span class="o">;</span>
+    <span class="n">ComponentLoader</span> <span class="n">loader</span><span class="o">;</span>
+    <span class="n">CloudBus</span> <span class="n">bus</span><span class="o">;</span>
+    <span class="n">DatabaseFacade</span> <span class="n">dbf</span><span class="o">;</span>
+
+    <span class="nd">@Before</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">DBUtil</span><span class="o">.</span><span class="na">reDeployDB</span><span class="o">();</span>
+        <span class="n">deployer</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Deployer</span><span class="o">(</span><span class="s">&quot;deployerXml/vm/TestCreateVm.xml&quot;</span><span class="o">);</span>
+        <span class="n">deployer</span><span class="o">.</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="n">deployer</span><span class="o">.</span><span class="na">getApi</span><span class="o">();</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">deployer</span><span class="o">.</span><span class="na">getComponentLoader</span><span class="o">();</span>
+        <span class="n">bus</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="na">getComponent</span><span class="o">(</span><span class="n">CloudBus</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">dbf</span> <span class="o">=</span> <span class="n">loader</span><span class="o">.</span><span class="na">getComponent</span><span class="o">(</span><span class="n">DatabaseFacade</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ApiSenderException</span><span class="o">,</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="n">InstanceOfferingInventory</span> <span class="n">ioinv</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="na">listInstanceOffering</span><span class="o">(</span><span class="kc">null</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">ImageInventory</span> <span class="n">iminv</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="na">listImage</span><span class="o">(</span><span class="kc">null</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">VmInstanceInventory</span> <span class="n">inv</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="na">listVmInstances</span><span class="o">(</span><span class="kc">null</span><span class="o">).</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">inv</span><span class="o">.</span><span class="na">getInstanceOfferingUuid</span><span class="o">(),</span> <span class="n">ioinv</span><span class="o">.</span><span class="na">getUuid</span><span class="o">());</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">inv</span><span class="o">.</span><span class="na">getImageUuid</span><span class="o">(),</span> <span class="n">iminv</span><span class="o">.</span><span class="na">getUuid</span><span class="o">());</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">VmInstanceState</span><span class="o">.</span><span class="na">Running</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span> <span class="n">inv</span><span class="o">.</span><span class="na">getState</span><span class="o">());</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">inv</span><span class="o">.</span><span class="na">getVmNics</span><span class="o">().</span><span class="na">size</span><span class="o">());</span>
+        <span class="n">VmInstanceVO</span> <span class="n">vm</span> <span class="o">=</span> <span class="n">dbf</span><span class="o">.</span><span class="na">findByUuid</span><span class="o">(</span><span class="n">inv</span><span class="o">.</span><span class="na">getUuid</span><span class="o">(),</span> <span class="n">VmInstanceVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">vm</span><span class="o">);</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertEquals</span><span class="o">(</span><span class="n">VmInstanceState</span><span class="o">.</span><span class="na">Running</span><span class="o">,</span> <span class="n">vm</span><span class="o">.</span><span class="na">getState</span><span class="o">());</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">VmNicInventory</span> <span class="n">nic</span> <span class="o">:</span> <span class="n">inv</span><span class="o">.</span><span class="na">getVmNics</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">VmNicVO</span> <span class="n">nvo</span> <span class="o">=</span> <span class="n">dbf</span><span class="o">.</span><span class="na">findByUuid</span><span class="o">(</span><span class="n">nic</span><span class="o">.</span><span class="na">getUuid</span><span class="o">(),</span> <span class="n">VmNicVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+            <span class="n">Assert</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">nvo</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">VolumeVO</span> <span class="n">root</span> <span class="o">=</span> <span class="n">dbf</span><span class="o">.</span><span class="na">findByUuid</span><span class="o">(</span><span class="n">inv</span><span class="o">.</span><span class="na">getRootVolumeUuid</span><span class="o">(),</span> <span class="n">VolumeVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">Assert</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">VolumeInventory</span> <span class="n">v</span> <span class="o">:</span> <span class="n">inv</span><span class="o">.</span><span class="na">getAllVolumes</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">getType</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">VolumeType</span><span class="o">.</span><span class="na">Data</span><span class="o">.</span><span class="na">toString</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">VolumeVO</span> <span class="n">data</span> <span class="o">=</span> <span class="n">dbf</span><span class="o">.</span><span class="na">findByUuid</span><span class="o">(</span><span class="n">v</span><span class="o">.</span><span class="na">getUuid</span><span class="o">(),</span> <span class="n">VolumeVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+                <span class="n">Assert</span><span class="o">.</span><span class="na">assertNotNull</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></div>
+
+
+<p>In above TestCreateVm case, the deployer read a configuration file at <em>deployerXml/vm/TestCreateVm.xml</em> and deploy a full environment
+that is ready to create a new VM; what is more, we actually let the deployer create the VM, as you don't see any code in
+method <code>test</code> calling <code>api.createVmByFullConfig()</code>; what the tester really does is verifying the VM is correctly created with
+conditions we specify in <em>deployerXml/vm/TestCreateVm.xml</em>. Now you see how easy it is, the tester only writes ~60 lines code and
+have the most important part of IaaS software -- creating VM tested.</p>
+
+<p>The configuration file TestCreateVm.xml in above example is like:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;deployerConfig</span> <span class="na">xmlns=</span><span class="s">&quot;http://zstack.org/schema/zstack&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;instanceOfferings&gt;</span>
+        <span class="nt">&lt;instanceOffering</span> <span class="na">name=</span><span class="s">&quot;TestInstanceOffering&quot;</span>
+            <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">memoryCapacity=</span><span class="s">&quot;3G&quot;</span> <span class="na">cpuNum=</span><span class="s">&quot;1&quot;</span> <span class="na">cpuSpeed=</span><span class="s">&quot;3000&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/instanceOfferings&gt;</span>
+
+    <span class="nt">&lt;backupStorages&gt;</span>
+        <span class="nt">&lt;simulatorBackupStorage</span> <span class="na">name=</span><span class="s">&quot;TestBackupStorage&quot;</span>
+            <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">url=</span><span class="s">&quot;nfs://test&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/backupStorages&gt;</span>
+
+    <span class="nt">&lt;images&gt;</span>
+        <span class="nt">&lt;image</span> <span class="na">name=</span><span class="s">&quot;TestImage&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">format=</span><span class="s">&quot;simulator&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;backupStorageRef&gt;</span>TestBackupStorage<span class="nt">&lt;/backupStorageRef&gt;</span>
+        <span class="nt">&lt;/image&gt;</span>
+    <span class="nt">&lt;/images&gt;</span>
+
+    <span class="nt">&lt;diskOffering</span> <span class="na">name=</span><span class="s">&quot;TestRootDiskOffering&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span>
+        <span class="na">diskSize=</span><span class="s">&quot;50G&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;diskOffering</span> <span class="na">name=</span><span class="s">&quot;TestDataDiskOffering&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span>
+        <span class="na">diskSize=</span><span class="s">&quot;120G&quot;</span> <span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;vm&gt;</span>
+        <span class="nt">&lt;userVm</span> <span class="na">name=</span><span class="s">&quot;TestVm&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;rootDiskOfferingRef&gt;</span>TestRootDiskOffering<span class="nt">&lt;/rootDiskOfferingRef&gt;</span>
+            <span class="nt">&lt;imageRef&gt;</span>TestImage<span class="nt">&lt;/imageRef&gt;</span>
+            <span class="nt">&lt;instanceOfferingRef&gt;</span>TestInstanceOffering<span class="nt">&lt;/instanceOfferingRef&gt;</span>
+            <span class="nt">&lt;l3NetworkRef&gt;</span>TestL3Network1<span class="nt">&lt;/l3NetworkRef&gt;</span>
+            <span class="nt">&lt;l3NetworkRef&gt;</span>TestL3Network2<span class="nt">&lt;/l3NetworkRef&gt;</span>
+            <span class="nt">&lt;l3NetworkRef&gt;</span>TestL3Network3<span class="nt">&lt;/l3NetworkRef&gt;</span>
+            <span class="nt">&lt;defaultL3NetworkRef&gt;</span>TestL3Network1<span class="nt">&lt;/defaultL3NetworkRef&gt;</span>
+            <span class="nt">&lt;diskOfferingRef&gt;</span>TestDataDiskOffering<span class="nt">&lt;/diskOfferingRef&gt;</span>
+        <span class="nt">&lt;/userVm&gt;</span>
+    <span class="nt">&lt;/vm&gt;</span>
+
+    <span class="nt">&lt;zones&gt;</span>
+        <span class="nt">&lt;zone</span> <span class="na">name=</span><span class="s">&quot;TestZone&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;clusters&gt;</span>
+                <span class="nt">&lt;cluster</span> <span class="na">name=</span><span class="s">&quot;TestCluster&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;hosts&gt;</span>
+                        <span class="nt">&lt;simulatorHost</span> <span class="na">name=</span><span class="s">&quot;TestHost1&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span>
+                            <span class="na">managementIp=</span><span class="s">&quot;10.0.0.11&quot;</span> <span class="na">memoryCapacity=</span><span class="s">&quot;8G&quot;</span> <span class="na">cpuNum=</span><span class="s">&quot;4&quot;</span> <span class="na">cpuSpeed=</span><span class="s">&quot;2600&quot;</span> <span class="nt">/&gt;</span>
+                        <span class="nt">&lt;simulatorHost</span> <span class="na">name=</span><span class="s">&quot;TestHost2&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span>
+                            <span class="na">managementIp=</span><span class="s">&quot;10.0.0.12&quot;</span> <span class="na">memoryCapacity=</span><span class="s">&quot;4G&quot;</span> <span class="na">cpuNum=</span><span class="s">&quot;4&quot;</span> <span class="na">cpuSpeed=</span><span class="s">&quot;2600&quot;</span> <span class="nt">/&gt;</span>
+                    <span class="nt">&lt;/hosts&gt;</span>
+                    <span class="nt">&lt;primaryStorageRef&gt;</span>TestPrimaryStorage<span class="nt">&lt;/primaryStorageRef&gt;</span>
+                    <span class="nt">&lt;l2NetworkRef&gt;</span>TestL2Network<span class="nt">&lt;/l2NetworkRef&gt;</span>
+                <span class="nt">&lt;/cluster&gt;</span>
+            <span class="nt">&lt;/clusters&gt;</span>
+
+            <span class="nt">&lt;l2Networks&gt;</span>
+                <span class="nt">&lt;l2NoVlanNetwork</span> <span class="na">name=</span><span class="s">&quot;TestL2Network&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span>
+                    <span class="na">physicalInterface=</span><span class="s">&quot;eth0&quot;</span><span class="nt">&gt;</span>
+                    <span class="nt">&lt;l3Networks&gt;</span>
+                        <span class="nt">&lt;l3BasicNetwork</span> <span class="na">name=</span><span class="s">&quot;TestL3Network1&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;ipRange</span> <span class="na">name=</span><span class="s">&quot;TestIpRange1&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">startIp=</span><span class="s">&quot;10.0.0.100&quot;</span>
+                                <span class="na">endIp=</span><span class="s">&quot;10.10.1.200&quot;</span> <span class="na">gateway=</span><span class="s">&quot;10.0.0.1&quot;</span> <span class="na">netmask=</span><span class="s">&quot;255.0.0.0&quot;</span> <span class="nt">/&gt;</span>
+                        <span class="nt">&lt;/l3BasicNetwork&gt;</span>
+                        <span class="nt">&lt;l3BasicNetwork</span> <span class="na">name=</span><span class="s">&quot;TestL3Network2&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;ipRange</span> <span class="na">name=</span><span class="s">&quot;TestIpRange2&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">startIp=</span><span class="s">&quot;10.10.2.100&quot;</span>
+                                <span class="na">endIp=</span><span class="s">&quot;10.20.2.200&quot;</span> <span class="na">gateway=</span><span class="s">&quot;10.10.2.1&quot;</span> <span class="na">netmask=</span><span class="s">&quot;255.0.0.0&quot;</span> <span class="nt">/&gt;</span>
+                        <span class="nt">&lt;/l3BasicNetwork&gt;</span>
+                        <span class="nt">&lt;l3BasicNetwork</span> <span class="na">name=</span><span class="s">&quot;TestL3Network3&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span><span class="nt">&gt;</span>
+                            <span class="nt">&lt;ipRange</span> <span class="na">name=</span><span class="s">&quot;TestIpRange3&quot;</span> <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">startIp=</span><span class="s">&quot;10.20.3.100&quot;</span>
+                                <span class="na">endIp=</span><span class="s">&quot;10.30.3.200&quot;</span> <span class="na">gateway=</span><span class="s">&quot;10.20.3.1&quot;</span> <span class="na">netmask=</span><span class="s">&quot;255.0.0.0&quot;</span> <span class="nt">/&gt;</span>
+                        <span class="nt">&lt;/l3BasicNetwork&gt;</span>
+                    <span class="nt">&lt;/l3Networks&gt;</span>
+                <span class="nt">&lt;/l2NoVlanNetwork&gt;</span>
+            <span class="nt">&lt;/l2Networks&gt;</span>
+
+            <span class="nt">&lt;primaryStorages&gt;</span>
+                <span class="nt">&lt;simulatorPrimaryStorage</span> <span class="na">name=</span><span class="s">&quot;TestPrimaryStorage&quot;</span>
+                    <span class="na">description=</span><span class="s">&quot;Test&quot;</span> <span class="na">totalCapacity=</span><span class="s">&quot;1T&quot;</span> <span class="na">url=</span><span class="s">&quot;nfs://test&quot;</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;/primaryStorages&gt;</span>
+
+            <span class="nt">&lt;backupStorageRef&gt;</span>TestBackupStorage<span class="nt">&lt;/backupStorageRef&gt;</span>
+        <span class="nt">&lt;/zone&gt;</span>
+    <span class="nt">&lt;/zones&gt;</span>
+<span class="nt">&lt;/deployerConfig&gt;</span></code></pre></div>
+
+
+<h4>Simulator</h4>
+
+<p>Most integration testing cases are built on simulators; every resource that needs to communicate with backend devices has a simulator implementation;
+for example, KVM simulator, virtual router VM simulator, NFS primary storage simulator. Because current resource backend are all Python based
+HTTP servers, most simulators are constructed using Apache Tomcat embedded HTTP server. A snippet of KVM simulator is like:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="n">KVMConstant</span><span class="o">.</span><span class="na">KVM_MERGE_SNAPSHOT_PATH</span><span class="o">,</span> <span class="n">method</span><span class="o">=</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="n">String</span> <span class="nf">mergeSnapshot</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">HttpEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">restf</span><span class="o">.</span><span class="na">httpServletRequestToHttpEntity</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+        <span class="n">MergeSnapshotCmd</span> <span class="n">cmd</span> <span class="o">=</span> <span class="n">JSONObjectUtil</span><span class="o">.</span><span class="na">toObject</span><span class="o">(</span><span class="n">entity</span><span class="o">.</span><span class="na">getBody</span><span class="o">(),</span> <span class="n">MergeSnapshotCmd</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">MergeSnapshotRsp</span> <span class="n">rsp</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">MergeSnapshotRsp</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">config</span><span class="o">.</span><span class="na">mergeSnapshotSuccess</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">rsp</span><span class="o">.</span><span class="na">setError</span><span class="o">(</span><span class="s">&quot;on purpose&quot;</span><span class="o">);</span>
+            <span class="n">rsp</span><span class="o">.</span><span class="na">setSuccess</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">snapshotKvmSimulator</span><span class="o">.</span><span class="na">merge</span><span class="o">(</span><span class="n">cmd</span><span class="o">.</span><span class="na">getSrcPath</span><span class="o">(),</span> <span class="n">cmd</span><span class="o">.</span><span class="na">getDestPath</span><span class="o">(),</span> <span class="n">cmd</span><span class="o">.</span><span class="na">isFullRebase</span><span class="o">());</span>
+            <span class="n">config</span><span class="o">.</span><span class="na">mergeSnapshotCmds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">cmd</span><span class="o">);</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="n">entity</span><span class="o">.</span><span class="na">getBody</span><span class="o">());</span>
+        <span class="o">}</span>
+
+        <span class="n">replyer</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">entity</span><span class="o">,</span> <span class="n">rsp</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="n">value</span><span class="o">=</span><span class="n">KVMConstant</span><span class="o">.</span><span class="na">KVM_TAKE_VOLUME_SNAPSHOT_PATH</span><span class="o">,</span> <span class="n">method</span><span class="o">=</span><span class="n">RequestMethod</span><span class="o">.</span><span class="na">POST</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="nd">@ResponseBody</span> <span class="n">String</span> <span class="nf">takeSnapshot</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">HttpEntity</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">restf</span><span class="o">.</span><span class="na">httpServletRequestToHttpEntity</span><span class="o">(</span><span class="n">req</span><span class="o">);</span>
+        <span class="n">TakeSnapshotCmd</span> <span class="n">cmd</span> <span class="o">=</span> <span class="n">JSONObjectUtil</span><span class="o">.</span><span class="na">toObject</span><span class="o">(</span><span class="n">entity</span><span class="o">.</span><span class="na">getBody</span><span class="o">(),</span> <span class="n">TakeSnapshotCmd</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+        <span class="n">TakeSnapshotResponse</span> <span class="n">rsp</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">TakeSnapshotResponse</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">config</span><span class="o">.</span><span class="na">snapshotSuccess</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">config</span><span class="o">.</span><span class="na">snapshotCmds</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">cmd</span><span class="o">);</span>
+            <span class="n">rsp</span> <span class="o">=</span> <span class="n">snapshotKvmSimulator</span><span class="o">.</span><span class="na">takeSnapshot</span><span class="o">(</span><span class="n">cmd</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span>  <span class="o">{</span>
+            <span class="n">rsp</span><span class="o">.</span><span class="na">setError</span><span class="o">(</span><span class="s">&quot;on purpose&quot;</span><span class="o">);</span>
+            <span class="n">rsp</span><span class="o">.</span><span class="na">setSuccess</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">replyer</span><span class="o">.</span><span class="na">reply</span><span class="o">(</span><span class="n">entity</span><span class="o">,</span> <span class="n">rsp</span><span class="o">);</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span></code></pre></div>
+
+
+<p>Every simulator has a configuration object like <code>KVMSimulatorConfig</code> that testers can use to control simulator behaviors.</p>
+
+<h4>Testing Framework</h4>
+
+<p>As all test cases are actually JUnit test cases, testers can run each case individually using normal JUnit commands, for example:</p>
+
+<pre><code>[root@localhost test]# mvn test -Dtest=TestAddImage
+</code></pre>
+
+<p>And all cases in a test suite can be executed in one command, for example:</p>
+
+<pre><code>[root@localhost test]# mvn test -Dtest=UnitTestSuite 
+</code></pre>
+
+<p><img src="../../images/blogs/scalability/testing1.png" class="center-img img-responsive"></p>
+
+<p>Cases can also be executed in a group, for example:</p>
+
+<pre><code>[root@localhost test]# mvn test -Dtest=UnitTestSuite -Dconfig=unitTestSuiteXml/eip.xml
+</code></pre>
+
+<p>An XML configuration file lists cases in the group, for example, the above eip.xml is like:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;UnitTestSuiteConfig</span> <span class="na">xmlns=</span><span class="s">&quot;http://zstack.org/schema/zstack&quot;</span> <span class="na">timeout=</span><span class="s">&quot;120&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip1&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip2&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip3&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip4&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip5&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip6&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip7&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip8&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip9&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip10&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip11&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip12&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip13&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip14&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip15&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip16&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip17&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip18&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip19&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip20&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip21&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip22&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip23&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip24&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestVirtualRouterEip25&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestQueryEip1&quot;</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;TestCase</span> <span class="na">class=</span><span class="s">&quot;org.zstack.test.eip.TestEipPortForwardingAttachableNic&quot;</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/UnitTestSuiteConfig&gt;</span></code></pre></div>
+
+
+<p>Multiple cases can also be executed in one command by feeding their names, for example:</p>
+
+<pre><code>[root@localhost test]# mvn test -Dtest=UnitTestSuite -Dcases=TestAddImage,TestCreateTemplateFromRootVolume,TestCreateDataVolume
+</code></pre>
+
+<h3>Summary</h3>
+
+<p>In this article, we introduced the first part of ZStack automation testing system -- integration testing. With it, developers
+can write code with 100% confidence. And writing test cases is no longer a daunting and boring task; developers can finish most
+cases with less than 100 lines code, which is easy and efficient;</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

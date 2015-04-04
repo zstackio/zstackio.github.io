@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+{% include head.html %}
+
+<body>
+
+
+{% include navbar.html %}
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-3" style="margin-top: 25px">
+      <ul class="nav nav-pills nav-stacked left-slider">
+        <ol>
+          {% for item in page.sections %}
+          <li><a href="#{{item.id}}">{{item.title}}</a></li>
+          {% endfor %}
+        </ol>
+      </ul>
+    </div>
+    <div class="col-xs-9 tutorial">
+      {{ content }}
+    </div>
+  </div>
+</div>
+
+{% include js.html %}
+
+{% include foot.html %}
+</body>
+
+</html>

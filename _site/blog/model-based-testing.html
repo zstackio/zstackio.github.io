@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="/issues">Issues</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">The Automation Testing System 3: Model-based Testing</h2>
+    <p class="post-meta">May 2, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><em>The <a href="http://en.wikipedia.org/wiki/Model-based_testing">model-based testing</a> system
+is a sub-project in zstack-woodpecker. With finite-state machines and
+action selection strategies, it can generate random API operations that may run forever
+unless a defect is found, or pre-defined exit conditions are met. ZStack relies on model-based testing to test
+corner cases that hardly happen in real world, which compensates integration testing and
+system testing in terms of test coverage.</em></p>
+
+<h3>Overview</h3>
+
+<p>Test coverage is an important indicator that judges the quality of a testing system. Regular testing methodologies such
+as unit testing, integration testing, and system testing all of which are designed by human logical thinking are very hard
+to cover corner cases of the software. This problem becomes more obvious in IaaS software that manage different
+sub-systems that can lead to complex scenarios.</p>
+
+<p>ZStack solves this problem by introducing model-based testing that can generate scenarios consisting of random API
+combinations that will continuously run until meeting pre-defined exit conditions or finding a defect. As machine driven testing, the
+model-based testing can overcome weaknesses of human logical thinking to conduct tests that are seemly human illogical
+but API correct, helping discover corner cases that are hard to notice by human leading testing.</p>
+
+<p>An example may help understand the idea; the model-based testing system used to uncover a bug after executing ~200 APIs; after
+debugging, we found the minimal sequence to reproduce the issue is:</p>
+
+<ol>
+<li>create a VM</li>
+<li>stop the VM</li>
+<li>create a volume snapshot for the VM's root volume</li>
+<li>create a new data volume template from the VM root volume</li>
+<li>destroy VM</li>
+<li>create a new data volume from the template in step 4</li>
+<li>create a new volume snapshot from the data volume in step 6</li>
+</ol>
+
+
+<p>This operating sequence is apparently illogical, we believe no tester will write an integration testing case or system testing
+case doing so. This is where machine thinking shines because it doesn't have human feelings and will do things human feels
+unreasonable. After finding this bug, we generate a regression test to guard the issue for the future.</p>
+
+<h3>Model-based Testing System</h3>
+
+<p>The model-based testing system, as driven by the machine, is also called robot testing. When the system runs, it moves from
+one model(also called stage in following sections) to another by executing actions(also called operations) selected
+by action selection strategies. After every model is finished, checkers will validate the testing result and test exit
+conditions; the system will quit if any failure is discovered or the exit conditions are met. Otherwise, it moves to next
+model and repeats.</p>
+
+<p><img src="../../images/blogs/testing/model-based-test.png" class="center-img img-responsive"></p>
+
+<h4>Finite-state Machine</h4>
+
+<p>In the theory of model-based testing, there are many ways to generate testing operations, for example, <a href="http://en.wikipedia.org/wiki/Finite-state_machine">finite-state machine</a>,
+<a href="http://en.wikipedia.org/wiki/Automated_theorem_proving">theorem proving</a>, <a href="http://en.wikipedia.org/wiki/Model_checking">model checking</a>.
+We chose to use a finite-state machine because it naturally fits IaaS software that every resource is essentially driven
+by states. For example, VM states from user perspective are like:</p>
+
+<p><img src="../../images/blogs/testing/vm-transition-table.png" class="center-img img-responsive"></p>
+
+<p>In the model-based testing system, states of every resource are pre-defined in <code>test_state.py</code>, which looks like:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">vm_state_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Any</span><span class="p">:</span> <span class="mi">1</span> <span class="p">,</span> 
+            <span class="n">vm_header</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> 
+            <span class="n">vm_header</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> 
+            <span class="n">vm_header</span><span class="o">.</span><span class="n">DESTROYED</span><span class="p">:</span> <span class="mi">4</span>
+            <span class="p">}</span>
+
+    <span class="n">vm_volume_state_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Any</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="n">vm_no_volume_att</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> 
+            <span class="n">vm_volume_att_not_full</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> 
+            <span class="n">vm_volume_att_full</span><span class="p">:</span> <span class="mi">40</span> 
+            <span class="p">}</span>
+
+    <span class="n">volume_state_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Any</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> 
+            <span class="n">free_volume</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> 
+            <span class="n">no_free_volume</span><span class="p">:</span><span class="mi">300</span>
+            <span class="p">}</span>
+
+    <span class="n">image_state_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Any</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> 
+            <span class="n">no_new_template_image</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> 
+            <span class="n">new_template_image</span><span class="p">:</span> <span class="mi">3000</span>
+            <span class="p">}</span></code></pre></div>
+
+
+<p>States of all resources in the system make up of a <em>stage</em>(model); the system can transit from one stage to next stage
+by executing operations maintained in the transition table. A stage is defined as:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">TestStage</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Test states definition and Test state transition matrix. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vm_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vm_volume_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sg_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vip_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sp_current_state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapshot_live_cap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">volume_vm_current_state</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="o">...</span></code></pre></div>
+
+
+<p>A stage can be represented by an integer that is the sum of all states the stage contains; using the
+integer, we can look up the transition table for next candidate operations; an example of the transition table
+is like:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#state transition table for vm_state, volume_state and image_state</span>
+    <span class="n">normal_action_transition_table</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">Any</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">create_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">create_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">idel</span><span class="p">],</span> 
+        <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">stop_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">reboot_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">destroy_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">migrate_vm</span><span class="p">],</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">start_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">destroy_vm</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">create_image_from_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">create_data_vol_template_from_volume</span><span class="p">],</span> 
+        <span class="mi">4</span><span class="p">:</span> <span class="p">[],</span>
+      <span class="mi">211</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> 
+      <span class="mi">222</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">attach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span>
+      <span class="mi">223</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">attach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> 
+      <span class="mi">224</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span>
+      <span class="mi">232</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">attach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span>
+      <span class="mi">233</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">attach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span>
+      <span class="mi">234</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> <span class="mi">244</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> <span class="mi">321</span><span class="p">:</span> <span class="p">[],</span>
+      <span class="mi">332</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> 
+      <span class="mi">333</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> <span class="mi">334</span><span class="p">:</span> <span class="p">[],</span>
+      <span class="mi">342</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> 
+      <span class="mi">343</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">detach_volume</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">delete_volume</span><span class="p">],</span> <span class="mi">344</span><span class="p">:</span> <span class="p">[],</span>
+     <span class="mi">3000</span><span class="p">:</span> <span class="p">[</span><span class="n">ta</span><span class="o">.</span><span class="n">delete_image</span><span class="p">,</span> <span class="n">ta</span><span class="o">.</span><span class="n">create_data_volume_from_image</span><span class="p">]</span>
+    <span class="p">}</span></code></pre></div>
+
+
+<p>By this way, the model-based testing system can keep running from one stage to another until meeting some
+pre-defined exit conditions or finding some defect, it can continuously run several days and call APIs
+tens of thousands times.</p>
+
+<h4>Action Selection Strategies</h4>
+
+<p>When moving amid stages, the model-based testing system needs to decide what the next operation to
+perform; the decision maker is called <em>action selection strategy</em> that is a pluggable engine that various
+selection algorithms can be implemented with different intentions.</p>
+
+<p>Current system has three strategies:</p>
+
+<ul>
+<li><strong>Random scheduler</strong> is the simplest strategy that randomly picks up the next operation from candidates for the current stage.
+As a straightforward algorithm, the random scheduler may repeat one operation while keep other operations starving;
+to relieve the issue, we enhance each operation with a weight, so testers can give higher weights to operations they
+want to test more.</li>
+</ul>
+
+
+<p><img src="../../images/blogs/testing/random-scheduler.png" class="center-img img-responsive"></p>
+
+<ul>
+<li><strong>Fair scheduler</strong> is the strategy that every candidate operation is treated equally, compensating random scheduler
+in the way that every operation has fair chance to be executed, guaranteeing all operations will be tested as long as the
+testing period is long enough.</li>
+</ul>
+
+
+<p><img src="../../images/blogs/testing/fair-scheduler.png" class="center-img img-responsive"></p>
+
+<ul>
+<li><strong>Path coverage scheduler</strong> is the strategy that decides the next operation by historical data; this strategy will
+memorize operation paths that have been tested, and try to choose the next operation that can form a new operation path;
+for example, given candidate operations A, B, C, D, if previous operation is B and paths BA, BB, BC all have been
+tested, the strategy will choose D as the next operation so path BD can be tested.</li>
+</ul>
+
+
+<p><img src="../../images/blogs/testing/path-coverage-scheduler.png" class="center-img img-responsive"></p>
+
+<p>As mentioned before that action selection strategy is a pluggable engine, every strategy actually derives from class
+<code>ActionSelector</code>:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">ActionSelector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_list</span><span class="p">,</span> <span class="n">history_actions</span><span class="p">,</span> <span class="n">priority_actions</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_actions</span> <span class="o">=</span> <span class="n">history_actions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action_list</span> <span class="o">=</span> <span class="n">action_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priority_actions</span> <span class="o">=</span> <span class="n">priority_actions</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        New Action Selector need to implement own select() function. </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">get_action_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_list</span>
+
+    <span class="k">def</span> <span class="nf">get_priority_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority_actions</span>
+
+    <span class="k">def</span> <span class="nf">get_history_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history_actions</span></code></pre></div>
+
+
+<p>An implementation example of random scheduler is like:</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">RandomActionSelector</span><span class="p">(</span><span class="n">ActionSelector</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Base on the priority action list, just randomly pickup action. </span>
+
+<span class="sd">    If need to set higher priority for some action, it just needs to put them</span>
+<span class="sd">    more times in priority_actions list. </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_list</span><span class="p">,</span> <span class="n">history_actions</span><span class="p">,</span> <span class="n">priority_actions</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RandomActionSelector</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">action_list</span><span class="p">,</span> \
+                <span class="n">history_actions</span><span class="p">,</span> <span class="n">priority_actions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">priority_actions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">priority_actions</span><span class="o">.</span><span class="n">get_priority_action_list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">action</span> <span class="ow">in</span> <span class="n">priority_actions</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_action_list</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">action_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_action_list</span><span class="p">())</span></code></pre></div>
+
+
+<h3>Exit Conditions</h3>
+
+<p>Before starting the model-based testing system, exit conditions must be set otherwise the system will keep running
+until a defect is found, or the log files explode hard drive of the testing machine. Exit conditions can be any forms,
+for example, stopping after running 24 hours, stopping when the system has 100 EIPs created, stopping when there are
+2 stopped and 8 running VMs; it's all up to testers to define conditions that can augment the chance of finding defects
+as big as possible.</p>
+
+<h3>Failure Replaying</h3>
+
+<p>Debugging a failure found by model-based testing is hard and frustrating; most failures are uncovered by very large
+operation sequences that are usually illogical and with huge lines of logs. We used to reproduce failures manually; after
+painfully, manually invoking APIs using <code>zstack-cli</code> 200 times following a ~500,000 lines log, we finally realized this
+miserable job is humanly impossible. Then we invented a tool that can reproduce a failure by replaying the action log
+that records test information purely about APIs.</p>
+
+<p>An action log is like:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml">Robot Action: create_vm  
+ Robot Action Result: create_vm; new VM: fc2c0221be72423ea303a522fd6570e9 
+ Robot Action: stop_vm; on VM: fc2c0221be72423ea303a522fd6570e9 
+ Robot Action: create_volume_snapshot; on Root Volume: fe839dcb305f471a852a1f5e21d4feda; on VM: fc2c0221be72423ea303a522fd6570e9 
+ Robot Action Result: create_volume_snapshot; new SP: 497ac6abaf984f5a825ae4fb2c585a88 
+ Robot Action: create_data_volume_template_from_volume; on Volume: fe839dcb305f471a852a1f5e21d4feda;  on VM: fc2c0221be72423ea303a522fd6570e9 
+ Robot Action Result: create_data_volume_template_from_volume; new DataVolume Image: fb23cdfce4b54072847a3cfe8ae45d35 
+ Robot Action: destroy_vm; on VM: fc2c0221be72423ea303a522fd6570e9 
+ Robot Action: create_data_volume_from_image; on Image: fb23cdfce4b54072847a3cfe8ae45d35 
+ Robot Action Result: create_data_volume_from_image; new Volume: 20dee895d68b428a88e5ec3d3ef634d8 
+ Robot Action: create_volume_snapshot; on Volume: 20dee895d68b428a88e5ec3d3ef634d8</code></pre></div>
+
+
+<p>Testers can recreate the failure environment by calling the replaying tool:</p>
+
+<pre><code>robot_replay.py -f path_to_action_log
+</code></pre>
+
+<h3>Summary</h3>
+
+<p>In this article, we introduced model-based testing system. As being good at uncovering issues of corner cases, the
+model-based testing system works with integration testing system and system testing system as the foundation of defending
+ZStack's quality, allowing us to deliver a product with proud confidence.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-xs-3 col-xs-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li>Gitter</li>
+          <li>Contribute</li>
+        </ul>
+      </div>
+      <div class="col-xs-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-xs-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon fa fa-twitter fa-3" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon fa fa-facebook fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon fa fa-github-alt fa-3" href="" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon fa fa-weixin fa-3" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon fa fa-weibo fa-3" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before">
+          <li><i>ZStack is an open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts.</b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+{% include head.html %}
+{% include js.html %}
+<body>
+
+
+{% include navbar.html %}
+
+<div class="container big-font">
+  <div class="col-xs-8">
+      {% for post in site.posts reversed %}
+      <div>
+          <a href="{{post.url}}"><h3>{{post.title}}</h3></a>
+          {{post.excerpt}}
+          <a href="{{post.url}}">Read more >></a>
+      </div>
+      <hr>
+      {% endfor %}
+  </div>
+  <div class="col-xs-4" style="margin-top: 25px">
+    <ul class="nav nav-pills nav-stacked left-slider">
+      <ol>
+        {% for post in site.posts reversed %}
+        <li style="padding: 10px"><a href="{{post.url}}">{{post.title}}</a></li>
+        {% endfor %}
+      </ol>
+    </ul>
+  </div>
+</div>
+
+{% include foot.html %}
+</body>
+
+</html>
