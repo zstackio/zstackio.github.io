@@ -23,7 +23,7 @@ yours.
 
 <h3><i class="fa fa-github-alt">&nbsp; GitHub</i></h3>
 
-You can also submit questions as issues to [GitHub](). Please ensure your questions are labeled as <span class="label label-success">Question</span>,
+You can also submit questions as issues to [GitHub](https://github.com/zstackorg/zstack/issues). Please ensure your questions are labeled as <span class="label label-success">Question</span>,
 otherwise we may not notice you are asking questions and may not be able to reply in time. 
 
 <hr>
@@ -32,9 +32,9 @@ otherwise we may not notice you are asking questions and may not be able to repl
 
 Check out source code in our GitHub repos:
 
-* [zstack](): the core orchestration.
-* [zstack-utility](): the repo containing various agents(e.g. kvmagent, virtual router VM agent) and tools(e.g. zstack-cli, zstack-ctl) in Python.
-* [zstack-dashboard](): the web UI.
+* [zstack](https://github.com/zstackorg/zstack): the core orchestration.
+* [zstack-utility](https://github.com/zstackorg/zstack-utility): the repo containing various agents(e.g. kvmagent, virtual router VM agent) and tools(e.g. zstack-cli, zstack-ctl) in Python.
+* [zstack-dashboard](https://github.com/zstackorg/zstack-dashborad): the web UI.
 
 <hr>
 
