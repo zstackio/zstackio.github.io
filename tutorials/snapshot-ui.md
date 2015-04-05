@@ -293,7 +293,7 @@ click button 'New Image' to open the dialog:
 3. choose format 'qcow2'
 4. choose media type 'RootVolumeTemplate'
 5. choose platform 'Linux'
-6. input URL 'http://download.zstack.org/templates/ttylinux.qcow2'
+6. input URL http://download.zstack.org/templates/ttylinux.qcow2
 7. click button 'Add'
 
 <div class="bs-callout bs-callout-success">
@@ -316,7 +316,7 @@ click 'New Image' button again to add the virtual router image:
 3. choose format 'qcow2'
 4. choose media type 'RootVolumeTemplate'
 5. choose platform 'Linux'
-6. input URL 'http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2'
+6. input URL http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2
 7. **check 'System' checkbox**
 8. click button 'Add'
 
