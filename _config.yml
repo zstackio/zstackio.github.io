@@ -1,9 +1,9 @@
 # Site settings
 title: ZStack
-email: zstack721@gmail.com
+email: info@zstack.org
 
 name: "zstack"
-description: "A open source, scalable, easy IaaS software"
+description: "An open source, scalable, easy IaaS software"
 
 #contacts
 twitter_username: "zstack_org"
