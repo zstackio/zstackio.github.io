@@ -34,7 +34,8 @@ Check out source code in our GitHub repos:
 
 * [zstack](https://github.com/zstackorg/zstack): the core orchestration.
 * [zstack-utility](https://github.com/zstackorg/zstack-utility): the repo containing various agents(e.g. kvmagent, virtual router VM agent) and tools(e.g. zstack-cli, zstack-ctl) in Python.
-* [zstack-dashboard](https://github.com/zstackorg/zstack-dashborad): the web UI.
+* [zstack-dashboard](https://github.com/zstackorg/zstack-dashboard): the web UI.
+* [zstack-woodpecker](https://github.com/zstackorg/zstack-woodpecker): the automated testing framework.
 
 <hr>
 
