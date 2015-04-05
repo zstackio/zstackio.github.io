@@ -35,12 +35,12 @@ Find six classic cloud deployments using ZStack in [Tutorials](../tutorials), al
 
 <h3><i class="fa fa-user">&nbsp; User Manual</i></h3>
 
-[User Manual](http://zdoc.readthedocs.org/en/latest/) is a full reference that contains explanations of all ZStack concepts,
+[User Manual](http://zstackdoc.readthedocs.org/en/latest/) is a full reference that contains explanations of all ZStack concepts,
 usage of ZStack tools, definitions of global settings and system tags, and usage of every API (demonstrated by command line tool).
 
-For usage of command line tool(zstack-cli), visit [Command Line Tool](http://zdoc.readthedocs.org/en/latest/userManual/cli.html).
+For usage of command line tool(zstack-cli), visit [Command Line Tool](http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html).
 
-For usage of query APIs, visit [Query](http://zdoc.readthedocs.org/en/latest/userManual/query.html).
+For usage of query APIs, visit [Query](http://zstackdoc.readthedocs.org/en/latest/userManual/query.html).
 
 <hr>
 
