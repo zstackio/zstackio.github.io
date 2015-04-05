@@ -42,7 +42,7 @@ Check out source code in our GitHub repos:
 
 <h3><i class="fa fa-facebook">&nbsp; Facebook</i></h3>
 
-Click [here]() to follow us on Facebook.
+Click [here](https://www.facebook.com/zstackorg) to follow us on Facebook.
 
 <h3><i class="fa fa-twitter">&nbsp; Twitter</i></h3>
 
