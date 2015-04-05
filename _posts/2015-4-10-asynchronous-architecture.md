@@ -51,10 +51,10 @@ design. Finally, the IaaS software itself becomes the bottleneck of the cloud, w
 
 ZStack tackles this problem by an asynchronous architecture. If we look at the relationship between IaaS software and facilities of data center, the IaaS software
 is actually playing a mediator role; it coordinates external systems but does not do real time costly tasks; for example, volumes are created by storage system, templates are downloaded by
-image system, virtual machines are created by hypervisor and so on. **The real task the IaaS software do is to make decisions then distribute sub-tasks to different external systems**.
+image system, virtual machines are created by hypervisor and so on. **The real task the IaaS software does is to make decisions then distributes sub-tasks to different external systems**.
 For example, for KVM, many sub-tasks like preparing volume, preparing network, and creating virtual machine are carried out by KVM hosts; it may take 5 seconds to finish spawning
 a virtual machine; however, the actual time cost in the IaaS software may be only 0.5s and the rest of 4.5s are spent on KVM host. The truth of ZStack's asynchronous architecture
-is the IaaS management software doesn't need to wait that 4.5s, but only spends 0.5s choosing which host to do the task then simply delegates the task to that host; once the host
+is the IaaS management software doesn't need to wait that 4.5s, but only spends 0.5s choosing which host to do the task then simply delegates it to that host. Once the host
 completes its assignment, it notifies the IaaS management software the result. By the asynchronous architecture, a thread pool with 100 threads can
 easily serve thousands of concurrent tasks.
 

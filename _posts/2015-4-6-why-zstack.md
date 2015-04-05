@@ -99,7 +99,7 @@ may ask me to show you the details, as we claim to have cures for challenges men
 our architecture on our [website](http://zstack.org/blog), it's still a little difficult for people to associate them with concrete issues like
 complexity and stability. I will post other two blogs specific to those topics explaining how we tackle them at the architecture level.
 
-Recently, the emergence of Docker (or other container based technologies) and the thriving public clouds may shake people's conviction of
+Recently, the emergence of Docker (and other container based technologies) and the thriving public clouds may shake people's conviction of
 IaaS based private clouds. It's an interesting topic that I'd like to discuss in a future post too.
 
 At last, I want to say that even I share some negative thoughts of OpenStack, I absolutely do not mean to offend this great project.
