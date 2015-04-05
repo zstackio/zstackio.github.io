@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "The In-Process Microservices Architecture"
-date:   2015-4-13 21:14:07
+date:   2015-4-4 15:52:00
+author: Frank Zhang
 categories: blog
 ---
 

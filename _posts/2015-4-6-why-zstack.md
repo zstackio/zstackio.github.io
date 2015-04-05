@@ -1,8 +1,9 @@
 ---
 layout: post
 title:  "Why Do We Need New IaaS Software Other Than OpenStack"
-date:   2015-4-10 21:14:07
+date:   2015-4-5
 categories: blog
+author: Frank Zhang
 ---
 
 Three years ago, when I was working on another IaaS software, my friend joked: "you guys are making a product

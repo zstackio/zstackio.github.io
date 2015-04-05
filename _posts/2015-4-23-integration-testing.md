@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "The Automation Testing System 1: Integration Testing"
-date:   2015-4-23 21:14:07
+date:   2015-4-4 15:42:00
+author: Frank Zhang
 categories: blog
 ---
 

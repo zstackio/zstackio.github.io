@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "The Automation Testing System 2: System Testing"
-date:   2015-5-1 21:15:28
+date:   2015-4-4 15:41:00
+author: Frank Zhang
 categories: blog
 ---
 

@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "The Automation Testing System 3: Model-based Testing"
-date:   2015-5-2 23:32:03
+date:   2015-4-4 15:40:00
+author: Frank Zhang
 categories: blog
 ---
 

@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "ZStack's Scalability Secrets Part 3: Lock-free Architecture"
-date:   2015-4-12 21:14:07
+date:   2015-4-4 15:53:00
+author: Frank Zhang
 categories: blog
 ---
 

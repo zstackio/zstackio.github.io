@@ -1,7 +1,8 @@
 ---
 layout: post
 title:  "ZStack's Scalability Secrets Part 1: Asynchronous Architecture"
-date:   2015-4-10 21:14:07
+date:   2015-4-4 15:55:00
+author: Frank Zhang
 categories: blog
 ---
 
