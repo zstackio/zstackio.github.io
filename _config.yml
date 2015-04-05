@@ -3,7 +3,7 @@ title: ZStack
 email: info@zstack.org
 
 name: "zstack"
-description: "An open source, scalable, easy IaaS software"
+description: "ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs."
 
 #contacts
 twitter_username: "zstack_org"
