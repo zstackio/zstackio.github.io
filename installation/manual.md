@@ -3,7 +3,7 @@ title: ZStack Installation
 layout: installationPage
 ---
 
-## Manual Installation
+# Manual Installation
 
 ### 1. Install ZStack management node, MySQL and RabbitMQ on separate machines
 

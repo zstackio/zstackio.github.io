@@ -3,7 +3,7 @@ title: ZStack Download
 layout: installationPage
 ---
 
-<h2 id="quickInstallation">Quick Installation</h2>
+<h1 id="quickInstallation">Quick Installation</h1>
 
 For people wanting to try out ZStack quickly, the best way is to install all software including KVM on a single machine so
 you can build your first cloud with only one machine. Because of this, we recommend below hardware specification:

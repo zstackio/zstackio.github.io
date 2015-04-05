@@ -3,7 +3,7 @@ title: ZStack Installation
 layout: installationPage
 ---
 
-## Multi-node Installation
+# Multi-node Installation
 
 For users wanting to build a scaled out and high available production environment, ths recommended way is to 
 install 2 ZStack management nodes, MySQL, and RabbitMQ on separate machines:
