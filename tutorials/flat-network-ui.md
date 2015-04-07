@@ -484,7 +484,7 @@ click button 'New VmInstance' to open the dialog:
 5. input host name as 'vm1'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createVM3.png">
+<img  class="img-responsive"  src="../images/tutorials/t2/createVM2.png">
 
 <hr>
 
