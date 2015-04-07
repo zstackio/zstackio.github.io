@@ -50,6 +50,12 @@ Click [here](features-matrix.html) to see features supported in current version.
 
 <hr>
 
+<h3><i class="fa fa-cube">&nbsp; Architecture Overview</i></h3>
+
+Click [here](https://docs.google.com/presentation/d/1mslQwl373-pZKuzZEbIIPd1mHG2ythI3RoyCVKRSeS8/edit#slide=id.g62dc262c2_18) for an architecture overview.
+
+<hr>
+
 <h3><i class="fa fa-exclamation-triangle">&nbsp; Troubleshooting</i></h3>
 
 [Troubleshooting](troubles/index.html) lists a few issues that are not ZStack problems but you may encounter.
