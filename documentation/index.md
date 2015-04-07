@@ -52,7 +52,7 @@ Click [here](features-matrix.html) to see features supported in current version.
 
 <h3><i class="fa fa-cube">&nbsp; Architecture Overview</i></h3>
 
-Click [here](https://docs.google.com/presentation/d/1mslQwl373-pZKuzZEbIIPd1mHG2ythI3RoyCVKRSeS8/edit#slide=id.g62dc262c2_18) for an architecture overview.
+Click [here](https://docs.google.com/presentation/d/1mslQwl373-pZKuzZEbIIPd1mHG2ythI3RoyCVKRSeS8/edit?usp=sharing) for an architecture overview.
 
 <hr>
 
