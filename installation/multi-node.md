@@ -157,5 +157,11 @@ On the management node 1, you can use `zstack-ctl` to install web UI:
     Example: sudo zstack-ctl install_ui --host=192.168.0.225
     
     
+<div class="bs-callout bs-callout-info">
+  <h4>Default Credential</h4>
+  
+  The default credential for UI login is admin/password.
+</div>
+    
 Now your multi-node ZStack environment is successfully installed, visit [Getting Started With Multi-node Installation](../documentation/getstart-multi.html) see how to configure and run ZStack.
 

@@ -151,6 +151,12 @@ You can use `zstack-ctl` to install web UI:
 Now your ZStack is successfully installed, visit [Getting Started With Manual Installation](../documentation/getstart-manual.html#manual) see how to configure and run ZStack. You can also
 use above steps to install all software on a single machine.
 
+<div class="bs-callout bs-callout-info">
+  <h4>Default Credential</h4>
+  
+  The default credential for UI login is admin/password.
+</div>
+
 
 <hr style="margin-bottom:50px">
 

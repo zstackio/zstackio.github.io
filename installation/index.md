@@ -96,4 +96,10 @@ The script will install the machine with:
 * NFS server
 * Apache HTTP server
 
+<div class="bs-callout bs-callout-info">
+  <h4>Default Credential</h4>
+  
+  The default credential for UI login is admin/password.
+</div>
+
 Now your ZStack is successfully installed, visit [Getting started with quick installation](../documentation/getstart-quick.html) see how to access web UI and command line tool.
