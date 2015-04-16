@@ -26,6 +26,10 @@ yours.
 You can also submit questions as issues to [GitHub](https://github.com/zstackorg/zstack/issues). Please ensure your questions are labeled as <img src="../images/question-mark.png">
 otherwise we may not notice you are asking questions and may not be able to reply in time. 
 
+<h3><i class="fa fa-comments">&nbsp; IRC Channel</i></h3>
+
+You can find us on [Freenode IRC](https://webchat.freenode.net/) with channel number **#zstack**.
+
 <hr>
 
 ## Source Code
