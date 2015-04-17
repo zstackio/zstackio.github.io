@@ -73,11 +73,11 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L http://7xi3lj.com1.z0.glb.clouddn.com/install.sh -o install-zstack.sh
-sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.tgz</code></pre>
+sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.1.tgz</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O install-zstack.sh http://download.zstack.org/install.sh
-sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.tgz</code></pre>
+sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.1.tgz</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
@@ -248,7 +248,7 @@ that may cause troubles. You can download and install Tomcat from the official s
 Assuming your Tomcat `$CATALINA_HOME` is */usr/local/apache-tomcat*, you can download and install ZStack by:
 
     cd /usr/local/apache-tomcat/webapps
-    wget http://download.zstack.org/releases/0.6/zstack.war
+    wget http://download.zstack.org/releases/0.6.1/zstack.war
     unzip zstack.war -d zstack
     
 **In following sections, we assume the `$CATALINA_HOME` is */usr/local/apache-tomcat/*.**
