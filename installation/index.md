@@ -40,7 +40,7 @@ you can build your first cloud with only one machine. Because of this, we recomm
       国内用户在访问我们美国服务器以及<a href="https://pypi.python.org/pypi">Pypi</a>网站时速度较慢，请使用以下链接：
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L http://7xi3lj.com1.z0.glb.clouddn.com/install.sh -o install-zstack.sh
+      <pre><code>curl -L http://download.zstack.com/install.sh -o install-zstack.sh
 sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.1.tgz</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
