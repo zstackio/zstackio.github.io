@@ -480,7 +480,7 @@ create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 51
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button>
 
 <div id="13" class="collapse">
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,PRIVATE-L3</code></pre>
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
