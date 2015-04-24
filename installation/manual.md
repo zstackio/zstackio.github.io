@@ -17,7 +17,7 @@ For machine to install ZStack management node, we recommend below hardware speci
 <table class="table table-striped table-bordered">
   <tr>
     <td><b>CPU</b></td>
-    <td>Intel/AMD CPU</td>
+    <td>>= 4 Cores Intel/AMD CPUs supporting VT-x or SVM</td>
   </tr>
   <tr>
     <td><b>Memory</b></td>

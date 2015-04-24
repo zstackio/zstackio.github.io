@@ -11,7 +11,7 @@ you can build your first cloud with only one machine. Because of this, we recomm
 <table class="table table-striped table-bordered">
   <tr>
     <td><b>CPU</b></td>
-    <td>Intel/AMD CPU supporting VT-x or SVM</td>
+    <td>>= 4 Cores Intel/AMD CPUs supporting VT-x or SVM</td>
   </tr>
   <tr>
     <td><b>Memory</b></td>
