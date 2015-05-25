@@ -116,7 +116,7 @@ MySQL.
 
     sudo zstack-ctl install_db --host=ip_of_machine_to_install_mysql
     
-    Example: sudo zstack-ctl install_db host=192.168.0.224
+    Example: sudo zstack-ctl install_db --host=192.168.0.224
     
 `zstack-ctl` leverages [Ansible](http://www.ansible.com/home) to do the installation; it will ask you for SSH root password
 if the SSH key is not set on the remote machine.
@@ -220,7 +220,7 @@ can follow below instructions.
 
 ZStack requires JRE7 or later version.
 
-*CentOS6.6./7*
+*CentOS6.6/7*
 
     sudo yum install java-1.7.0-openjdk
     
