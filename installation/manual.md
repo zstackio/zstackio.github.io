@@ -187,7 +187,7 @@ can follow below instructions.
    
 #### 2.2 Install RabbitMQ:
 
-*CentOS6.5/6.6./7*
+*CentOS6.6./7*
 
     sudo yum install rabbitmq-server
     
@@ -202,7 +202,7 @@ can follow below instructions.
     
 #### 2.3. Install Ansible:
 
-*CentOS6.5/6.6./7*
+*CentOS6.6./7*
 
     sudo yum install python-setuptools
     sudo easy_install pip
@@ -210,7 +210,7 @@ can follow below instructions.
     
 *Ubuntu14.04*
 
-    sudo apt-get install python-setuptools
+    sudo apt-get install python-setuptools python-devel
     sudo easy_install pip
     sudo pip install ansible==1.7.2
     
@@ -220,7 +220,7 @@ can follow below instructions.
 
 ZStack requires JRE7 or later version.
 
-*CentOS6.5/6.6./7*
+*CentOS6.6./7*
 
     sudo yum install java-1.7.0-openjdk
     
