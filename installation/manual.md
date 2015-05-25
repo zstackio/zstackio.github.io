@@ -248,7 +248,7 @@ that may cause troubles. You can download and install Tomcat from the official s
 Assuming your Tomcat `$CATALINA_HOME` is */usr/local/apache-tomcat*, you can download and install ZStack by:
 
     cd /usr/local/apache-tomcat/webapps
-    wget http://download.zstack.org/releases/0.6.2/zstack.war
+    wget https://download.zstack.org/releases/0.6/war-0.6.2/zstack.war
     unzip zstack.war -d zstack
     
 **In following sections, we assume the `$CATALINA_HOME` is */usr/local/apache-tomcat/*.**
