@@ -126,11 +126,40 @@ As step 2, you can use `zstack-ctl` to install RabbitMQ too:
     sudo zstack-ctl install_rabbitmq --host=ip_of_machine_to_install_mysql
     
     Example: sudo zstack-ctl install_rabbitmq --host=192.168.0.225
-    
-<div class="bs-callout bs-callout-info">
-  <h4>The command will update zstack.properties</h4>
-  After installing, <code>zstack-ctl</code> will automatically update IP of RabbitMQ to zstack.properties file.
-</div>
+
+Once you successfully installed RabbitMQ, you need to create credentials for remote access:
+
+    rabbitmqctl add_user username password
+
+    Example: rabbitmqctl add_user zstack zstack123
+
+    rabbitmqctl set_user_tags username administrator
+
+    Example: rabbitmqctl set_user_tags zstack administrator
+
+    rabbitmqctl change_password username password
+
+    Example: rabbitmqctl change_password zstack zstack123
+
+    rabbitmqctl set_permissions -p / username ".*" ".*" ".*"
+
+    Example: rabbitmqctl set_permissions -p / zstack ".*" ".*" ".*"
+
+Now you need to configure above RabbitMQ credentials to zstack.properties:
+
+    zstack-ctl configure CloudBus.rabbitmqUsername=rabbitmq_username
+
+    Example: zstack-ctl configure CloudBus.rabbitmqUsername=zstack
+
+    zstack-ctl configure CloudBus.rabbitmqPassword=rabbitmq_password
+
+    Example: zstack-ctl configure CloudBus.rabbitmqPassword=zstack123
+
+    zstack-ctl configure management.server.ip=rabbitmq_server_ip
+
+    Example: zstack-ctl configure management.server.ip=10.89.13.57
+
+    zstack-ctl save_config
 
 ### 4. Install ZStack Management Node 2
 
