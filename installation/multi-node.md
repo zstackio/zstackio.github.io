@@ -71,11 +71,11 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L http://download.zstack.org/install.sh -o install-zstack.sh
-sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
+sudo bash install-zstack.sh -i -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O install-zstack.sh http://download.zstack.org/install.sh
-sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
+sudo bash install-zstack.sh -i -R http://pypi.douban.com/simple/ -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
@@ -105,7 +105,14 @@ sudo bash install-zstack.sh -a -R http://pypi.douban.com/simple/ -f http://7xi3l
 
     wget -O install-zstack.sh http://download.zstack.org/install.sh 
     sudo bash install-zstack.sh -i
-    
+
+Once you successfully installed the node, configure the IP into zstack.properties:
+
+    zstack-ctl configure management.server.ip=ip_of_management_node1
+
+    Example: zstack-ctl configure management.server.ip=10.89.13.57
+
+    zstack-ctl save_config
 
 ### 2. Install MySQL
 
@@ -115,7 +122,7 @@ MySQL.
     sudo zstack-ctl install_db --host=ip_of_machine_to_install_mysql
     
     Example: sudo zstack-ctl install_db --host=192.168.0.225
-    
+
 `zstack-ctl` leverages [Ansible](http://www.ansible.com/home) to do the installation; it will ask you for SSH root password
 if the SSH key is not set on the remote machine.
 
@@ -155,10 +162,6 @@ Now you need to configure above RabbitMQ credentials to zstack.properties:
 
     Example: zstack-ctl configure CloudBus.rabbitmqPassword=zstack123
 
-    zstack-ctl configure management.server.ip=rabbitmq_server_ip
-
-    Example: zstack-ctl configure management.server.ip=10.89.13.57
-
     zstack-ctl save_config
 
 ### 4. Install ZStack Management Node 2
@@ -168,12 +171,30 @@ On the management node 1, you can use `zstack-ctl` to install extra management n
     sudo zstack-ctl install_management_node --remote=ip_of_machine_to_install_node_2
     
     Example: sudo zstack-ctl install_management_node --remote=192.168.0.225
-    
+
+Once you successfully installed the node, configure the IP into zstack.properties:
+
+    zstack-ctl configure management.server.ip=ip_of_management_node2
+
+    Example: zstack-ctl configure management.server.ip=10.89.13.57
+
+    zstack-ctl save_config
+
 you can repeat this step to install more nodes if needed.
     
 ### 5. Install Web UI
 
 On the management node 1, you can use `zstack-ctl` to install web UI:
+
+<div class="bs-callout bs-callout-warning">
+  <h4>Install virtualenv 12.1.1</h4>
+
+  Please manually do install virtualenv 12.1.1 on the UI server before proceeding:
+
+  <pre><code>yum -y install python-pip && pip install  virtualenv==12.1.1 && mkdir -p /var/run/zstack/</code></pre>
+
+  This step will be automated in next version
+</div>
 
 #### 5.1 Install to local
 
@@ -184,7 +205,20 @@ On the management node 1, you can use `zstack-ctl` to install web UI:
     sudo zstack-ctl install_ui --host=ip_of_machine_to_install_ui
     
     Example: sudo zstack-ctl install_ui --host=192.168.0.225
-    
+
+<div class="bs-callout bs-callout-warning">
+  <h4>Manually configure RabbitMQ IP in web.py</h4>
+
+  In this version, you have to manually change web.py to configure the RabbitMQ server IP. In file
+  /var/lib/zstack/virtualenv/zstack-dashboard/lib/python2.7/site-packages/zstack_dashboard/web.py, change the line:
+
+  <pre><code>self.amqp_url = 'localhost'</code></pre> to
+
+  <pre><code>self.amqp_url = 'zstack-rabbitmq-ip'</code></pre>
+
+  This step will be automated in the next version.
+</div>
+
     
 <div class="bs-callout bs-callout-info">
   <h4>Default Credential</h4>
