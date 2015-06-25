@@ -73,6 +73,10 @@ the start web UI command is:
 
     /etc/init.d/zstack-dashboard start --rabbitmq "username:password@YOUR_RABBITMQ_IP"
 
+If there are more than 1 RabbitMQ server, the RabbitMQ contents should be splited by ',':
+
+    /etc/init.d/zstack-dashboard start --rabbitmq "username:password@YOUR_RABBITMQ_IP1,username:password@YOUR_RABBITMQ_IP2"
+
 You can also add the rabbitmq parameters into /etc/init.d/zstack-dashboard, then you don't need to add it
 every time restart UI process. 
 
