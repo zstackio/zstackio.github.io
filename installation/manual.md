@@ -69,15 +69,15 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
 <div class="bs-callout bs-callout-success">
   <h4 class="hand" data-toggle="collapse" data-target="#china">Fast link for users of Mainland China (国内用户请点击展开)</h4>
   <div id="china" class="collapse">
-      国内用户在访问我们美国服务器以及<a href="https://pypi.python.org/pypi">Pypi</a>网站时速度较慢，请使用以下链接：
+      国内用户在访问我们美国服务器时速度较慢，请使用以下链接：
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L http://download.zstack.org/install.sh -o install-zstack.sh
-sudo bash install-zstack.sh -a -R https://pypi.mirrors.ustc.edu.cn/simple -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
+      <pre><code>curl -L http://download.zstack.org/releases/0.7/install.sh -o install-zstack.sh
+sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.0.tgz</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
-      <pre><code>wget -O install-zstack.sh http://download.zstack.org/install.sh
-sudo bash install-zstack.sh -a -R https://pypi.mirrors.ustc.edu.cn/simple -f http://7xi3lj.com1.z0.glb.clouddn.com/zstack-all-in-one-0.6.2.tgz</code></pre>
+      <pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.7/install.sh
+sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.0.tgz</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
