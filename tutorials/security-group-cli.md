@@ -275,7 +275,7 @@ this image will be used as user VM image.
 
 <hr>
 
-add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2') to backup storage ('BACKUP-STORAGE1'):
+add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('https://download.zstack.org/releases/0.7/zstack-virtualrouter-0.7.qcow2') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
 
@@ -287,10 +287,10 @@ add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' ty
   <h4>Fast link for users of Mainland China</h4>
   由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
   
-  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.6.qcow2</code></pre>
+  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.7.qcow2</code></pre>
 </div>
 
-	>>> AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-virtualrouter-0.6.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+	>>> AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=https://download.zstack.org/releases/0.7/zstack-virtualrouter-0.7.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 
 
 <img class="img-responsive" src="../images/tutorials/t1/cliAddVRImage.png">

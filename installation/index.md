@@ -68,12 +68,12 @@ sudo bash install-zstack.sh -a -R https://pypi.mirrors.ustc.edu.cn/simple -f htt
 
 #### Use *curl*:
 
-    curl -L http://download.zstack.org/install.sh -o install-zstack.sh
+    curl -L https://download.zstack.org/releases/0.7/install.sh -o install-zstack.sh
     sudo bash install-zstack.sh -a
     
 #### Use *wget*:
 
-    wget -O install-zstack.sh http://download.zstack.org/install.sh 
+    wget --no-check-certificate -O install-zstack.sh https://download.zstack.org/releases/0.7/install.sh
     sudo bash install-zstack.sh -a
 
     
