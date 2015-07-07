@@ -47,7 +47,7 @@ we will create a few VMs and assign them IPs from that subnet.
 <h4 id="prerequisites">2. Prerequisites</h4>
 
 We assume you have followed [Quick Installation Guide](../installation/index.html) to install ZStack on a single Linux machine, and
-the ZStack management node is up and running. To access the web UI, type below URL in your browser:
+the ZStack management node is up and running. To access the web UI, type below URL in your browser (Please use latest Chrome or Firefox browser.):
 
     http://your_machine_ip:5000/
     
