@@ -64,22 +64,14 @@ or use the service file in init.d/:
     
 ### 4. Start web UI
 
-You can start the web UI by:
+If the UI is installed in localhost, you can start the web UI by:
 
-    /etc/init.d/zstack-dashboard start
+    zstack-ctl start_ui 
+
+If the UI is installed on different host, you can start the web UI by:
+
+    zstack-ctl start_ui --host=ip_of_ui_host
     
-If RabbitMQ server is not installed on the same machine with zstack-dashboard, 
-the start web UI command is:
-
-    /etc/init.d/zstack-dashboard start --rabbitmq "username:password@YOUR_RABBITMQ_IP"
-
-If there are more than 1 RabbitMQ server, the RabbitMQ contents should be splited by ',':
-
-    /etc/init.d/zstack-dashboard start --rabbitmq "username:password@YOUR_RABBITMQ_IP1,username:password@YOUR_RABBITMQ_IP2"
-
-You can also add the rabbitmq parameters into /etc/init.d/zstack-dashboard, then you don't need to add it
-every time restart UI process. 
-
 the web UI will listen on port `5000`, you can visit it with URL `http://ip_of_ui_machine:5000`.
 
 ### Useful zstack-ctl commands

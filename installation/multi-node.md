@@ -206,19 +206,6 @@ On the management node 1, you can use `zstack-ctl` to install web UI:
     
     Example: sudo zstack-ctl install_ui --host=192.168.0.225
 
-<div class="bs-callout bs-callout-warning">
-  <h4>Manually configure RabbitMQ IP in web.py</h4>
-
-  In this version, you have to manually change web.py to configure the RabbitMQ server IP. In file
-  /var/lib/zstack/virtualenv/zstack-dashboard/lib/python2.7/site-packages/zstack_dashboard/web.py, change the line:
-
-  <pre><code>self.amqp_url = 'localhost'</code></pre> to
-
-  <pre><code>self.amqp_url = 'zstack-rabbitmq-ip'</code></pre>
-
-  This step will be automated in the next version.
-</div>
-
     
 <div class="bs-callout bs-callout-info">
   <h4>Default Credential</h4>

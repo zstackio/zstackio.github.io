@@ -100,9 +100,13 @@ repeat this command to start all other nodes.
     
 ### 4. Start web UI
 
-On the first management node, you can start the web UI by:
+On the first management node, if the UI is installed in localhost, you can start the web UI by:
 
-    /etc/init.d/zstack-dashboard start
+    zstack-ctl start_ui 
+
+If the UI is installed on different host, you can start the web UI by:
+
+    zstack-ctl start_ui --host=ip_of_ui_host
     
 the web UI will listen on port `5000`, you can visit it with URL `http://ip_of_ui_machine:5000`.
 
