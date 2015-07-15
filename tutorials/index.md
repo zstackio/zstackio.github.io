@@ -13,7 +13,7 @@ layout: tutorialPage
   </div>
   <div class="row">
     <div class="col-sm-6">
-      <img class="img-responsive" src="../images/eip.png">
+      <img class="img-responsive" src="/images/eip.png">
     </div>
     <div class="col-sm-6" style="padding-top: 50px">
       <h3>Amazon EC2 classic EIP zone</h3>
@@ -35,7 +35,7 @@ layout: tutorialPage
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <img class="img-responsive" src="../images/flat_network.png">
+        <img class="img-responsive" src="/images/flat_network.png">
       </div>
       <div class="col-sm-6" style="padding-top: 50px">
         <h3>Flat Network</h3>
@@ -56,7 +56,7 @@ layout: tutorialPage
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
-      <img class="img-responsive" src="../images/tier_3_networks.png">
+      <img class="img-responsive" src="/images/tier_3_networks.png">
     </div>
     <div class="col-sm-6" style="padding-top: 50px">
       <h3>Three Tiered Network</h3>
@@ -77,7 +77,7 @@ layout: tutorialPage
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <img class="img-responsive" src="../images/flat_network_with_security_group.png">
+        <img class="img-responsive" src="/images/flat_network_with_security_group.png">
       </div>
       <div class="col-sm-6" style="padding-top: 50px">
         <h3>Security Group</h3>
@@ -98,7 +98,7 @@ layout: tutorialPage
 <div class="container">
   <div class="row">
     <div class="col-sm-6">
-      <img class="img-responsive" src="../images/port_forwarding.png">
+      <img class="img-responsive" src="/images/port_forwarding.png">
     </div>
     <div class="col-sm-6" style="padding-top: 50px">
       <h3>Elastic Port Forwarding</h3>
@@ -119,7 +119,7 @@ layout: tutorialPage
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <img class="img-responsive" src="../images/snapshot.png">
+        <img class="img-responsive" src="/images/snapshot.png">
       </div>
       <div class="col-sm-6" style="padding-top: 50px">
         <h3>Snapshots</h3>

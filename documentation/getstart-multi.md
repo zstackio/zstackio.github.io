@@ -1,5 +1,5 @@
 ---
-title: Documentation
+title: Getting Started With Multi-node Installation
 layout: docPage
 ---
 
@@ -75,6 +75,14 @@ Once you have configured the first management node, you can duplicate the config
     Example: zstack-ctl configure --duplicate-to-remote=192.168.0.225
     
 repeat this command to duplicate the configuration to all nodes.
+
+Please set management node ip in each management node separately:
+
+    zstack-ctl configure management.server.ip=ip_of_current_management_node
+
+    Example: zstack-ctl configure management.server.ip=192.168.0.226
+
+    zstack-ctl save_config
 
 ### 3. Start management nodes
 

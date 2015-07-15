@@ -1,6 +1,6 @@
 ---
-title: "Wechat Matrix Code"
-layout: docPage
+title: 微信公众号
+layout: docPage.cn
 ---
 
 <div class="container" style="padding-top: 50px; padding-bottom: 50px">
@@ -9,7 +9,7 @@ layout: docPage
       <i class="fa fa-weixin fa-2x"></i>
     </div>
     <div class="col-xs-9">
-      <p style="font-size: 20px"><b>Follow ZStack WeChat public account by scanning the matrix code:</b></p>
+      <p style="font-size: 20px"><b>扫描下方二维码关注ZStack微信公众号:</b></p>
     </div>
   </div>
   <div class="row">

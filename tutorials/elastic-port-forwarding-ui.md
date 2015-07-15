@@ -41,7 +41,7 @@ sections:
 ### Elastic Port Forwarding
 
 <h4 id="overview">1. Overview</h4>
-<img class="img-responsive" src="../images/port_forwarding.png">
+<img class="img-responsive" src="/images/port_forwarding.png">
 
 While EIP can be used to bind a public IP to a VM that is on a private network, it opens all ports of that EIP to the world;
 to achieve decent security, users may need to use security group along with EIP. Elastic port forwarding provides another way
@@ -107,7 +107,7 @@ Based on those requirements, we assume below setup information:
 
 open browser with URL(http://your_machine_ip:5000/) and login with admin/password:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/login.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/login.png">
 
 <hr>
 
@@ -115,19 +115,19 @@ open browser with URL(http://your_machine_ip:5000/) and login with admin/passwor
 
 click 'Zone' in the left sidebar to enter the zone page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png">
 
 <hr>
 
 click button 'New Zone' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png">
 
 <hr>
 
 name your first zone as 'ZONE1' and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png">
 
 <hr>
 
@@ -135,31 +135,31 @@ name your first zone as 'ZONE1' and click button 'Create':
 
 click 'Cluster' in the left sidebar to enter the cluster page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster1.png">
 
 <hr>
 
 click button 'New Cluster' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png">
 
 <hr>
 
 select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png">
 
 <hr>
 
 for now you don't have any primary storage to attach, click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png">
 
 <hr>
 
 you don't have L2 network to attach either, click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png">
 
 <hr>
 
@@ -167,13 +167,13 @@ you don't have L2 network to attach either, click button 'Create':
 
 click 'Host' in the left sidebar to enter host page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost1.png">
 
 <hr>
 
 click 'New Host' button to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png">
 
 <hr>
 
@@ -183,7 +183,7 @@ click 'New Host' button to open the dialog:
 4. the most important thing: give **SSH credentials for user root**
 5. click 'add' button
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost3.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>A little slow when first time adding a host</h4>
@@ -196,13 +196,13 @@ click 'New Host' button to open the dialog:
 
 click 'Primary Storage' in the left slider to enter primary storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png">
 
 <hr>
 
 click button 'New Primary Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
 <hr>
 
@@ -212,7 +212,7 @@ click button 'New Primary Storage' to open the dialog:
 4. input NFS url(192.168.0.212:/usr/local/zstack/nfs_root)
 5. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS3.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Format of NFS URL</h4>
@@ -223,7 +223,7 @@ click button 'New Primary Storage' to open the dialog:
 
 select cluster(CLUSTER1) to attach, then click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -236,13 +236,13 @@ select cluster(CLUSTER1) to attach, then click button 'Add':
 
 click 'Backup Storage' in left sidebar to enter backup storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png">
 
 <hr>
 
 click button 'New Backup Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png">
 
 <hr>
 
@@ -253,13 +253,13 @@ click button 'New Backup Storage' to open the dialog:
 5. input SSH credentials for user root
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS3.png">
 
 <hr>
 
 select zone(ZONE1) to attach, and click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png">
 
 <hr>
 
@@ -267,13 +267,13 @@ select zone(ZONE1) to attach, and click button 'Add':
 
 click 'Image' in left sidebar to enter image page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png">
 
 <hr>
 
 click button 'New Image' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png">
 
 <hr>
 
@@ -294,7 +294,7 @@ this image will be used as user VM image.
   <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/ttylinux.qcow2</code></pre>
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
 <hr>
 
@@ -316,7 +316,7 @@ click 'New Image' button again to add the virtual router image:
   <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.7.qcow2</code></pre>
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
@@ -331,13 +331,13 @@ click 'New Image' button again to add the virtual router image:
 
 click 'L2 Network' in left sidebar to enter L2 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png">
 
 <hr>
 
 click button 'New L2 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png">
 
 <hr>
 
@@ -347,13 +347,13 @@ click button 'New L2 Network' to open the dialog:
 4. input physical interface as 'eth0'
 5. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network3.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
 
 <hr>
 
@@ -366,13 +366,13 @@ click 'New L2 Network' again to create the private L2 network:
 5. input physical interface as 'eth0'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network5.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network6.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network6.png">
 
 <hr>
 
@@ -380,13 +380,13 @@ select cluster(CLUSTER1) to attach, and click button 'Create':
 
 click 'L3 Network' in left sidebar to enter L3 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
 
 <hr>
 
 click button 'New L3 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png">
 
 <hr>
 
@@ -397,7 +397,7 @@ click button 'New L3 Network' to open the dialog:
 5. check 'system network' checkbox
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network3.png">
 
 <hr>
 
@@ -410,19 +410,19 @@ click button 'New L3 Network' to open the dialog:
 7. click button 'Add' to add the IP range
 8. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png">
 
 <hr>
 
 click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network5.png">
 
 <hr>
 
 click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network6.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network6.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>No network services needed for PUBLIC-MANAGEMENT-L3'</h4>
@@ -440,7 +440,7 @@ click 'New L3 Network' button again to create the private L3 network:
 5. input domain as 'tutorials.zstack.org'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network7.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network7.png">
 
 <hr>
 
@@ -450,13 +450,13 @@ click 'New L3 Network' button again to create the private L3 network:
 4. click button 'Add' to add the IP range
 5. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network8.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network8.png">
 
 <hr>
 
 input DNS as '8.8.8.8' then click button 'Add' to add the DNS, then click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network9.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network9.png">
 
 <hr>
 
@@ -464,13 +464,13 @@ input DNS as '8.8.8.8' then click button 'Add' to add the DNS, then click button
 2. choose service 'DHCP'
 3. click button 'Add' to add the network service
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network10.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network10.png">
 
 <hr>
 
 repeat the above three steps to add network services: DNS, SNAT, PortForwarding, then click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createL3Network11.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createL3Network11.png">
 
 <hr>
 
@@ -478,13 +478,13 @@ repeat the above three steps to add network services: DNS, SNAT, PortForwarding,
 
 click 'Instance Offering' in left sidebar to enter instance offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png">
 
 <hr>
 
 click button 'New Instance Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png">
 
 <hr>
 
@@ -494,7 +494,7 @@ click button 'New Instance Offering' to open the dialog:
 4. input memory as 512M
 5. click button 'create'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png">
 
 <hr>
 
@@ -502,13 +502,13 @@ click button 'New Instance Offering' to open the dialog:
 
 click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png">
 
 <hr>
 
 click 'New Virtual Router Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png">
 
 <hr>
 
@@ -523,7 +523,7 @@ click 'New Virtual Router Offering' to open the dialog:
 9. check 'DEFAULT OFFERING' checkbox
 10. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png">
 
 <hr>
 
@@ -531,13 +531,13 @@ click 'New Virtual Router Offering' to open the dialog:
 
 click 'Instance' in the left sidebar to enter VM instance page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png">
 
 <hr>
 
 click button 'New VmInstance' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png">
 
 <hr>
 
@@ -548,13 +548,13 @@ click button 'New VmInstance' to open the dialog:
 5. input host name as 'vm1'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM3.png">
 
 <hr>
 
 click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -568,11 +568,11 @@ click button 'Create':
 
 click 'Port Forwarding' in the left sidebar to enter the port forwarding page:
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule1.png">
 
 click button 'New Port Forwarding Rule' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule2.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule2.png">
 
 <hr>
 
@@ -581,8 +581,8 @@ click button 'New Port Forwarding Rule' to open the dialog:
 3. click button 'Create VIP' to create the VIP
 4. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule3.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule4.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule4.png">
 
 <hr>
 
@@ -594,21 +594,21 @@ click button 'New Port Forwarding Rule' to open the dialog:
 6. input guest end port as 22
 7. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule5.png">
 
 <hr>
 
 1. select vm instance 'VM1'
 2. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule6.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule6.png">
 
 <hr>
 
 SSH login from a machine that can reach public IP (192.168.0.239), you should be able to login into the VM1:
 
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule7.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/createPortForwardingRule8.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule7.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule8.png">
 
 <hr>
 
@@ -617,8 +617,8 @@ SSH login from a machine that can reach public IP (192.168.0.239), you should be
 follow instructions in section <a href="#createVM">14. Create Virtual Machine</a> to create another VM(VM2) on
 the private L3 network(PRIVATE-L3).
 
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule1.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule2.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule2.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Subsequent VMs are created extremely fast</h4>
@@ -635,8 +635,8 @@ go to the port forwarding page:
 3. select item 'Detach'
 4. click button 'Detach' to confirm detaching
 
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule3.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule4.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule4.png">
 
 <hr>
 
@@ -646,21 +646,21 @@ to reattach the 'PORT-FORWARDING1' to VM2:
 2. click button 'Action'
 3. select item 'Attach'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule5.png">
 
 <hr>
 
 1. select vm instance 'VM2'
 2. click button 'Attach'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule6.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule6.png">
 
 <hr>
 
 SSH login to the public IP (192.168.0.239) again, you should see it's in VM2 now:
 
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule7.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/rebindPortForwardingRule8.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule7.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule8.png">
 
 <hr>
 
@@ -676,8 +676,8 @@ To create the port forwarding rule, go to port forwarding page, click button 'Ne
 3. click button 'Create VIP' to create the VIP
 4. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule1.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule2.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule2.png">
 
 <hr>
 
@@ -689,21 +689,21 @@ To create the port forwarding rule, go to port forwarding page, click button 'Ne
 6. input guest end port as 22
 7. click button 'next'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule3.png">
 
 <hr>
 
 1. select vm instance 'VM1'
 2. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule4.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule4.png">
 
 <hr>
 
 SSH login to public IP (192.168.0.240) with port 2222, you should login to VM1:
 
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule5.png">
-<img  class="img-responsive"  src="../images/tutorials/t5/2ndPortForwardingRule6.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule6.png">
 
 
 ### Summary

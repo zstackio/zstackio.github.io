@@ -1,5 +1,5 @@
 ---
-title: ZStack Installation
+title: ZStack Multi-node Installation
 layout: installationPage
 ---
 
