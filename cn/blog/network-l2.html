@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - Networking Model 1: L2 and L3 Network</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">Networking Model 1: L2 and L3 Network</h2>
+    <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p><em>ZStack abstracts the networking model into L2 and L3 networks. An L2 network provides a type of L2 isolation method, while an L3 network
+basically represents a subnet associated with OSI layer 4 ~ layer 7 network services. The idea is to use terms and
+concepts with which administrators have been familiar to describe ZStack's networking model, allowing administrators to
+create networking topologies easily and precisely.</em></p>
+
+<blockquote><p><em><strong>Note</strong>: We will not involve any details about network implementation at hypervisor side; for example, we will not discuss
+how ZStack creates bridges or VLAN devices in the Linux operating system. The purpose of this article is to give you a brief idea
+of ZStack's networking model. We strongly recommend you to read <a href="plugin.html">The Versatile Plugin System</a>
+if you haven't, as many terms related to plugins(especially the extension point) will be mentioned in following contents.</em></p></blockquote>
+
+<h3>Overview</h3>
+
+<p>The most exciting and difficult part of a cloud must be the networking model. The biggest revolution the cloud technology brings to traditional
+datacenters is that administrators won't have to spend days or weeks in creating or changing networking topologies, instead, they
+can finish the former daunting task in a few minutes by clicking some buttons in the UI of IaaS software.</p>
+
+<p>In order to achieve that simplicity, an IaaS software must have a clear and flexible networking model that can help administrators
+build the majority of classic networking topologies of traditional datacenter in the cloud. And, what's more, it must allow administrators
+to change the well-built network whenever necessary without redeploying the entire cloud.</p>
+
+<p>The overall picture of ZStack's networking model is like:</p>
+
+<p><img src="../../images/blogs/scalability/network-model1.png" class="center-img img-responsive"></p>
+
+<p>An L2 network, which represents exactly an L2 broadcast domain, is the base of all network elements. Upon an L2 network there are
+L3 networks and network service providers; an L3 network is a subnet with network services associated; despite an L2 network usually
+contains only one L3 network, multiple L3 networks can co-exist on the same L2 network as long as their IP ranges won't
+conflict. An L3 network may have one or more IP ranges belonging to the same subnet, the purpose of having separated IP ranges is
+to allow users to reserve a part of IPs from a subnet. Network services like DHCP, DNS are provided by providers bound to
+an L2 network to upon L3 networks.</p>
+
+<blockquote><p><em><strong>Note</strong>: As Virtual Private Cloud(VPC) has not been supported in this ZStack version(0.6), the above networking model doesn't show
+how VPC will work. However, the concept is similar, the VPC is just a coordination of multiple L3 networks with programmatic routing. We will
+introduce VPC in future ZStack version, which is coming soon.</em></p></blockquote>
+
+<h3>L2 Network</h3>
+
+<p>An L2 network is responsible for providing an L2 isolation method that can be a pure L2 technology(e.g. <a href="http://en.wikipedia.org/wiki/Virtual_LAN">VLAN</a>),
+or an overlay technology(e.g. <a href="http://en.wikipedia.org/wiki/Generic_Routing_Encapsulation">GRE tunnel</a>, <a href="http://en.wikipedia.org/wiki/Virtual_Extensible_LAN">VXLAN</a>).
+ZStack doesn't care about the details an L2 network uses in the backend, so the data structure -- L2NetworkInventory --
+which encompasses necessary L2 information is highly abstracted:</p>
+
+<table class="table table-striped table-bordered black-table">
+  <tr>
+    <td><b>FIELD</b></td>
+    <td><b>DESCRIPTION</b></td>
+  </tr>
+  <tr>
+    <td>uuid</td>
+    <td>L2 network UUID</td>
+  </tr>
+  <tr>
+    <td>name</td>
+    <td>a short name</td>
+  </tr>
+  <tr>
+    <td>description</td>
+    <td>a long description</td>
+  </tr>
+  <tr>
+    <td>zoneUuid</td>
+    <td>uuid of zone the L2 network belongs to</td>
+  </tr>
+  <tr>
+    <td>physicalInterface</td>
+    <td>a string containing information necessary to implement the L2 network at the backend. for example, 'eth0'</td>
+  </tr>
+  <tr>
+    <td>type</td>
+    <td>L2 network type</td>
+  </tr>
+  <tr>
+    <td>attachedClusterUuids</td>
+    <td>a list of cluster uuid the L2 network has attached to</td>
+  </tr>
+</table>
+
+
+<p>A sub-typed L2 network may have extra properties, for example, the L2VlanNetwork has an extra field <code>vlan</code>.</p>
+
+<h4>Attaching Strategy</h4>
+
+<p>In real datacenters, an L2 network usually represents the connectivity of a physical network between hosts, for example, hosts
+under the same L2 switch may be on the same L2 network. The network connectivity is not unchangeable, it may change whenever
+the physical infrastructure of a datacenter changes, for example, administrators re-wire an L2 switch. To provide a flexible way describing
+relationships between hosts and L2 networks, ZStack uses a so-called <em>attaching strategy</em> that allows an L2
+network to be attached/detached to/from multiple clusters that are groups of hosts.</p>
+
+<p><img src="../../images/blogs/scalability/network-model2.png" class="center-img img-responsive"></p>
+
+<p>In above picture, hosts in the cluster1 and the cluster2 are all wired to the L2 network1 while hosts in the cluster2 are also wired to the L2 network2,
+administrators can attach the L2 network1 to both clusters but attach the L2 network2 to only cluster2. Some time later, if administrators
+re-wire hosts in the cluster2 to remove connections off the L2 network1, they can detach the L2 network1 from the cluster2 to reflect
+current network connectivity.</p>
+
+<p><img src="../../images/blogs/scalability/network-model3.png" class="center-img img-responsive"></p>
+
+<p>The attachment between clusters and L2 networks shows the behavior of establishing L2 broadcast domains among hosts within
+those clusters, which doesn't always involve physical connection changes. For example, hosts connecting
+to tagged switch ports can create bridges on ethernet devices with the same VLAN in their operating systems, to build an L2 broadcast domain
+for VMs connecting to the bridges; in this case, attaching or detaching an L2 network doesn't imply any physical infrastructure
+change but the behavior of creating or deleting an L2 broadcast domain.</p>
+
+<p><img src="../../images/blogs/scalability/network-model4.png" class="center-img img-responsive"></p>
+
+<p>In the above picture, once administrators create an L2VlanNetwork with VLAN 10 and attach it to the cluster1 and the cluster2, a broadcast
+domain is created among hosts within these clusters. Hypervisors may take various ways to implement the L2 broadcast domain, for
+example, KVM hosts will create bridges with VLAN devices(VLAN 10) in their Linux operating systems; if the L2VlanNetwork is detached
+from the cluster2 later, the hosts in the detached cluster will be removed from the broadcast domain by deleting their VLAN(10) bridges.
+This concept of creating/destroying broadcast domains applies to all types of L2 networks; for example, attaching an OvsGreL2Network
+to KVM clusters may lead GRE tunnels to be created amid hosts, while detaching an OvsGreL2Network may cause GRE tunnels to be deleted.</p>
+
+<p>The attaching strategy has an extra bonus in with respect to restricting hosts that VMs can run. Because a VM is always created
+with L3 networks belonging to some L2 networks, the VM will only be allocated to a host in the cluster that has been attached to
+those L2 networks. By this way, administrators can divide hosts into different pools by L2 networks, for example, clusters attached
+with a high bandwidth L2 network, clusters attached to a public L2 network. If administrators want to put all hosts into a
+single pool, they can attach all L2 networks to all clusters.</p>
+
+<h4>Backend Implementation</h4>
+
+<p>With virtualization technology, the backend implementation of an L2 network is highly hypervisor dependent. For example,
+the implementation of the L2VlanNetwork on a KVM host is creating a bridge with a VLAN device but configuring a vSwitch on a VMWare ESXi host.
+To decouple the implementation of L2 network from hypervisors, ZStack delegates the responsibility of implementing a type of L2 network
+to hypervisor plugins. Two extension points are defined for realizing an L2 network. The first one is <code>L2NetworkRealizationExtensionPoint</code>:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">L2NetworkRealizationExtensionPoint</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">realize</span><span class="o">(</span><span class="n">L2NetworkInventory</span> <span class="n">l2Network</span><span class="o">,</span> <span class="n">String</span> <span class="n">hostUuid</span><span class="o">,</span> <span class="n">Completion</span> <span class="n">completion</span><span class="o">);</span>
+
+    <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">L2NetworkInventory</span> <span class="n">l2Network</span><span class="o">,</span> <span class="n">String</span> <span class="n">hostUuid</span><span class="o">,</span> <span class="n">Completion</span> <span class="n">completion</span><span class="o">);</span>
+    
+    <span class="n">L2NetworkType</span> <span class="nf">getSupportedL2NetworkType</span><span class="o">();</span>
+    
+    <span class="n">HypervisorType</span> <span class="nf">getSupportedHypervisorType</span><span class="o">();</span>
+<span class="o">}</span></code></pre></div>
+
+
+<p>When an L2 network is being attached to a cluster, this extension point is called for every host in the cluster, the hypervisor plugin
+can take this chance to implement the network on the back-end host; for example, the KVM plugin has both <code>KVMRealizeL2NoVlanNetworkBackend</code>
+and <code>KVMRealizeL2VlanNetworkBackend</code> that extend <code>L2NetworkRealizationExtensionPoint</code> to create bridges on Linux operating systems.
+This extension point is useful for L2 networks that don't need to know information of VMs, both L2NoVlanNetwork and L2VlanNetwork
+fall into this category. However, some L2 networks may only be able to be implemented when VMs are being created, for example, an L2VxlanNetwork may
+need to look up the VID of a VM's owner account in order to establish an L2 broadcast domain; in this case, the hypervisor plugin can implement another extension point <code>PreVmInstantiateResourceExtensionPoint</code>:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">PreVmInstantiateResourceExtensionPoint</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="nf">preBeforeInstantiateVmResource</span><span class="o">(</span><span class="n">VmInstanceSpec</span> <span class="n">spec</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">VmInstantiateResourceException</span><span class="o">;</span>
+    
+    <span class="kt">void</span> <span class="nf">preInstantiateVmResource</span><span class="o">(</span><span class="n">VmInstanceSpec</span> <span class="n">spec</span><span class="o">,</span> <span class="n">Completion</span> <span class="n">completion</span><span class="o">);</span>
+    
+    <span class="kt">void</span> <span class="nf">preReleaseVmResource</span><span class="o">(</span><span class="n">VmInstanceSpec</span> <span class="n">spec</span><span class="o">,</span> <span class="n">Completion</span> <span class="n">completion</span><span class="o">);</span>
+<span class="o">}</span></code></pre></div>
+
+
+<p>Plugins can retrieve information of the destination host and the VM from <code>VmInstanceSpec</code> then realize an L2 network before the VM being created
+on the destination host.</p>
+
+<h3>L3 Network</h3>
+
+<p>An L3 network is a subnet created on an L2 network, associated with network services; it can have multiple IP ranges as long as
+they belong to the same L3 network and won't conflict with each other.</p>
+
+<p><img src="../../images/blogs/scalability/network-model5.png" class="center-img img-responsive"></p>
+
+<p>In the above picture there are two IP ranges (192.168.0.10 - 192.168.0.50) and (192.168.0.60 - 192.168.0.100), IPs from 192.168.0.51
+to 192.168.0.59 are reserved so administrators can assign them to devices not managed by ZStack.</p>
+
+<p>An L3 network is nothing if without network services that are provided by network service providers associated with the underlying L2 network. A network service
+provider may provide one or more network services, for example, ZStack's default <em>virtual router provider</em> is able to provide almost
+all common network services like DHCP, DNS, SNAT and so on, while <a href="https://f5.com/glossary/load-balancer">F5</a> provider may only provide load balancing. In this ZStack version(0.6),
+a network service provider can only associate with an L2 network at the time the L2 network is being created; for example, the virtual router provider
+implementing <code>L2NetworkCreateExtensionPoint</code> will create associations with all L2 networks after they are created.</p>
+
+<p>Administrators can attach network services to an L3 network; for one type of service, only one service of one network
+service provider can be attached to the L3 network; for example, you cannot attach two DHCP services from different providers to the same L3 network.
+In this ZStack version(0.6), six types of network services: DHCP, DNS, SNAT, EIP, Port Forwarding, and Security Group are defined, providers
+only need to implement corresponding backends: <code>NetworkServiceDhcpBackend</code>, <code>NetworkServiceDnsBackend</code>, <code>NetworkServiceSnatBackend</code>,
+<code>EipBackend</code>, <code>PortForwardingBackend</code>, and <code>SecurityGroupHypervisorBackend</code> to provide those services. We will discuss
+our reference provider <em>virtual router provider</em> in <a href="virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a>, you can explore more
+details then.</p>
+
+<h3>Summary</h3>
+
+<p>In this article, we briefly explained ZStack's networking model. Without digging into backend hypervisor details, we demonstrated
+how ZStack abstracts the OSI model into L2 network(layer 2), L3 network(layer 3), and network services(layer 4 ~ 7). In next article,
+we will elaborate our reference implementation of the network service provider: virtual router provider, about how it implements DHCP,
+DNS, SNAT, EIP, and Port Forwarding in an appliance VM.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

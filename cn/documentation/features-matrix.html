@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - Documentation</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+<body>
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container doc big-font">
+  <h2>Feature Matrix</h2>
+
+<p>In current version (0.6), the supported features are listed as follows:</p>
+
+<table class="table black-table">
+  <thead>
+    <th>Category</th>
+    <th>Name</th>
+    <th>Note</th>
+  </thead>
+  
+  <tbody>
+    <tr>
+      <td rowspan=3>Compute</td>
+      <td>Zone</td>
+      <td>A logic group of resources. Similar to Amazon EC2 availability zone</td>
+    </tr>
+    <tr>
+      <td>Cluster</td>
+      <td>A logic group of hosts</td>
+    </tr>
+    <tr>
+      <td>Host</td>
+      <td>only KVM support</td>
+    </tr>
+    
+    <tr>
+      <td rowspan=5>Storage</td>
+      <td>Primary Storage</td>
+      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder</td>
+    </tr>
+    <tr>
+      <td>Backup Storage</td>
+      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image</td>
+    </tr>
+    <tr>
+      <td>Image</td>
+      <td>Templates for creating volumes. Similar to OpenStack's Glance in combination with Backup Storage</td>
+    </tr>
+    <tr>
+      <td>Volume</td>
+      <td>Virtual disks</td>
+    </tr>
+    <tr>
+      <td>Volume Snapshot</td>
+      <td>Snapshots of volumes</td>
+    </tr>
+    
+    <tr>
+      <td rowspan=2>Networking</td>
+      <td>L2 Network</td>
+      <td>Layer2 broadcast domains for traffic isolation. Supporting non-VLAN and VLAN</td>
+    </tr>
+    <tr>
+      <td>L3 Network</td>
+      <td>Subnets with network services</td>
+    </tr>
+    
+    <tr>
+      <td rowspan=6>Network Services</td>
+      <td>DHCP</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>DNS</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>SNAT</td>
+      <td>Source NAT</td>
+    </tr>
+    <tr>
+      <td>Elastic Port Forwarding</td>
+      <td>Port forwarding rules that can be bound to virtual machines dynamically</td>
+    </tr>
+    <tr>
+      <td>EIP</td>
+      <td>Similar to Amazon EC2 elastic IP</td>
+    </tr>
+    <tr>
+      <td>Security Group</td>
+      <td>A distributed firewall. Similar to Amazon EC2 security group</td>
+    </tr>
+    
+    <tr>
+      <td rowspan=2>Configurations</td>
+      <td>Instance Offering</td>
+      <td>A specification for creating virtual machines. Similar to OpenStack flavor</td>
+    </tr>
+    <tr>
+      <td>Disk Offering</td>
+      <td>A specification for creating volumes</td>
+    </tr>
+  </tbody>
+</table>
+
+
+</div>
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+
+</body>
+
+</html>
