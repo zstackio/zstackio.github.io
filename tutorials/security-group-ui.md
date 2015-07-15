@@ -47,7 +47,7 @@ sections:
 ### Security Group
 
 <h4 id="overview">1. Overview</h4>
-<img  class="img-responsive"  src="../images/flat_network_with_security_group.png">
+<img  class="img-responsive"  src="/images/flat_network_with_security_group.png">
 
 Security group is a virtual firewall that can control the traffic for a group of VMs. In this example, we will
 create a flat network with a security group, then create one VM(INNER-VM) in the security group while another VM(OUTER-VM) out of
@@ -120,7 +120,7 @@ Based on those requirements, we assume below setup information:
 
 open browser with URL(http://your_machine_ip:5000/) and login with admin/password:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/login.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/login.png">
 
 <hr>
 
@@ -128,19 +128,19 @@ open browser with URL(http://your_machine_ip:5000/) and login with admin/passwor
 
 click 'Zone' in the left sidebar to enter the zone page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png">
 
 <hr>
 
 click button 'New Zone' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png">
 
 <hr>
 
 name your first zone as 'ZONE1' and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png">
 
 <hr>
 
@@ -148,31 +148,31 @@ name your first zone as 'ZONE1' and click button 'Create':
 
 click 'Cluster' in the left sidebar to enter the cluster page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster1.png">
 
 <hr>
 
 click button 'New Cluster' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png">
 
 <hr>
 
 select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png">
 
 <hr>
 
 for now you don't have any primary storage to attach, click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png">
 
 <hr>
 
 you don't have L2 network to attach either, click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png">
 
 <hr>
 
@@ -180,13 +180,13 @@ you don't have L2 network to attach either, click button 'Create':
 
 click 'Host' in the left sidebar to enter host page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost1.png">
 
 <hr>
 
 click 'New Host' button to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png">
 
 <hr>
 
@@ -196,7 +196,7 @@ click 'New Host' button to open the dialog:
 4. the most important thing: give **SSH credentials for user root**
 5. click 'add' button
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost3.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>A little slow when first time adding a host</h4>
@@ -209,13 +209,13 @@ click 'New Host' button to open the dialog:
 
 click 'Primary Storage' in the left slider to enter primary storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png">
 
 <hr>
 
 click button 'New Primary Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
 <hr>
 
@@ -230,13 +230,13 @@ click button 'New Primary Storage' to open the dialog:
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS3.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, then click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -249,13 +249,13 @@ select cluster(CLUSTER1) to attach, then click button 'Add':
 
 click 'Backup Storage' in left sidebar to enter backup storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png">
 
 <hr>
 
 click button 'New Backup Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png">
 
 <hr>
 
@@ -266,13 +266,13 @@ click button 'New Backup Storage' to open the dialog:
 5. input SSH credentials for user root
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS3.png">
 
 <hr>
 
 select zone(ZONE1) to attach, and click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png">
 
 <hr>
 
@@ -280,13 +280,13 @@ select zone(ZONE1) to attach, and click button 'Add':
 
 click 'Image' in left sidebar to enter image page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png">
 
 <hr>
 
 click button 'New Image' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png">
 
 <hr>
 
@@ -308,7 +308,7 @@ this image will be used as user VM image.
 </div>
 
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
 <hr>
 
@@ -330,7 +330,7 @@ click 'New Image' button again to add the virtual router image:
   <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.7.qcow2</code></pre>
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
@@ -344,13 +344,13 @@ click 'New Image' button again to add the virtual router image:
 
 click 'L2 Network' in left sidebar to enter L2 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png">
 
 <hr>
 
 click button 'New L2 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png">
 
 <hr>
 
@@ -360,13 +360,13 @@ click button 'New L2 Network' to open the dialog:
 4. input physical interface as 'eth0'
 5. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
 
 <hr>
 
@@ -374,13 +374,13 @@ select cluster(CLUSTER1) to attach, and click button 'Create':
 
 click 'L3 Network' in left sidebar to enter L3 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
 
 <hr>
 
 click button 'New L3 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png">
 
 <hr>
 
@@ -391,7 +391,7 @@ click button 'New L3 Network' to open the dialog:
 5. choose type 'L3BasicNetwork'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png">
 
 <hr>
 
@@ -404,7 +404,7 @@ click button 'New L3 Network' to open the dialog:
 7. click button 'Add' to add the IP range
 8. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png">
 
 <hr>
 
@@ -412,7 +412,7 @@ click button 'New L3 Network' to open the dialog:
 2. click button 'Add' to add the DNS
 3. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network5.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png">
 
 <hr>
 
@@ -421,7 +421,7 @@ click button 'New L3 Network' to open the dialog:
 3. click button 'Add' to add DHCP service
 4. repeat step 2~3 to add DNS service
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network6.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png">
 
 <hr>
 
@@ -431,8 +431,8 @@ click button 'New L3 Network' to open the dialog:
 4. now you should have network services: DHCP, DNS, and SecurityGroup added
 5. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createL3Network7.png">
-<img  class="img-responsive"  src="../images/tutorials/t4/createL3Network8.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createL3Network7.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createL3Network8.png">
 
 <hr>
 
@@ -440,20 +440,20 @@ click button 'New L3 Network' to open the dialog:
 
 click 'Security Group' in left sidebar to enter security group page:
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup1.png">
 
 <hr>
 
 click button 'New Security Group' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup2.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup2.png">
 
 <hr>
 
 1. input name as 'SECURITY-GROUP-1'
 2. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup3.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup3.png">
 
 <hr>
 
@@ -470,15 +470,15 @@ click button 'New Security Group' to open the dialog:
   You can specify a CIDR(e.g. 16.16.16.0/24, 16.16.16.16/32) to restrict what traffics can access the port.
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup4.png">
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup5.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup4.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
 <hr>
 
 1. select L3 network 'FLAT-L3'
 2. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createSecurityGroup6.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup6.png">
 
 <hr>
 
@@ -486,13 +486,13 @@ click button 'New Security Group' to open the dialog:
 
 click 'Instance Offering' in left sidebar to enter instance offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png">
 
 <hr>
 
 click button 'New Instance Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png">
 
 <hr>
 
@@ -502,7 +502,7 @@ click button 'New Instance Offering' to open the dialog:
 4. input memory as 512M
 5. click button 'create'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png">
 
 <hr>
 
@@ -510,13 +510,13 @@ click button 'New Instance Offering' to open the dialog:
 
 click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png">
 
 <hr>
 
 click 'New Virtual Router Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png">
 
 <hr>
 
@@ -531,7 +531,7 @@ click 'New Virtual Router Offering' to open the dialog:
 9. check 'DEFAULT OFFERING' checkbox
 10. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createVirtualRouterOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png">
 
 <hr>
 
@@ -539,13 +539,13 @@ click 'New Virtual Router Offering' to open the dialog:
 
 click 'Instance' in the left sidebar to enter VM instance page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png">
 
 <hr>
 
 click button 'New VmInstance' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png">
 
 <hr>
 
@@ -556,13 +556,13 @@ click button 'New VmInstance' to open the dialog:
 5. input host name as 'inner'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createInnerVM3.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createInnerVM3.png">
 
 <hr>
 
 click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -576,14 +576,14 @@ click button 'Create':
 
 In security group page, select 'SECURITY-GROUP-1', then click button 'Action' and select item 'Add Vm Nic'.
 
-<img  class="img-responsive"  src="../images/tutorials/t4/joinSecurityGroup1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup1.png">
 
 <hr>
 
 1. select the only nic of INNER-VM
 2. click button 'Add'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/joinSecurityGroup2.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup2.png">
 
 <hr>
 
@@ -598,7 +598,7 @@ go to vm instance page and click button 'New VmInstance' again to create OUTER-V
 5. input host name as 'outer'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createOuterVM1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM1.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Subsequent VMs are created extremely fast</h4>
@@ -610,7 +610,7 @@ go to vm instance page and click button 'New VmInstance' again to create OUTER-V
 
 click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t4/createOuterVM2.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM2.png">
 
 <hr>
 
@@ -622,13 +622,13 @@ go to vm instance page:
 2. click tab 'Nic'
 3. you can see IP address of INNER-VM: 192.168.0.236
 
-<img  class="img-responsive"  src="../images/tutorials/t4/sshLogin1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/sshLogin1.png">
 
 <hr>
 
 click breadcrumb 'VM INSTANCE' on top of title bar 'INNER-VM' to go back vm instance page:
 
-<img  class="img-responsive"  src="../images/tutorials/t4/sshLogin2.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/sshLogin2.png">
 
 <hr>
 
@@ -636,7 +636,7 @@ click breadcrumb 'VM INSTANCE' on top of title bar 'INNER-VM' to go back vm inst
 2. click button 'Action'
 3. select item 'Console' to open VNC console
 
-<img  class="img-responsive"  src="../images/tutorials/t4/sshLogin3.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/sshLogin3.png">
 
 <hr>
 
@@ -652,7 +652,7 @@ in the popup window, login the VM by *username: root, password: password*.
   The IP address may be different in your environment, please use the IP showed in your nic page of INNER-VM.
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t4/sshLogin4.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/sshLogin4.png">
 
 <hr>
 
@@ -664,14 +664,14 @@ go to security group page:
 2. click button 'Action'
 3. select item 'Delete Rule'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/deleteSecurityGroupRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule1.png">
 
 <hr>
 
 1. select checkbox of rule 22
 2. click button 'Delete'
 
-<img  class="img-responsive"  src="../images/tutorials/t4/deleteSecurityGroupRule2.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule2.png">
 
 <hr>
 
@@ -679,7 +679,7 @@ go to security group page:
 
 go back to VNC console of OUTER-VM; ssh INNER-VM, it should fail.
 
-<img  class="img-responsive"  src="../images/tutorials/t4/sshLoginFailure1.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/sshLoginFailure1.png">
 
 ### Summary
 

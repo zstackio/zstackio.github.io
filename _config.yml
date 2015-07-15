@@ -17,3 +17,12 @@ markdown: rdiscount
 permalink: none
 highlighter: pygments
 relative_permalinks: false
+
+# multiple languages plugins.
+gems:           ['jekyll-multiple-languages']
+
+languages:          ['en', 'cn']
+#
+language_default:   'en'
+#
+fill_default_content: true

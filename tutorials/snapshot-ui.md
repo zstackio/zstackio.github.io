@@ -37,7 +37,7 @@ sections:
 ### Volume Snapshot
 
 <h4 id="overview">1. Overview</h4>
-<img  class="img-responsive"  src="../images/snapshot.png">
+<img  class="img-responsive"  src="/images/snapshot.png">
 
 ZStack allows user to create snapshots from VM's root volume and data volumes. Unlike majority of IaaS software only allowing users
 to create at most one snapshot chain, ZStack allows users to create a snapshot tree that each branch is a snapshot chain.
@@ -118,7 +118,7 @@ Based on those requirements, we assume below setup information:
 
 open browser with URL(http://your_machine_ip:5000/) and login with admin/password:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/login.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/login.png">
 
 <hr>
 
@@ -126,19 +126,19 @@ open browser with URL(http://your_machine_ip:5000/) and login with admin/passwor
 
 click 'Zone' in the left sidebar to enter the zone page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png">
 
 <hr>
 
 click button 'New Zone' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png">
 
 <hr>
 
 name your first zone as 'ZONE1' and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createZone3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png">
 
 <hr>
 
@@ -146,31 +146,31 @@ name your first zone as 'ZONE1' and click button 'Create':
 
 click 'Cluster' in the left sidebar to enter the cluster page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster1.png">
 
 <hr>
 
 click button 'New Cluster' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png">
 
 <hr>
 
 select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png">
 
 <hr>
 
 for now you don't have any primary storage to attach, click button 'Next':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png">
 
 <hr>
 
 you don't have L2 network to attach either, click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createCluster5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png">
 
 <hr>
 
@@ -178,13 +178,13 @@ you don't have L2 network to attach either, click button 'Create':
 
 click 'Host' in the left sidebar to enter host page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost1.png">
 
 <hr>
 
 click 'New Host' button to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png">
 
 <hr>
 
@@ -194,7 +194,7 @@ click 'New Host' button to open the dialog:
 4. the most important thing: give **SSH credentials for user root**
 5. click 'add' button
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addHost3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addHost3.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>A little slow when first time adding a host</h4>
@@ -207,13 +207,13 @@ click 'New Host' button to open the dialog:
 
 click 'Primary Storage' in the left slider to enter primary storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png">
 
 <hr>
 
 click button 'New Primary Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
 <hr>
 
@@ -228,13 +228,13 @@ click button 'New Primary Storage' to open the dialog:
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS3.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, then click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addPS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -247,13 +247,13 @@ select cluster(CLUSTER1) to attach, then click button 'Add':
 
 click 'Backup Storage' in left sidebar to enter backup storage page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png">
 
 <hr>
 
 click button 'New Backup Storage' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png">
 
 <hr>
 
@@ -264,13 +264,13 @@ click button 'New Backup Storage' to open the dialog:
 5. input SSH credentials for user root
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS3.png">
 
 <hr>
 
 select zone(ZONE1) to attach, and click button 'Add':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addBS4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png">
 
 <hr>
 
@@ -278,13 +278,13 @@ select zone(ZONE1) to attach, and click button 'Add':
 
 click 'Image' in left sidebar to enter image page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png">
 
 <hr>
 
 click button 'New Image' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png">
 
 <hr>
 
@@ -305,7 +305,7 @@ click button 'New Image' to open the dialog:
 
 this image will be used as user VM image.
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
 <hr>
 
@@ -327,7 +327,7 @@ click 'New Image' button again to add the virtual router image:
   <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.7.qcow2</code></pre>
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t1/addImage4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
@@ -341,13 +341,13 @@ click 'New Image' button again to add the virtual router image:
 
 click 'L2 Network' in left sidebar to enter L2 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png">
 
 <hr>
 
 click button 'New L2 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png">
 
 <hr>
 
@@ -357,13 +357,13 @@ click button 'New L2 Network' to open the dialog:
 4. input physical interface as 'eth0'
 5. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png">
 
 <hr>
 
 select cluster(CLUSTER1) to attach, and click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL2Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
 
 <hr>
 
@@ -371,13 +371,13 @@ select cluster(CLUSTER1) to attach, and click button 'Create':
 
 click 'L3 Network' in left sidebar to enter L3 network page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
 
 <hr>
 
 click button 'New L3 Network' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png">
 
 <hr>
 
@@ -388,7 +388,7 @@ click button 'New L3 Network' to open the dialog:
 5. choose type 'L3BasicNetwork'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png">
 
 <hr>
 
@@ -401,7 +401,7 @@ click button 'New L3 Network' to open the dialog:
 7. click button 'Add' to add the IP range
 8. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png">
 
 <hr>
 
@@ -409,7 +409,7 @@ click button 'New L3 Network' to open the dialog:
 2. click button 'Add' to add the DNS
 3. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network5.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png">
 
 <hr>
 
@@ -419,7 +419,7 @@ click button 'New L3 Network' to open the dialog:
 4. repeat step 2~3 to add DNS service
 5. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createL3Network6.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png">
 
 <hr>
 
@@ -427,13 +427,13 @@ click button 'New L3 Network' to open the dialog:
 
 click 'Instance Offering' in left sidebar to enter instance offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png">
 
 <hr>
 
 click button 'New Instance Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png">
 
 <hr>
 
@@ -443,7 +443,7 @@ click button 'New Instance Offering' to open the dialog:
 4. input memory as 512M
 5. click button 'create'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createInstanceOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png">
 
 <hr>
 
@@ -451,13 +451,13 @@ click button 'New Instance Offering' to open the dialog:
 
 click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png">
 
 <hr>
 
 click 'New Virtual Router Offering' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVirtualRouterOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png">
 
 <hr>
 
@@ -472,19 +472,19 @@ click 'New Virtual Router Offering' to open the dialog:
 9. check 'DEFAULT OFFERING' checkbox
 10. click button 'Create'
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createVirtualRouterOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png">
 
 <h4 id="createVM">14. Create Virtual Machine</h4>
 
 click 'Instance' in the left sidebar to enter VM instance page:
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png">
 
 <hr>
 
 click button 'New VmInstance' to open the dialog:
 
-<img  class="img-responsive"  src="../images/tutorials/t2/createVM2.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createVM2.png">
 
 <hr>
 
@@ -495,13 +495,13 @@ click button 'New VmInstance' to open the dialog:
 5. input host name as 'vm1'
 6. click button 'Next'
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM3.png">
 
 <hr>
 
 click button 'Create':
 
-<img  class="img-responsive"  src="../images/tutorials/t1/createVM4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -520,13 +520,13 @@ to the correct snapshot. go to vm instance page:
 2. click button 'Action'
 3. select item 'Console'
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot5.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot5.png">
 
 <hr>
 
 in the popup window, login the VM by *username: root, password: password*; then create a file 'flag' as below:
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot6.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot6.png">
 
 <hr>
 
@@ -536,41 +536,41 @@ go to vm instance page:
 2. select tab 'Volume':
 3. click device ID 0 to enter VM1's root volume page
 
-<img class="img-responsive" src="../images/tutorials/t6/createSnapshot1.png">
-<img class="img-responsive" src="../images/tutorials/t6/createSnapshot2.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot1.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot2.png">
 
 <hr>
 
 1. click button 'Action'
 2. select item 'Take Snapshot'
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot3.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot3.png">
 
 <hr>
 
 1. input name as 'sp1'
 2. click button 'click'
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot4.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot4.png">
 
 <hr>
 
 repeat above two steps to create two more snapshots: sp2 and sp3:
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot7.png">
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot8.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot7.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot8.png">
 
 <hr>
 
 click tab 'Snapshot' and expand the tree, you should see three snapshots:
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot9.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot9.png">
 
 <hr>
 
 use instructions in the beginning of this section to enter VM1's console, and delete the flag file 'flag1':
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot10.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot10.png">
 
 <hr>
 
@@ -587,7 +587,7 @@ to revert the root volume to a prior snapshot, we need to stop the VM1 first; go
    distributions.
 </div>
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot12.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot12.png">
 
 <hr>
 
@@ -598,8 +598,8 @@ use former instructions to go to snapshot page:
 3. in the dropdown, select item 'Revert volume to this snapshot'
 4. click button 'Revert'
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot11.png">
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot13.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot11.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot13.png">
 
 <hr>
 
@@ -609,28 +609,28 @@ now start the VM again:
 2. click button 'Action'
 3. select item 'Start'
 
-<img class="img-responsive" src="../images/tutorials/t6/createSnapshot14.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot14.png">
 
 <hr>
 
 open the VNC console again and check the flag file 'flag1', you should see the file we deleted before now comes back,
 which confirms we have successfully reverted the root volume to the snapshot 'sp1':
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot15.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot15.png">
 
 <hr>
 
 use former instructions to create two more snapshots: 'sp1.1' and 'sp1.2':
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot16.png">
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot17.png">
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot18.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot16.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot17.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot18.png">
 
 <hr>
 
 expand the snapshot tree, now you should see two branches that are both derived from snapshot 'sp1':
 
-<img  class="img-responsive"  src="../images/tutorials/t6/createSnapshot19.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot19.png">
 
 
 ### Summary
