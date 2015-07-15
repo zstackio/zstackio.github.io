@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - The In-Process Microservices Architecture</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">The In-Process Microservices Architecture</h2>
+    <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p><em>To tackle challenges such as significant operations overhead, duplication of effort, testability that microservices usually faces, and
+to achieve the benefits such as code decoupling, easy to scale-out that microservices brings in, ZStack encompasses all services in
+a single process called management node, building a in-process microservices architecture.</em></p>
+
+<h3>The motivation</h3>
+
+<p>Making an IaaS software is hard, this lesson has been learned from existing IaaS software in the market. As an integration software,
+an IaaS software normally needs to manage complex, various sub-systems(e.g. hypervisor, storage, networking, identity) and conduct
+activities that may span multiple subsystems; for example, creating a VM will involve cooperation with hypervisor, storage, and networking.
+As most software start with solving a concrete problem without too many architectural thoughts, their implementations often grow as:</p>
+
+<p><img src="../../images/blogs/scalability/soa1.png" class="center-img" style="height: 500px"></p>
+
+<p>Along with the software gets aged, the monolithic architecture will eventually become a mess that
+nobody can modify the code unless rebuilding the whole system from scratch. This monolithic programming problem is the perfect situation that microservices
+can step in. By dividing functionality of the system into small, focused, and self-contained services, and by defining protocol that how
+services communicate with each other, microservices can help convert a cumbersome software from a tight, net-topological architecture into a loosely coupled,
+star topological architecture.</p>
+
+<p><img src="../../images/blogs/scalability/soa2.png" class="center-img" style="height: 500px"></p>
+
+<p>Because services are compiling-independent in microservices, adding or removing services will not impact the whole architecture(of course, removing services will
+cause functionality loss).</p>
+
+<blockquote><p><em><strong>Microservices are much more beyond we have talked</strong>: Microservices does have many other remarkable merits especially in a DevOps process
+involving multiple teams of a large origination. We are not going to discussing all cons and pros of microservices that we are sure you can find
+tons of relevant articles on internet, but focus on some of them which we found impact IaaS software much.</em></p></blockquote>
+
+<h3>The problem</h3>
+
+<p>Although microservices can decouple architecture, it comes at a price. Good reads are <a href="http://highscalability.com/blog/2014/4/8/microservices-not-a-free-lunch.html">Microservices - Not A Free Lunch!</a>
+and <a href="https://rclayton.silvrback.com/failing-at-microservices">Failing at Microservices</a>. Here we highlight some issues that we think impact an IaaS software significantly:</p>
+
+<h4>1. Service boundary and duplication of effort</h4>
+
+<p>One challenge of constructing a microservices architecture is deciding which part of the code should be defined as a service. Some are very obvious,
+for example, code dealing with host specific logic can be a service. However, some, for example, code that manages database access, is hard to
+decide; a database service makes the architecture clear, but it also causes significant performance downgrade; usually, codes
+like this are made as libraries for all services. Typically services are maintained and developed in separate repos, constructing an abstract library
+that provides interfaces for individual software needs good skills in coordinating different groups of developers. Eventually, services end up with
+inventing their wheels that cause unnecessary duplication of effort.</p>
+
+<h4>2. Hard to deploy, upgrade and maintain</h4>
+
+<p>Services especially those scattered in different processes and machines are hard to deploy and upgrade. Users usually have to spend several days even
+weeks deploying a fully workable system, and fear upgrading an established stable system. Despite configuration management software like <a href="http://puppetlabs.com/">puppet</a>
+ease the problem to some extent, users still need to overcome the steep learning curve to master them just in order to deploy or upgrade a software. Managing a cloud
+is difficult, efforts should not be wasted on managing software that is supposed to make life easier.</p>
+
+<blockquote><p><em><strong>The number of services does matter</strong>: IaaS software usually has many services. Citing the famous OpenStack as an example, to have a basic setup you will need: Nova,
+Cinder, Neutron, Horizon, Keystone, Glance. Excluding Nova that is deployed per host, you will need to manage 20 servers if you want four instances running on separate machines for each service.
+Though this artificial case will unlikely happen in reality, it shows the challenge of managing separate services.</em></p></blockquote>
+
+<h4>3. Scattered configurations</h4>
+
+<p>Services running on separate machines maintain their copy of configurations scattered in every corner of the system; updating
+configurations in system-wide is usually done by ad-hoc scripts that can lead to obscure failures caused by inconsistent configurations.</p>
+
+<h4>4. Extra monitoring effort</h4>
+
+<p>To track the health of the system, users have to make extra effort to monitor every single service instance. The monitoring software,
+built either by thirdparty tools or by services themselves, are also obsessed by similar problems of microservices because they are
+software still working in the distributed manner.</p>
+
+<h4>5. Plugin killer</h4>
+
+<p>Plugins are rarely heard in microservices world because each service is a small function unit running in a separate process; traditional
+plugin patterns (see <a href="plugin.html">The Versatile Plugin System</a>) that aim to hook different function units into each other seems impossible
+even anti-patterns in microservices; however, for business logic that naturally impose tight dependencies among function units, microservices
+may make things worse because lack of plugin architecture, changing business logic may result in changes of a bunch of separate services.</p>
+
+<h3>Services all in one process</h3>
+
+<p>Realizing above problems and the fact that a workable IaaS software must run with all orchestration services up, ZStack encloses all services
+into a single process called management node. Besides benefits like decoupling architecture that microservices already brings in, the in-process microservices architecture
+gives us extra bonus:</p>
+
+<h4>1. Concise dependency</h4>
+
+<p>As all services are in one process, the software only needs one copy of supporting software(e.g. database library, message library); upgrading or changing supporting library
+is as simple as what we are doing for single binary applications.</p>
+
+<h4>2. High availability, load balancing and monitoring</h4>
+
+<p>Services can focus on their business logic without being disturbed by HA, load balancing, and monitoring all of which are taken care of by management nodes; furthermore,
+states can be split from services to create stateless services, see <a href="stateless-clustering.html">ZStack's Scalability Secrets Part 2: Stateless Services</a> for more details.</p>
+
+<h4>3. Centralized configurations</h4>
+
+<p>As in a single process, all services share the same configuration file -- zstack.properties; users don't need to manage various configuration files
+scattered on different machines.</p>
+
+<h4>4. Easy to deploy, upgrade, and maintain and scale out</h4>
+
+<p>Deploying, upgrading, or maintaining a single management node is the same to deploying and upgrading a single application; scaling out services is just springing up
+multiple management nodes.</p>
+
+<h4>5. Plugins enabled</h4>
+
+<p>As running in a single process, plugins can be easily created as in traditional single process applications.</p>
+
+<blockquote><p><em><strong>In-process microservices is not a new invention</strong>: Back to 1990s, Microsoft defined servers in its COM(Component Object Model) as remote, local, and in-process. The
+<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms693345%28v=vs.85%29.aspx">In-Process Servers</a> that are DLLs loaded in the same process spaces of
+applications are some in-process microservices. Peter Kriens <a href="http://www.infoq.com/news/2014/07/uservices-defined">claimed</a> to have defined OSGi µservices as a service that always communicates
+within the same process already four years ago.</em></p></blockquote>
+
+<h4>Service Example</h4>
+
+<p>In microservices, a service is normally a logical representation of a repeatable business activity, is unassociated, loosely coupled, self-contained,
+and is a "black box" to consumers of the service. In plain English, a traditional microservice usually dedicates to specific business logic,
+has own APIs and configuration methods, and runs as an individual application. Even ZStack's services share the same process space; they have most of those characters.
+ZStack is largely a Java project written in a strong type language, but there is no even compiling dependency between orchestration services;
+for example, compute services(including VM service, host service, zone service, cluster service) are not depending on storage services(including volume service,
+primary storage service, backup storage service, volume snapshot service), though those services are bound tightly in business activities.</p>
+
+<p>In the source code, a ZStack service is nothing more than a <a href="http://maven.apache.org/">maven</a> module, which is built as an individual JAR file. Every service
+can define own APIs, error codes, global configurations, global properties, and system tags. Cite KVM host service as an example, it has own APIs:</p>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml">?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<span class="nt">&lt;service</span> <span class="na">xmlns=</span><span class="s">&quot;http://zstack.org/schema/zstack&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;id&gt;</span>host<span class="nt">&lt;/id&gt;</span>
+
+    <span class="nt">&lt;message&gt;</span>
+        <span class="nt">&lt;name&gt;</span>org.zstack.kvm.APIAddKVMHostMsg<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;interceptor&gt;</span>HostApiInterceptor<span class="nt">&lt;/interceptor&gt;</span>
+        <span class="nt">&lt;interceptor&gt;</span>KVMApiInterceptor<span class="nt">&lt;/interceptor&gt;</span>
+    <span class="nt">&lt;/message&gt;</span>
+
+<span class="nt">&lt;/service&gt;</span></code></pre></div>
+
+
+<p>and various ways that allow users to configure itself:</p>
+
+<p><strong>Configure through global configuration</strong></p>
+
+<blockquote><p><em><strong>Note</strong>: Here only shows a small part. Users can use API to update/retrieve global configurations, what here shows is the global configuration schema.</em></p></blockquote>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;globalConfig</span> <span class="na">xmlns=</span><span class="s">&quot;http://zstack.org/schema/zstack&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;config&gt;</span>
+        <span class="nt">&lt;category&gt;</span>kvm<span class="nt">&lt;/category&gt;</span>
+        <span class="nt">&lt;name&gt;</span>vm.migrationQuantity<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;description&gt;</span>A value that defines how many vm can be migrated in parallel when putting a KVM host into maintenance mode.<span class="nt">&lt;/description&gt;</span>
+        <span class="nt">&lt;defaultValue&gt;</span>2<span class="nt">&lt;/defaultValue&gt;</span>
+        <span class="nt">&lt;type&gt;</span>java.lang.Integer<span class="nt">&lt;/type&gt;</span>
+    <span class="nt">&lt;/config&gt;</span>
+
+    <span class="nt">&lt;config&gt;</span>
+        <span class="nt">&lt;category&gt;</span>kvm<span class="nt">&lt;/category&gt;</span>
+        <span class="nt">&lt;name&gt;</span>reservedMemory<span class="nt">&lt;/name&gt;</span>
+        <span class="nt">&lt;description&gt;</span>The memory capacity reserved on all KVM hosts. ZStack KVM agent is a python web server that needs some memory capacity to run. this value reserves a portion of memory for the agent as well as other host applications. The value can be overridden by system tag on individual host, cluster and zone level<span class="nt">&lt;/description&gt;</span>
+        <span class="nt">&lt;defaultValue&gt;</span>512M<span class="nt">&lt;/defaultValue&gt;</span>
+    <span class="nt">&lt;/config&gt;</span>
+<span class="nt">&lt;/globalConfig&gt;</span></code></pre></div>
+
+
+<p><strong>Configure through global property</strong></p>
+
+<blockquote><p><em><strong>Note</strong>: Below codes map to corresponding properties in zstack.properties file.</em></p></blockquote>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@GlobalPropertyDefinition</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">KVMGlobalProperty</span> <span class="o">{</span>
+    <span class="nd">@GlobalProperty</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;KvmAgent.agentPackageName&quot;</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;kvmagent-0.6.tar.gz&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">AGENT_PACKAGE_NAME</span><span class="o">;</span>
+    <span class="nd">@GlobalProperty</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;KvmAgent.agentUrlRootPath&quot;</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">AGENT_URL_ROOT_PATH</span><span class="o">;</span>
+    <span class="nd">@GlobalProperty</span><span class="o">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;KvmAgent.agentUrlScheme&quot;</span><span class="o">,</span> <span class="n">defaultValue</span> <span class="o">=</span> <span class="s">&quot;http&quot;</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">AGENT_URL_SCHEME</span><span class="o">;</span>
+<span class="o">}</span></code></pre></div>
+
+
+<p><strong>Configure through system tags</strong></p>
+
+<blockquote><p><em><strong>Note</strong>: Below codes map to corresponding system tags in the database.</em></p></blockquote>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@TagDefinition</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">KVMSystemTags</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">QEMU_IMG_VERSION_TOKEN</span> <span class="o">=</span> <span class="s">&quot;version&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">PatternedSystemTag</span> <span class="n">QEMU_IMG_VERSION</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PatternedSystemTag</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;qemu-img::version::%s&quot;</span><span class="o">,</span> <span class="n">QEMU_IMG_VERSION_TOKEN</span><span class="o">),</span> <span class="n">HostVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">LIBVIRT_VERSION_TOKEN</span> <span class="o">=</span> <span class="s">&quot;version&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">PatternedSystemTag</span> <span class="n">LIBVIRT_VERSION</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PatternedSystemTag</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;libvirt::version::%s&quot;</span><span class="o">,</span> <span class="n">LIBVIRT_VERSION_TOKEN</span><span class="o">),</span> <span class="n">HostVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">HVM_CPU_FLAG_TOKEN</span> <span class="o">=</span> <span class="s">&quot;flag&quot;</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">PatternedSystemTag</span> <span class="n">HVM_CPU_FLAG</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">PatternedSystemTag</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">&quot;hvm::%s&quot;</span><span class="o">,</span> <span class="n">HVM_CPU_FLAG_TOKEN</span><span class="o">),</span> <span class="n">HostVO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="o">}</span></code></pre></div>
+
+
+<h4>Service Loading</h4>
+
+<p>Services advertise themselves in Spring bean XML files, for example, the KVM's is partly like:</p>
+
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&lt;?</span><span class="n">xml</span> <span class="n">version</span><span class="o">=</span><span class="s">&quot;1.0&quot;</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="o">?&gt;</span>
+<span class="o">&lt;</span><span class="n">beans</span> <span class="n">xmlns</span><span class="o">=</span><span class="s">&quot;http://www.springframework.org/schema/beans&quot;</span>
+    <span class="nl">xmlns:</span><span class="n">xsi</span><span class="o">=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="nl">xmlns:</span><span class="n">aop</span><span class="o">=</span><span class="s">&quot;http://www.springframework.org/schema/aop&quot;</span>
+    <span class="nl">xmlns:</span><span class="n">tx</span><span class="o">=</span><span class="s">&quot;http://www.springframework.org/schema/tx&quot;</span> <span class="nl">xmlns:</span><span class="n">zstack</span><span class="o">=</span><span class="s">&quot;http://zstack.org/schema/zstack&quot;</span>
+    <span class="nl">xsi:</span><span class="n">schemaLocation</span><span class="o">=</span><span class="s">&quot;http://www.springframework.org/schema/beans</span>
+<span class="s">    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd</span>
+<span class="s">    http://www.springframework.org/schema/aop</span>
+<span class="s">    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd</span>
+<span class="s">    http://www.springframework.org/schema/tx </span>
+<span class="s">    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd</span>
+<span class="s">    http://zstack.org/schema/zstack </span>
+<span class="s">    http://zstack.org/schema/zstack/plugin.xsd&quot;</span>
+    <span class="k">default</span><span class="o">-</span><span class="n">init</span><span class="o">-</span><span class="n">method</span><span class="o">=</span><span class="s">&quot;init&quot;</span> <span class="k">default</span><span class="o">-</span><span class="n">destroy</span><span class="o">-</span><span class="n">method</span><span class="o">=</span><span class="s">&quot;destroy&quot;</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;</span><span class="n">bean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;KvmHostReserveExtension&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KvmHostReserveExtension&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.Component&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.allocator.HostReservedCapacityExtensionPoint&quot;</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;/</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;</span><span class="n">bean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;KVMHostFactory&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KVMHostFactory&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.host.HypervisorFactory&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.Component&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.managementnode.ManagementNodeChangeListener&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.volume.MaxDataVolumeNumberExtensionPoint&quot;</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;/</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>
+
+    <span class="o">&lt;</span><span class="n">bean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;KVMSecurityGroupBackend&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KVMSecurityGroupBackend&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.network.securitygroup.SecurityGroupHypervisorBackend&quot;</span> <span class="o">/&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KVMHostConnectExtensionPoint&quot;</span> <span class="o">/&gt;</span>
+        <span class="o">&lt;/</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>  
+
+    <span class="o">&lt;</span><span class="n">bean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;KVMConsoleHypervisorBackend&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KVMConsoleHypervisorBackend&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.console.ConsoleHypervisorBackend&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;/</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>  
+
+    <span class="o">&lt;</span><span class="n">bean</span> <span class="n">id</span><span class="o">=</span><span class="s">&quot;KVMApiInterceptor&quot;</span> <span class="n">class</span><span class="o">=</span><span class="s">&quot;org.zstack.kvm.KVMApiInterceptor&quot;</span><span class="o">&gt;</span>
+        <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nl">zstack:</span><span class="n">extension</span> <span class="n">interface</span><span class="o">=</span><span class="s">&quot;org.zstack.header.apimediator.ApiMessageInterceptor&quot;</span><span class="o">/&gt;</span>
+        <span class="o">&lt;/</span><span class="nl">zstack:</span><span class="n">plugin</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">bean</span><span class="o">&gt;</span>  
+<span class="o">&lt;/</span><span class="n">beans</span><span class="o">&gt;</span></code></pre></div>
+
+
+<p>The management node, which is the container of all services, will load each service by reading their XML configuration during
+booting period.</p>
+
+<h3>Summary</h3>
+
+<p>In this article, we demonstrated ZStack's in-process microservices architecture. With it, ZStack has a very clean, loosely
+coupled code structure, which is the basis of building a robust IaaS software.</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

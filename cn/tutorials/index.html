@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack使用教程</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/cn/">主 页</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="big-font tutorial-home">
+  <div class="container">
+  <div class="row" style="padding-top: 25px">
+    <p>
+    这套教程仅仅展示了用ZStack来创建一些经典的云环境的方法。当您熟悉了ZStack的基本功能后，
+    您完全可以灵活的创造更多的云解决方案。在您跟随使用教程来搭建自己的云主机的时候，我们假定您已经通过
+    ZStack的<a href="../installation/index.html">快速安装手册</a>完成了ZStack在单台Linux机器上的安装。
+    您可以在单台Linux机器上完成所有教程的案例而无需更多的主机。
+    </p>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <img class="img-responsive" src="/images/eip.png">
+    </div>
+    <div class="col-sm-6" style="padding-top: 50px">
+      <h3>经典共有云Amazon EC2 弹性IP（EIP）</h3>
+      <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
+      <p>
+        <a href="ec2-ui.html" class="btn btn-primary" role="button">
+          图形界面版本
+        </a>
+        <a href="ec2-cli.html" class="btn btn-default" role="button">
+          命令行版本
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div  style="background: #f7f7f7">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <img class="img-responsive" src="/images/flat_network.png">
+      </div>
+      <div class="col-sm-6" style="padding-top: 50px">
+        <h3>扁平网络</h3>
+        <p>在一个扁平网络中，所有的云主机都在一个大二层的网络环境中。它们属于一个相同的子网。他们的网关和路由通常由数据中心的其他节点或者交换机提供。ZStack的虚拟机交换机可以给云主机分配动态或者静态的IP地址。这个是私有云环境中的典型环境。</p>
+        <p>
+          <a href="flat-network-ui.html" class="btn btn-primary" role="button">
+            图形界面版本
+          </a>
+          <a href="flat-network-cli.html" class="btn btn-default" role="button">
+            命令行版本
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <img class="img-responsive" src="/images/tier_3_networks.png">
+    </div>
+    <div class="col-sm-6" style="padding-top: 50px">
+      <h3>三层网络</h3>
+      <p>在传统的互联网业务中流行着三层网络架构，分别给三类服务器提供隔离的网络环境：Web服务器，应用服务器和数据库服务器。其中Web服务器可以跨接共有网络和应用层网络，应用服务器可以跨接应用层网络和数据库网络，而数据库服务器只存在于数据库网络。</p>
+      <p>
+        <a href="three-tiered-ui.html" class="btn btn-primary" role="button">
+          图形界面版本
+        </a>
+        <a href="three-tiered-cli.html" class="btn btn-default" role="button">
+          命令行版本
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div  style="background: #f7f7f7">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <img class="img-responsive" src="/images/flat_network_with_security_group.png">
+      </div>
+      <div class="col-sm-6" style="padding-top: 50px">
+        <h3>安全组防火墙</h3>
+        <p>云主机可以通过设置安全组来控制进出云主机的网络包的安全规则，以达到安全防护的目的。</p>
+        <p>
+          <a href="security-group-ui.html" class="btn btn-primary" role="button">
+            图形界面版本
+          </a>
+          <a href="security-group-cli.html" class="btn btn-default" role="button">
+            命令行版本
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-6">
+      <img class="img-responsive" src="/images/port_forwarding.png">
+    </div>
+    <div class="col-sm-6" style="padding-top: 50px">
+      <h3>端口转发</h3>
+      <p>端口转发可以把共有网络的IP地址通过区分端口的方式让多台云主机共享相同的公网IP地址，同时也具有防火墙的功能。</p>
+      <p>
+        <a href="elastic-port-forwarding-ui.html" class="btn btn-primary" role="button">
+          图形界面版本
+        </a>
+        <a href="elastic-port-forwarding-cli.html" class="btn btn-default" role="button">
+          命令行版本
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div  style="background: #f7f7f7">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <img class="img-responsive" src="/images/snapshot.png">
+      </div>
+      <div class="col-sm-6" style="padding-top: 50px">
+        <h3>磁盘快照</h3>
+        <p>我们将在一个快照树上创建两个磁盘快照的分支</p>
+        <p>
+          <a href="snapshot-ui.html" class="btn btn-primary" role="button">
+            图形界面版本
+          </a>
+          <a href="snapshot-cli.html" class="btn btn-default" role="button">
+            命令行版本
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">社区</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> 订阅邮件组</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">社区介绍</a></li>
+          <li>QQ群</li>
+          <li><a class="footer-text-link" href="../misc/wechat.html">微信订阅号</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">资源</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">安装手册</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">新手入门</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">新闻博客</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">更多文档</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">联系我们</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack 是开源的IaaS软件，其开源代码遵守 Apache 2.0 协议的规定.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+</html>
