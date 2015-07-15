@@ -61,6 +61,10 @@ Click [here](../misc/wechat.html) to subscribe our public account on WeChat.
 
 Click [here](http://weibo.com/zstack) to follow our Weibo account.
 
+<h3><i class="fa fa-weibo">&nbsp; QQ群</i></h3>
+
+Join ZStack QQ user group: 410185063 to discuss with people.
+
 <hr>
 
 ## Contact Us
