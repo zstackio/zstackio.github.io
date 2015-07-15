@@ -1,5 +1,7 @@
 #!/bin/bash
 #build zstack multiple languages website from source to web pages
+# Before run this script, you need to checkout source branch to edit web site 
+# and push all changes.
 
 function exe_cmd() {
     echo $1
@@ -7,13 +9,13 @@ function exe_cmd() {
 }
 
 if [ $# -lt 1 ]; then
-    echo "Usage: sh $0 [ source | master ]"
+    echo "Usage: sh $0 [ master ]"
     exit
 fi
 
 branch=$1
 if [ -z "$branch" ] || [ "$branch" != "master" ]; then
-    branch='source'
+    branch='master'
 fi
 
 exe_cmd "jekyll build"
