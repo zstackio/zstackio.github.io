@@ -121,7 +121,7 @@ sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases
   zstack.properties文件的地址可以用 `zstack-ctl status` 来获得。
 </div>
 
-当您成功的安装恶劣RabbitMQ之后，您还需要为远程的RabbitMQ访问创建加密访问(需要在RabbitMQ的服务器上做如下操作)：
+当您成功的安装了RabbitMQ之后，您还需要为远程的RabbitMQ访问创建加密访问(需要在RabbitMQ的服务器上做如下操作)：
 
     rabbitmqctl add_user username password
 

@@ -1,5 +1,5 @@
 ---
-title: ZStack搭建EC2教程
+title: ZStack搭建动态端口映射教程
 layout: tutorialDetailPage.cn
 sections:
   - id: overview 
@@ -30,23 +30,25 @@ sections:
     title: 添加虚拟路由器配置
   - id: createVM
     title: 创建云主机
-  - id: createEIP
-    title: 申请EIP
-  - id: rebindEIP
-    title: 把EIP绑定到其他云主机
+  - id: createPortForwardingRule
+    title: 创建端口映射规则
+  - id: rebindPortForwardingRule
+    title: 重新绑定端口映射规则
+  - id: create2ndPortForwardingRule
+    title: 创建第二个端口映射规则
 ---
 
-### 经典Amazon EC2 EIP环境
+### 动态的端口映射
 
 <h4 id="overview">1. 介绍</h4>
-<img  class="img-responsive"  src="/images/eip.png">
+<img class="img-responsive" src="/images/port_forwarding.png">
 
-Amazon EC2是世界上最著名的共有云场景。在这个场景里，用户可以创建一个具有私有网络IP地址的云主机。
-然后申请一个动态公网IP地址，把这个公网IP地址绑定到云主机之后，互联网上的用户就可以通过EIP的地址访问这个云主机。
-当有多个云主机的情况下，这个EIP可以动态的绑定不同的云主机。
+众所周知EIP可以用于绑定一个公网IP地址给一个私网的云主机。EIP默认会把所有的端口都无私的分配给绑定的云主机使用。
+为了进行端口的安全控制，我们可以使用安全组来限制。除此之外，我们还可以使用动态的端口映射来达到相似的效果。
+与EIP不同的是，动态端口绑定可以把一个VIP地址的不同端口分别分配给不同的云主机使用。这样就是可以实现
+同一个公网IP地址可以给多个云主机共享的目的。
 
-在这个例子里，我们将会用ZStack在一个共有网络和一个私有网络上来创建这么一个EC2的环境。
-
+在这个教程里，我们将会演示如何给一个云主机创建端口映射规则，绑定相同规则到其他主机以及多主机共享相同VIP的场景。
 <hr>
 
 <h4 id="prerequisites">2. 前提</h4>
@@ -452,9 +454,9 @@ passwd root</code></pre>
 
 <hr>
 
-重复上面这步来添加其他的网络服务：DNS, SNAT, EIP, 最后点击'Create':
+重复上面这步来添加其他的网络服务：DNS, SNAT, PortForwarding, 最后点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network11.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createL3Network11.png">
 
 <hr>
 
@@ -551,74 +553,60 @@ passwd root</code></pre>
 
 <hr>
 
-当云主机创建完成，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):
+<h4 id="createPortForwardingRule">15. 创建端口映射规则</h4>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png">
+点击左侧面板的 'Port Forwarding':
 
-<hr>
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule1.png">
 
-在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以尝试ping一下www.baidu.com看看是否能成功。
+点击 'New Port Forwarding Rule': 
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM6.png">
-
-<hr>
-
-使用'ifconfig'命令，您应可以看到这个云主机的私网的IP地址：
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM7.png">
-
-<hr>
-
-<h4 id="createEIP">15. 创建EIP</h4>
-
-点击左侧面板的'EIP':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP1.png">
-
-<hr>
-
-点击'New EIP':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP2.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule2.png">
 
 <hr>
 
 1. 选择创建VIP的方法'Create New VIP'
-2. 选择L3 Network **'PUBLIC-MANAGEMENT-L3'**
+2. 选择三层网络 'PUBLIC-MANAGEMENT-L3'
 3. 点击'Create VIP'来新建一个VIP
 4. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule4.png">
 
 <hr>
 
-1. 选择云主机'VM1'
-2. 取一个名字'EIP1'
-3. 点击'Create'
+1. 输入名字 'PORT-FORWARDING1'
+2. 选择协议 'TCP'
+3. 输入VIP起始端口号 22
+4. 输入VIP结束端口号 22
+5. 输入云主机起始端口号 22
+6. 输入云主机结束端口号 22
+7. 点击 'next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP4.png">
-
-<hr>
-
-当创建结束，有应该可以看到创建EIP的结果，在我们这里，EIP是'192.168.0.240':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule5.png">
 
 <hr>
 
-可以选择任意一个能够访问192.168.0.0/24网段的机器来登录IP '192.168.0.240':
+1. 选择云主机 'VM1'
+2. 点击 'Create'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP6.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule6.png">
 
 <hr>
 
-<h4 id="rebindEIP">16. 把EIP绑定到其他云主机</h4>
+从一个可以访问公网的机器SSH登录(192.168.0.239), 您将会登录到VM1:
 
-跟着 <a href="#createVM">14. 创建云主机</a>的方法创建一个新的云主机(VM2):
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule7.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule8.png">
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP1.png">
+<hr>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP2.png">
+<h4 id="rebindPortForwardingRule">16. 重新绑定端口转发规则</h4>
+
+跟着 <a href="#createVM">14. 创建云主机</a>的方法创建一个新的在私网PRIVATE-L3上的云主机(VM2):
+
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule2.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>后续的云主机创建过程会非常的快</h4>
@@ -627,20 +615,86 @@ passwd root</code></pre>
 
 <hr>
 
-点击EIP页面，选择EIP1，点击'Action'；然后在下拉框中点击'Detach'并且确定；
+到port forwarding控制页面:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP3.png">
+1. 选择 'PORT-FORWARDING1'
+2. 点击 'Action'
+3. 选择 'Detach'
+4. 点击 'Detach'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP4.png">
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule3.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule4.png">
 
 <hr>
 
-在取消EIP绑定后，再次点击'Action'并且选择'Attach'，在对话框中选择VM2作为挂载对象点击'Attach'：
+to reattach the 'PORT-FORWARDING1' to VM2:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP6.png">
+1. 选择 'PORT-FORWARDING1'
+2. 点击 'Action'
+3. 选择 'Attach'
 
-再次SSH登录到EIP '192.168.0.240'并且用'hostname'命令检查，您应该会发现这次的hostname是'vm2', 也就是说EIP已经绑定到了VM2。
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule5.png">
+
+<hr>
+
+1. 选择云主机 'VM2'
+2. 点击 'Attach'
+
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule6.png">
+
+<hr>
+
+当用SSH再次登录公网IP (192.168.0.239)时, 您将会登录VM2:
+
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule7.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule8.png">
+
+<hr>
+
+<h4 id="create2ndPortForwardingRule">17. 创建第二条端口转发规则</h4>
+
+跟随<a href="#createPortForwardingRule">15. 创建端口转发规则</a>来创建第二条规则。
+这一次我们要把相同VIP的2222号端口绑定给VM1的22端口。
+
+到port forwarding页面，再次点击 'New Port Forwarding Rule':
+
+1. 选择VIP创建方法'Create New VIP'
+2. 选择三层网络 'PUBLIC-MANAGEMENT-L3'
+3. 点击 'Create VIP'
+4. 点击 'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule1.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule2.png">
+
+<hr>
+
+1. 输入名字 'PORT-FORWARDING2'
+2. 选择协议 'TCP'
+3. 输入VIP起始端口号 2222
+4. 输入VIP结束端口号 2222
+5. 输入云主机起始端口号 22
+6. 输入云主机结束端口号 22
+7. 点击 'next'
+
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule3.png">
+
+<hr>
+
+1. 选择云主机 'VM1'
+2. 点击 'Create'
+
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule4.png">
+
+<hr>
+
+SSH登录公网IP地址(192.168.0.240)的2222端口, 您将会登录到VM1:
+
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule5.png">
+<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule6.png">
 
 
+### 总结
+
+在本教程里，我们展示了如果创建端口映射，以及如何从公有网络上通过VIP和设定的端口映射访问私有云主机。
+尽管我们仅仅为每个VIP展示了一个端口映射的规则，但是实际上，只要分配的端口之间不冲突，
+同一个VIP可以把不同的端口分配给不同的云主机。更多关于动态端口映射的信息请访问[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/portForwarding.html).
