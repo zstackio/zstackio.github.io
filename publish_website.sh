@@ -36,4 +36,11 @@ else
     exe_cmd "touch .nojekyll"
 fi
 
-echo "You need to run 'git add -A', 'git commit -a' and 'git push --all origin'"
+echo "Successfully generate website static web pages for master"
+echo "----------"
+echo "Next Step:"
+echo " 1.'git add -A'
+ 2. 'git commit -a' 
+ 3. 'git push --all origin'
+ 3. 'git checkout source' for next round edit"
+echo "----------"
