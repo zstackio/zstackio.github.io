@@ -1,5 +1,5 @@
 ---
-title: ZStack Tutorials
+title: ZStack Three Ties Network Tutorials
 layout: tutorialDetailPage
 sections:
   - id: overview 
@@ -727,7 +727,7 @@ select APPLICATION-VM, click button 'Action' then click item 'Console' to open V
 in the popup window, login the VM by *username: root, password: password*.
 
 1. ping google.com, it should succeed.
-2. ping APPLICATION-VM, it should succeed.
+2. ping DATABASE-VM, it should succeed.
 3. ping WEB-VM, it should succeed.
 
 <img  class="img-responsive"  src="/images/tutorials/t3/applicationVMConsole1.png">

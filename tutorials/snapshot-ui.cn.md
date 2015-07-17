@@ -1,5 +1,5 @@
 ---
-title: ZStack搭建EC2教程
+title: ZStack创建磁盘快照教程
 layout: tutorialDetailPage.cn
 sections:
   - id: overview 
@@ -30,22 +30,27 @@ sections:
     title: 添加虚拟路由器配置
   - id: createVM
     title: 创建云主机
-  - id: createEIP
-    title: 申请EIP
-  - id: rebindEIP
-    title: 把EIP绑定到其他云主机
+  - id: createSnapshotTree1
+    title: 创建磁盘快照 
 ---
 
-### 经典Amazon EC2 EIP环境
+### 磁盘快照
 
 <h4 id="overview">1. 介绍</h4>
-<img  class="img-responsive"  src="/images/eip.png">
+<img  class="img-responsive"  src="/images/snapshot.png">
 
-Amazon EC2是世界上最著名的共有云场景。在这个场景里，用户可以创建一个具有私有网络IP地址的云主机。
-然后申请一个动态公网IP地址，把这个公网IP地址绑定到云主机之后，互联网上的用户就可以通过EIP的地址访问这个云主机。
-当有多个云主机的情况下，这个EIP可以动态的绑定不同的云主机。
+ZStack允许用户给云主机的根磁盘和数据磁盘创建自己的磁盘快照，与其他主要的IaaS软件不同，
+ZStack允许用户创建一个快照树，每一个快照的分支都是一个快照链。而其他IaaS通常只能支持创建一个快照链
 
-在这个例子里，我们将会用ZStack在一个共有网络和一个私有网络上来创建这么一个EC2的环境。
+在这个教程里，我们将会给一个云主机的根磁盘创建一个拥有两个分支的快照树
+
+<div class="bs-callout bs-callout-warning">
+  <h4>只有Ubuntu14.04 支持live snapshot, CentOS 6/7 均不支持</h4>
+  对于我们已经测试过的几个Linux发行商(CentOS6.x, CentOS7, and Ubuntu14.04)来说，仅仅只有Ubuntu14.04 是只是云主机live snapshot的，
+  也就是说允许在云主机不停机的情况下来创建磁盘快照。如果您的Linux是CentOS 6或者7，在创建磁盘快照前，您需要先暂停云主机的运行。
+  我们假定您正在使用Ubuntu14.04, 所以在本教程里不会特别做暂停云主机的操作。然后您需要知道的是，不论您使用的是何种操作系统，
+  尝试从某个磁盘快照还原的时候，总是需要先暂停云主机的。
+</div>
 
 <hr>
 
@@ -326,37 +331,18 @@ passwd root</code></pre>
 <hr>
 
 1. 选择zone(ZONE1)
-2. 给二层网络取个名字'PUBLIC-MANAGEMENT-L2'
+2. 给二层网络取个名字'FLAT-L2'
 3. 选择类型'L2NoVlanNetwork'
 4. 输入物理网卡的名字'eth0'
 5. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png">
 
 <hr>
 
 选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
-
-<hr>
-
-再次点击'New L2 Network'来创建私有二层网络:
-
-1. 选择zone(ZONE1)
-2. 给私有二层网络取名为'PRIVATE-L2'
-3. **选择类型'L2VlanNetwork'**
-4. **输入vlan号：'100'**
-5. 输入物理网卡的名字'eth0'
-6. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network5.png">
-
-<hr>
-
-选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network6.png">
 
 <hr>
 
@@ -375,86 +361,41 @@ passwd root</code></pre>
 <hr>
 
 1. 选择zone(ZONE1)
-2. 选择二层网络(PUBLIC-MANAGEMENT-L2)
-3. 给三层网络取名为'PUBLIC-MANAGEMENT-L3'
-4. 选择类型'L3BasicNetwork'
-5. 选择'system network'
-6. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network3.png">
-
-<hr>
-
-1. 给IP地址范围取个名字'PUBLIC-IP-RANGE'
-2. 选择方法'Add By Range'
-3. 输入起始IP地址'192.168.0.230'
-4. 输入结束IP地址'192.168.0.240'
-5. 输入子网掩码'255.255.255.0'
-6. 输入网关'192.168.0.1'
-7. **点击'Add'添加IP范围**
-8. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png">
-
-<hr>
-
-点击 'Next':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network5.png">
-
-<hr>
-
-点击 'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network6.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>'无需给PUBLIC-MANAGEMENT-L3选择网络服务'</h4>
-  在本教程里，不会有用户的云主机创建在PUBLIC-MANAGEMENT-L3上（因为之前选择了System），所以我们也不需要添加额外的网络服务。
-</div>
-
-<hr>
-
-再次点击'New L3 Network'来创建给云主机的私有三层网络:
-
-1. 选择zone(ZONE1)
-2. 选择二层网络(PRIVATE-L2)
-3. 给三层网络取名为'PRIVATE-L3'
+2. 选择二层网络(FLAT-L2)
+3. 给三层网络取名为'FLAT-L3'
 4. 选择类型'L3BasicNetwork'
 5. 输入域名：'tutorials.zstack.org'
-6. 点击'Next'
+6. 点击'Next' (不要选择System)
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network7.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png">
 
 <hr>
 
-1. 取个名字'PRIVATE-IP-RANGE'
-2. 选择方法'Add BY CIDR'
-3. 输入IP地址范围 '10.0.0.0/24'
-4. **点击'Add'**
-5. 点击'Next'
+1. 命名IP range：'FLAT-IP-RANGE'
+2. 选择添加方法：'Add By IP Range'
+3. 输入起始IP地址 '192.168.0.230'
+4. 输入结束IP地址'192.168.0.240'
+5. 输入子网掩码 '255.255.255.0'
+6. 输入网关 '192.168.0.1'
+7. 点击 'Add' 来添加一个 IP range
+8. 点击 'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network8.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png">
 
 <hr>
 
 输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network9.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png">
 
 <hr>
 
 1. 选择provider'VirtualRouter'
 2. 选择'DHCP'
 3. 点击'Add'增加一个网络服务
+重复上面这步来添加DNS, 最后点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network10.png">
-
-<hr>
-
-重复上面这步来添加其他的网络服务：DNS, SNAT, EIP, 最后点击'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network11.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png">
 
 <hr>
 
@@ -504,12 +445,12 @@ passwd root</code></pre>
 4. 输入CPU主频'512'
 5. 输入内存大小'512M'
 6. 选择磁盘镜像'VIRTUAL-ROUTER"
-7. 选择management L3 network 'PUBLIC-MANAGEMENT-L3'
-8. 选择public L3 network 'PUBLIC-MANAGEMENT-L3'
+7. 选择management L3 network 'FLAT-L3'
+8. 选择public L3 network 'FLAT-L3'
 9. 勾选'DEFAULT OFFERING'
 10. 点击'Create'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png">
 
 <hr>
 
@@ -529,16 +470,16 @@ passwd root</code></pre>
 
 1. 选择模板'512M-512HZ'
 2. 选择磁盘镜像'ttylinux'
-3. 选择三层网络'PRIVATE-L3'，**并且点击'Add'**
+3. 选择三层网络'FLAT-L3'，**并且点击'Add'**
 4. 输入云主机的名字'VM1'
 5. 输入云主机的网络名字： 'vm1'
 6. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM3.png">
+<img  class="img-responsive"  src="/images/tutorials/t2/createVM2.png">
 
 <hr>
 
-点击'Create':
+点击 'Create':
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
 
@@ -551,96 +492,153 @@ passwd root</code></pre>
 
 <hr>
 
-当云主机创建完成，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):
+<h4 id="createSnapshotTree1">15. 创建磁盘快照</h4>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png">
+在做磁盘快照前，让我们在磁盘上做一个标记，这样我们可以在回滚快照的时候检查一下是否操作成功:
 
-<hr>
+进入'VM INSTANCE'页面：
+1. 选择VM1
+2. 点击'Action'
+3. 选择'Console'
 
-在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以尝试ping一下www.baidu.com看看是否能成功。
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM6.png">
-
-<hr>
-
-使用'ifconfig'命令，您应可以看到这个云主机的私网的IP地址：
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM7.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot5.png">
 
 <hr>
 
-<h4 id="createEIP">15. 创建EIP</h4>
+在浏览器弹出的窗口中，使用*用户名: root, 密码: password*登录; 然后创建一个名为'flag1'的文件:
 
-点击左侧面板的'EIP':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP1.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot6.png">
 
 <hr>
 
-点击'New EIP':
+返回'VM INSTANCE'的页面: 
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP2.png">
+1. 双击VM1进入该云主机的的详细信息
+2. 选择'Volume':
+3. 点击设备号ID为0的设备进入VM1的根磁盘界面
 
-<hr>
-
-1. 选择创建VIP的方法'Create New VIP'
-2. 选择L3 Network **'PUBLIC-MANAGEMENT-L3'**
-3. 点击'Create VIP'来新建一个VIP
-4. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP3.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot1.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot2.png">
 
 <hr>
 
-1. 选择云主机'VM1'
-2. 取一个名字'EIP1'
-3. 点击'Create'
+1. 点击 'Action'
+2. 选择创建快照 'Take Snapshot'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP4.png">
-
-<hr>
-
-当创建结束，有应该可以看到创建EIP的结果，在我们这里，EIP是'192.168.0.240':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP5.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot3.png">
 
 <hr>
 
-可以选择任意一个能够访问192.168.0.0/24网段的机器来登录IP '192.168.0.240':
+1. 输入 'sp1'
+2. 点击 'click'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP6.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot4.png">
 
 <hr>
 
-<h4 id="rebindEIP">16. 把EIP绑定到其他云主机</h4>
+重复上述两步来创建另外两个快照sp2和sp3:
 
-跟着 <a href="#createVM">14. 创建云主机</a>的方法创建一个新的云主机(VM2):
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot7.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot8.png">
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP1.png">
+<hr>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP2.png">
+点击'Snapshot'的标签，然后展开快照树，您将会看到3个磁盘快照：
 
-<div class="bs-callout bs-callout-info">
-  <h4>后续的云主机创建过程会非常的快</h4>
-  由于第一次创建云主机时，ZStack已经把云主机的磁盘放到了缓存中，虚拟路由器也成功创建，所以后续的云主机添加的过程通常不会超过2秒。
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot9.png">
+
+<hr>
+
+用刚刚登录VM1的方法登录VM1并且删除标记文件'flag1'：
+
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot10.png">
+
+<hr>
+
+为了回滚磁盘快照，我们需要先停止云主机，在左侧面板进入'VM INSTANCE'页面：
+
+1. 选择 VM1
+2. 点击 'Action'
+3. 选择 'Stop'
+
+<div class="bs-callout bs-callout-warning">
+  <h4>由于我们的ttylinux并不支持ACPID，所以停止实验用的云主机会很慢</h4>
+   ZStack 会等待60秒钟的超时后强制停止该虚拟机，通常来说您不会在一个正常安装的云主机上遇到类似问题。
 </div>
 
-<hr>
-
-点击EIP页面，选择EIP1，点击'Action'；然后在下拉框中点击'Detach'并且确定；
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP3.png">
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP4.png">
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP5.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot12.png">
 
 <hr>
 
-在取消EIP绑定后，再次点击'Action'并且选择'Attach'，在对话框中选择VM2作为挂载对象点击'Attach'：
+使用之前的方法回到之前快照的操作页面：
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP6.png">
+1. 展开快照树
+2. 选择快照 'sp1'
+3. 在下拉框中选择 'Revert volume to this snapshot'
+4. 点击 'Revert'
 
-再次SSH登录到EIP '192.168.0.240'并且用'hostname'命令检查，您应该会发现这次的hostname是'vm2', 也就是说EIP已经绑定到了VM2。
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot11.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot13.png">
+
+<hr>
+
+操作完毕后，再次回到'VM INSTANCE'页面启动云主机:
+
+1. 选择 VM1
+2. 点击 'Action'
+3. 选择 'Start'
+
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot14.png">
+
+<hr>
+
+打开VNC console，登录VM1，再次检查标记文件：'flag1'，这时您会可以发现我们之前删除的文件又恢复了。
+这说明我们回滚磁盘快照的操作已经成功。
+
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot15.png">
+
+<hr>
+
+这时，我们再次使用创建磁盘快照的方法创建两个新的快照：'sp1.1' 和 'sp1.2'：
+
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot16.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot17.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot18.png">
+
+<hr>
+
+展开磁盘快照树树，您将会看到两颗磁盘快照树从'sp1'上生长出来：
+
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot19.png">
+
+
+### 总结
+
+在本教程里，我们展示了如何创建磁盘快照。除了使用快照回滚功能外，您还可以选择某个磁盘快照来创建磁盘
+镜像的模版。更多关于磁盘快照的介绍，请访问我们的
+[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

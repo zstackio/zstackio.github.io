@@ -1,5 +1,5 @@
 ---
-title: ZStack Tutorials
+title: ZStack EC2 Tutorials
 layout: tutorialDetailPage
 sections:
   - id: overview 

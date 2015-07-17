@@ -1,5 +1,5 @@
 ---
-title: ZStack Tutorials
+title: ZStack Volume Snapshot Tutorials
 layout: tutorialDetailPage
 sections:
   - id: overview 

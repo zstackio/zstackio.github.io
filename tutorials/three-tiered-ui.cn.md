@@ -1,5 +1,5 @@
 ---
-title: ZStack搭建EC2教程
+title: ZStack搭建三层网络教程
 layout: tutorialDetailPage.cn
 sections:
   - id: overview 
@@ -24,28 +24,42 @@ sections:
     title: 创建二层网络
   - id: createL3Network
     title: 创建三层网络
+  - id: createPublicL2Network
+    title: 创建公有二层网络
+  - id: createPublicL3Network
+    title: 创建公有三层网络
+  - id: createApplicationL2Network
+    title: 创建应用二层网络
+  - id: createApplicationL3Network
+    title: 创建应用三层网络
+  - id: createDatabaseL2Network
+    title: 创建数据库二层网络
+  - id: createDatabaseL3Network
+    title: 创建数据库三层网络
   - id: createInstanceOffering
     title: 添加云主机配置
   - id: createVirtualRouterOffering
     title: 添加虚拟路由器配置
-  - id: createVM
-    title: 创建云主机
-  - id: createEIP
-    title: 申请EIP
-  - id: rebindEIP
-    title: 把EIP绑定到其他云主机
+  - id: createWebVM
+    title: 创建Web云主机
+  - id: createApplicationVM
+    title: 创建应用云主机
+  - id: createDatabaseVM
+    title: 创建数据库云主机
+  - id: createTestVM
+    title: 确认云主机间相互连接
 ---
 
-### 经典Amazon EC2 EIP环境
-
 <h4 id="overview">1. 介绍</h4>
-<img  class="img-responsive"  src="/images/eip.png">
+<img class="img-responsive" src="/images/tier_3_networks.png">
 
-Amazon EC2是世界上最著名的共有云场景。在这个场景里，用户可以创建一个具有私有网络IP地址的云主机。
-然后申请一个动态公网IP地址，把这个公网IP地址绑定到云主机之后，互联网上的用户就可以通过EIP的地址访问这个云主机。
-当有多个云主机的情况下，这个EIP可以动态的绑定不同的云主机。
+三层网络也是比较流行的网络架构，因为是用户可以把数据库，应用服务器和网页服务器分别放在不同的网络层面：
+展示层，应用层和数据库层。这种分发可以最大化的保证网络隔离和安全。
 
-在这个例子里，我们将会用ZStack在一个共有网络和一个私有网络上来创建这么一个EC2的环境。
+在本教程里，文明将会创建3个三层网络：公有网络，应用层网络和数据库网络。公有网络给网页服务器提供互联网连接能力，应用层网络和
+数据库网络则是用户可以通过NAT访问公网的两个私有网络。此外，我们还会分别创建3个云主机：web-vm, application-vm 和 database-vm。
+其中web-vm会有两块网卡，一块接在公有网络，另一块接在应用层网络。applicaiton-vm也有两个网卡，一块接在应用层网络，另一块接在
+数据库网络。database-vm只有一个网卡只接数据网络。
 
 <hr>
 
@@ -311,17 +325,17 @@ passwd root</code></pre>
 
 <hr>
 
-<h4 id="createL2Network">10. 创建二层网络</h4>
+<h4 id="createPublicL2Network">10. 创建公有二层网络</h4>
 
 点击左侧面板的'L2 Network':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network1.png">
 
 <hr>
 
-点击按钮'New L2 Network':
+点击'New L2 Network':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network2.png">
 
 <hr>
 
@@ -331,46 +345,27 @@ passwd root</code></pre>
 4. 输入物理网卡的名字'eth0'
 5. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network3.png">
 
 <hr>
 
 选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network4.png">
 
 <hr>
 
-再次点击'New L2 Network'来创建私有二层网络:
-
-1. 选择zone(ZONE1)
-2. 给私有二层网络取名为'PRIVATE-L2'
-3. **选择类型'L2VlanNetwork'**
-4. **输入vlan号：'100'**
-5. 输入物理网卡的名字'eth0'
-6. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network5.png">
-
-<hr>
-
-选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network6.png">
-
-<hr>
-
-<h4 id="createL3Network">11. 创建三层网络</h4>
+<h4 id="createPublicL3Network">11. 创建Public L3 Network</h4>
 
 点击左侧面板的'L3 Network':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network1.png">
 
 <hr>
 
 点击'New L3 Network':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png">
 
 <hr>
 
@@ -378,10 +373,9 @@ passwd root</code></pre>
 2. 选择二层网络(PUBLIC-MANAGEMENT-L2)
 3. 给三层网络取名为'PUBLIC-MANAGEMENT-L3'
 4. 选择类型'L3BasicNetwork'
-5. 选择'system network'
-6. 点击'Next'
+5. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png">
 
 <hr>
 
@@ -398,49 +392,10 @@ passwd root</code></pre>
 
 <hr>
 
-点击 'Next':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network5.png">
-
-<hr>
-
-点击 'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network6.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>'无需给PUBLIC-MANAGEMENT-L3选择网络服务'</h4>
-  在本教程里，不会有用户的云主机创建在PUBLIC-MANAGEMENT-L3上（因为之前选择了System），所以我们也不需要添加额外的网络服务。
-</div>
-
-<hr>
-
-再次点击'New L3 Network'来创建给云主机的私有三层网络:
-
-1. 选择zone(ZONE1)
-2. 选择二层网络(PRIVATE-L2)
-3. 给三层网络取名为'PRIVATE-L3'
-4. 选择类型'L3BasicNetwork'
-5. 输入域名：'tutorials.zstack.org'
-6. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network7.png">
-
-<hr>
-
-1. 取个名字'PRIVATE-IP-RANGE'
-2. 选择方法'Add BY CIDR'
-3. 输入IP地址范围 '10.0.0.0/24'
-4. **点击'Add'**
-5. 点击'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network8.png">
-
-<hr>
-
 输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network9.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network4.png">
 
 <hr>
 
@@ -448,13 +403,149 @@ passwd root</code></pre>
 2. 选择'DHCP'
 3. 点击'Add'增加一个网络服务
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network10.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network6.png">
 
 <hr>
 
-重复上面这步来添加其他的网络服务：DNS, SNAT, EIP, 最后点击'Create':
+重复上面这步来添加DNS网络服务, 最后点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network11.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network7.png">
+
+<hr>
+
+<h4 id="createApplicationL2Network">12. 创建应用层二层网络</h4>
+
+再次点击'New L2 Network'来创建应用层二层网络:
+
+1. 选择zone(ZONE1)
+2. 给私有二层网络取名为'APPLICATION-L2'
+3. **选择类型'L2VlanNetwork'**
+4. **输入vlan号：'100'**
+5. 输入物理网卡的名字'eth0'
+6. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network3.png">
+
+<hr>
+
+选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png">
+
+<hr>
+
+<h4 id="createApplicationL3Network">13. 创建应用层三层网络</h4>
+
+再次点击'New L3 Network'来创建给云主机的应用层三层网络:
+
+1. 选择zone(ZONE1)
+2. 选择二层网络(APPLICATION-L2)
+3. 给三层网络取名为'APPLICATION-L3'
+4. 选择类型'L3BasicNetwork'
+5. 输入域名：'application.zstack.org'
+6. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network1.png">
+
+<hr>
+
+1. 取个名字'APPLICATION-IP-RANGE'
+2. 选择方法'Add BY CIDR'
+3. 输入IP地址范围 '10.0.0.0/24'
+4. **点击'Add'**
+5. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network3.png">
+
+<hr>
+
+输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network5.png">
+
+<hr>
+
+1. 选择provider'VirtualRouter'
+2. 选择'DHCP'
+3. 点击'Add'增加一个网络服务
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network6.png">
+
+<hr>
+
+重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network7.png">
+
+<hr>
+
+<h4 id="createDatabaseL2Network">14. 创建Database L2 Network</h4>
+
+再次点击'New L2 Network'来创建数据库层二层网络:
+
+1. 选择zone(ZONE1)
+2. 给私有二层网络取名为'DATABASE-L2'
+3. **选择类型'L2VlanNetwork'**
+4. **输入vlan号：'101'**
+5. 输入物理网卡的名字'eth0'
+6. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network3.png">
+
+<hr>
+
+选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png">
+
+<hr>
+
+<h4 id="createDatabaseL3Network">15. 创建数据库层三层网络</h4>
+
+再次点击'New L3 Network'来创建给云主机的数据层三层网络:
+
+1. 选择zone(ZONE1)
+2. 选择二层网络(DATABASE-L2)
+3. 给三层网络取名为'DATABASE-L3'
+4. 选择类型'L3BasicNetwork'
+5. 输入域名：'database.zstack.org'
+6. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network1.png">
+
+<hr>
+
+1. 取个名字'APPLICATION-IP-RANGE'
+2. 选择方法'Add BY CIDR'
+3. 输入IP地址范围 '172.16.1.0/24'
+4. **点击'Add'**
+5. 点击'Next'
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network3.png">
+
+<hr>
+
+输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network5.png">
+
+<hr>
+
+1. 选择provider'VirtualRouter'
+2. 选择'DHCP'
+3. 点击'Add'增加一个网络服务
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network6.png">
+
+<hr>
+
+重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':
+
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network7.png">
 
 <hr>
 
@@ -509,38 +600,38 @@ passwd root</code></pre>
 9. 勾选'DEFAULT OFFERING'
 10. 点击'Create'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png">
-
 <hr>
 
-<h4 id="createVM">14. 创建云主机</h4>
+<h4 id="createWebVM">18. 创建WEB云主机</h4>
 
 点击左边面板的'Instance':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createWebVM1.png">
 
 <hr>
 
 点击'New VmInstance':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createWebVM2.png">
 
 <hr>
 
 1. 选择模板'512M-512HZ'
 2. 选择磁盘镜像'ttylinux'
-3. 选择三层网络'PRIVATE-L3'，**并且点击'Add'**
-4. 输入云主机的名字'VM1'
-5. 输入云主机的网络名字： 'vm1'
-6. 点击'Next'
+3. 选择三层网络'PUBLIC-MANAGEMENT-L3'，**并且点击'Add'**
+4. 选择三层网络'APPLICATION-L3'，**并且点击'Add'**
+5. 选择'PUBLIC-MANAGEMENT-L3'作为默认三层网络
+6. 输入云主机的名字'WEB-VM'
+7. 输入云主机的网络名字： 'web'
+8. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createWebVM3.png">
 
 <hr>
 
 点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createWebVM4.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>启动第一个云主机会花费较长的时间</h4>
@@ -551,96 +642,100 @@ passwd root</code></pre>
 
 <hr>
 
-当云主机创建完成，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):
+<h4 id="createApplicationVM">19. 创建应用云主机</h4>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png">
-
-<hr>
-
-在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以尝试ping一下www.baidu.com看看是否能成功。
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM6.png">
+点击'New VmInstance' to open the dialog again:
 
 <hr>
 
-使用'ifconfig'命令，您应可以看到这个云主机的私网的IP地址：
+1. 选择模板'512M-512HZ'
+2. 选择磁盘镜像'ttylinux'
+3. 选择三层网络'APPLICATION-L3'，**并且点击'Add'**
+4. 选择三层网络'DATABASE-L3'，**并且点击'Add'**
+5. 选择'APPLICATION-L3'作为默认三层网络
+6. 输入云主机的名字'APPLICATION-VM'
+7. 输入云主机的网络名字： 'application'
+8. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM7.png">
-
-<hr>
-
-<h4 id="createEIP">15. 创建EIP</h4>
-
-点击左侧面板的'EIP':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP1.png">
-
-<hr>
-
-点击'New EIP':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM1.png">
 
 <hr>
 
-1. 选择创建VIP的方法'Create New VIP'
-2. 选择L3 Network **'PUBLIC-MANAGEMENT-L3'**
-3. 点击'Create VIP'来新建一个VIP
-4. 点击'Next'
+点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png">
 
-<hr>
-
-1. 选择云主机'VM1'
-2. 取一个名字'EIP1'
-3. 点击'Create'
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP4.png">
-
-<hr>
-
-当创建结束，有应该可以看到创建EIP的结果，在我们这里，EIP是'192.168.0.240':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP5.png">
-
-<hr>
-
-可以选择任意一个能够访问192.168.0.0/24网段的机器来登录IP '192.168.0.240':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createEIP6.png">
-
-<hr>
-
-<h4 id="rebindEIP">16. 把EIP绑定到其他云主机</h4>
-
-跟着 <a href="#createVM">14. 创建云主机</a>的方法创建一个新的云主机(VM2):
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP1.png">
-
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP2.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>后续的云主机创建过程会非常的快</h4>
-  由于第一次创建云主机时，ZStack已经把云主机的磁盘放到了缓存中，虚拟路由器也成功创建，所以后续的云主机添加的过程通常不会超过2秒。
+<div class="bs-callout bs-callout-warning">
+  <h4>还是优点慢，因为需要创建一个新的虚拟路由器给数据库层网络</h4>
+  因为这是第一个数据库层网络的云主机，ZStack会在创建APPLICATION-VM之前，主动创建一个虚拟路由器。
+  这大概会需要1分钟的时间。在此之后，再创建在DATABASE-L3上的虚拟机将会非常的快。
 </div>
 
 <hr>
 
-点击EIP页面，选择EIP1，点击'Action'；然后在下拉框中点击'Detach'并且确定；
+<h4 id="createDatabaseVM">20. 创建数据库云主机</h4>
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP3.png">
+再次点击'New VmInstance':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP4.png">
+1. 选择模板'512M-512HZ'
+2. 选择磁盘镜像'ttylinux'
+3. 选择三层网络'DATABASE-L3'，**并且点击'Add'**
+4. 输入云主机的名字'DATABASE-VM'
+5. 输入云主机的网络名字： 'database'
+6. 点击'Next'
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP5.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseVM1.png">
 
 <hr>
 
-在取消EIP绑定后，再次点击'Action'并且选择'Attach'，在对话框中选择VM2作为挂载对象点击'Attach'：
+点击'Create':
 
-<img  class="img-responsive"  src="/images/tutorials/t1/rebindEIP6.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png">
 
-再次SSH登录到EIP '192.168.0.240'并且用'hostname'命令检查，您应该会发现这次的hostname是'vm2', 也就是说EIP已经绑定到了VM2。
+<hr>
 
+<h4 id="testVM">21. 确认网络联通性</h4>
 
+选择 WEB-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:
+
+<img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole1.png">
+
+<hr>
+
+在浏览器弹出的窗口里，输入*用户名: root, 密码: password*登录云主机
+
+1. ping www.baidu.com, 应该可以成功.
+2. ping APPLICATION-VM, 应该可以成功.
+3. ping DATABASE-VM, 应该会失败（因为访问不到数据库网络）.
+
+<img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole2.png">
+
+<hr>
+
+选择 APPLICATION-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:
+
+在浏览器弹出的窗口里，输入*用户名: root, 密码: password*登录云主机
+
+1. ping www.baidu.com, 应该可以成功.
+2. ping WEB-VM, 应该可以成功.
+3. ping DATABASE-VM, 应该会成功.
+
+<img  class="img-responsive"  src="/images/tutorials/t3/applicationVMConsole1.png">
+
+<hr>
+
+选择 DATABASE-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:
+
+在浏览器弹出的窗口里，输入*用户名: root, 密码: password*登录云主机
+
+1. ping www.baidu.com, 应该可以成功.
+2. ping WEB-VM, 应该会失败.
+3. ping APPLICATION-VM, 应该会成功.
+
+<img  class="img-responsive"  src="/images/tutorials/t3/databaseVMConsole1.png">
+
+### 总结
+
+在本教程里，我们展示了如何在ZStack里创建一个三层网络模型。仅仅作为演示，我们没有使用任何的安全组。您可以参考安全组
+的教程，并结合本教程做一个更加安全的生产环境。如果想要了解更多的细节，请访问我们的
+[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html).

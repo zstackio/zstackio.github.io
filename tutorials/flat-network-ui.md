@@ -1,5 +1,5 @@
 ---
-title: ZStack Tutorials
+title: ZStack Flat Network Tutorials
 layout: tutorialDetailPage
 sections:
   - id: overview 

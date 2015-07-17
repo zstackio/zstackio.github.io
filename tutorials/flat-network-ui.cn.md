@@ -441,6 +441,8 @@ passwd root</code></pre>
 
 <img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png">
 
+<hr>
+
 <h4 id="createVM">14. 创建云主机</h4>
 
 点击左边面板的'Instance':
