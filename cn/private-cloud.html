@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - 为私有云结庐而做“隆中对”（下）</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">为私有云结庐而做“隆中对”（下）</h2>
+    <p class="post-meta"> by Frank Zhang on May 19, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <h3>写在前面：</h3>
+
+<p>由于企业私有云市场迟迟未打开，近两年来已有多家IaaS企业被廉价收购甚至倒闭，业界已经开始出现一种质疑私有云是伪命题的声音。在此，作者想借ZStack发布的机会，梳理一下私有云的过去和现状，并展望一下它的未来。</p>
+
+<h3>私有云为什么还没有成功</h3>
+
+<p>我们知道私有云市场的四位先行者——Eucalyptus、CloudStack、OpenNebula已渐渐淡出市场，OpenStack虽然比较火爆但也迟迟打不开企业市场。作者认为造成这个结果的原因是，起步时过度依赖Amazon EC2模式，没有正视市场需求，以及没有按用户场景合理使用新技术。</p>
+
+<p>上述几个IaaS软件在起步的初期，都没有什么前人的经验可以借鉴。没有人知道设计这么一个分布式的集成系统，面临的挑战在哪里，都有哪些坑要填。于是所有IaaS软件都处于一个在功能上模仿Amazon EC2、在架构上自然生长的状态。由于当时市场空白较大，各家都急于上马IaaS项目，开发的推动力在于快速实现EC2的功能，在架构方面思考较少，为未来不同需求留下的架构冗余也不多。当整个IaaS软件发展到中后期，开发者们试图根据传统企业的真实需求进行架构变更时，才发现架构重构已经难以进行。</p>
+
+<p>Eucalyptus因为全面模仿Amazon EC2模式，其方案一直难以定制；而CloudStack虽然针对传统企业的差异需求进行了变更的尝试，但结果却是新版本软件越来越不稳定。OpenStack则干脆主动忽视这一市场需求；OpenStack社区本身就有很强的声音拒绝传统应用带来的需求。例如《Keep OpenStack Weird》一文就呼吁OpenStack拒绝为传统应用改变，而要求企业必须进化以开发出适应OpenStack的应用。Gartner在文章《Why vendors can’t sell OpenStack to enterprises》就明确指出拒绝拥抱传统应用生态是OpenStack无法打开企业市场的一个重要原因。</p>
+
+<p>IaaS在公有云的蓬勃发展带动了相关领域的创新，SDN（软件定义网络）、SDS（软件定义存储）应运而生。的确，这些新技术的出现都是为了解决传统技术所面临的一些问题，但这些问题往往在公有云和大规模数据中心比较明显。例如公有云对网络隔离的需求，要求隔离技术能突破传统VLAN最多4096个的限制；存储技术要求能够实现分布式、多写备份以及动态扩容等。对于传统企业来说，这些技术往往既没必要也不稳定。当前一些私有云厂商，在向客户推荐解决方案时过分推销新技术，例如明明客户只需要传统的扁平网络，却硬要客户部署SDN；明明客户对存储动态扩容没有需求，使用传统的NFS + RAID备份就已足够，却推荐客户部署分布式存储。客户项目上马后，在日常使用中长期遇到不稳定、难维护的问题，渐渐对私有云失去信心。OpenStack社区蓬勃发展后涌入的大量硬件厂商，从自身利益出发提交了很多兼容性不好的代码，造成OpenStack某些核心组件不稳定（例如Neutron），也在一定程度上加剧了客户对私有云的不信任。</p>
+
+<h3>私有云未来应该怎么做</h3>
+
+<p>对于未来私有云的发展，作者认为关键在于：开发出能拥抱传统应用生态的商业模式，专注于用户场景，控制软件投入风险，向上融合走整体解决方案路线。</p>
+
+<p>1、开发出能拥抱传统应用生态的商业模式</p>
+
+<p>要想打开传统企业市场，私有云厂商要正视已是既成事实的传统应用生态。虽然未来的企业应用必将进化成亲和现代IaaS架构的云应用，但在此之前，我们不得不兼顾企业已在传统应用上的投入。兼顾的方法是在虚拟化方面学习VMWare，在网络模式和上层服务向Amazon靠拢。VMWare凭借多年来在企业虚拟化方面的积累，开发出了很多满足传统应用需求的功能，例如在管理上以虚拟机为中心、虚拟机高可靠、专有资源配置等。私有云提供商的IaaS软件要么开发出类似功能，要么直接集成VMWare作为虚拟化解决方案。在网络方面，Amazon的很多网络功能已经成为云计算领域的事实标准，例如VPC、EIP、Security Group、ELB等都广受用户欢迎。私有云IaaS软件要将这些服务进行整合，以实现传统应用的各个网络场景。此外，由于全世界的公有云几乎都遵循Amazon EC2模式，在网络上靠拢Amazon能够很容易帮助客户搭建混合云（hybrid cloud），打通用户在公有云和私有云中的业务。最后，Amazon很多IaaS之上的功能例如Auto scaling、CloudFormation、CloudWatch等都是解决用户痛点的创新，私有云IaaS需要能够提供类似的功能。</p>
+
+<p>2、专注于用户场景</p>
+
+<p>专注于用户场景要求私有云提供商从用户的应用场景出发，推荐符合用户需求的解决方案，一切以稳定优先。以网络为例，无论是SDN还是传统技术，最后面对的还是OSI的7层模型。在IaaS层面就是L2隔离，L3子网加路由，L4~L7应用层协议，应用场景是非常明确的。对于企业用户，可能只需要数目有限的私有网络，那我们就可以推荐用传统的VLAN来进行隔离；对于一些服务提供商，要求网络拓扑能够灵活按需变化，那我们就可以推荐使用SDN来实现路由。又例如存储，企业用户的场景往往是容量可以预估，稳定性可靠性要求高，那我们就可以推荐成熟的、基于传统协议的商业存储；如果面对的是服务提供商，数据量可能会爆炸增长的，那我们就应该推出类似于Ceph这样的分布式存储。</p>
+
+<p>3、控制软件投入风险</p>
+
+<p>IaaS软件是集成技术，必然会引来各种第三方厂商要求进行集成。私有云提供商要对自家IaaS软件在这方面的投入进行控制，不能沦为第三方厂商的集成器，把主要精力浪费在下层系统的集成中。愿意部署私有云的企业，往往都是有预算购买新硬件产品的。私有云提供商应该优先专注于集成最稳定、应用广泛的成熟产品，在向客户提供解决方案时，只推荐已验证过的第三方产品。并且要借助客户的力量，反推第三方厂商与自身集成。例如CloudStack中的很多硬件驱动就是其客户要求网络和存储厂商为CloudStack提供的。此外，要认识到在虚拟化、网络以及存储方面已经存在非常多的标准技术，而对标准技术的稳定集成已能够满足绝大多数企业客户的需求。</p>
+
+<p>4、向上融合走整体解决方案路线</p>
+
+<p>私有云的未来一定是向上层发展，实现IaaS和PaaS的融合。私有云的目的是为了将用户从基础架构中解脱出来，专注于业务创新。但在基础架构（IaaS）跟最终业务（application或SaaS）之间还有一层隔离，即软件的部署交付，目前人们称之为平台即服务（PaaS）。未来的私有云展现给用户的一定是一个最终平台，即不仅能够管理用户的基础架构，还能为用户部署和管理上层业务。我们不妨将IaaS和PaaS融合的平台看作是私有云的一个未来形态，如果说操作系统是传统软件的入口的话，那么未来企业软件的入口就是私有云。用户部署软件的方式将不再是到一个个操作系统里手动安装配置，而是软件商提交给用户的就是包含软件本身的操作系统镜像，通过支持私有云定义的接口，可以在镜像启动时导入下层基础设施信息，例如网络地址、网络磁盘路径以及软件配置信息，并且能在运行的过程中根据自身状态将数据反馈给IaaS，实现基础设施层面的调整（例如启动更多的虚拟机）。目前已经有一些产品和项目在向这个方向努力，但都停留在跟IaaS第三方集成的层面上。由于IaaS本身不提供原生支持以及成熟度的问题，目前还没有好的解决方案。</p>
+
+<h3>总结</h3>
+
+<p>私有云要打开企业市场，不能再走早期单纯复制公有云的模式，而是要拥抱传统应用生态，走一条兼顾现实、着眼未来的道路，并最终向上发展，为企业IT架构提供一套完整的解决方案。</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
