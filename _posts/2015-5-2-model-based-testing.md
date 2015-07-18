@@ -4,7 +4,7 @@ title:  "The Automation Testing System 3: Model-based Testing"
 date:   2015-4-4 15:40:00
 author: Frank Zhang
 categories: blog
-tags: en
+category: en
 ---
 
 *The [model-based testing](http://en.wikipedia.org/wiki/Model-based_testing) system
