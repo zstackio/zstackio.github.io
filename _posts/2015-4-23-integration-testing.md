@@ -4,6 +4,7 @@ title:  "The Automation Testing System 1: Integration Testing"
 date:   2015-4-4 15:42:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack

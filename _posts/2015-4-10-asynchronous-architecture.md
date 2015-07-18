@@ -4,6 +4,7 @@ title:  "ZStack's Scalability Secrets Part 1: Asynchronous Architecture"
 date:   2015-4-4 15:55:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *ZStack offers an architecture that 99% tasks are executed asynchronously, which is a key design that a single management

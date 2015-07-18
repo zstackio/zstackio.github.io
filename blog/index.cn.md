@@ -1,4 +1,4 @@
 ---
 title: Blogs
-layout: blogPage
+layout: blogPage.cn
 ---

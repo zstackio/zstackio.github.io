@@ -4,6 +4,7 @@ title:  "The Automation Testing System 2: System Testing"
 date:   2015-4-4 15:41:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *ZStack's [system testing](http://en.wikipedia.org/wiki/System_testing)

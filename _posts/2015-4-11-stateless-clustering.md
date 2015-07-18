@@ -4,6 +4,7 @@ title:  "ZStack's Scalability Secrets Part 2: Stateless Services"
 date:   2015-4-4 15:54:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *Every ZStack service is stateless. Making services high available and scaled out can be as easy as starting

@@ -4,6 +4,7 @@ title:  "The In-Process Microservices Architecture"
 date:   2015-4-4 15:52:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *To tackle challenges such as significant operations overhead, duplication of effort, testability that microservices usually faces, and

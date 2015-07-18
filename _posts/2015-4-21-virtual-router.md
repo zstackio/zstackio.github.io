@@ -4,6 +4,7 @@ title:  "Networking Model 2: Virtual Router Network Service Provider"
 date:   2015-4-4 15:44:00
 author: Frank Zhang
 categories: blog
+tags: en
 ---
 
 *In ZStack's networking model, OSI layer 4 ~ 7 network services are implemented as small plugins from different service providers.
