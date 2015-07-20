@@ -65,7 +65,7 @@ ZStack允许用户创建一个快照树，每一个快照的分支都是一个�
 
 + 至少20G可用的硬盘剩余空间用于基本的主存储和备份存储
 + 有几个可以使用的公网的IP地址
-+ 有一个启动的NFS服务器NFS (如果在安装ZStack的时候使用了-a或者-n的参赛，ZStack安装程序会在本机启动一个NFS服务，默认是在/usr/local/zstack/nfs_root/。但是我们还是建议用户自己可以配置一个单独的NFS服务，例如/my_nfs_folder)
++ 有一个启动的NFS服务器NFS (如果在安装ZStack的时候使用了-a或者-n的参数，ZStack安装程序会在本机启动一个NFS服务，默认是在/usr/local/zstack/nfs_root/。但是我们还是建议用户自己可以配置一个单独的NFS服务，例如/my_nfs_folder)
 + 可以使用root用户 ssh到本机
 
 <div class="bs-callout bs-callout-info">
@@ -107,7 +107,7 @@ passwd root</code></pre>
 
 <h4 id="login">3. 登录</h4>
 
-在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上打开如下地址来登录ZStack管理界面：
+在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上ZStack管理界面：
 默认的用户名和密码分别为admin/password:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/login.png">

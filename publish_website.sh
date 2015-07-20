@@ -42,5 +42,11 @@ echo "Next Step:"
 echo " 1.'git add -A'
  2. 'git commit -a' 
  3. 'git push --all origin'
- 3. 'git checkout source' for next round edit"
+ 3. 'git checkout source' for next round edit
+
+ or do it all in one line (don't forget use right comment):
+
+ git add -A; git commit -a -m "THE COMMENTS NEED TO BE REPLACED"; git push --all origin; git checkout source
+
+"
 echo "----------"
