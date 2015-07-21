@@ -27,7 +27,7 @@ fi
 exe_cmd "git checkout $branch"
 error_code=$?
 if [ $error_code != 0 ];then
-    echo "Switch $branch fail."
+    echo "Switch $branch fail. You need to commit your new codes firstly to source branch."
     exit
 else
     ls | grep -v _site|xargs rm -rf
@@ -46,7 +46,7 @@ echo " 1.'git add -A'
 
  or do it all in one line (don't forget use right comment):
 
- git add -A; git commit -a -m "THE COMMENTS NEED TO BE REPLACED"; git push --all origin; git checkout source
+ git add -A; git commit -a -m \"THE COMMENTS NEED TO BE REPLACED\"; git push --all origin; git checkout source
 
 "
 echo "----------"
