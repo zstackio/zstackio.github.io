@@ -108,6 +108,27 @@
 
 
 
+<div class="bs-callout bs-callout-info">
+  <h4>配置root用户的ssh登录能力</h4>
+  管理节点需要root用户的SSH权限来调用Ansible安装系统包和consoleproxy。您需要提前配置root用户的SSH访问能力。
+  
+  <h5>CentOS:</h5>
+  <pre><code>sudo su
+passwd root</code></pre>
+
+  <h5>Ubuntu:</h5>
+  您需要修改SSHD的配置文件：
+  <pre><code>1. sudo su
+2. passwd root
+3. 编辑/etc/ssh/sshd_config
+4. 注释掉 'PermitRootLogin without-password'
+5. 添加'PermitRootLogin yes'
+6. 重启 SSHD: 'service ssh restart'</code></pre>
+</div>
+
+
+
+
 <div class="bs-callout bs-callout-warning">
 <h4>注意配置YUM或者APT的镜像</h4>
 在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
