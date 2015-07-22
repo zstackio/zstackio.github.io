@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 22 Jul 2015 10:50:59 +0800</pubDate>
-    <lastBuildDate>Wed, 22 Jul 2015 10:50:59 +0800</lastBuildDate>
+    <pubDate>Wed, 22 Jul 2015 11:52:08 +0800</pubDate>
+    <lastBuildDate>Wed, 22 Jul 2015 11:52:08 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -15,11 +15,11 @@
 for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.&lt;/p&gt;
 </description>
         <pubDate>Wed, 08 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/en/v0.7.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/en/v0.7.1.html</guid>
+        <link>http://zstack.org/blog/v0.7.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.7.1.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -29,229 +29,11 @@ for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgra
 for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.&lt;/p&gt;
 </description>
         <pubDate>Wed, 08 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/en/v0.7.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/en/v0.7.1.html</guid>
+        <link>http://zstack.org/cn/blog/v0.7.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.1.html</guid>
         
         
-        <category>en</category>
-        
-      </item>
-    
-      <item>
-        <title>Announcing ZStack v0.7</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is released.&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
-minutes.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
-wget --no-check-certificate https://download.zstack.org/releases/0.7/install.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0.tgz
-bash install.sh -u -f zstack-all-in-one-0.7.0.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7
-cd zstack-0.7
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstackctl-0.7.tar.gz
-/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
-
-&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
-In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
-installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it&#39;s worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
-
-&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
-Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
-the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
-
-&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
-feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM&#39;s snapshot function, the BTRFS-ISCSI snapshot does
-not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
-NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
-
-&lt;h2&gt;Static IP Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn&#39;t supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack&#39;s system tag system. You can provide static
-IPs by system tags in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;Update APIs&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
-APIUpdateImageMsg
-APIUpdateVolumeMsg
-APIUpdateInstanceOfferingMsg
-APIUpdateDiskOfferingMsg
-APIUpdatePrimaryStorageMsg
-APIUpdateVolumeSnapshotMsg
-APIUpdateBackupStorageMsg
-APIUpdateL3NetworkMsg
-APIUpdateIpRangeMsg
-APIUpdateL2NetworkMsg
-APIUpdateClusterMsg
-APIUpdateZoneMsg
-APIUpdateHostMsg
-APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
-APIUpdateKVMHostMsg
-APIUpdateSftpBackupStorageMsg
-APIUpdatePortForwardingRuleMsg
-APIUpdateEipMsg
-APIUpdateSecurityGroupMsg
-APIUpdateVipMsg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
-explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2&gt;Bug Fixes&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/60&quot;&gt;can not only query status field for VmInstance&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/59&quot;&gt;IP arrange judgment has bug&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/54&quot;&gt;iscsi volume vm creation failure&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can&#39;t be migrated in centos6&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/47&quot;&gt;Delete iscsi volume snapshot failed&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/46&quot;&gt;zstack management node shutdown due to: web listener issued context destroy event&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/45&quot;&gt;zstack management node start failure due to rabbitmq: Attempt to use closed channel&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn&#39;t support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn&#39;t support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume&#39;s format is &#39;raw&#39; if it&#39;s installed from ISO&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/21&quot;&gt;Can not create guest vm from ISO image with iSCSI on Btrfs&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/20&quot;&gt;Host status tracing has bug, which might wrongly change Host status from disconnected to connected&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/19&quot;&gt;primary storage capacity allocation and counting bug &lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/17&quot;&gt;Feature Request: Primary Storage need to support iSCSI with backend filesystem BTRFS&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/16&quot;&gt;Feature Request: Assign given IP (not DHCP random IP) to new created VM&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can&#39;t start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 02 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/en/v0.7.html</link>
-        <guid isPermaLink="true">http://zstack.org/en/v0.7.html</guid>
-        
-        
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -465,11 +247,229 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Thu, 02 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/en/v0.7.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/en/v0.7.html</guid>
+        <link>http://zstack.org/blog/v0.7.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.7.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Announcing ZStack v0.7</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is released.&lt;/p&gt;
+
+&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
+
+&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
+minutes.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Backup Database&lt;/h4&gt;
+  
+  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
+  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
+  database in case any error happens. You can backup the database following:
+  
+  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
+
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
+wget --no-check-certificate https://download.zstack.org/releases/0.7/install.sh
+wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0.tgz
+bash install.sh -u -f zstack-all-in-one-0.7.0.tgz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
+
+&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
+
+&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
+
+&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7
+cd zstack-0.7
+wget --no-check-certificate https://download.zstack.org/releases/0.7/zstackctl-0.7.tar.gz
+/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
+
+wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack.war
+zstack-ctl upgrade_management_node --war-file zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
+
+&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
+  other management nodes to upgrade, continue to perform following instructions.
+&lt;/div&gt;
+
+
+&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
+
+&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
+
+&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
+
+&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
+
+&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
+&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
+  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
+
+&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
+In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
+installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
+bigger(~80M) than before; but we still think it&#39;s worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
+
+&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
+
+&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
+Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
+the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
+
+&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
+feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
+has only one snapshot. Compared to the volume snapshot of NFS using KVM&#39;s snapshot function, the BTRFS-ISCSI snapshot does
+not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
+NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
+
+&lt;h2&gt;Static IP Support&lt;/h2&gt;
+
+&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn&#39;t supported this feature,
+but you can achieve it using zstack-cli. This feature is implemented based on ZStack&#39;s system tag system. You can provide static
+IPs by system tags in format of:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;Update APIs&lt;/h2&gt;
+
+&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
+APIUpdateImageMsg
+APIUpdateVolumeMsg
+APIUpdateInstanceOfferingMsg
+APIUpdateDiskOfferingMsg
+APIUpdatePrimaryStorageMsg
+APIUpdateVolumeSnapshotMsg
+APIUpdateBackupStorageMsg
+APIUpdateL3NetworkMsg
+APIUpdateIpRangeMsg
+APIUpdateL2NetworkMsg
+APIUpdateClusterMsg
+APIUpdateZoneMsg
+APIUpdateHostMsg
+APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
+APIUpdateKVMHostMsg
+APIUpdateSftpBackupStorageMsg
+APIUpdatePortForwardingRuleMsg
+APIUpdateEipMsg
+APIUpdateSecurityGroupMsg
+APIUpdateVipMsg
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
+explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Bug Fixes&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/60&quot;&gt;can not only query status field for VmInstance&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/59&quot;&gt;IP arrange judgment has bug&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/54&quot;&gt;iscsi volume vm creation failure&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can&#39;t be migrated in centos6&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/47&quot;&gt;Delete iscsi volume snapshot failed&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/46&quot;&gt;zstack management node shutdown due to: web listener issued context destroy event&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/45&quot;&gt;zstack management node start failure due to rabbitmq: Attempt to use closed channel&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn&#39;t support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn&#39;t support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume&#39;s format is &#39;raw&#39; if it&#39;s installed from ISO&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/21&quot;&gt;Can not create guest vm from ISO image with iSCSI on Btrfs&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/20&quot;&gt;Host status tracing has bug, which might wrongly change Host status from disconnected to connected&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/19&quot;&gt;primary storage capacity allocation and counting bug &lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/17&quot;&gt;Feature Request: Primary Storage need to support iSCSI with backend filesystem BTRFS&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/16&quot;&gt;Feature Request: Assign given IP (not DHCP random IP) to new created VM&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can&#39;t start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Bug Report&lt;/h2&gt;
+
+&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 02 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/v0.7.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.html</guid>
+        
+        
+        <category>blog</category>
         
       </item>
     
@@ -649,11 +649,11 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Wed, 24 Jun 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/en/v0.7-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/en/v0.7-rc2.html</guid>
+        <link>http://zstack.org/blog/v0.7-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.7-rc2.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -833,11 +833,11 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Wed, 24 Jun 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/en/v0.7-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/en/v0.7-rc2.html</guid>
+        <link>http://zstack.org/cn/blog/v0.7-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7-rc2.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -901,11 +901,11 @@ helping enterprises move IT infrastructure into the cloud era.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../images/zstack-intel.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 14 Jun 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/en/intel.html</link>
-        <guid isPermaLink="true">http://zstack.org/en/intel.html</guid>
+        <link>http://zstack.org/blog/intel.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/intel.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -922,11 +922,11 @@ helping enterprises move IT infrastructure into the cloud era.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;../../images/zstack-intel.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 14 Jun 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/en/intel.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/en/intel.html</guid>
+        <link>http://zstack.org/cn/blog/intel.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/intel.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
@@ -1034,11 +1034,11 @@ primary storage and backup storage.&lt;/p&gt;
 &lt;p&gt;Enable API of user-account system that is similar to current AWS IAM.&lt;/p&gt;
 </description>
         <pubDate>Tue, 09 Jun 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/en/roadmap.html</link>
-        <guid isPermaLink="true">http://zstack.org/en/roadmap.html</guid>
+        <link>http://zstack.org/blog/roadmap.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/roadmap.html</guid>
         
         
-        <category>en</category>
+        <category>blog</category>
         
       </item>
     
