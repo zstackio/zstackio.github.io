@@ -4,7 +4,6 @@ title:  "ZStack's Scalability Secrets Part 3: Lock-free Architecture"
 date:   2015-4-4 15:53:00
 author: Frank Zhang
 categories: blog
-category: en
 ---
 
 *Lots of tasks in IaaS software need to execute in sequence; for example, when a task of starting a virtual machine is running,

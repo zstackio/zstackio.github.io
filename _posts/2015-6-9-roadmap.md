@@ -3,7 +3,6 @@ layout: post
 title:  "ZStack Roadmap"
 date:   2015-6-9
 categories: blog
-category: en
 author: Frank Zhang
 ---
 

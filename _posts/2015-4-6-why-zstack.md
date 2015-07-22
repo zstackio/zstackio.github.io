@@ -3,7 +3,6 @@ layout: post
 title:  "Why Do We Need New IaaS Software Other Than OpenStack"
 date:   2015-4-5
 categories: blog
-category: en
 author: Frank Zhang
 ---
 
