@@ -1,10 +1,10 @@
 ---
-layout: post
+layout: post.cn
 title:  "私有云之殇：公有云这座大山(上)"
 date:   2015-5-19
 categories: blog
 author: Frank Zhang
-category: cn
+category: cn_blog
 ---
 
 ### 写在前面：

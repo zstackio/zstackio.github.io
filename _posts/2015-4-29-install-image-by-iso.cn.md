@@ -1,10 +1,10 @@
 ---
-layout: post
+layout: post.cn
 title:  "在ZStack用ISO文件安装虚拟机模板"
 date:   2015-4-29
 categories: blog
 author: Yongkang You
-category: cn
+category: cn_blog
 ---
 IaaS的快速启动虚拟机的奥秘之一，就是把操作系统预先装到一个公共的模板之中。当用户创建一个新的虚拟机的时候，IaaS就会复制该模板作为新虚拟机的根分区，从而省掉了安装部署等操作。基于KVM，ZStack目前支持qcow2和raw两种格式的模板。在ZStack官网上，可以下载到两个虚拟机的模板：virtual-router和ttylinux。其中virtual-router是一个特殊的模板，它用于ZStack的基本网络服务（DHCP，DNS，SNAT，EIP，PortForwarding）使用的；而ttylinux是一个超小的Linux模板，文件大小只有十几兆（最小启动内存可以低至24MB），具有最基本的网络功能，不过只用于演示用途。如果用户需要定制自己的虚拟机模板，通常需要自己先去用virt-manager这样的系统自带工具手动安装，然后再上传到一个http的服务器，略显麻烦。
 

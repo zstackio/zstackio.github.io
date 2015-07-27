@@ -76,9 +76,9 @@ zstack.properties 文件。您可以使用任意一个节点，只要您使用�
 
 但是您还需要给每一个管理节点手动配置一下各自的IP地址：
 
-    zstack-ctl configure --remote=ip_of_remote_zstack management.server.ip=ip_of_current_management_node
+    zstack-ctl configure --host=ip_of_remote_zstack management.server.ip=ip_of_current_management_node
 
-    例如: zstack-ctl configure --remote=192.168.0.226 management.server.ip=192.168.0.226
+    例如: zstack-ctl configure --host=192.168.0.226 management.server.ip=192.168.0.226
 
 最后保存一下config文件：
 
@@ -100,9 +100,9 @@ zstack.properties 文件。您可以使用任意一个节点，只要您使用�
 
 当第一个管理节点启动成功后，您就可以使用下面的命令来启动其他的管理节点：
  
-    zstack-ctl start_node --remote=ip_of_other_node
+    zstack-ctl start_node --host=ip_of_other_node
     
-    例如: zstack-ctl start_node --remote=192.168.0.224
+    例如: zstack-ctl start_node --host=192.168.0.224
     
 重复这条命令，直到所有的管理节点都已经启动完毕。
     
@@ -134,9 +134,9 @@ zstack.properties 文件。您可以使用任意一个节点，只要您使用�
     
 停止非本机的管理节点:
 
-    zstack-ctl stop_node --remote=ip_of_node
+    zstack-ctl stop_node --host=ip_of_node
     
-    例如: zstack-ctl stop_node --remote=192.168.0.224
+    例如: zstack-ctl stop_node --host=192.168.0.224
     
 ZStack管理节点上的日志文件默认存放在 `/var/log/zstack/management-server.log`, 您可以通过下面的命令监控最新产生的日志：
 
@@ -150,9 +150,9 @@ ZStack管理节点上的日志文件默认存放在 `/var/log/zstack/management-
     
 您也可以通过下面的命令来添加或者更新非本机的ZStack配置文件：
 
-    zstack-ctl configure --remote=ip_of_node property_name=property_value
+    zstack-ctl configure --host=ip_of_node property_name=property_value
     
-    例如: zstack-ctl configure --remote=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
+    例如: zstack-ctl configure --host=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
     
 ### 使用ZStack命令行工具
 

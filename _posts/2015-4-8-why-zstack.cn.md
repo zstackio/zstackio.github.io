@@ -1,10 +1,10 @@
 ---
-layout: post
+layout: post.cn
 title:  "为什么我们创造ZStack而不是选择OpenStack"
 date:   2015-4-8
 categories: blog
 author: Frank Zhang
-category: cn
+category: cn_blog
 ---
 
 **我们站在巨人的肩膀上，所以能够看得更远**

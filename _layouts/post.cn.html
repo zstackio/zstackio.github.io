@@ -1,0 +1,20 @@
+---
+layout: default.cn
+---
+<div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">{{ page.title }}</h2>
+    <p class="post-meta">{% if page.author %} by {{ page.author }}{% endif %} on {{ page.date | date: "%b %-d, %Y" }}</p>
+    <div style="margin-bottom: 15px">
+      {% include shareButtons.html %}
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    {{ content }}
+  </article>
+
+  {% include disqus.html %}
+</div>

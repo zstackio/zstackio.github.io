@@ -168,9 +168,9 @@ Now you need to configure above RabbitMQ credentials to zstack.properties:
 
 On the management node 1, you can use `zstack-ctl` to install extra management nodes:
 
-    sudo zstack-ctl install_management_node --remote=ip_of_machine_to_install_node_2
+    sudo zstack-ctl install_management_node --host=ip_of_machine_to_install_node_2
     
-    Example: sudo zstack-ctl install_management_node --remote=192.168.0.225
+    Example: sudo zstack-ctl install_management_node --host=192.168.0.225
 
 Once you successfully installed the node, configure the IP into zstack.properties:
 

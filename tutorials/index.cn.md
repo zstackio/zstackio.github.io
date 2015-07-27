@@ -137,3 +137,24 @@ layout: tutorialPage.cn
     </div>
   </div>
 </div>
+
+<div class="container">
+  <div class="row">
+    
+    <h2>更多教程：</h2>
+    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
+        <a href=/cn_blog/install-image-by-iso.html>使用ISO安装模板</a>
+    </div>
+    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
+        <a href=/cn_blog/local-stroage-tutorials.html>本地存储教程</a>
+    </div>
+    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
+        <a href=/cn_blog/attach-detach-l3-tutorials.html>添加删除三层网络教程</a>
+    </div>
+    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
+        <a href=/cn_blog/zstack-account-user-tutorials.html>账号用户系统教程</a>
+    </div>
+    </p>
+  </div>
+</div>
+

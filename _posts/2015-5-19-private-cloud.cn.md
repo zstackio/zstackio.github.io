@@ -1,10 +1,10 @@
 ---
-layout: post
+layout: post.cn
 title:  "为私有云结庐而做“隆中对”（下）"
 date:   2015-5-19
 categories: blog
 author: Frank Zhang
-category: cn
+category: cn_blog
 ---
 
 ### 写在前面：

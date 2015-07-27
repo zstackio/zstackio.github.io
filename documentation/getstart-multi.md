@@ -118,9 +118,9 @@ passwd root</code></pre>
 
 Once the first management node starts successfully, you can start other nodes by:
  
-    zstack-ctl start_node --remote=ip_of_other_node
+    zstack-ctl start_node --host=ip_of_other_node
     
-    Example: zstack-ctl start_node --remote=192.168.0.224
+    Example: zstack-ctl start_node --host=192.168.0.224
     
 repeat this command to start all other nodes.
     
@@ -149,9 +149,9 @@ You can stop a local management node by:
     
 or stop a remote management node by:
 
-    zstack-ctl stop_node --remote=ip_of_node
+    zstack-ctl stop_node --host=ip_of_node
     
-    Example: zstack-ctl stop_node --remote=192.168.0.224
+    Example: zstack-ctl stop_node --host=192.168.0.224
     
 The log file of ZStack management node locates at `/var/log/zstack/management-server.log`, you can view local log by:
 
@@ -167,9 +167,9 @@ You can add or update a property in zstack.properties by:
     
 or update a property to a remote node:
 
-    zstack-ctl configure --remote=ip_of_node property_name=property_value
+    zstack-ctl configure --host=ip_of_node property_name=property_value
     
-    Example: zstack-ctl configure --remote=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
+    Example: zstack-ctl configure --host=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
     
 ### Use Command Line Tool
 

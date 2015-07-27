@@ -155,9 +155,9 @@ sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases
 
 在装好ZStack的管理节点一上，您可以使用`zstack-ctl`来安装其他的管理节点：
 
-    sudo zstack-ctl install_management_node --remote=ip_of_machine_to_install_node_2
+    sudo zstack-ctl install_management_node --host=ip_of_machine_to_install_node_2
     
-    Example: sudo zstack-ctl install_management_node --remote=192.168.0.226
+    Example: sudo zstack-ctl install_management_node --host=192.168.0.226
 
 当新节点成功安装后，请在<b>新节点</b>上配置当前管理节点的IP地址：
 
