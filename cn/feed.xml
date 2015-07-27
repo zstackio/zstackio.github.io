@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Jul 2015 00:23:14 -0700</pubDate>
-    <lastBuildDate>Mon, 27 Jul 2015 00:23:14 -0700</lastBuildDate>
+    <pubDate>Mon, 27 Jul 2015 00:26:09 -0700</pubDate>
+    <lastBuildDate>Mon, 27 Jul 2015 00:26:09 -0700</lastBuildDate>
     <generator>Jekyll v2.4.0</generator>
     
       <item>
@@ -268,8 +268,8 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 26 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/blog/v0.8-rc1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8-rc1.html</guid>
+        <link>http://zstack.org/cn/blog/v0.8-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8-rc2.html</guid>
         
         
         <category>blog</category>
@@ -535,8 +535,8 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 26 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/blog/v0.8-rc1.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v0.8-rc1.html</guid>
+        <link>http://zstack.org/blog/v0.8-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.8-rc2.html</guid>
         
         
         <category>blog</category>
