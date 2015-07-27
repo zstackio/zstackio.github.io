@@ -235,9 +235,9 @@ passwd root</code></pre>
 
 <p>Once the first management node starts successfully, you can start other nodes by:</p>
 
-<pre><code>zstack-ctl start_node --remote=ip_of_other_node
+<pre><code>zstack-ctl start_node --host=ip_of_other_node
 
-Example: zstack-ctl start_node --remote=192.168.0.224
+Example: zstack-ctl start_node --host=192.168.0.224
 </code></pre>
 
 <p>repeat this command to start all other nodes.</p>
@@ -271,9 +271,9 @@ Example: zstack-ctl start_node --remote=192.168.0.224
 
 <p>or stop a remote management node by:</p>
 
-<pre><code>zstack-ctl stop_node --remote=ip_of_node
+<pre><code>zstack-ctl stop_node --host=ip_of_node
 
-Example: zstack-ctl stop_node --remote=192.168.0.224
+Example: zstack-ctl stop_node --host=192.168.0.224
 </code></pre>
 
 <p>The log file of ZStack management node locates at <code>/var/log/zstack/management-server.log</code>, you can view local log by:</p>
@@ -292,9 +292,9 @@ Example: zstack-ctl configure CloudBus.serverIp.0=192.168.0.225
 
 <p>or update a property to a remote node:</p>
 
-<pre><code>zstack-ctl configure --remote=ip_of_node property_name=property_value
+<pre><code>zstack-ctl configure --host=ip_of_node property_name=property_value
 
-Example: zstack-ctl configure --remote=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
+Example: zstack-ctl configure --host=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
 </code></pre>
 
 <h3>Use Command Line Tool</h3>

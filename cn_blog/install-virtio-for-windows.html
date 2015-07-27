@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack使用教程</title>
+    <title>ZStack - 在Windows VM中使用data volume</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -70,182 +70,120 @@
 </nav>
 
 
-<div class="big-font tutorial-home">
-  <div class="container">
-  <div class="row" style="padding-top: 25px">
-    <p>
-    这套教程仅仅展示了用ZStack来创建一些经典的云环境的方法。当您熟悉了ZStack的基本功能后，
-    您完全可以灵活的创造更多的云解决方案。在您跟随使用教程来搭建自己的云主机的时候，我们假定您已经通过
-    ZStack的<a href="../installation/index.html">快速安装手册</a>完成了ZStack在单台Linux机器上的安装。
-    您可以在单台Linux机器上完成所有教程的案例而无需更多的主机。
-    </p>
-  </div>
+<div class="container big-font">
   <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/eip.png">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">在Windows VM中使用data volume</h2>
+    <p class="post-meta"> by Yongkang You on Jul 25, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
     </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
-      <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
-      <p>
-        <a href="ec2-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="ec2-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
+  </header>
+
+
+  <article class="post-content">
+    <h2>适用版本：</h2>
+
+<p><strong>ZStack v0.8.0 + </strong></p>
+
+<h2>介绍</h2>
+
+<p>由于KVM不提供Windows SCSI驱动，ZStack只能使用 IDE和virtio两种模式提供硬盘驱动。其中IDE由于无法支持硬盘hotplug，这导致使用IDE硬盘来添加数据磁盘的时候必须要重启虚拟机。所以想要实现动态的数据磁盘添加和删除操作，需要使用virtio类型的磁盘。由于Windows系统中没有包含virtio的驱动，所以用在创建Windows虚拟机模版的时候，需要额外安装virtio的驱动程序，否则在0.8以后的系统中，无论是否重启虚拟机，用户都无法直接使用新添加的数据磁盘。</p>
+
+<div class="bs-callout bs-callout-info">
+  <h4>RedHat VirtIO 下载地址</h4>
+完整的virtio驱动下载页面在
+https://fedoraproject.org/wiki/Windows_Virtio_Drivers
+此外，Redhat提供了一个教程安装virtio驱动，但该教材讲述的是安装ballon驱动，并且对磁盘驱动的描述是不准确的。
+我们下面提供的教程已在Windows7上成功实验过
 </div>
 
 
+<p>要使用virtio驱动，用户需要先通过ISO安装好一个windows VM，然后根据以下步骤进行：
+1. 下载virtio驱动到windows VM，地址：https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso，下载完成后可以用WinRAR等工具解压
+2. attach一个data volume到windows VM。
+3. 在设备管理器中，可以看到一个未知的SCSI controller</p>
+
+<p><img  class="img-responsive"  src="/images/blogs/windows-virtio/add-device1.png"></p>
+
+<ol>
+<li><p>如下图所示选中PCI BUS，右键点击，弹出菜单后选择"Update Driver Software..."
+<img  class="img-responsive"  src="/images/blogs/windows-virtio/add-device2.png"></p></li>
+<li><p>选着从本地安装驱动，把路径指向解压的virtio驱动。使用的驱动文件夹为viostor (不要选择vioscsi，这个是virtio-scsi设备的驱动，用于ISCSI设备，viostor是块设备的磁盘驱动）</p></li>
+</ol>
 
 
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>扁平网络</h3>
-        <p>在一个扁平网络中，所有的云主机都在一个大二层的网络环境中。它们属于一个相同的子网。他们的网关和路由通常由数据中心的其他节点或者交换机提供。ZStack的虚拟机交换机可以给云主机分配动态或者静态的IP地址。这个是私有云环境中的典型环境。</p>
-        <p>
-          <a href="flat-network-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="flat-network-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
+<p><img  class="img-responsive"  src="/images/blogs/windows-virtio/add-device3.png"></p>
+
+<ol>
+<li>右键点击未知的SCSI Controller，同样使用"Update Driver Software..."，安装viostor驱动（如果不执行步骤5更新PCI驱动，SCSI controller右键点击不会出现更新驱动的菜单）</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/blogs/windows-virtio/add-device4.png"></p>
+
+<p><img  class="img-responsive"  src="/images/blogs/windows-virtio/add-device5.png">
+7. 安装完驱动后，就可以使用windows自带的磁盘管理工具发现新硬盘并格式化。</p>
+
+<div class="bs-callout bs-callout-info">
+  <h4>动态卸载磁盘</h4>
+Widnows virtio驱动对detach volume支持不好，我们发现在volume detach后在windows里仍可以看到该磁盘，但操作的时候会导致系统挂起。
+建议用户在detach volume后重启windows。
 </div>
 
 
+  </article>
 
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/tier_3_networks.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>三层网络</h3>
-      <p>在传统的互联网业务中流行着三层网络架构，分别给三类服务器提供隔离的网络环境：Web服务器，应用服务器和数据库服务器。其中Web服务器可以跨接共有网络和应用层网络，应用服务器可以跨接应用层网络和数据库网络，而数据库服务器只存在于数据库网络。</p>
-      <p>
-        <a href="three-tiered-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="three-tiered-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
 </div>
 
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network_with_security_group.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>安全组防火墙</h3>
-        <p>云主机可以通过设置安全组来控制进出云主机的网络包的安全规则，以达到安全防护的目的。</p>
-        <p>
-          <a href="security-group-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="security-group-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
     </div>
   </div>
-</div>
-
-
-
-
-<div class="container">
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/port_forwarding.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>端口转发</h3>
-      <p>端口转发可以把共有网络的IP地址通过区分端口的方式让多台云主机共享相同的公网IP地址，同时也具有防火墙的功能。</p>
-      <p>
-        <a href="elastic-port-forwarding-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="elastic-port-forwarding-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/snapshot.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>磁盘快照</h3>
-        <p>我们将在一个快照树上创建两个磁盘快照的分支</p>
-        <p>
-          <a href="snapshot-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="snapshot-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="container">
-  <div class="row">
-    
-    <h2>更多教程：</h2>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/install-image-by-iso.html>使用ISO安装模板</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/local-stroage-tutorials.html>本地存储教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/attach-detach-l3-tutorials.html>添加删除三层网络教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/zstack-account-user-tutorials.html>账号用户系统教程</a>
-    </div>
-    </p>
-  </div>
-</div>
-
-
-
-
 </div>
 
 <script src="/js/jquery-1.9.1.js"></script>
@@ -332,5 +270,7 @@
 </div>
 
 </body>
+
+
 
 </html>

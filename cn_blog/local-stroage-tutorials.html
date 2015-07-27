@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack使用教程</title>
+    <title>ZStack - ZStack本地存储使用手册</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -70,182 +70,136 @@
 </nav>
 
 
-<div class="big-font tutorial-home">
-  <div class="container">
-  <div class="row" style="padding-top: 25px">
-    <p>
-    这套教程仅仅展示了用ZStack来创建一些经典的云环境的方法。当您熟悉了ZStack的基本功能后，
-    您完全可以灵活的创造更多的云解决方案。在您跟随使用教程来搭建自己的云主机的时候，我们假定您已经通过
-    ZStack的<a href="../installation/index.html">快速安装手册</a>完成了ZStack在单台Linux机器上的安装。
-    您可以在单台Linux机器上完成所有教程的案例而无需更多的主机。
-    </p>
-  </div>
+<div class="container big-font">
   <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/eip.png">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack本地存储使用手册</h2>
+    <p class="post-meta"> by Yongkang You on Jul 27, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
     </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
-      <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
-      <p>
-        <a href="ec2-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="ec2-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
+  </header>
+
+
+  <article class="post-content">
+    <h2>介绍</h2>
+
+<p>本地存储（Local Storage）是继NFS主存储、iSCSI主存储之后ZStack支持的第三类主存储。
+本地存储相比网络共享存储而言，更轻量、更方便（甚至在网络速度和网络存储性能不佳的情况下，本地存储的性能也更高）
+，所以也有很多客户采用本地存储方案来搭建云系统。ZStack自v0.8.0开始支持本地存储。本教程仅会介绍如何添加本地存储来做云环境的主存储。</p>
+
+<p>ZStack对于本地存储的使用有如下定义：
+1. 一个Cluster内的所有计算节点应该有相同的目录放本地存储。
+2. 如果一个Cluster既拥有本地主存储也挂载了NFS或者其他网络共享存储，那么云主机的根磁盘将会存放在本地存储，
+而数据磁盘将会存放在网络共享存储。
+3. 在使用网络共享存储的时候，当原始云主机磁盘被删除后，备份过的<strong>磁盘快照</strong>依然可以用于创建磁盘镜像模板和恢复磁盘；
+但是这个操作在本地存储上无法进行。用户需要在原始磁盘删除前，使用磁盘快照功能创建磁盘镜像模板。</p>
+
+<h3>通过UI添加本地存储</h3>
+
+<p>用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问<a href="../cn/tutorials/flat-network-ui.html">创建扁平网络环境</a></p>
+
+<p>在<a href="../cn/tutorials/flat-network-ui.html#addPrimaryStorage">创建主存储</a>的时候：
+1. 选择类型'LocalStorage'
+2. 输入计算节点上云主据磁盘要存放的目录</p>
+
+<p><img src="/images/0.8/localstorage.png" class="center-img img-responsive"></p>
+
+<hr>
+
+
+<h3>通过zstack-cli添加本地存储</h3>
+
+<p>用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问<a href="../cn/tutorials/flat-network-cli.html">创建扁平网络环境</a>。
+在<a href="../cn/tutorials/flat-network-cli.html#addPrimaryStorage">创建主存储</a>的时候：</p>
+
+<pre><code>&gt;&gt;&gt;AddLocalPrimaryStorage zoneUuid=15d546efe84a499caa36b2f6a95d6b81 name=local url=/home/volumes
+</code></pre>
+
+<div class="bs-callout bs-callout-default">
+  <h4>URL</h4>
+  本地主存储使用本地的一个目录来存放云主机的磁盘。当主存储挂载到Cluster上时，该目录会在Cluster内的所有计算节点上创建出来。
 </div>
 
 
 
 
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>扁平网络</h3>
-        <p>在一个扁平网络中，所有的云主机都在一个大二层的网络环境中。它们属于一个相同的子网。他们的网关和路由通常由数据中心的其他节点或者交换机提供。ZStack的虚拟机交换机可以给云主机分配动态或者静态的IP地址。这个是私有云环境中的典型环境。</p>
-        <p>
-          <a href="flat-network-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="flat-network-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
+<div class="bs-callout bs-callout-default">
+  <h4>关于本地存储的容量</h4>
+  
+  一个cluster里面本地存储的总容量是每一个计算节点上存储容量的总和。不像网络共享存储（例如NFS主存储），
+  即使您发现ZStack系统显示的可用容量大于你所申请的磁盘空间，您可能还是会遇到空间不足（not enough capacity）的错误。
+  这是因为该Cluster内找不到任何一个单个的计算节点能够独立满足空间分配的需求。例如，您有两个计算节点，
+  每个节点上都有10GB的剩余空间，ZStack会显示当前Cluster有20GB的可用空间。当您试图去创建一个15GB的云主机磁盘的时候，
+  ZStack会告诉你找不到足够的空间。
 </div>
 
 
 
 
-<div class="container">
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/tier_3_networks.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>三层网络</h3>
-      <p>在传统的互联网业务中流行着三层网络架构，分别给三类服务器提供隔离的网络环境：Web服务器，应用服务器和数据库服务器。其中Web服务器可以跨接共有网络和应用层网络，应用服务器可以跨接应用层网络和数据库网络，而数据库服务器只存在于数据库网络。</p>
-      <p>
-        <a href="three-tiered-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="three-tiered-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
+<div class="bs-callout bs-callout-warning">
+  <h4>本地储存不支持云主机漂移和有限的跨云主机数据盘挂载</h4>
+  
+  由于本地存储不具备网络共享存储中，每个计算节点都可以访问该存储的能力。所以在存储漂移功能支持前，
+  使用本地存储的云主机将不会具有漂移的功能。用户需要对可能发生的数据丢失或者长时间无法恢复云主机的运行做好准备。
+  例如，需要考虑如何在应用层做到跨云主机的高可用。
+
+  对于系统中可以挂载（状态为Ready）的数据磁盘，该磁盘仅能挂载到和该磁盘在同一计算节点的云主机上。
 </div>
 
 
+  </article>
 
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
 
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network_with_security_group.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>安全组防火墙</h3>
-        <p>云主机可以通过设置安全组来控制进出云主机的网络包的安全规则，以达到安全防护的目的。</p>
-        <p>
-          <a href="security-group-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="security-group-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
 </div>
 
-
-
-
-<div class="container">
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/port_forwarding.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>端口转发</h3>
-      <p>端口转发可以把共有网络的IP地址通过区分端口的方式让多台云主机共享相同的公网IP地址，同时也具有防火墙的功能。</p>
-      <p>
-        <a href="elastic-port-forwarding-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="elastic-port-forwarding-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
     </div>
   </div>
-</div>
-
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/snapshot.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>磁盘快照</h3>
-        <p>我们将在一个快照树上创建两个磁盘快照的分支</p>
-        <p>
-          <a href="snapshot-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="snapshot-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="container">
-  <div class="row">
-    
-    <h2>更多教程：</h2>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/install-image-by-iso.html>使用ISO安装模板</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/local-stroage-tutorials.html>本地存储教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/attach-detach-l3-tutorials.html>添加删除三层网络教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/zstack-account-user-tutorials.html>账号用户系统教程</a>
-    </div>
-    </p>
-  </div>
-</div>
-
-
-
-
 </div>
 
 <script src="/js/jquery-1.9.1.js"></script>
@@ -332,5 +286,7 @@
 </div>
 
 </body>
+
+
 
 </html>

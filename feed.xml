@@ -5,196 +5,665 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Jul 2015 00:26:09 -0700</pubDate>
-    <lastBuildDate>Mon, 27 Jul 2015 00:26:09 -0700</lastBuildDate>
-    <generator>Jekyll v2.4.0</generator>
+    <pubDate>Mon, 27 Jul 2015 22:33:51 +0800</pubDate>
+    <lastBuildDate>Mon, 27 Jul 2015 22:33:51 +0800</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>Announcing ZStack v0.8 RC2</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is in the release cycle.
-Today we release 0.8 RC2 for you test. In this release, ZStack introduces four new features:&lt;/p&gt;
+        <title>可与AWS媲美的ZStack账号用户系统</title>
+        <description>&lt;h2&gt;介绍&lt;/h2&gt;
 
-&lt;h2&gt;Local Primary Storage&lt;/h2&gt;
+&lt;p&gt;在v0.8.0之前，ZStack只支持管理员账号来使用整个云环境。自v0.8.0开始，ZStack支持了完善的用户账号系统。
+ZStack用户账号系统设计与经典的亚马逊AWS相似，都定义了Account（账号）和User（用户）。账号可以分为系统管理员账号（SystemAdmin）
+和普通账号（Normal）。其中系统管理员就是我们之前熟悉的名为 &lt;strong&gt;admin&lt;/strong&gt; 的账号。用户是某个账号下的成员，
+一个账号下可以有多个不同的用户。账号可以通过策略来限制不同用户所拥有的权限。默认情况下新创建的普通账号的用户
+只拥有该普通账号所有只读API的权限。账号所有者可以通过添加或者删除权限来限制用户的API执行能力。&lt;/p&gt;
 
-&lt;p&gt;Users can use local disks of hosts as primary storage.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ZStack v0.8.0系统里创建和管理账户只能通过 zstack-cli 来完成。目前还无法通过UI界面来完成账户管理任务&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h3&gt;Add through UI&lt;/h3&gt;
+&lt;p&gt;一般来说，在一个复杂应用中，一个账号可以对应一个部门或者公司。同一个账号下的用户可以对应于公司里的不同角色。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;对于通常的私有云用户来说，我们建议只需要给普通的使用者创建不同的账号来限制系统级别的操作即可，而无需在每个账号下再创建用户。
+对于共有云用户来说，您可能会有自己的账号和计费系统。您可以根据需求来对接ZStack的账号用户系统，选择是否使用用户。&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;select the type to 'LocalStorage'&lt;/li&gt;
-&lt;li&gt;input the hosts' folder path.&lt;/li&gt;
-&lt;/ol&gt;
+&lt;h2&gt;登录&lt;/h2&gt;
+
+&lt;p&gt;当首次安装和部署完ZStack系统，admin账号即已经添加完毕。admin用户拥有全部API的执行能力，包括构建整个云系统。
+admin用户的默认密码是：&lt;strong&gt;password&lt;/strong&gt;，用户可以通过Account API登录ZStack系统，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli LogInByAccount accountName=admin password=password &lt;/code&gt;&lt;/pre&gt;
 
 
-&lt;h3&gt;Add through CLI&lt;/h3&gt;
+&lt;h2&gt;修改密码&lt;/h2&gt;
 
-&lt;p&gt;You can use AddLocalPrimaryStorage to add the local primary storage. For example:&lt;/p&gt;
+&lt;p&gt;登录ZStack系统后，可以通过&lt;strong&gt;UpdateAccountPassword&lt;/strong&gt;来修改自身的登录密码，例如：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;AddLocalPrimaryStorage zoneUuid=15d546efe84a499caa36b2f6a95d6b81 name=local url=/home/volumes
+&lt;pre&gt;&lt;code&gt;# zstack-cli UpdateAccount password=password &lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;另外，用户也可以直接输入 &lt;strong&gt;zstack-cli&lt;/strong&gt; 命令后，进入命令行交互模式来输入ZStack API命令：&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/tutorials/account/zstackCli.png&quot;&gt;&lt;/p&gt;
+
+&lt;hr&gt;
+
+
+&lt;h2&gt;退出登录&lt;/h2&gt;
+
+&lt;p&gt;退出当前账号的登录方法是通过zstack-cli的LogOut命令，或者在ZStack UI界面里点击右上角的用户选择&lt;strong&gt;Sign Out&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2&gt;查询资源&lt;/h2&gt;
+
+&lt;p&gt;云系统环境的搭建，可以通过&lt;strong&gt;admin&lt;/strong&gt;用户进入ZStack UI或者ZStack CLI来完成，具体的搭建过程可以参考：&lt;a href=&quot;../tutorials&quot;&gt;用户教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;云环境部署好后，系统管理员可以通过添加普通账号和普通用户来限制云环境的使用者的权限，例如普通用户只能在制定
+的环境里创建和查询（有限的）云主机，而不能更改整个云环境的配置。创建云主机需要至少知道三个要素：L3 Network，Image和InstanceOffering。&lt;/p&gt;
+
+&lt;p&gt;在使用&lt;strong&gt;admin&lt;/strong&gt; 账号登录后，可以查询之前部署云系统的各种资源，例如查询三层网络（L3 Network）:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli QueryL3Network
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
+            &quot;description&quot;: &quot;Test&quot;,
+            &quot;ipRanges&quot;: [
+                {
+                    &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
+                    &quot;description&quot;: &quot;Test&quot;,
+                    &quot;endIp&quot;: &quot;10.0.101.250&quot;,
+                    &quot;gateway&quot;: &quot;10.0.101.1&quot;,
+                    &quot;l3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
+                    &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
+                    &quot;name&quot;: &quot;host IP range&quot;,
+                    &quot;netmask&quot;: &quot;255.255.255.0&quot;,
+                    &quot;startIp&quot;: &quot;10.0.101.150&quot;,
+                    &quot;uuid&quot;: &quot;52414f42081b4e8eb5b3daa3ed96f685&quot;
+                }
+            ],
+            &quot;l2NetworkUuid&quot;: &quot;523de2369a7845c18c6ea44263b53be3&quot;,
+            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
+            &quot;name&quot;: &quot;public network&quot;,
+            &quot;networkServices&quot;: [],
+            &quot;state&quot;: &quot;Enabled&quot;,
+            &quot;system&quot;: false,
+            &quot;type&quot;: &quot;L3BasicNetwork&quot;,
+            &quot;uuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
+            &quot;zoneUuid&quot;: &quot;f3515d3bfb8649d9837c7681a528b736&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
-  &lt;h4&gt;URL&lt;/h4&gt;
-  
-  The local primary storage uses a folder to store VM volumes and images on hosts. When being attached to a cluster,
-  the folder specified by the URL will be created on all hosts in the cluster if not existing.
-&lt;/div&gt;
+
+
+
+&lt;hr&gt;
+
+
+&lt;p&gt;也可以查询云主机镜像（Image）和云主机模板（InstanceOffering）：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli QueryImage
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;backupStorageRefs&quot;: [
+                {
+                    &quot;backupStorageUuid&quot;: &quot;ce26eab0a5114bcb81f2c5c7ce3384ae&quot;,
+                    &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:35 PM&quot;,
+                    &quot;imageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
+                    &quot;installPath&quot;: &quot;/home/sftpBackupStorage/rootVolumeTemplates/acct-36c27e8ff05c4780bf6d2fa65700f22e/0ac93029ede142849a1355d8e7be8974/f18_200m.template&quot;,
+                    &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:35 PM&quot;
+                }
+            ],
+            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:33 PM&quot;,
+            &quot;description&quot;: &quot;Test&quot;,
+            &quot;format&quot;: &quot;raw&quot;,
+            &quot;guestOsType&quot;: &quot;unknown&quot;,
+            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:33 PM&quot;,
+            &quot;md5Sum&quot;: &quot;not calculated&quot;,
+            &quot;mediaType&quot;: &quot;RootVolumeTemplate&quot;,
+            &quot;name&quot;: &quot;ttylinux&quot;,
+            &quot;platform&quot;: &quot;Linux&quot;,
+            &quot;size&quot;: 209715200,
+            &quot;state&quot;: &quot;Enabled&quot;,
+            &quot;status&quot;: &quot;Ready&quot;,
+            &quot;system&quot;: false,
+            &quot;type&quot;: &quot;zstack&quot;,
+            &quot;url&quot;: &quot;http://zstack.yyk.net/image/f18_200m.img&quot;,
+            &quot;uuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
 
 
 
 
-&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
-  &lt;h4&gt;Capacity&lt;/h4&gt;
-  
-  The total capacity and available capacity are summed from the corresponding capacity of each hosts. Unlike pool-based
-  primary storage(e.g. NFS), you may encounter an allocation failure(not enough capacity) even if the total available capacity is bigger than
-  the capacity you ask, because no host can solely provide that capacity. For example, say you have 2 hosts each of which has 10G available
-  capacity, and you are creating a 15G volume; though the total available capacity is 20G, the case will fail because each host cannot
-  provide the 15G capacity.
-&lt;/div&gt;
+&lt;pre&gt;&lt;code&gt;# zstack-cli QueryInstanceOffering
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
+            &quot;cpuNum&quot;: 1,
+            &quot;cpuSpeed&quot;: 512,
+            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:37 PM&quot;,
+            &quot;description&quot;: &quot;small install offering&quot;,
+            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:37 PM&quot;,
+            &quot;memorySize&quot;: 134217728,
+            &quot;name&quot;: &quot;small-vm&quot;,
+            &quot;sortKey&quot;: 0,
+            &quot;state&quot;: &quot;Enabled&quot;,
+            &quot;type&quot;: &quot;UserVm&quot;,
+            &quot;uuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+&lt;hr&gt;
+
+
+&lt;p&gt;当然我们也可以通过ZStack的UI界面取获取各种资源的详细信息。&lt;/p&gt;
+
+&lt;h2&gt;添加账号&lt;/h2&gt;
+
+&lt;p&gt;添加普通账号的命令是 &lt;strong&gt;CreateAccount&lt;/strong&gt;, 使用方法例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli CreateAccount name=frank password=123456
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
+        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
+        &quot;name&quot;: &quot;frank&quot;,
+        &quot;type&quot;: &quot;Normal&quot;,
+        &quot;uuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;添加完普通帐号，可以用新的添加的帐号登录试试&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli LogInByAccount accountName=frank password=123456
+{
+    &quot;inventory&quot;: {
+        &quot;accountUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:03:04 PM&quot;,
+        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:03:04 PM&quot;,
+        &quot;userUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
+        &quot;uuid&quot;: &quot;6985fef9518f417296d2d9ed317d0281&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h2&gt;共享资源&lt;/h2&gt;
+
+&lt;p&gt;新添加的普通用户是没有办法读取&lt;strong&gt;admin&lt;/strong&gt;账户创建的各种资源，例如L3 Network, Image和Instance Offering:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# zstack-cli QueryL3Network
+{
+    &quot;inventories&quot;: [],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;如果需要让普通用户使用管理员账户创建的各种资源来创建云主机的化，我们需要把相关的资源的共享给普通用户。
+共享资源的API是 &lt;strong&gt;ShareResource&lt;/strong&gt;。使用这个API的时候，如果需要共享账户A的资源给B，那么我们首先需要用A登录系统，
+再使用ShareResource API来共享相关资源。例如我们想要把admin用户的L3 Network，Image和InstanceOffering共享给frank：&lt;/p&gt;
+
+&lt;h3&gt;1. 先进入zstack-cli的交互模式：&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+# zstack-cli 
+  ZStack command line tool
+
+  Type &quot;help&quot; for more information
+
+  Type Tab key for auto-completion
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;2. 登录admin账户：&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;LogInByAccount accountName=admin password=password
+{
+    &quot;inventory&quot;: {
+        &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:06:19 PM&quot;,
+        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:06:19 PM&quot;,
+        &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;uuid&quot;: &quot;e69fdd16edbd416ab09c17e9ffe94c75&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;3. 共享L3 Network，Image和InstanceOffering 给账户frank。这里的uuid，都是前面在创建账户以及Query资源的时候返回的uuid。&lt;/h3&gt;
+
+&lt;p&gt;共享多个资源的时候，uuid之间是用逗号分割的。另外，我们可以用一条命令把相同的资源共享给多个账户，同样账户uuid之间用逗号分割。
+如果需要把资源共享给所有的账户，我们可以使用参数&lt;strong&gt;toPublic=true&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;ShareResource accountUuids=a20609798cd949d297eb82becfe61983 resourceUuids=8f5006aac7874a20a0c2cfcb095ce6d2,0ac93029ede142849a1355d8e7be8974,ea8d1e412df54f23aa8f2372e3547929
+{
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;4. 然后我们可以登录到frank账户检查一下是不是已经可以查询到各个资源：&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;LogOut 
+{
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;LogInByAccount accountName=frank password=123456
+{
+    &quot;inventory&quot;: {
+        &quot;accountUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:15:01 PM&quot;,
+        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:15:01 PM&quot;,
+        &quot;userUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
+        &quot;uuid&quot;: &quot;4472cdcb583a42219b8fff24b9a903aa&quot;
+    },
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;QueryL3Network fields=name,uuid
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;name&quot;: &quot;public network&quot;,
+            &quot;uuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;QueryImage fields=name,uuid
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;name&quot;: &quot;ttylinux&quot;,
+            &quot;uuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;QueryInstanceOffering  fields=name,uuid
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;name&quot;: &quot;small-vm&quot;,
+            &quot;uuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;当账户frank拥有了相关资源的访问能力后，就可以用他们创建自己的虚拟机了：&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateVmInstance name=frank-vm1 description=&quot;frnak 1st vm&quot; l3NetworkUuids=8f5006aac7874a20a0c2cfcb095ce6d2 imageUuid=0ac93029ede142849a1355d8e7be8974 instanceOfferingUuid=ea8d1e412df54f23aa8f2372e3547929
+{
+    &quot;inventory&quot;: {
+        &quot;allVolumes&quot;: [
+            {
+                &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+                &quot;description&quot;: &quot;Root volume for VM[uuid:801bb9b7664e4a16a06d36a894a8ef1e]&quot;,
+                &quot;deviceId&quot;: 0,
+                &quot;format&quot;: &quot;qcow2&quot;,
+                &quot;installPath&quot;: &quot;/opt/zstack/nfsprimarystorage/prim-fbc3536389e641ceaef120f10ea5db83/rootVolumes/acct-a20609798cd949d297eb82becfe61983/vol-df3977d719774d0ab3faf2c3b70aeea4/df3977d719774d0ab3faf2c3b70aeea4.qcow2&quot;,
+                &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+                &quot;name&quot;: &quot;ROOT-for-frank-vm1&quot;,
+                &quot;primaryStorageUuid&quot;: &quot;fbc3536389e641ceaef120f10ea5db83&quot;,
+                &quot;rootImageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
+                &quot;size&quot;: 209715200,
+                &quot;state&quot;: &quot;Enabled&quot;,
+                &quot;status&quot;: &quot;Ready&quot;,
+                &quot;type&quot;: &quot;Root&quot;,
+                &quot;uuid&quot;: &quot;df3977d719774d0ab3faf2c3b70aeea4&quot;,
+                &quot;vmInstanceUuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;
+            }
+        ],
+        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
+        &quot;clusterUuid&quot;: &quot;6ce598a2e2684845a6656c83038b6fa3&quot;,
+        &quot;cpuNum&quot;: 1,
+        &quot;cpuSpeed&quot;: 512,
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+        &quot;defaultL3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
+        &quot;description&quot;: &quot;frnak 1st vm&quot;,
+        &quot;hostUuid&quot;: &quot;af661086268041ea9bb07a181d1371e1&quot;,
+        &quot;hypervisorType&quot;: &quot;KVM&quot;,
+        &quot;imageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
+        &quot;instanceOfferingUuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;,
+        &quot;lastHostUuid&quot;: &quot;af661086268041ea9bb07a181d1371e1&quot;,
+        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+        &quot;memorySize&quot;: 134217728,
+        &quot;name&quot;: &quot;frank-vm1&quot;,
+        &quot;platform&quot;: &quot;Linux&quot;,
+        &quot;rootVolumeUuid&quot;: &quot;df3977d719774d0ab3faf2c3b70aeea4&quot;,
+        &quot;state&quot;: &quot;Running&quot;,
+        &quot;type&quot;: &quot;UserVm&quot;,
+        &quot;uuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;,
+        &quot;vmNics&quot;: [
+            {
+                &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+                &quot;deviceId&quot;: 0,
+                &quot;gateway&quot;: &quot;10.0.101.1&quot;,
+                &quot;ip&quot;: &quot;10.0.101.232&quot;,
+                &quot;l3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
+                &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
+                &quot;mac&quot;: &quot;fa:f8:f4:b0:89:00&quot;,
+                &quot;netmask&quot;: &quot;255.255.255.0&quot;,
+                &quot;uuid&quot;: &quot;4587e8b851e84b159fa0622cda354fed&quot;,
+                &quot;vmInstanceUuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;
+            }
+        ],
+        &quot;zoneUuid&quot;: &quot;f3515d3bfb8649d9837c7681a528b736&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
 
 
 
 
 &lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;No live migration and limited volume attaching&lt;/h4&gt;
-  
-  Because local primary storage is not network shared storage, it's not possible to lively migrate a VM from one host to another 
-  until the storage migration feature is supported in future ZStack releases. Data volumes, whose states are Ready, can only be
-  attached to VMs on the same host; that is to say, once a data volume is instantiated on a local storage, it can only be attached
-  to VMs on the same host where it is instantiated.
+&lt;h4&gt;注意退出账户登录&lt;/h4&gt;
+zstack-cli默认会记录最近一次用户登录的&lt;b&gt;session_uuid&lt;/b&gt;用于之后API命令的操作。ZStack系统会根据session_uuid
+来获取当前用户以及用户的权限。用户session默认超时时间是120分钟（当然也可以修改全局参数改变）。如果用户在操作了API命令
+后没有及时的LogOut，zstack-cli依然会使用之前的session_uuid来进行后续的操作。这可能对你的系统产生不必要的安全问题。
+另外ZStack系统还会限制当前活跃的session数量（默认是500个，可以修改全局参数改变。过度的登录新的session而不登出的化，
+有可能因为到达session登录的上线，会导致系统拒绝新账号的登录。
 &lt;/div&gt;
 
 
-&lt;h2&gt;Dynamically attaching/detaching L3 networks&lt;/h2&gt;
+&lt;h2&gt;限制账号创建资源的数量&lt;/h2&gt;
 
-&lt;p&gt;Beginning at this version, users can dynamically attach/detach a L3 network to/from a VM.&lt;/p&gt;
+&lt;p&gt;ZStack默认限制了普通账号创建资源的数量，例如普通账号最多只能创建20个云主机（更多账号限制可以访问：
+&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html#default-quotas&quot;&gt;默认账号资源数量限制&lt;/a&gt;）&lt;/p&gt;
 
-&lt;h3&gt;Attach through UI&lt;/h3&gt;
+&lt;p&gt;如果需要修改账号可使用的资源数量，需要利用&lt;strong&gt;UpdateQuota&lt;/strong&gt; API，例如（需要使用&lt;strong&gt;admin&lt;/strong&gt;用户登录后操作）:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
-&lt;li&gt;click 'Attach L3 Network' on the drop-down menu&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;select the L3 networks you want to attach&lt;/li&gt;
-&lt;li&gt;click button 'Attach'&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3&gt;Attach through CLI&lt;/h3&gt;
-
-&lt;p&gt;You can use AttachL3NetworkToVm to attach a L3 network to a VM. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=d791a3f662ac48a99b9e998136eed2a1 vmInstanceUuid=15d546efe84a499caa36b2f6a95d6b81
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;UpdateQuota identityUuid=a20609798cd949d297eb82becfe61983 name=vm.num value=100
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
+        &quot;identityType&quot;: &quot;AccountVO&quot;,
+        &quot;identityUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
+        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
+        &quot;name&quot;: &quot;vm.num&quot;,
+        &quot;value&quot;: 100
+    },
+    &quot;success&quot;: true
+}
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3&gt;Detach through UI&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;用户也可以使用&lt;strong&gt;QueryQuota&lt;/strong&gt; 命令来获取某个账户的所有资源限制：&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
-&lt;li&gt;click 'Detach L3 Network' on the drop-down menu&lt;/li&gt;
-&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;QueryQuota identityUuid=a20609798cd949d297eb82becfe61983 fields=name,value
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;name&quot;: &quot;vm.memorySize&quot;,
+            &quot;value&quot;: 85899345920
+        },
+        {
+            &quot;name&quot;: &quot;eip.num&quot;,
+            &quot;value&quot;: 20
+        },
+        {
+            &quot;name&quot;: &quot;volume.data.num&quot;,
+            &quot;value&quot;: 40
+        },
+        {
+            &quot;name&quot;: &quot;l3.num&quot;,
+            &quot;value&quot;: 20
+        },
+        {
+            &quot;name&quot;: &quot;vip.num&quot;,
+            &quot;value&quot;: 20
+        },
+        {
+            &quot;name&quot;: &quot;portForwarding.num&quot;,
+            &quot;value&quot;: 20
+        },
+        {
+            &quot;name&quot;: &quot;vm.num&quot;,
+            &quot;value&quot;: 100
+        },
+        {
+            &quot;name&quot;: &quot;vm.cpuNum&quot;,
+            &quot;value&quot;: 80
+        },
+        {
+            &quot;name&quot;: &quot;volume.capacity&quot;,
+            &quot;value&quot;: 10995116277760
+        },
+        {
+            &quot;name&quot;: &quot;securityGroup.num&quot;,
+            &quot;value&quot;: 20
+        }
+    ],
+    &quot;success&quot;: true
+}&lt;/code&gt;&lt;/pre&gt;
 
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;h2&gt;给一个账号创建多用户，并设置不同的用户权限&lt;/h2&gt;
 
-&lt;ol&gt;
-&lt;li&gt;select the L3 networks you want to detach&lt;/li&gt;
-&lt;li&gt;click button 'Detach'&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;在一个大型的云环境中，可能会同时使用账号和用户，并且给同一账号下的不同用户设置不同的权限。
+接下来我们来看一个可能的案例，在这个案例中我们将会创建如下图所示的用户登录环境：&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/tutorials/account/multiUser.png&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;在这个部门里，你会有一个三人架构团队（David，Tony和Frank），他们负责创建和管理云主机；
+另外有一个三人的运营团队（Lucy，Arhbi和Jeff），他们不能创建云主机，但是能够打开并且操作云主机的终端。
+除此之外，这两个团队有一个共同的项目经理，他拥有全部团队的所有能力。我们来看看该如何创建一个这样的使用场景：&lt;/p&gt;
+
+&lt;h3&gt;1. 使用&lt;strong&gt;admin&lt;/strong&gt;用户登录后，创建一个新的账号：ops-team&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateAccount name=ops-team password=password&lt;/code&gt;&lt;/pre&gt;
 
 
-&lt;h3&gt;Detach through CLI&lt;/h3&gt;
+&lt;h3&gt;2. 登录ops-team账号&lt;/h3&gt;
 
-&lt;p&gt;You can use &lt;code&gt;DetachL3NetworkFromVm&lt;/code&gt; to detach a L3 network from a VM. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;DetachL3NetworkFromVm vmNicUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;LogOut
+&gt;&gt;&gt;LogInByAccount accountName=ops-team password=password
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;VM Nic UUID&lt;/h4&gt;
-  
-  Instead of a L3 network UUID and a VM UUID, `the DetachL3NetworkFromVm`
-  use the `vmNicUuid` as the parameter because it implies both VM UUID and
-  L3 network UUID.
+
+&lt;h3&gt;3. 创建用户&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateUser name=david password=password
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;重复这步来创建其他的用户：tony, frank, lucy, arhbi, jeff, mgr&lt;/p&gt;
+
+&lt;h3&gt;4. 创建用户组&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateUserGroup name=infra
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;重复这步来创建一个新的用户组 ops&lt;/p&gt;
+
+&lt;h3&gt;5. 添加用户到用户组&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AddUserToGroup userUuid=d7646ae8af2140c0a3ccef2ad8da816d groupUuid=92c523a43651442489f8d2d598c7c3da
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;strong&gt;注意:&lt;/strong&gt;userUuid 和 groupUuid 都是之前在创建的时候，系统返回的uuid。
+重复这步把david, tony, frank加到infra组, 把lucy, arhbi, jeff加到ops组&lt;/p&gt;
+
+&lt;h3&gt;6. 创建权限策略&lt;/h3&gt;
+
+&lt;p&gt;创建第一条策略，可以允许执行所有云主机相关的操作：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreatePolicy name=vm-management statements=&#39;[{&quot;actions&quot;:[&quot;instance:.*&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;创建第二条策略，可以允许访问云主机的console：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreatePolicy name=vm-console statements=&#39;[{&quot;actions&quot;:[&quot;instance:APIRequestConsoleAccessMsg&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;创建第三条策略，允许所有本账户可以执行的操作：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreatePolicy name=all statements=&#39;[{&quot;actions&quot;:[&quot;.*&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+&lt;h4&gt;特殊的JSON字符串&lt;/h4&gt;
+需要注意的是这里的statements是一个JSON的字符串，最外面是一个单引号，里面的每一个字符串需要用双引号包裹起来。
+如果写错，会导致策略添加失败。
 &lt;/div&gt;
 
 
-&lt;h2&gt;Identity Management&lt;/h2&gt;
+&lt;h3&gt;7. 把策略一添加到 infra小组&lt;/h3&gt;
 
-&lt;p&gt;In this version, ZStack opens the identity management APIs which provide similar functions to AWS IAM. The details
-of the identity management system can be found in &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html&quot;&gt;user manual -- identity chapter&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AttachPolicyToUserGroup groupUuid=92c523a43651442489f8d2d598c7c3da policyUuid=afb3bfbb911a42e0a662286728e49891
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2&gt;Change the instance offering of the VM&lt;/h2&gt;
 
-&lt;p&gt;In this version, users can change the instance offering of a VM.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：这里的policyUuid和groupUuid都是之前创建策略和用户组的时候，系统返回的uuid。用户需要把他们修改成自己创建的uuid。&lt;/p&gt;
 
-&lt;h3&gt;Change through UI&lt;/h3&gt;
+&lt;h3&gt;8. 把策略二添加到 ops小组&lt;/h3&gt;
 
-&lt;p&gt;Not implemented in RC2, will be available in the GA release&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AttachPolicyToUserGroup groupUuid=0939fc6f772d44d6a8f9d45c89c2a716 policyUuid=3bddf41e2ba6469881a65287879e5d58
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3&gt;Change through CLI&lt;/h3&gt;
 
-&lt;p&gt;You can use ChangeInstanceOffering to change the instance offering of a VM. For example:&lt;/p&gt;
+&lt;h3&gt;9. 把策略三添加给mgr用户&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AttachPolicyToUser userUuid=d55c5fba4d1b4533961db9952dc15b00 policyUuid=36c27e8ff05c4780bf6d2fa65700f22e
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;现在一个拥有三种不同权限用户组，7个用户名的架构就已经创建完毕了&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;更多关于账号和用户相关的介绍和API请访问&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html&quot;&gt;ZStack账号系统&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/zstack-account-user-tutorials.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-account-user-tutorials.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
+    
+      <item>
+        <title>发布 ZStack v0.8 RC2</title>
+        <description>&lt;p&gt;大家好，很高兴今天再次宣布又一个ZStack的新版本v0.8.0-rc2正式发布。v0.8.0-rc2 里包含了0.8系列里面非常重要的4个功能：本地存储、动态添加删除L3 Network、完善的账号用户系统和修改云主机的配置。让我们来一一介绍一下他们的功能：&lt;/p&gt;
+
+&lt;h2&gt;本地存储&lt;/h2&gt;
+
+&lt;p&gt;用户可以使用计算节点的本地存储作为主存储设备。用户可以不必预先创建任何的网络主存储。本地存储具有方便、快捷、适中性能等特点。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./local-stroage-tutorials.html&quot;&gt;本地存储教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;动态添加、删除云主机三层网络（网卡）&lt;/h2&gt;
+
+&lt;p&gt;用户可以对一个正在运行的或是停止的云主机添加和删除三层网络。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;hr&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./attach-detach-l3-tutorials.html&quot;&gt;添加删除三层网络教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;完善的用户账号管理系统&lt;/h2&gt;
+
+&lt;p&gt;从本版开始，ZStack开放了完善的用户账号系统API。ZStack的账号用户系统和亚马逊的AWS采用相同的管理方式，提供了Account和User。用户不仅可以创建，修改用户密码，还可以创建不同用户组并加以不同的权限限制。
+共有云也可以基于ZStack的账号系统对接自身的billing系统。&lt;/p&gt;
+
+&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./zstack-account-user-tutorials.html&quot;&gt;账号用户系统手册&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;改变云主机模板&lt;/h2&gt;
+
+&lt;p&gt;当用户选择某个模板（CPU/内存配置）创建云主机之后，可以根据需求修改云主机配置。修改后，仅需要重启云主机即可。不过该功能和账号系统一样，在v0.8里只能通过zstack-cli来调用，例如：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;A stop/start is required&lt;/h4&gt;
-  
-  If you change the instance offering while the VM is running, you need to stop/start the VM to make the change takes effect.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
+&lt;h2&gt;从0.7版本无缝升级&lt;/h2&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
+  &lt;h4&gt;升级数据库&lt;/h4&gt;
   
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
+  虽然ZStack升级程序会进行备份，不过在升级数据库前，还是希望用户手动&lt;b&gt;做好数据库的备份!&lt;/b&gt;
+  您可以使用以下的命令来备份当前zstack的数据库：
   
   &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
 
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
+&lt;h3&gt;快速升级&lt;/h3&gt;
 
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
+&lt;p&gt;如果你仅仅只有一个管理节点，数据库和Dashboard也装在相同的节点上，那么你就可以用下面的方法快速升级：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
-wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack-install-0.8.0-rc2.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack-all-in-one-0.8.0-rc2.tgz
+&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-install-0.8.0-rc2.sh
+wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-all-in-one-0.8.0-rc2.tgz
 bash zstack-install-0.8.0-rc2.sh -u -f zstack-all-in-one-0.8.0-rc2.tgz
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
+&lt;p&gt;正常情况，你大概只需要等待2分钟，zstack就会帮你升级完成。&lt;/p&gt;
 
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
+&lt;h3&gt;使用zstack-ctl升级多节点&lt;/h3&gt;
 
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
+&lt;h4&gt;1. 升级第一个节点&lt;/h4&gt;
 
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.8
+&lt;pre&gt;&lt;code&gt;mkdir zstack-0.8
 cd zstack-0.8
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Install zstack-ctl if you are using 0.6 version&lt;/h4&gt;
+  &lt;h4&gt;请重新安装zstack-ctl，如果你还在使用zstack v0.6系列的产品&lt;/h4&gt;
   
   wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
   /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
@@ -202,77 +671,245 @@ cd zstack-0.8
 &lt;/div&gt;
 
 
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack.war
+&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0-rc2/zstack.war
 zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
+&lt;h4&gt;2. 升级数据库&lt;/h4&gt;
 
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
+&lt;p&gt;备份数据库&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;You can start the node now if you only have one management node&lt;/h4&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
+  &lt;h4&gt;如果只有一个管理节点，您可以立刻启动该节点&lt;/h4&gt;
+  使用命令&lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt;启动zstack管理节点。如果还有其他管理节点，请继续完成步骤三。
 &lt;/div&gt;
 
 
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
+&lt;h4&gt;3. 升级其他管理节点&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;需要注意从 v0.8开始，zstack-ctl 统一了命令参数，所有原有--remote 指令都统一成了--host. &lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4&gt;4. 升级UI&lt;/h4&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Stop UI&lt;/h4&gt;
+  &lt;h4&gt;停止UI服务&lt;/h4&gt;
   
-  If you are using 0.6, stop the UI by &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; if 0.7, stop the UI by &lt;code&gt;zstack-ctl stop_ui&lt;/code&gt;
+  &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; 
+
 &lt;/div&gt;
 
 
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
+&lt;p&gt;升级本地UI服务：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;or&lt;/p&gt;
+&lt;p&gt;或者升级远端UI服务：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
+&lt;h4&gt;5. 启动管理节点&lt;/h4&gt;
 
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
+&lt;p&gt;启动本地管理节点：&lt;/p&gt;
 
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.8 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --host remote_host_ip&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`zstack-ctl start_node`
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;启动远程管理节点：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;`zstack-ctl start_node --host remote_host_ip`
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  &lt;h4&gt;所有的Agent都会随着管理节点的启动而自动升级&lt;/h4&gt;
+  当管理节点启动后，会重新连接并升级包括计算节点，备份存储，虚拟路由等等一系列的ZStack Agents。
+  用户在创建新的云主机之前，需要确保计算节点的状态已经变成Connected
 &lt;/div&gt;
 
 
-&lt;h4&gt;6. Start UI&lt;/h4&gt;
+&lt;h4&gt;6. 启动UI服务&lt;/h4&gt;
 
-&lt;p&gt;Now you can start the UI by &lt;code&gt;zstack-ctl start_ui&lt;/code&gt; on the local host or &lt;code&gt;zstack-ctl start_ui --host remote_host_ip&lt;/code&gt; on the remote host.&lt;/p&gt;
+&lt;p&gt;启动本地UI：&lt;/p&gt;
 
-&lt;h2&gt;Bug Report&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;`zstack-ctl start_ui`
+&lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;启动远端UI：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;`zstack-ctl start_ui --host remote_host_ip`
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2&gt;报告bug&lt;/h2&gt;
+
+&lt;p&gt;如果你在使用中发现任何问题或者有任何建议，请你到我们的&lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;上告诉我们，谢谢！&lt;/p&gt;
+
+&lt;p&gt;Enjoy～
+ZStack 开发团队&lt;/p&gt;
 </description>
-        <pubDate>Sun, 26 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/blog/v0.8-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8-rc2.html</guid>
+        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v0.8-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v0.8-rc2.html</guid>
         
         
-        <category>blog</category>
+        <category>cn_blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack本地存储使用手册</title>
+        <description>&lt;h2&gt;介绍&lt;/h2&gt;
+
+&lt;p&gt;本地存储（Local Storage）是继NFS主存储、iSCSI主存储之后ZStack支持的第三类主存储。
+本地存储相比网络共享存储而言，更轻量、更方便（甚至在网络速度和网络存储性能不佳的情况下，本地存储的性能也更高）
+，所以也有很多客户采用本地存储方案来搭建云系统。ZStack自v0.8.0开始支持本地存储。本教程仅会介绍如何添加本地存储来做云环境的主存储。&lt;/p&gt;
+
+&lt;p&gt;ZStack对于本地存储的使用有如下定义：
+1. 一个Cluster内的所有计算节点应该有相同的目录放本地存储。
+2. 如果一个Cluster既拥有本地主存储也挂载了NFS或者其他网络共享存储，那么云主机的根磁盘将会存放在本地存储，
+而数据磁盘将会存放在网络共享存储。
+3. 在使用网络共享存储的时候，当原始云主机磁盘被删除后，备份过的&lt;strong&gt;磁盘快照&lt;/strong&gt;依然可以用于创建磁盘镜像模板和恢复磁盘；
+但是这个操作在本地存储上无法进行。用户需要在原始磁盘删除前，使用磁盘快照功能创建磁盘镜像模板。&lt;/p&gt;
+
+&lt;h3&gt;通过UI添加本地存储&lt;/h3&gt;
+
+&lt;p&gt;用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问&lt;a href=&quot;../cn/tutorials/flat-network-ui.html&quot;&gt;创建扁平网络环境&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;在&lt;a href=&quot;../cn/tutorials/flat-network-ui.html#addPrimaryStorage&quot;&gt;创建主存储&lt;/a&gt;的时候：
+1. 选择类型&#39;LocalStorage&#39;
+2. 输入计算节点上云主据磁盘要存放的目录&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;hr&gt;
+
+
+&lt;h3&gt;通过zstack-cli添加本地存储&lt;/h3&gt;
+
+&lt;p&gt;用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问&lt;a href=&quot;../cn/tutorials/flat-network-cli.html&quot;&gt;创建扁平网络环境&lt;/a&gt;。
+在&lt;a href=&quot;../cn/tutorials/flat-network-cli.html#addPrimaryStorage&quot;&gt;创建主存储&lt;/a&gt;的时候：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddLocalPrimaryStorage zoneUuid=15d546efe84a499caa36b2f6a95d6b81 name=local url=/home/volumes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
+  &lt;h4&gt;URL&lt;/h4&gt;
+  本地主存储使用本地的一个目录来存放云主机的磁盘。当主存储挂载到Cluster上时，该目录会在Cluster内的所有计算节点上创建出来。
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
+  &lt;h4&gt;关于本地存储的容量&lt;/h4&gt;
+  
+  一个cluster里面本地存储的总容量是每一个计算节点上存储容量的总和。不像网络共享存储（例如NFS主存储），
+  即使您发现ZStack系统显示的可用容量大于你所申请的磁盘空间，您可能还是会遇到空间不足（not enough capacity）的错误。
+  这是因为该Cluster内找不到任何一个单个的计算节点能够独立满足空间分配的需求。例如，您有两个计算节点，
+  每个节点上都有10GB的剩余空间，ZStack会显示当前Cluster有20GB的可用空间。当您试图去创建一个15GB的云主机磁盘的时候，
+  ZStack会告诉你找不到足够的空间。
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;本地储存不支持云主机漂移和有限的跨云主机数据盘挂载&lt;/h4&gt;
+  
+  由于本地存储不具备网络共享存储中，每个计算节点都可以访问该存储的能力。所以在存储漂移功能支持前，
+  使用本地存储的云主机将不会具有漂移的功能。用户需要对可能发生的数据丢失或者长时间无法恢复云主机的运行做好准备。
+  例如，需要考虑如何在应用层做到跨云主机的高可用。
+
+  对于系统中可以挂载（状态为Ready）的数据磁盘，该磁盘仅能挂载到和该磁盘在同一计算节点的云主机上。
+&lt;/div&gt;
+
+</description>
+        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/local-stroage-tutorials.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/local-stroage-tutorials.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack云主机动态添加和删除网卡教程</title>
+        <description>&lt;h2&gt;介绍&lt;/h2&gt;
+
+&lt;p&gt;动态添加和删除网卡是IaaS里的基本功能，ZStack自v0.8.0开始支持云主机运行态或停止态动态的添加和删除网卡（更准确的称为三层网络）。
+动态添加的网卡要求该网卡的三层网络不能是该云主机中已有的三层网络。&lt;/p&gt;
+
+&lt;h3&gt;通过UI给云主机挂载三层网络&lt;/h3&gt;
+
+&lt;p&gt;在VM Instance的界面
+&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;选择需要添加三层网络的云主机并点击&#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;点击 &#39;Attach L3 Network&#39;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;选择你希望挂载的三层网络&lt;/li&gt;
+&lt;li&gt;点击挂载&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;通过zstack-cli给云主机挂载三层网络&lt;/h3&gt;
+
+&lt;p&gt;你可以使用&lt;strong&gt; AttachL3NetworkToVm &lt;/strong&gt;命令来挂载一个三层网络，例如；&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=d791a3f662ac48a99b9e998136eed2a1 vmInstanceUuid=15d546efe84a499caa36b2f6a95d6b81
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;通过UI删除一个云主机的三层网络&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;选择云主机并点击&#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;点击 &#39;Detach L3 Network&#39;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;选择您想卸载的三层网络&lt;/li&gt;
+&lt;li&gt;点击 &#39;Detach&#39;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;通过zstack-cli给云主机卸载一个三层网络&lt;/h3&gt;
+
+&lt;p&gt;你可以使用&lt;strong&gt; DetachL3NetworkToVm &lt;/strong&gt;命令来卸载一个三层网络，例如；&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;DetachL3NetworkFromVm vmNicUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;云主机网卡的UUID&lt;/h4&gt;
+  
+  在卸载三层网络的时候，ZStack使用了云主机的网卡UUID，而不是三层网络的UUID。这是因为一个网卡的UUID，隐含着关联了云主机的UUID和三层网络的UUID。
+&lt;/div&gt;
+
+</description>
+        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/attach-detach-l3-tutorials.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/attach-detach-l3-tutorials.html</guid>
+        
+        
+        <category>cn_blog</category>
         
       </item>
     
@@ -287,11 +924,11 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
 
 &lt;h3&gt;Add through UI&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select the type to 'LocalStorage'&lt;/li&gt;
-&lt;li&gt;input the hosts' folder path.&lt;/li&gt;
+&lt;li&gt;select the type to &#39;LocalStorage&#39;&lt;/li&gt;
+&lt;li&gt;input the hosts&#39; folder path.&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -328,7 +965,7 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
 &lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
   &lt;h4&gt;No live migration and limited volume attaching&lt;/h4&gt;
   
-  Because local primary storage is not network shared storage, it's not possible to lively migrate a VM from one host to another 
+  Because local primary storage is not network shared storage, it&#39;s not possible to lively migrate a VM from one host to another 
   until the storage migration feature is supported in future ZStack releases. Data volumes, whose states are Ready, can only be
   attached to VMs on the same host; that is to say, once a data volume is instantiated on a local storage, it can only be attached
   to VMs on the same host where it is instantiated.
@@ -341,19 +978,19 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
 
 &lt;h3&gt;Attach through UI&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
-&lt;li&gt;click 'Attach L3 Network' on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;click &#39;Attach L3 Network&#39; on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to attach&lt;/li&gt;
-&lt;li&gt;click button 'Attach'&lt;/li&gt;
+&lt;li&gt;click button &#39;Attach&#39;&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -366,19 +1003,19 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
 
 &lt;h3&gt;Detach through UI&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
-&lt;li&gt;click 'Detach L3 Network' on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;click &#39;Detach L3 Network&#39; on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
-&lt;p&gt;&lt;img src=&quot;../../images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to detach&lt;/li&gt;
-&lt;li&gt;click button 'Detach'&lt;/li&gt;
+&lt;li&gt;click button &#39;Detach&#39;&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -440,7 +1077,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
 
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
 wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack-install-0.8.0-rc2.sh
@@ -522,7 +1159,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
   &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
 &lt;/div&gt;
 
 
@@ -534,7 +1171,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Sun, 26 Jul 2015 00:00:00 -0700</pubDate>
+        <pubDate>Sun, 26 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/blog/v0.8-rc2.html</link>
         <guid isPermaLink="true">http://zstack.org/blog/v0.8-rc2.html</guid>
         
@@ -544,16 +1181,330 @@ zstack-ctl upgrade_management_node --war-file zstack.war
       </item>
     
       <item>
-        <title>Announcing ZStack v0.7.1</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0.1 is released. This release contains two bugs fixes. Both
-for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.&lt;/p&gt;
+        <title>Announcing ZStack v0.8 RC2</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is in the release cycle.
+Today we release 0.8 RC2 for you test. In this release, ZStack introduces four new features:&lt;/p&gt;
+
+&lt;h2&gt;Local Primary Storage&lt;/h2&gt;
+
+&lt;p&gt;Users can use local disks of hosts as primary storage.&lt;/p&gt;
+
+&lt;h3&gt;Add through UI&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the type to &#39;LocalStorage&#39;&lt;/li&gt;
+&lt;li&gt;input the hosts&#39; folder path.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;Add through CLI&lt;/h3&gt;
+
+&lt;p&gt;You can use AddLocalPrimaryStorage to add the local primary storage. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;AddLocalPrimaryStorage zoneUuid=15d546efe84a499caa36b2f6a95d6b81 name=local url=/home/volumes
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
+  &lt;h4&gt;URL&lt;/h4&gt;
+  
+  The local primary storage uses a folder to store VM volumes and images on hosts. When being attached to a cluster,
+  the folder specified by the URL will be created on all hosts in the cluster if not existing.
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
+  &lt;h4&gt;Capacity&lt;/h4&gt;
+  
+  The total capacity and available capacity are summed from the corresponding capacity of each hosts. Unlike pool-based
+  primary storage(e.g. NFS), you may encounter an allocation failure(not enough capacity) even if the total available capacity is bigger than
+  the capacity you ask, because no host can solely provide that capacity. For example, say you have 2 hosts each of which has 10G available
+  capacity, and you are creating a 15G volume; though the total available capacity is 20G, the case will fail because each host cannot
+  provide the 15G capacity.
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;No live migration and limited volume attaching&lt;/h4&gt;
+  
+  Because local primary storage is not network shared storage, it&#39;s not possible to lively migrate a VM from one host to another 
+  until the storage migration feature is supported in future ZStack releases. Data volumes, whose states are Ready, can only be
+  attached to VMs on the same host; that is to say, once a data volume is instantiated on a local storage, it can only be attached
+  to VMs on the same host where it is instantiated.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Dynamically attaching/detaching L3 networks&lt;/h2&gt;
+
+&lt;p&gt;Beginning at this version, users can dynamically attach/detach a L3 network to/from a VM.&lt;/p&gt;
+
+&lt;h3&gt;Attach through UI&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;click &#39;Attach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the L3 networks you want to attach&lt;/li&gt;
+&lt;li&gt;click button &#39;Attach&#39;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;Attach through CLI&lt;/h3&gt;
+
+&lt;p&gt;You can use AttachL3NetworkToVm to attach a L3 network to a VM. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=d791a3f662ac48a99b9e998136eed2a1 vmInstanceUuid=15d546efe84a499caa36b2f6a95d6b81
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;Detach through UI&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
+&lt;li&gt;click &#39;Detach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the L3 networks you want to detach&lt;/li&gt;
+&lt;li&gt;click button &#39;Detach&#39;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;Detach through CLI&lt;/h3&gt;
+
+&lt;p&gt;You can use &lt;code&gt;DetachL3NetworkFromVm&lt;/code&gt; to detach a L3 network from a VM. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;DetachL3NetworkFromVm vmNicUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;VM Nic UUID&lt;/h4&gt;
+  
+  Instead of a L3 network UUID and a VM UUID, `the DetachL3NetworkFromVm`
+  use the `vmNicUuid` as the parameter because it implies both VM UUID and
+  L3 network UUID.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Identity Management&lt;/h2&gt;
+
+&lt;p&gt;In this version, ZStack opens the identity management APIs which provide similar functions to AWS IAM. The details
+of the identity management system can be found in &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html&quot;&gt;user manual -- identity chapter&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Change the instance offering of the VM&lt;/h2&gt;
+
+&lt;p&gt;In this version, users can change the instance offering of a VM.&lt;/p&gt;
+
+&lt;h3&gt;Change through UI&lt;/h3&gt;
+
+&lt;p&gt;Not implemented in RC2, will be available in the GA release&lt;/p&gt;
+
+&lt;h3&gt;Change through CLI&lt;/h3&gt;
+
+&lt;p&gt;You can use ChangeInstanceOffering to change the instance offering of a VM. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;A stop/start is required&lt;/h4&gt;
+  
+  If you change the instance offering while the VM is running, you need to stop/start the VM to make the change takes effect.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Backup Database&lt;/h4&gt;
+  
+  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
+  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
+  database in case any error happens. You can backup the database following:
+  
+  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
+
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
+wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack-install-0.8.0-rc2.sh
+wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack-all-in-one-0.8.0-rc2.tgz
+bash zstack-install-0.8.0-rc2.sh -u -f zstack-all-in-one-0.8.0-rc2.tgz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
+
+&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
+
+&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
+
+&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.8
+cd zstack-0.8
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Install zstack-ctl if you are using 0.6 version&lt;/h4&gt;
+  
+  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
+  
+&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code&gt;wget --no-check-certificate https://download.zstack.org/releases/0.8/rc2/zstack.war
+zstack-ctl upgrade_management_node --war-file zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
+
+&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;You can start the node now if you only have one management node&lt;/h4&gt;
+  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
+  other management nodes to upgrade, continue to perform following instructions.
+&lt;/div&gt;
+
+
+&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
+
+&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Stop UI&lt;/h4&gt;
+  
+  If you are using 0.6, stop the UI by &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; if 0.7, stop the UI by &lt;code&gt;zstack-ctl stop_ui&lt;/code&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
+
+&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
+
+&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.8 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
+&lt;code&gt;zstack-ctl start_node --host remote_host_ip&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
+  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+&lt;/div&gt;
+
+
+&lt;h4&gt;6. Start UI&lt;/h4&gt;
+
+&lt;p&gt;Now you can start the UI by &lt;code&gt;zstack-ctl start_ui&lt;/code&gt; on the local host or &lt;code&gt;zstack-ctl start_ui --host remote_host_ip&lt;/code&gt; on the remote host.&lt;/p&gt;
+
+&lt;h2&gt;Bug Report&lt;/h2&gt;
+
+&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Wed, 08 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/blog/v0.7.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.1.html</guid>
+        <pubDate>Sun, 26 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/v0.8-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8-rc2.html</guid>
         
         
         <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>在Windows VM中使用data volume</title>
+        <description>&lt;h2&gt;适用版本：&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;ZStack v0.8.0 + &lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2&gt;介绍&lt;/h2&gt;
+
+&lt;p&gt;由于KVM不提供Windows SCSI驱动，ZStack只能使用 IDE和virtio两种模式提供硬盘驱动。其中IDE由于无法支持硬盘hotplug，这导致使用IDE硬盘来添加数据磁盘的时候必须要重启虚拟机。所以想要实现动态的数据磁盘添加和删除操作，需要使用virtio类型的磁盘。由于Windows系统中没有包含virtio的驱动，所以用在创建Windows虚拟机模版的时候，需要额外安装virtio的驱动程序，否则在0.8以后的系统中，无论是否重启虚拟机，用户都无法直接使用新添加的数据磁盘。&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;RedHat VirtIO 下载地址&lt;/h4&gt;
+完整的virtio驱动下载页面在
+https://fedoraproject.org/wiki/Windows_Virtio_Drivers
+此外，Redhat提供了一个教程安装virtio驱动，但该教材讲述的是安装ballon驱动，并且对磁盘驱动的描述是不准确的。
+我们下面提供的教程已在Windows7上成功实验过
+&lt;/div&gt;
+
+
+&lt;p&gt;要使用virtio驱动，用户需要先通过ISO安装好一个windows VM，然后根据以下步骤进行：
+1. 下载virtio驱动到windows VM，地址：https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso，下载完成后可以用WinRAR等工具解压
+2. attach一个data volume到windows VM。
+3. 在设备管理器中，可以看到一个未知的SCSI controller&lt;/p&gt;
+
+&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/windows-virtio/add-device1.png&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;如下图所示选中PCI BUS，右键点击，弹出菜单后选择&quot;Update Driver Software...&quot;
+&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/windows-virtio/add-device2.png&quot;&gt;&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;选着从本地安装驱动，把路径指向解压的virtio驱动。使用的驱动文件夹为viostor (不要选择vioscsi，这个是virtio-scsi设备的驱动，用于ISCSI设备，viostor是块设备的磁盘驱动）&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/windows-virtio/add-device3.png&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;右键点击未知的SCSI Controller，同样使用&quot;Update Driver Software...&quot;，安装viostor驱动（如果不执行步骤5更新PCI驱动，SCSI controller右键点击不会出现更新驱动的菜单）&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/windows-virtio/add-device4.png&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/windows-virtio/add-device5.png&quot;&gt;
+7. 安装完驱动后，就可以使用windows自带的磁盘管理工具发现新硬盘并格式化。&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;动态卸载磁盘&lt;/h4&gt;
+Widnows virtio驱动对detach volume支持不好，我们发现在volume detach后在windows里仍可以看到该磁盘，但操作的时候会导致系统挂起。
+建议用户在detach volume后重启windows。
+&lt;/div&gt;
+
+</description>
+        <pubDate>Sat, 25 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/install-virtio-for-windows.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/install-virtio-for-windows.html</guid>
+        
+        
+        <category>cn_blog</category>
         
       </item>
     
@@ -562,7 +1513,7 @@ for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgra
         <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0.1 is released. This release contains two bugs fixes. Both
 for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.&lt;/p&gt;
 </description>
-        <pubDate>Wed, 08 Jul 2015 00:00:00 -0700</pubDate>
+        <pubDate>Wed, 08 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/blog/v0.7.1.html</link>
         <guid isPermaLink="true">http://zstack.org/blog/v0.7.1.html</guid>
         
@@ -572,217 +1523,13 @@ for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgra
       </item>
     
       <item>
-        <title>Announcing ZStack v0.7</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is released.&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
-minutes.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
-wget --no-check-certificate https://download.zstack.org/releases/0.7/install.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0.tgz
-bash install.sh -u -f zstack-all-in-one-0.7.0.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7
-cd zstack-0.7
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstackctl-0.7.tar.gz
-/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
-
-&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
-In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
-installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it's worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
-
-&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
-Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
-the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
-
-&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
-feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM's snapshot function, the BTRFS-ISCSI snapshot does
-not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
-NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
-
-&lt;h2&gt;Static IP Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn't supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack's system tag system. You can provide static
-IPs by system tags in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;Update APIs&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
-APIUpdateImageMsg
-APIUpdateVolumeMsg
-APIUpdateInstanceOfferingMsg
-APIUpdateDiskOfferingMsg
-APIUpdatePrimaryStorageMsg
-APIUpdateVolumeSnapshotMsg
-APIUpdateBackupStorageMsg
-APIUpdateL3NetworkMsg
-APIUpdateIpRangeMsg
-APIUpdateL2NetworkMsg
-APIUpdateClusterMsg
-APIUpdateZoneMsg
-APIUpdateHostMsg
-APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
-APIUpdateKVMHostMsg
-APIUpdateSftpBackupStorageMsg
-APIUpdatePortForwardingRuleMsg
-APIUpdateEipMsg
-APIUpdateSecurityGroupMsg
-APIUpdateVipMsg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
-explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2&gt;Bug Fixes&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/60&quot;&gt;can not only query status field for VmInstance&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/59&quot;&gt;IP arrange judgment has bug&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/54&quot;&gt;iscsi volume vm creation failure&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can't be migrated in centos6&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/47&quot;&gt;Delete iscsi volume snapshot failed&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/46&quot;&gt;zstack management node shutdown due to: web listener issued context destroy event&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/45&quot;&gt;zstack management node start failure due to rabbitmq: Attempt to use closed channel&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn't support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn't support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume's format is 'raw' if it's installed from ISO&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/21&quot;&gt;Can not create guest vm from ISO image with iSCSI on Btrfs&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/20&quot;&gt;Host status tracing has bug, which might wrongly change Host status from disconnected to connected&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/19&quot;&gt;primary storage capacity allocation and counting bug &lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/17&quot;&gt;Feature Request: Primary Storage need to support iSCSI with backend filesystem BTRFS&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/16&quot;&gt;Feature Request: Assign given IP (not DHCP random IP) to new created VM&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can't start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+        <title>Announcing ZStack v0.7.1</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0.1 is released. This release contains two bugs fixes. Both
+for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.&lt;/p&gt;
 </description>
-        <pubDate>Thu, 02 Jul 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/blog/v0.7.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.html</guid>
+        <pubDate>Wed, 08 Jul 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/v0.7.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.1.html</guid>
         
         
         <category>blog</category>
@@ -811,7 +1558,7 @@ minutes.&lt;/p&gt;
 
 &lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
 
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
 wget --no-check-certificate https://download.zstack.org/releases/0.7/install.sh
@@ -885,7 +1632,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
   &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
 &lt;/div&gt;
 
 
@@ -894,7 +1641,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
 In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
 installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it's worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
+bigger(~80M) than before; but we still think it&#39;s worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
 
 &lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
 
@@ -912,14 +1659,14 @@ the following instructions assume the BTRFS filesystem is mounted on /home/btrfs
 
 &lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
 feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM's snapshot function, the BTRFS-ISCSI snapshot does
+has only one snapshot. Compared to the volume snapshot of NFS using KVM&#39;s snapshot function, the BTRFS-ISCSI snapshot does
 not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
 NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
 
 &lt;h2&gt;Static IP Support&lt;/h2&gt;
 
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn't supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack's system tag system. You can provide static
+&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn&#39;t supported this feature,
+but you can achieve it using zstack-cli. This feature is implemented based on ZStack&#39;s system tag system. You can provide static
 IPs by system tags in format of:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
@@ -968,7 +1715,7 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/54&quot;&gt;iscsi volume vm creation failure&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can't be migrated in centos6&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can&#39;t be migrated in centos6&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/47&quot;&gt;Delete iscsi volume snapshot failed&lt;/a&gt;&lt;/p&gt;
 
@@ -976,11 +1723,11 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/45&quot;&gt;zstack management node start failure due to rabbitmq: Attempt to use closed channel&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn't support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn&#39;t support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn't support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn&#39;t support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume's format is 'raw' if it's installed from ISO&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume&#39;s format is &#39;raw&#39; if it&#39;s installed from ISO&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/21&quot;&gt;Can not create guest vm from ISO image with iSCSI on Btrfs&lt;/a&gt;&lt;/p&gt;
 
@@ -992,451 +1739,15 @@ explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.o
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/16&quot;&gt;Feature Request: Assign given IP (not DHCP random IP) to new created VM&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can't start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can&#39;t start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2&gt;Bug Report&lt;/h2&gt;
 
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 02 Jul 2015 00:00:00 -0700</pubDate>
+        <pubDate>Thu, 02 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/blog/v0.7.html</link>
         <guid isPermaLink="true">http://zstack.org/blog/v0.7.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Announcing ZStack v0.7 RC2</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is in the release cycle.
-Today we release 0.7.0 RC2 for you test.&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
-minutes.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-install-0.7.0-rc2.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0-rc2.tgz
-bash zstack-install-0.7.0-rc2.sh -u -f zstack-all-in-one-0.7.0-rc2.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7-rc2
-cd zstack-0.7-rc2
-wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
-/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-
-wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
-
-&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
-In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
-installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it's worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
-
-&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
-Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
-the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
-
-&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
-feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM's snapshot function, the BTRFS-ISCSI snapshot does
-not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
-NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
-
-&lt;h2&gt;Static IP Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn't supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack's system tag system. You can provide static
-IPs by system tags in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;Update APIs&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
-APIUpdateImageMsg
-APIUpdateVolumeMsg
-APIUpdateInstanceOfferingMsg
-APIUpdateDiskOfferingMsg
-APIUpdatePrimaryStorageMsg
-APIUpdateVolumeSnapshotMsg
-APIUpdateBackupStorageMsg
-APIUpdateL3NetworkMsg
-APIUpdateIpRangeMsg
-APIUpdateL2NetworkMsg
-APIUpdateClusterMsg
-APIUpdateZoneMsg
-APIUpdateHostMsg
-APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
-APIUpdateKVMHostMsg
-APIUpdateSftpBackupStorageMsg
-APIUpdatePortForwardingRuleMsg
-APIUpdateEipMsg
-APIUpdateSecurityGroupMsg
-APIUpdateVipMsg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
-explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt; once 0.7 GA is released.&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 24 Jun 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/blog/v0.7-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7-rc2.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Announcing ZStack v0.7 RC2</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is in the release cycle.
-Today we release 0.7.0 RC2 for you test.&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
-minutes.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-install-0.7.0-rc2.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0-rc2.tgz
-bash zstack-install-0.7.0-rc2.sh -u -f zstack-all-in-one-0.7.0-rc2.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7-rc2
-cd zstack-0.7-rc2
-wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
-/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-
-wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
-
-&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
-In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
-installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it's worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
-
-&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
-Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
-the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
-
-&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
-feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM's snapshot function, the BTRFS-ISCSI snapshot does
-not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
-NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
-
-&lt;h2&gt;Static IP Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn't supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack's system tag system. You can provide static
-IPs by system tags in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;Update APIs&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
-APIUpdateImageMsg
-APIUpdateVolumeMsg
-APIUpdateInstanceOfferingMsg
-APIUpdateDiskOfferingMsg
-APIUpdatePrimaryStorageMsg
-APIUpdateVolumeSnapshotMsg
-APIUpdateBackupStorageMsg
-APIUpdateL3NetworkMsg
-APIUpdateIpRangeMsg
-APIUpdateL2NetworkMsg
-APIUpdateClusterMsg
-APIUpdateZoneMsg
-APIUpdateHostMsg
-APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
-APIUpdateKVMHostMsg
-APIUpdateSftpBackupStorageMsg
-APIUpdatePortForwardingRuleMsg
-APIUpdateEipMsg
-APIUpdateSecurityGroupMsg
-APIUpdateVipMsg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
-explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt; once 0.7 GA is released.&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Wed, 24 Jun 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/blog/v0.7-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v0.7-rc2.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>如果软件测试是门艺术，软件测试工程师就是艺术家 －－ 浅析ZStack是如何做智能软件测试</title>
-        <description>&lt;p&gt;目前各个软件公司都很重视自动化软件测试。甚至会把软件测试自动化率（自动化测试用例占整个测试用例的比例）作为软件测试人员（也叫质量保证工程师）绩效考核的内容之一。追求自动化测试比例的初衷是很好的，但是不顾软件产品的实际情况和软件测试人员的情况，而过分追求高的测试自动化比例，会得到适得其反的效果。我们常常会听到某软件的自动化测试率高达70～80%，可是还是不得不聘请大量的测试人员来进行手动测试。这在无形之中把软件测试引入了误区。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/automation-test-ratio.jpg&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;ZStack的测试架构师认为，软件自动化测试的好坏可以用软件缺陷的发现的比率来衡量。换句话说如果整个系统的自动化测试比例达到80%，那么通过自动化测试发现软件缺陷的数量应该达到甚至超过全部软件缺陷数量的80%。举个例子，iSCSI主存储是即将发布的ZStack 0.7版本的重要功能。ZStack现有的自动化测试用例在没有修改一行代码的情况下，就可以用于测试iSCSI主存储的功能。之前开发人员手动测试没有发现的软件缺陷，但是用自动化测试用例发现了5个缺陷。这个就是非常有效的自动化测试用例。&lt;/p&gt;
-
-&lt;p&gt;ZStack对软件质量非常看重，因为我们深知人是最聪明也是最不可靠的（以后我们也许可以探讨一下人性与软件测试的香相关话题），所以从整个软件设计的开始，ZStack就决定尽可能的依靠全自动的测试手段来探测各种可能出现的软件缺陷。&lt;/p&gt;
-
-&lt;p&gt;传统的自动化测试有一个优势就是每轮测试都会严格执行之前定义好的全部测试用例，无一遗漏。通过对前后测试结果的比较，就可以得出质量的变化情况。不过这个优势也是它的弱点。设计软件测试的人员都知道，由于无法穷举所有的测试可能，所以预先设计的测试用例也只能覆盖一部分最常见（或者说是测试人员最希望测试到）的领域。那么对于没有测试到的领域就无法确定其是否存在软件缺陷。这个问题该怎么破呢？为此，ZStack的自动化测试特别引入了一种特别的测试－－基于模型的测试（Model-based Testing)。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/model-based-test.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;基于模型的测试是一种人工智能的测试方法，可以用于自动的构造测试场景和测试用例。它要求测试人员首先基于软件功能构造出各种模型（或者叫做行为），然后制定行为和行为之间的关系以及行为和系统的关系（有限状态机），之后自动测试系统就可以智能的根据当前的被测系统的状态（场景）以及预设的规则，选择下一步要执行的行为。理论上这种测试方法可以尽可能的遍历被测试系统中各种可能经历的行为链，从而极大的提高了测试覆盖率。由于它每次执行的路径和以往不同，所以可以构造出完全不同的测试用例，我们也可以称之为智能的软件测试。&lt;/p&gt;
-
-&lt;p&gt;下面，我们来大致看看ZStack是怎么构造基于模型的测试的。不过首先我们要说明的是，整个基于模型测试的难点在于提取测试模型，以及编写测试模型验证代码，而非基于模型的测试框架本身和模型算法。所以以后遇到推销基于模型测试“框架”的人，千万不要觉得他们牛的一塌糊涂，真正牛的是实现具体测试的人，而非框架本身。实现测试系统的工程师才是真正的英雄。换句话说，虽然现实中有一些现成的基于模型的测试的框架，但是如果其他IaaS想要重现ZStack的智能测试也绝非易事。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/vm-transition-table.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;ZStack基于模型的测试首先就是要把各种IaaS操作定义成模型。这里我们拿虚拟机实例的各种操作举例。虚拟机实例通常只有4个状态，状态和状态之间可以定义标准的操作。把状态和操作画出来后，我们就得到了虚拟机实例的状态迁移图（有限状态机）。可以看到上图中Running和Stopped的状态之间可以通过stop和start操作做成状态环。那么智能测试就可以根据预先设定的规则，可能会让虚拟机在这个环里做有限的测试。这一个看起来好像很简单，但是要知道IaaS里面还有很多其他资源的状态迁移图。而且很多资源之间是有相互依赖关系的，例如在某些系统中只有虚拟机处于Stopped的状态才可以做磁盘快照。而且用户在操作IaaS的时候，也不会只做虚拟机状态的改变，通常会和其他资源的actions混合操作。所有当把所有资源的迁移图画完，就会发现整个IaaS的场景和可选的行为之间的关系还是非常非常复杂的。ZStack的测试工程师可是花费了不少的时间来完成这项艰巨的工作。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/random-scheduler.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;当创造完场景和行为关系图后，智能测试就可以开始最初的测试工作。一开始的时候，它的智力水平并不高，只能从当前可执行的所有操作中随机的选择一个操作。极端情况，这可能会导致它一直在虚拟机实例的操作中绕圈子，而有些操作从来就没有执行过。慢慢的ZStack工程师就开始给他添加了两个更高的智慧：公平调度算法和基于历史测试路径的调度算法。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/fair-scheduler.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;公平调度算法会让智能测试系统尽量选择最少执行的行为作为下一个操作。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/testing/path-coverage-scheduler.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;而基于历史测试路径的算法可以让智能系统选择曾经没有测试过的路径。有了这两种更加智能的调度算法，智能测试系统也就可以更好的发挥它的能力，未来ZStack的测试工程师们还会设计出一些更高级的复合测试算法，来增加智能测试系统的智商。除了发现一些常规的问题外，通过基于模型的测试还发现了不少我们称之为Corner Case的缺陷，它们可能是90%的ZStack用户永远也不会触发的问题。虽说是corner case，但是一旦在开发的阶段没有发现，等到用户遇到的时候，就会花费很大的力气来修复，有一些可能还是致命的。所以这种基于模型的智能测试给ZStack带来了很大的好处。&lt;/p&gt;
-
-&lt;p&gt;基于模型的测试和ZStack的另外两大自动化测试系统：集成测试和系统测试构成了ZStack质量控制的三驾马车。在当今DevOps当道的今天，我们希望ZStack的测试和研发投入比力求做到1:1（以后我们也许可以和大家交流为什么纯粹的靠开发人员来做测试是有问题的） ，我们希望把软件质量永远放在ZStack的第一位。&lt;/p&gt;
-
-&lt;p&gt;希望今天浅析的ZStack智能测试方法能给广大软件质量保证师从实践角度带来一些好的想法。最后我们想要感谢全世界的软件测试工程师，感谢你们在每一件软件产品后面付出的辛苦努力！&lt;/p&gt;
-</description>
-        <pubDate>Sun, 14 Jun 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/cn/test-is-king.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/test-is-king.html</guid>
-        
-        
-        <category>cn</category>
-        
-      </item>
-    
-      <item>
-        <title>Intel is ZStack's partner now</title>
-        <description>&lt;p&gt;Today we are glad to announce that Intel, the world's largest and highest valued semiconductor chip maker, becomes ZStack's partner!
-Intel has been investigating many resources in the cloud computing, including help open source technology to create enterprise-ready
-IaaS infrastructure. ZStack, as its leading IaaS technology brings a lot of potential for future enterprise cloud, gets much attention
-from Intel and finally becomes Intel's partner in IaaS area.&lt;/p&gt;
-
-&lt;p&gt;Leveraging Intel's support, ZStack will continue to focus on building deployable, maintainable, and flexible IaaS software,
-helping enterprises move IT infrastructure into the cloud era.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/zstack-intel.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 14 Jun 2015 00:00:00 -0700</pubDate>
-        <link>http://zstack.org/blog/intel.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/intel.html</guid>
         
         
         <category>blog</category>
