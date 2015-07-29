@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 27 Jul 2015 22:33:51 +0800</pubDate>
-    <lastBuildDate>Mon, 27 Jul 2015 22:33:51 +0800</lastBuildDate>
+    <pubDate>Wed, 29 Jul 2015 11:31:26 +0800</pubDate>
+    <lastBuildDate>Wed, 29 Jul 2015 11:31:26 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -628,8 +628,10 @@ zstack-cli默认会记录最近一次用户登录的&lt;b&gt;session_uuid&lt;/b&
 
 &lt;p&gt;当用户选择某个模板（CPU/内存配置）创建云主机之后，可以根据需求修改云主机配置。修改后，仅需要重启云主机即可。不过该功能和账号系统一样，在v0.8里只能通过zstack-cli来调用，例如：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;第一个vmInstanceUuid就是你想要改变的云主机的UUID，第二个instanceOfferingUuid就是你希望改变之后的模板的UUID。&lt;/p&gt;
 
 &lt;h2&gt;从0.7版本无缝升级&lt;/h2&gt;
 
@@ -1052,7 +1054,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;p&gt;You can use ChangeInstanceOffering to change the instance offering of a VM. For example:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
@@ -1319,7 +1321,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;p&gt;You can use ChangeInstanceOffering to change the instance offering of a VM. For example:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;

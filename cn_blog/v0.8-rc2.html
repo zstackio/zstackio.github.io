@@ -148,8 +148,10 @@
 
 <p>当用户选择某个模板（CPU/内存配置）创建云主机之后，可以根据需求修改云主机配置。修改后，仅需要重启云主机即可。不过该功能和账号系统一样，在v0.8里只能通过zstack-cli来调用，例如：</p>
 
-<pre><code>&gt;&gt;&gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 vmInstanceUuid=d791a3f662ac48a99b9e998136eed2a1
+<pre><code>&gt;&gt;&gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
 </code></pre>
+
+<p>第一个vmInstanceUuid就是你想要改变的云主机的UUID，第二个instanceOfferingUuid就是你希望改变之后的模板的UUID。</p>
 
 <h2>从0.7版本无缝升级</h2>
 
