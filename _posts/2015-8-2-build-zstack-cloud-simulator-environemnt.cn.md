@@ -1,6 +1,6 @@
 ---
 layout: post.cn
-title:  "ZStack 模拟器－－构建云测试环境的神器"
+title:  "ZStack 云环境模拟器"
 date:   2015-8-2
 categories: blog
 author: Yongkang You 
