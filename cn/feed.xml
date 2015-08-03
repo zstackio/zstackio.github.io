@@ -5,9 +5,658 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 29 Jul 2015 11:31:26 +0800</pubDate>
-    <lastBuildDate>Wed, 29 Jul 2015 11:31:26 +0800</lastBuildDate>
+    <pubDate>Mon, 03 Aug 2015 11:32:36 +0800</pubDate>
+    <lastBuildDate>Mon, 03 Aug 2015 11:32:36 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack 云环境模拟器</title>
+        <description>&lt;h3&gt;介绍&lt;/h3&gt;
+
+&lt;p&gt;熟悉OpenStack的同学应该知道OpenStack可以用&lt;a href=&quot;https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/&quot;&gt;devstack&lt;/a&gt;来搭建一个虚拟云环境，
+使用CloudStack的同学也知道CloudStack也有一个&lt;a href=&quot;https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration&quot;&gt;虚拟云环境&lt;/a&gt;。
+在虚拟云环境中，云主机不会在物理设备上真正创建出来，一切的云场景都是构建在一个虚无的世界中，唯有IaaS的数据库和消息总线还在真实的工作。
+由于云模拟器的这种特性，我们可以用它来熟悉各种云操作和进行底层和虚拟机无关的集成测试，例如测试消息总线，测试数据库，测试IaaS的基本功能。
+ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的开发而不断增强。ZStack的数百个集成测试用例就是
+跑在ZStack的模拟器之上的。ZStack首页上例举的很多大规模并发性能测试也是基于模拟器来进行的
+（不过ZStack在用户的真实物理环境中已经拿到比在PC模拟器上还要好的数据了，平均云主机的创建时间可以低于0.08s）。在频繁的各种VM的操作之中，
+我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
+从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
+ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。&lt;/p&gt;
+
+&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/simulator/simulator.png&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;今天我们就要给大家展示一下ZStack的虚拟云环境如何创建。另外我们还要给大家展示一下如何一步部署ZStack模拟云环境。
+ZStack模拟器和ZStack天然集成，最早的时候ZStack的Dashboard也是可以在UI界面上添加和部署虚拟云环境。但是后来为了避免用户的误操作，
+ZStack开发团队把UI界面上添加云环境的功能给禁止了。目前虚拟云环境需要通过zstack-cli来操作。
+如果您只是想快速部署一个虚拟的云环境，而不在乎部署的过程，可以直接跳转到本文的最后，使用一键部署。
+用户可以在半分钟内完成虚拟云环境的部署，并用其创建虚拟云主机。&lt;/p&gt;
+
+&lt;h3&gt;前提&lt;/h3&gt;
+
+&lt;p&gt;已经根据&lt;a href=&quot;/cn/installation/index.html&quot;&gt;ZStack快速安装手册&lt;/a&gt;，完成ZStack的快速安装和启动。&lt;/p&gt;
+
+&lt;h3&gt;登录zstack控制终端&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+[zstack@localhost ~]$ sudo zstack-cli
+
+  ZStack command line tool
+  Type &quot;help&quot; for more information
+  Type Tab key for auto-completion
+  Type &quot;quit&quot; or &quot;exit&quot; or Ctrl-d to exit
+
+&gt;&gt;&gt;LogInByAccount accountName=admin password=password
+{
+    &quot;inventory&quot;: {
+        &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 7:59:59 AM&quot;,
+        &quot;expiredDate&quot;: &quot;Aug 3, 2015 9:59:59 AM&quot;,
+        &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;uuid&quot;: &quot;d45bdd89b8984d65b35dd97f83387e4c&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;创建Zone&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateZone name=simulator-zone
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:00:25 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:00:25 AM&quot;,
+        &quot;name&quot;: &quot;simulator-zone&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;type&quot;: &quot;zstack&quot;,
+        &quot;uuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;创建Cluster&lt;/h3&gt;
+
+&lt;p&gt;需要大家把zoneUuid换成自己刚刚创建的Zone的UUID，并且把hypervisor的类型指定为“Simulator”：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateCluster name=simulator-cluster zoneUuid=22331c109ef64f88a5826bcf96793941 hypervisorType=Simulator
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:02:19 AM&quot;,
+        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:02:19 AM&quot;,
+        &quot;name&quot;: &quot;simulator-cluster&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;type&quot;: &quot;zstack&quot;,
+        &quot;uuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加虚拟的计算节点&lt;/h3&gt;
+
+&lt;p&gt;添加虚拟计算节点的时候，需要使用一个特别的API：&lt;strong&gt;AddSimulatorHost&lt;/strong&gt;。（添加物理KVM计算节点的API是：AddKVMHost）。
+由于是虚拟的计算节点，我们还需要给一个假设的CPU容量和内存容量（为了测试方便，该容量可以给的随意大）：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AddSimulatorHost name=simulator-host clusterUuid=c237767682d947f58efaf5e485b713e7 cpuCapacity=200000 memoryCapacity=1000000000000 managementIp=10.10.10.10
+{
+    &quot;inventory&quot;: {
+        &quot;availableCpuCapacity&quot;: 200000,
+        &quot;availableMemoryCapacity&quot;: 1000000000000,
+        &quot;clusterUuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:05:08 AM&quot;,
+        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:05:08 AM&quot;,
+        &quot;managementIp&quot;: &quot;10.10.10.10&quot;,
+        &quot;name&quot;: &quot;simulator-host&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Connected&quot;,
+        &quot;totalCpuCapacity&quot;: 200000,
+        &quot;totalMemoryCapacity&quot;: 1000000000000,
+        &quot;uuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加虚拟主存储&lt;/h3&gt;
+
+&lt;p&gt;同虚拟计算节点一样，我们需要使用一个特别的API（&lt;strong&gt;AddSimulatorPrimaryStorage&lt;/strong&gt;）来添加虚拟主存储，
+另外我们还需要给一个虚拟的可用空间以及设置类型为&lt;strong&gt;SimulatorPrimaryStorage&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AddSimulatorPrimaryStorage name=simulator-ps zoneUuid=22331c109ef64f88a5826bcf96793941 availableCapacity=10000000000000 totalCapacity=10000000000000 url=nfs://fake_url/fake_folder type=SimulatorPrimaryStorage
+{
+    &quot;inventory&quot;: {
+        &quot;attachedClusterUuids&quot;: [],
+        &quot;availableCapacity&quot;: 10000000000000,
+        &quot;availablePhysicalCapacity&quot;: 0,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
+        &quot;mountPath&quot;: &quot;/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
+        &quot;name&quot;: &quot;simulator-ps&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Connected&quot;,
+        &quot;totalCapacity&quot;: 10000000000000,
+        &quot;totalPhysicalCapacity&quot;: 0,
+        &quot;type&quot;: &quot;SimulatorPrimaryStorage&quot;,
+        &quot;url&quot;: &quot;nfs://fake_url/fake_folder&quot;,
+        &quot;uuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;然后把刚创建的主存储挂载到虚拟cluster上去：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AttachPrimaryStorageToCluster primaryStorageUuid=c6c019a5b6dc494aaacbedfb5d3beb8e clusterUuid=c237767682d947f58efaf5e485b713e7
+{
+    &quot;inventory&quot;: {
+        &quot;attachedClusterUuids&quot;: [
+            &quot;c237767682d947f58efaf5e485b713e7&quot;
+        ],
+        &quot;availableCapacity&quot;: 10000000000000,
+        &quot;availablePhysicalCapacity&quot;: 0,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
+        &quot;mountPath&quot;: &quot;/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
+        &quot;name&quot;: &quot;simulator-ps&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Connected&quot;,
+        &quot;totalCapacity&quot;: 10000000000000,
+        &quot;totalPhysicalCapacity&quot;: 0,
+        &quot;type&quot;: &quot;SimulatorPrimaryStorage&quot;,
+        &quot;url&quot;: &quot;nfs://fake_url/fake_folder&quot;,
+        &quot;uuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加虚拟备份存储&lt;/h3&gt;
+
+&lt;p&gt;同添加虚拟主存储类似，我们也需要用到特殊的&lt;strong&gt;AddSimulatorBackupStorage&lt;/strong&gt;，除了设定虚拟的可用空间外，
+我们还需要指定存储类型为SimulatorBackupStorage。创建完成后，在把它挂载到zone上：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AddSimulatorBackupStorage name=simulator-bs url=/fake_url totalCapacity=1000000000000 availableCapacity=1000000000000 type=SimulatorBackupStorage
+{
+    &quot;inventory&quot;: {
+        &quot;attachedZoneUuids&quot;: [],
+        &quot;availableCapacity&quot;: 1000000000000,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
+        &quot;name&quot;: &quot;simulator-bs&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Connected&quot;,
+        &quot;totalCapacity&quot;: 1000000000000,
+        &quot;type&quot;: &quot;SimulatorBackupStorage&quot;,
+        &quot;url&quot;: &quot;/fake_url&quot;,
+        &quot;uuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;
+    },
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;AttachBackupStorageToZone backupStorageUuid=7bde50df528b45ffb1689229c3de105b zoneUuid=22331c109ef64f88a5826bcf96793941
+{
+    &quot;inventory&quot;: {
+        &quot;attachedZoneUuids&quot;: [
+            &quot;22331c109ef64f88a5826bcf96793941&quot;
+        ],
+        &quot;availableCapacity&quot;: 1000000000000,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
+        &quot;name&quot;: &quot;simulator-bs&quot;,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Connected&quot;,
+        &quot;totalCapacity&quot;: 1000000000000,
+        &quot;type&quot;: &quot;SimulatorBackupStorage&quot;,
+        &quot;url&quot;: &quot;/fake_url&quot;,
+        &quot;uuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加虚拟云主机模版&lt;/h3&gt;
+
+&lt;p&gt;由于我们指定了备份存储为一个虚拟备份存储，添加Image的时候不需要使用真实的url。但是我们需要在Image的format上指定为&lt;strong&gt;simulator&lt;/strong&gt;，而不是qcow2或者raw。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;AddImage name=simulator-image backupStorageUuids=7bde50df528b45ffb1689229c3de105b format=simulator mediaType=RootVolumeTemplate url=http://fake_url
+{
+    &quot;inventory&quot;: {
+        &quot;backupStorageRefs&quot;: [
+            {
+                &quot;backupStorageUuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;,
+                &quot;createDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
+                &quot;imageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
+                &quot;installPath&quot;: &quot;/fake_url/simulator-image&quot;,
+                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;
+            }
+        ],
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
+        &quot;format&quot;: &quot;simulator&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
+        &quot;md5Sum&quot;: &quot;528068b1699f4495bcd90f1b901e6ee9&quot;,
+        &quot;mediaType&quot;: &quot;RootVolumeTemplate&quot;,
+        &quot;name&quot;: &quot;simulator-image&quot;,
+        &quot;platform&quot;: &quot;Linux&quot;,
+        &quot;size&quot;: 100,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;status&quot;: &quot;Ready&quot;,
+        &quot;system&quot;: false,
+        &quot;type&quot;: &quot;zstack&quot;,
+        &quot;url&quot;: &quot;http://fake_url&quot;,
+        &quot;uuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;创建虚拟L2&lt;/h3&gt;
+
+&lt;p&gt;添加一个虚拟的L2设备，当挂载给一个虚拟的Cluster的时候，ZStack不会检查该L2设备是否真实存在。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateL2NoVlanNetwork name=simulator-l2 physicalInterface=eth0 zoneUuid=22331c109ef64f88a5826bcf96793941
+{
+    &quot;inventory&quot;: {
+        &quot;attachedClusterUuids&quot;: [],
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
+        &quot;name&quot;: &quot;simulator-l2&quot;,
+        &quot;physicalInterface&quot;: &quot;eth0&quot;,
+        &quot;type&quot;: &quot;L2NoVlanNetwork&quot;,
+        &quot;uuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;AttachL2NetworkToCluster l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b clusterUuid=c237767682d947f58efaf5e485b713e7
+{
+    &quot;inventory&quot;: {
+        &quot;attachedClusterUuids&quot;: [
+            &quot;c237767682d947f58efaf5e485b713e7&quot;
+        ],
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
+        &quot;name&quot;: &quot;simulator-l2&quot;,
+        &quot;physicalInterface&quot;: &quot;eth0&quot;,
+        &quot;type&quot;: &quot;L2NoVlanNetwork&quot;,
+        &quot;uuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加一个L3网络&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateL3Network name=simulator-l3 l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:29:23 AM&quot;,
+        &quot;ipRanges&quot;: [],
+        &quot;l2NetworkUuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:29:23 AM&quot;,
+        &quot;name&quot;: &quot;simulator-l3&quot;,
+        &quot;networkServices&quot;: [],
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;system&quot;: false,
+        &quot;type&quot;: &quot;L3BasicNetwork&quot;,
+        &quot;uuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&gt;&gt;&gt;AddIpRange name=simulator-ip-range l3NetworkUuid=af0c2a51dd954207af9f61e43bfee757 startIp=172.16.0.2 endIp=172.16.255.254 netmask=255.255.0.0 gateway=172.16.0.1
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:30:44 AM&quot;,
+        &quot;endIp&quot;: &quot;172.16.255.254&quot;,
+        &quot;gateway&quot;: &quot;172.16.0.1&quot;,
+        &quot;l3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:30:44 AM&quot;,
+        &quot;name&quot;: &quot;simulator-ip-range&quot;,
+        &quot;netmask&quot;: &quot;255.255.0.0&quot;,
+        &quot;startIp&quot;: &quot;172.16.0.2&quot;,
+        &quot;uuid&quot;: &quot;24607ef0fa0b4b3fa6965e4c3c331abe&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;添加云主机模版&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+&gt;&gt;&gt;CreateInstanceOffering name=simulator-vm-offering cpuNum=2 cpuSpeed=128 memorySize=256000000
+{
+    &quot;inventory&quot;: {
+        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
+        &quot;cpuNum&quot;: 2,
+        &quot;cpuSpeed&quot;: 128,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:33:14 AM&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:33:14 AM&quot;,
+        &quot;memorySize&quot;: 256000000,
+        &quot;name&quot;: &quot;simulator-vm-offering&quot;,
+        &quot;sortKey&quot;: 0,
+        &quot;state&quot;: &quot;Enabled&quot;,
+        &quot;type&quot;: &quot;UserVm&quot;,
+        &quot;uuid&quot;: &quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;创建一个虚拟的云主机&lt;/h3&gt;
+
+&lt;p&gt;创建一个虚拟的云主机我们需要指定L3，Image和InstanceOffering的UUID。它们的UUID都可以在之前的命令结果中找到：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
+{
+    &quot;inventory&quot;: {
+        &quot;allVolumes&quot;: [
+            {
+                &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+                &quot;description&quot;: &quot;Root volume for VM[uuid:63becebd92894c108a4c268d7a722ed9]&quot;,
+                &quot;deviceId&quot;: 0,
+                &quot;format&quot;: &quot;simulator&quot;,
+                &quot;installPath&quot;: &quot;nfs:/fake_url/fake_folder/vm/8657fb16029444bfb62e96eed0867cc0.qcow2&quot;,
+                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+                &quot;name&quot;: &quot;ROOT-for-sim-vm1&quot;,
+                &quot;primaryStorageUuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
+                &quot;rootImageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
+                &quot;size&quot;: 100,
+                &quot;state&quot;: &quot;Enabled&quot;,
+                &quot;status&quot;: &quot;Ready&quot;,
+                &quot;type&quot;: &quot;Root&quot;,
+                &quot;uuid&quot;: &quot;8657fb16029444bfb62e96eed0867cc0&quot;,
+                &quot;vmInstanceUuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;
+            }
+        ],
+        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
+        &quot;clusterUuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
+        &quot;cpuNum&quot;: 2,
+        &quot;cpuSpeed&quot;: 128,
+        &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+        &quot;defaultL3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
+        &quot;hostUuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
+        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
+        &quot;imageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
+        &quot;instanceOfferingUuid&quot;: &quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&quot;,
+        &quot;lastHostUuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
+        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+        &quot;memorySize&quot;: 256000000,
+        &quot;name&quot;: &quot;sim-vm1&quot;,
+        &quot;platform&quot;: &quot;Linux&quot;,
+        &quot;rootVolumeUuid&quot;: &quot;8657fb16029444bfb62e96eed0867cc0&quot;,
+        &quot;state&quot;: &quot;Running&quot;,
+        &quot;type&quot;: &quot;UserVm&quot;,
+        &quot;uuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;,
+        &quot;vmNics&quot;: [
+            {
+                &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+                &quot;deviceId&quot;: 0,
+                &quot;gateway&quot;: &quot;172.16.0.1&quot;,
+                &quot;ip&quot;: &quot;172.16.199.179&quot;,
+                &quot;l3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
+                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
+                &quot;mac&quot;: &quot;fa:f1:91:9a:a7:00&quot;,
+                &quot;netmask&quot;: &quot;255.255.0.0&quot;,
+                &quot;uuid&quot;: &quot;888fdf0816714cdfa16a5797d6e2c8dc&quot;,
+                &quot;vmInstanceUuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;
+            }
+        ],
+        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;保存当前云环境&lt;/h3&gt;
+
+&lt;p&gt;如果觉得每次创建一个虚拟云环境还是需要花费一些时间来一步步添加各种资源。我们可以利用zstack-cli的dump云环境的功能，
+把当前的云环境给dump下来，然后在以后的测试中，直接还原。&lt;/p&gt;
+
+&lt;p&gt;使用zstack-cli -h 来获取相关的参数信息&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+[zstack@localhost ~]$ sudo zstack-cli -h
+Usage: -c [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -H HOST, --host=HOST  [Optional] IP address or DNS name of a ZStack
+                        management node. Default value: localhost
+  -p PORT, --port=PORT  [Optional] Port that the ZStack management node is
+                        listening on. Default value: 8080
+  -d DEPLOY_CONFIG_FILE, --deploy=DEPLOY_CONFIG_FILE
+                        [Optional] deploy a cloud from a XML file.
+  -t DEPLOY_CONFIG_TEMPLATE_FILE, --tempate=DEPLOY_CONFIG_TEMPLATE_FILE
+                        [Optional] variable template file for XML file
+                        spcified in option &#39;-d&#39;
+  -D ZSTACK_CONFIG_DUMP_FILE, --dump=ZSTACK_CONFIG_DUMP_FILE
+                        [Optional] dump a cloud to a XML file
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;然后使用 -D 来dump刚刚部署好的虚拟云环境&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+[zstack@localhost ~]$ sudo zstack-cli -D /tmp/simulator-zstack-cloud.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;&lt;strong&gt;如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password&lt;/strong&gt;来登录系统。&lt;/p&gt;
+
+&lt;h3&gt;Dump好的xml文件内容&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; ?&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;deployerConfig&amp;gt;&lt;/span&gt;
+
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;nodes&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;node&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;hostName=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10.10.3.230&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;8ff3c1babe0d44c0a75ab3a93eb7c867&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/nodes&amp;gt;&lt;/span&gt;
+
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;instanceOfferings&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;instanceOffering&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;allocatorStrategy=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;DefaultHostAllocatorStrategy&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;cpuNum=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;cpuSpeed=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;128&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;memorySize=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;256000000&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-vm-offering&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;sortKey=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;UserVm&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/instanceOfferings&amp;gt;&lt;/span&gt;
+
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorages&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;simulatorBackupStorage&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;availableCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;1000000000000&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-bs&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;totalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;1000000000000&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SimulatorBackupStorage&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/fake_url&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;7bde50df528b45ffb1689229c3de105b&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorages&amp;gt;&lt;/span&gt;
+
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;images&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;image&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;format=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;mediaType=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;RootVolumeTemplate&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-image&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;platform=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Linux&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Ready&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;system=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;False&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;http://fake_url&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;5e40b7d5fed442848830716bfe71ec2e&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorageRef&amp;gt;&lt;/span&gt;
+        simulator-bs
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorageRef&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/images&amp;gt;&lt;/span&gt;
+
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;zones&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;zone&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-zone&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
+      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;22331c109ef64f88a5826bcf96793941&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorageRef&amp;gt;&lt;/span&gt;
+        simulator-bs
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorageRef&amp;gt;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;primaryStorages&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;simulatorPrimaryStorage&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;availableCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;9999999999900&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;availablePhysicalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-ps&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;totalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10000000000000&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;totalPhysicalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;nfs://fake_url/fake_folder&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;c6c019a5b6dc494aaacbedfb5d3beb8e&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/primaryStorages&amp;gt;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;clusters&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;cluster&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;hypervisorType=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Simulator&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-cluster&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;c237767682d947f58efaf5e485b713e7&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;zoneUuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;22331c109ef64f88a5826bcf96793941&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;hosts&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;host&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;managementIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10.10.10.10&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-host&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;b879af2114794044a6ce2f8902da3e38&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/hosts&amp;gt;&lt;/span&gt;
+
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;primaryStorageRef&amp;gt;&lt;/span&gt;
+            simulator-ps
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/primaryStorageRef&amp;gt;&lt;/span&gt;
+
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2NetworkRef&amp;gt;&lt;/span&gt;
+            simulator-l2
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2NetworkRef&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/cluster&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/clusters&amp;gt;&lt;/span&gt;
+
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2Networks&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2NoVlanNetwork&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-l2&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;physicalInterface=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;eth0&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;description=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;l2&amp;quot;&lt;/span&gt;
+          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;66d4801c02154daeb361bf0a703bd14b&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;l3Networks&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;l3BasicNetwork&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-l3&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;system=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;False&amp;quot;&lt;/span&gt;
+              &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;af0c2a51dd954207af9f61e43bfee757&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+              &lt;span class=&quot;nt&quot;&gt;&amp;lt;ipRange&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;endIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.255.254&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;gateway=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.0.1&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-ip-range&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;netmask=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;255.255.0.0&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;startIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.0.2&amp;quot;&lt;/span&gt;
+                &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;24607ef0fa0b4b3fa6965e4c3c331abe&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l3BasicNetwork&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l3Networks&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2NoVlanNetwork&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2Networks&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/zone&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/zones&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/deployerConfig&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;还原虚拟云环境&lt;/h3&gt;
+
+&lt;p&gt;当进行了一些测试后，希望快速还原初始化的虚拟云环境，我们就可以使用上一节的xml内容进行恢复。我们假设xml的文件为：/tmp/simulator-zstack-cloud.xml&lt;/p&gt;
+
+&lt;h4&gt;停止zstack管理节点&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;
+zstack-ctl stop_node
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h4&gt;初始化数据库&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;注意：该操作会清空整个数据库中的数据&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+zstack-ctl deploydb --drop
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;如果设置了mysql的root密码，还需要添加 --root-password=MY_MYSQL_ROOT_PASSWORD 的参数。&lt;/p&gt;
+
+&lt;h4&gt;启动zstack管理节点&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code&gt;
+zstack-ctl start_node
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h4&gt;一键恢复zstack云环境&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password&lt;/strong&gt;来登录系统。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+zstack-cli -d /tmp/simulator-zstack-cloud.xml
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;创建一个虚拟云主机试试&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;
+sudo zstack-cli CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;h3&gt;总结&lt;/h3&gt;
+
+&lt;p&gt;在本文中，我们介绍了如何使用zstack-cli 命令来搭建一个模拟的zstack 云环境。也介绍了如何把搭建好的云环境备份下来，然后之后可以一键还原。
+欢迎ZStack的用户使用模拟器来熟悉ZStack云环境，以及进行各种性能和压力测试，看看ZStack系统是否可以相应数万的并发API请求。&lt;/p&gt;
+</description>
+        <pubDate>Sun, 02 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/build-zstack-cloud-simulator-environemnt.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/build-zstack-cloud-simulator-environemnt.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>可与AWS媲美的ZStack账号用户系统</title>
@@ -1532,224 +2181,6 @@ for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgra
         <pubDate>Wed, 08 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn/blog/v0.7.1.html</link>
         <guid isPermaLink="true">http://zstack.org/cn/blog/v0.7.1.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Announcing ZStack v0.7</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0 is released.&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.7, ZStack supports seamless upgrade from previous versions. You can upgrade your setup with simple commands in a few
-minutes.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
-wget --no-check-certificate https://download.zstack.org/releases/0.7/install.sh
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack-all-in-one-0.7.0.tgz
-bash install.sh -u -f zstack-all-in-one-0.7.0.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.7
-cd zstack-0.7
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstackctl-0.7.tar.gz
-/var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-
-wget --no-check-certificate https://download.zstack.org/releases/0.7/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Once it finishes, the management node, zstack-cli, zstack-ctl are upgraded on the machine. You should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;In a few seconds, you should see the below picture:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.7. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --remote remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Built-in PyPi Index&lt;/h2&gt;
-
-&lt;p&gt;Many users reported that agents installation sometimes failed because the Python PyPi index was not always available.
-In 0.7, we pull out all our Python dependencies and build a PyPi index inside the management node. All agents and tools
-installation will NOT reply on the Python PyPi on the public network anymore. Because of that, the zstack.war gets much
-bigger(~80M) than before; but we still think it&#39;s worthy, because it stable and fast the installation of agents and tools.&lt;/p&gt;
-
-&lt;h2&gt;New ISCSI Primary Storage Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version supports ISCSI as primary storage. The default ISCSI server is based on a Linux machine with a BTRFS filesystem.
-Follow the &lt;a href=&quot;https://www.howtoforge.com/a-beginners-guide-to-btrfs&quot;&gt;tutorial&lt;/a&gt; to prepare a Linux machine with a BTRFS filesystem,
-the following instructions assume the BTRFS filesystem is mounted on /home/btrfs&lt;/p&gt;
-
-&lt;p&gt;On the UI, go to &quot;Primary Storage&quot; page then click the button &quot;New Primary Storage&quot; to add the ISCSI primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;After adding, double click the primary storage you can see detailed information:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../../images/0.7/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;The BTRFS-ISCSI primary storage supports all features you can expect. For the volume snapshot, ZStack leverages the copy-on-write
-feature of BTRFS; all snapshots are created individually, that is to say, every snapshot stays in a single snapshot tree that
-has only one snapshot. Compared to the volume snapshot of NFS using KVM&#39;s snapshot function, the BTRFS-ISCSI snapshot does
-not rely on hypervisors. You can achieve the live-snapshot with any version of KVM, which is only available in Ubuntu1404 while using
-NFS volume snapshot, because the restriction of the libivirt version.&lt;/p&gt;
-
-&lt;h2&gt;Static IP Support&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version allows users to specify static IPs when creating a new VM. The RC2 UI hasn&#39;t supported this feature,
-but you can achieve it using zstack-cli. This feature is implemented based on ZStack&#39;s system tag system. You can provide static
-IPs by system tags in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;staticIp::{l3NetworkUuid}::{IP}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CreateVmInstance name=vm l3NetworkUuids=979520f7953a4c8bb77f90afe3b3d398,825c78d5e5454e17a6357cb618d7d226 defaultL3NetworkUuid=979520f7953a4c8bb77f90afe3b3d398 instanceOfferingUuid=4ec815360b0745b5b34d279405c4fcd7 imageUuid=be97815edffd41b78a5d30cab6e1fc1b systemTags=staticIp::979520f7953a4c8bb77f90afe3b3d398::192.168.0.10,staticIp::825c78d5e5454e17a6357cb618d7d226::10.10.1.10
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;Update APIs&lt;/h2&gt;
-
-&lt;p&gt;The 0.7 version adds APIs to update information of every resource. The new APIs are:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;APIUpdateVmInstanceMsg
-APIUpdateImageMsg
-APIUpdateVolumeMsg
-APIUpdateInstanceOfferingMsg
-APIUpdateDiskOfferingMsg
-APIUpdatePrimaryStorageMsg
-APIUpdateVolumeSnapshotMsg
-APIUpdateBackupStorageMsg
-APIUpdateL3NetworkMsg
-APIUpdateIpRangeMsg
-APIUpdateL2NetworkMsg
-APIUpdateClusterMsg
-APIUpdateZoneMsg
-APIUpdateHostMsg
-APIUpdateIscsiFileSystemBackendPrimaryStorageMsg
-APIUpdateKVMHostMsg
-APIUpdateSftpBackupStorageMsg
-APIUpdatePortForwardingRuleMsg
-APIUpdateEipMsg
-APIUpdateSecurityGroupMsg
-APIUpdateVipMsg
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;All these APIs are very straightforward; you can use &lt;code&gt;zstack-cli&lt;/code&gt; and type &lt;em&gt;Tab&lt;/em&gt; key to check out their parameters. Detailed
-explanation will be given in the &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;user manual&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2&gt;Bug Fixes&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/60&quot;&gt;can not only query status field for VmInstance&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/59&quot;&gt;IP arrange judgment has bug&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/54&quot;&gt;iscsi volume vm creation failure&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/50&quot;&gt;VM with iscsi volume can&#39;t be migrated in centos6&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/47&quot;&gt;Delete iscsi volume snapshot failed&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/46&quot;&gt;zstack management node shutdown due to: web listener issued context destroy event&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/45&quot;&gt;zstack management node start failure due to rabbitmq: Attempt to use closed channel&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/42&quot;&gt;backup iscsi volume snapshot doesn&#39;t support CreateDataVolumeFromVolumeSnapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/40&quot;&gt;iscsi volume doesn&#39;t support backup volume snapshot&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/26&quot;&gt;root volume&#39;s format is &#39;raw&#39; if it&#39;s installed from ISO&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/21&quot;&gt;Can not create guest vm from ISO image with iSCSI on Btrfs&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/20&quot;&gt;Host status tracing has bug, which might wrongly change Host status from disconnected to connected&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/19&quot;&gt;primary storage capacity allocation and counting bug &lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/17&quot;&gt;Feature Request: Primary Storage need to support iSCSI with backend filesystem BTRFS&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/16&quot;&gt;Feature Request: Assign given IP (not DHCP random IP) to new created VM&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/8&quot;&gt;Installation identify can&#39;t start management server for all-in-one&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Thu, 02 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v0.7.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v0.7.html</guid>
         
         
         <category>blog</category>
