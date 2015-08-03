@@ -6,8 +6,8 @@ categories: blog
 author: Yongkang You 
 category: cn_blog
 ---
+<img  class="img-responsive"  src="/images/blogs/simulator/simulator.png">
 ### 介绍
-
 熟悉OpenStack的同学应该知道OpenStack可以用[devstack](https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/)来搭建一个虚拟云环境，
 使用CloudStack的同学也知道CloudStack也有一个[虚拟云环境](https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration)。
 在虚拟云环境中，云主机不会在物理设备上真正创建出来，一切的云场景都是构建在一个虚无的世界中，唯有IaaS的数据库和消息总线还在真实的工作。
@@ -18,8 +18,6 @@ ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的�
 我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
 从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
 ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。
-
-<img  class="img-responsive"  src="/images/blogs/simulator/simulator.png">
 
 今天我们就要给大家展示一下ZStack的虚拟云环境如何创建。另外我们还要给大家展示一下如何一步部署ZStack模拟云环境。
 ZStack模拟器和ZStack天然集成，最早的时候ZStack的Dashboard也是可以在UI界面上添加和部署虚拟云环境。但是后来为了避免用户的误操作，
