@@ -5,13 +5,15 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 03 Aug 2015 11:32:36 +0800</pubDate>
-    <lastBuildDate>Mon, 03 Aug 2015 11:32:36 +0800</lastBuildDate>
+    <pubDate>Mon, 03 Aug 2015 11:52:28 +0800</pubDate>
+    <lastBuildDate>Mon, 03 Aug 2015 11:52:28 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>ZStack 云环境模拟器</title>
-        <description>&lt;h3&gt;介绍&lt;/h3&gt;
+        <description>&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/simulator/simulator.png&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;介绍&lt;/h3&gt;
 
 &lt;p&gt;熟悉OpenStack的同学应该知道OpenStack可以用&lt;a href=&quot;https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/&quot;&gt;devstack&lt;/a&gt;来搭建一个虚拟云环境，
 使用CloudStack的同学也知道CloudStack也有一个&lt;a href=&quot;https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration&quot;&gt;虚拟云环境&lt;/a&gt;。
@@ -23,8 +25,6 @@ ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的�
 我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
 从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
 ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/simulator/simulator.png&quot;&gt;&lt;/p&gt;
 
 &lt;p&gt;今天我们就要给大家展示一下ZStack的虚拟云环境如何创建。另外我们还要给大家展示一下如何一步部署ZStack模拟云环境。
 ZStack模拟器和ZStack天然集成，最早的时候ZStack的Dashboard也是可以在UI界面上添加和部署虚拟云环境。但是后来为了避免用户的误操作，

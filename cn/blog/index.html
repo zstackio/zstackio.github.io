@@ -117,7 +117,20 @@
     <div>
       <a href="/cn_blog/build-zstack-cloud-simulator-environemnt.html"><h3>ZStack 云环境模拟器</h3></a>
       <p class="post-meta"> by Yongkang You on Aug 2, 2015</p>
-      <h3>介绍</h3>
+      <p><img  class="img-responsive"  src="/images/blogs/simulator/simulator.png"></p>
+
+<h3>介绍</h3>
+
+<p>熟悉OpenStack的同学应该知道OpenStack可以用<a href="https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/">devstack</a>来搭建一个虚拟云环境，
+使用CloudStack的同学也知道CloudStack也有一个<a href="https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration">虚拟云环境</a>。
+在虚拟云环境中，云主机不会在物理设备上真正创建出来，一切的云场景都是构建在一个虚无的世界中，唯有IaaS的数据库和消息总线还在真实的工作。
+由于云模拟器的这种特性，我们可以用它来熟悉各种云操作和进行底层和虚拟机无关的集成测试，例如测试消息总线，测试数据库，测试IaaS的基本功能。
+ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的开发而不断增强。ZStack的数百个集成测试用例就是
+跑在ZStack的模拟器之上的。ZStack首页上例举的很多大规模并发性能测试也是基于模拟器来进行的
+（不过ZStack在用户的真实物理环境中已经拿到比在PC模拟器上还要好的数据了，平均云主机的创建时间可以低于0.08s）。在频繁的各种VM的操作之中，
+我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
+从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
+ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。</p>
 
       <a href="/cn_blog/build-zstack-cloud-simulator-environemnt.html">Read more >></a>
       <div style="margin-top: 15px">
