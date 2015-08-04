@@ -298,7 +298,7 @@ passwd root</code></pre>
 3. 选择格式'qcow2'
 4. 选择媒体类型为'RootVolumeTemplate'
 5. 选择平台'Linux'
-6. 输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-0.7.qcow2
+6. 输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2
 7. **勾选'System'**
 8. 点击'Add'
 
