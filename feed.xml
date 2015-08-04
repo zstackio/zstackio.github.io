@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 04 Aug 2015 13:34:07 +0800</pubDate>
-    <lastBuildDate>Tue, 04 Aug 2015 13:34:07 +0800</lastBuildDate>
+    <pubDate>Tue, 04 Aug 2015 13:43:02 +0800</pubDate>
+    <lastBuildDate>Tue, 04 Aug 2015 13:43:02 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -71,8 +71,8 @@
 
 &lt;p&gt;如果你仅仅只有一个管理节点，数据库和Dashboard也装在相同的节点上，那么你就可以用下面的方法快速升级：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
-wget --no-check-certificate http://download.zstack.org/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
+wget http://download.zstack.org/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz
 bash zstack-install-0.8.0.sh -u -f zstack-all-in-one-0.8.0.tgz
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -89,13 +89,13 @@ cd zstack-0.8
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
   &lt;h4&gt;请重新安装zstack-ctl，如果你还在使用zstack v0.6系列的产品&lt;/h4&gt;
   
-  wget --no-check-certificate http://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  wget http://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
   /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
   
 &lt;/div&gt;
 
 
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://download.zstack.org/releases/0.8/0.8.0/zstack.war
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/0.8/0.8.0/zstack.war
 zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;/code&gt;&lt;/pre&gt;
 
