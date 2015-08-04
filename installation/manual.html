@@ -144,12 +144,12 @@ MySQL, and RabbitMQ message broker on separate machines:</p>
       国内用户在访问我们美国服务器时速度较慢，请使用以下链接：
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L http://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh -o install-zstack.sh
-sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.1.tgz</code></pre>
+      <pre><code>curl -L http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh -o install-zstack.sh
+sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
-      <pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh
-sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.1.tgz</code></pre>
+      <pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
+sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
@@ -173,13 +173,13 @@ sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases
 
 <h5>Use <em>curl</em>:</h5>
 
-<pre><code>curl -L https://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh -o install-zstack.sh
+<pre><code>curl -L http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh -o install-zstack.sh
 sudo bash install-zstack.sh -i
 </code></pre>
 
 <h5>Use <em>wget</em>:</h5>
 
-<pre><code>wget --no-check-certificate -O install-zstack.sh https://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh 
+<pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh 
 sudo bash install-zstack.sh -i
 </code></pre>
 
@@ -279,7 +279,7 @@ can follow below instructions.</p>
 
 <div class="bs-callout bs-callout-info">
   <h4>You need to install EPEL repo</h4>
-  For CentOS 6.x, you need to install [EPEL repo](https://fedoraproject.org/wiki/EPEL) first.
+  For CentOS 6.x, you need to install [EPEL repo](http://fedoraproject.org/wiki/EPEL) first.
 </div>
 
 
@@ -342,7 +342,7 @@ tar xzf apache-tomcat-7.0.35.tar.gz
 <p>Assuming your Tomcat <code>$CATALINA_HOME</code> is <em>/usr/local/apache-tomcat</em>, you can download and install ZStack by:</p>
 
 <pre><code>cd /usr/local/apache-tomcat/webapps
-wget https://download.zstack.org/releases/0.6/war-0.6.2/zstack.war
+wget http://download.zstack.org/releases/0.6/war-0.6.2/zstack.war
 unzip zstack.war -d zstack
 </code></pre>
 
@@ -350,19 +350,19 @@ unzip zstack.war -d zstack
 
 <h4>2.7. Install Control Tool:</h4>
 
-<pre><code>sudo sh /usr/local/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/zstack-install-0.7.1.sh zstack-ctl
+<pre><code>sudo sh /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/install.sh zstack-ctl
 </code></pre>
 
 <h4>2.8. Install Command Line Tool:</h4>
 
-<pre><code>sudo sh /usr/local/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/zstack-install-0.7.1.sh zstack-cli
+<pre><code>sudo sh /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/install.sh zstack-cli
 </code></pre>
 
 <h4>2.0. Install Web UI:</h4>
 
 <p>You can install ZStack web UI by:</p>
 
-<pre><code>sudo sh /usr/local/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/zstack-install-0.7.1.sh zstack-dashboard
+<pre><code>sudo sh /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/tools/install.sh zstack-dashboard
 </code></pre>
 
 <p>Now your ZStack environment is successfully installed, visit <a href="../documentation/getstart-manual.html#manual">Getting Started With Manual Installation</a> see how to configure and run ZStack.</p>
