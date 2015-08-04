@@ -69,12 +69,12 @@ layout: installationPage.cn
 国内用户在访问我们美国服务器时速度较慢，请使用以下链接：
       
 <h4 style="margin-bottom:15px; margin-top:15px">使用<i>curl</i>:</h4>
-<pre><code>curl -L http://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh -o install-zstack.sh
-sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.1.tgz</code></pre>
+<pre><code>curl -L http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh -o install-zstack.sh
+sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
       
 <h4 style="margin-bottom:15px">使用<i>wget</i>:</h4>
-<pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.7/zstack-install-0.7.1.sh
-sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.7/zstack-all-in-one-0.7.1.tgz</code></pre>
+<pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
+sudo bash install-zstack.sh -i -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
       
 <div class="bs-callout bs-callout-danger">
   <h4>注意DNS劫持</h4>
