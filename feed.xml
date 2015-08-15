@@ -5,9 +5,140 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 09 Aug 2015 22:38:14 +0800</pubDate>
-    <lastBuildDate>Sun, 09 Aug 2015 22:38:14 +0800</lastBuildDate>
+    <pubDate>Sat, 15 Aug 2015 11:08:03 +0800</pubDate>
+    <lastBuildDate>Sat, 15 Aug 2015 11:08:03 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack 编译手册</title>
+        <description>&lt;h2&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;最近越来越多的云端开发者开始阅读&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/&quot;&gt;ZStack API手册&lt;/a&gt;和&lt;a href=&quot;https://github.com/zstackorg/zstack&quot;&gt;ZStack在GitHub上的源代码&lt;/a&gt;。
+其中部分开发者尝试基于ZStack进行二次开发（例如把传输云主机图像的VNC协议换成Spice协议，需要让ZStack创建的云主机拥有嵌套虚拟化，
+给ZStack加上特别的监控程序，让ZStack管理非硬件虚拟化支持的Qemu虚拟机，更改UI界面等等）。
+这些工作可能需要在ZStack中添加新的代码，并重新编译安装包。本文将会介绍标准的ZStack的编译打包方法。
+使用该方法，开发人员可以快速的添加新的功能，并生成自己新的ZStack安装包。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2&gt;下载ZStack源代码&lt;/h2&gt;
+
+&lt;p&gt;目前ZStack的源代码由三个软件仓库构成：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack&quot;&gt;zstack&lt;/a&gt;使用Java编写，是ZStack的核心，负责IaaS各种资源管理调度和消息通讯；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack-utility&quot;&gt;zstack-utility&lt;/a&gt;目前主要使用Python编写，包含ZStack的各种终端代理和其他工具。
+这些终端代理负责接收来自ZStack核心的消息并执行对应的操作，例如和Libvirt通讯来管理VM的生命周期、各种存储（例如Ceph，iSCSI，SFTP）的管理、
+虚拟路由器里管理VM的IP地址等等。除了终端代理工具外，这个软件仓库还包含了ZStack其他的工具，例如ZStack的编辑打包工具、
+ZStack安装程序、ZStack命令行工具、ZStack管控工具等等。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack-dashboard&quot;&gt;zstack-dashboard&lt;/a&gt;使用JavaScript编写，是ZStack的图形界面。&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;编译ZStack All In One Package，你需要先从github上下载上面三个源代码。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+mkdir /root/zstack-repos
+cd zstack-repos
+git clone https://github.com/zstackorg/zstack.git
+git clone https://github.com/zstackorg/zstack-utility.git
+git clone https://github.com/zstackorg/zstack-dashboard.git 
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;hr /&gt;
+
+&lt;h2&gt;下载安装编译依赖&lt;/h2&gt;
+
+&lt;p&gt;编译OS最好是在CentOS6.6或者CentOS7.1里进行。在编译之前，需要确保系统上已经安装了ant，maven，java-1.7.0-openjdk-devel，bzip2，gzip等工具。
+另外由于ZStack核心是Java代码，里面需要很多maven的依赖库，但是很多maven的依赖库的第一选择都是放在google管理的软件仓库。
+由于总所周知的原因，会导致第一次编译ZStack的时候异常缓慢，甚至是无法通过。不过maven的.m2/库是可以在不同机器上共享的。
+我们在百度云盘里放置了一份编译的依赖包：http://pan.baidu.com/s/1eQvUmWU。
+大家下载之后，可以根据说明，把依赖库的内容放到/root/.m2 的目录里即可（随着ZStack的开发，ZStack可能会引入一些新的库文件，
+有可能在编译新的ZStack的时候，还是会遇到动态下载少量的依赖包，不过由于新的依赖包数量不多，所以下载速度应该可以接收）。&lt;/p&gt;
+
+&lt;p&gt;另外如果有条件，大家也可以使用http代理服务器加速maven依赖包的下载，设置的方法可以参考：https://maven.apache.org/guides/mini/guide-proxies.html&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2&gt;预编译ZStack的Java代码&lt;/h2&gt;
+
+&lt;p&gt;验证一下Java和Maven相关的依赖是不是已经解决正常，我们先来编译一下ZStack的Java源码：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+cd zstack
+mvn -DskipTests clean install
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;如果一切顺利，我们大概只需要等待5分钟。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2&gt;编译ZStack All In One安装包&lt;/h2&gt;
+
+&lt;p&gt;如果ZStack的Java源码已经编译通过，我们就可以开始尝试编译ZStack All In One安装包了：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+cd ~/zstack-repos/
+wget -c http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.35/bin/apache-tomcat-7.0.35.zip
+cd zstack-utility/zstackbuild
+ant -Dzstack_build_root=/root/zstack-repos all-in-one
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;编译完成，安装包会放在zstack-utility/zstackbuild/target/目录中，例如：
+zstack-utility/zstackbuild/target/zstack-all-in-one-0.8.0-qa.tgz
+All In One安装包包含了ZStack核心功能，ZStack终端代理，ZStack管控工具和ZStack Web界面。&lt;/p&gt;
+
+&lt;p&gt;如果用户只是改变了Java代码，其实只需要更新ZStack核心功能即可。ZStack的核心代码是编译打包到zstack.war中，
+该文件会放在 zstack-utility/zstackbuild/target/zstack.war&lt;/p&gt;
+
+&lt;p&gt;有了新编译完成的ZStack包，用户便可以参考我们的&lt;a href=&quot;http://zstack.org/cn_blog/v0.8-release.html&quot;&gt;安装升级手册&lt;/a&gt;来安装自己编译的ZStack安装包了。&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h2&gt;ZStack 集成测试用例&lt;/h2&gt;
+
+&lt;p&gt;在开发新功能的时候，不要忘记添加自己的集成测试用例。ZStack的集成测试用例都是放在zstack/test/ 目录下的。
+开发者可以学习之前的集成测试用例来创建自己的测试用例。在成功完成&lt;strong&gt;预编译ZStack的Java代码&lt;/strong&gt;之后，
+我们可以使用如下的方法来运行集成测试用例：&lt;/p&gt;
+
+&lt;p&gt;运行一个测试用例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+cd zstack/test/
+mvn test -Dtest=test_case_name 
+#for example: for TestChangeHostState.java, the name is TestChangeHostState
+mvn test -Dtest=TestChangeHostState
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;运行一组测试用例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+cd zstack/test/
+mvn test -Dtest=UnitTestSuite -Dconfig=unitTestSuiteXml/AccountManager.xml 
+#all group test configures are in zstack_source/test/src/test/resources/unitTestSuiteXml/
+&lt;/code&gt;&lt;/pre&gt;
+
+
+&lt;p&gt;运行全部的测试用例：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;
+cd zstack/test/
+mvn test -Dtest=UnitTestSuite
+&lt;/code&gt;&lt;/pre&gt;
+
+</description>
+        <pubDate>Sat, 15 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/build-zstack.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/build-zstack.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack 2015 技术分享会【北京站】</title>
@@ -2460,80 +2591,6 @@ ZStack 开发团队&lt;/p&gt;
         <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/local-stroage-tutorials.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/local-stroage-tutorials.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack云主机动态添加和删除网卡教程</title>
-        <description>&lt;h2&gt;介绍&lt;/h2&gt;
-
-&lt;p&gt;动态添加和删除网卡是IaaS里的基本功能，ZStack自v0.8.0开始支持云主机运行态或停止态动态的添加和删除网卡（更准确的称为三层网络）。
-动态添加的网卡要求该网卡的三层网络不能是该云主机中已有的三层网络。&lt;/p&gt;
-
-&lt;h3&gt;通过UI给云主机挂载三层网络&lt;/h3&gt;
-
-&lt;p&gt;在VM Instance的界面
-&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;选择需要添加三层网络的云主机并点击&#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;点击 &#39;Attach L3 Network&#39;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;选择你希望挂载的三层网络&lt;/li&gt;
-&lt;li&gt;点击挂载&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3&gt;通过zstack-cli给云主机挂载三层网络&lt;/h3&gt;
-
-&lt;p&gt;你可以使用&lt;strong&gt; AttachL3NetworkToVm &lt;/strong&gt;命令来挂载一个三层网络，例如；&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=d791a3f662ac48a99b9e998136eed2a1 vmInstanceUuid=15d546efe84a499caa36b2f6a95d6b81
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;通过UI删除一个云主机的三层网络&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;选择云主机并点击&#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;点击 &#39;Detach L3 Network&#39;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;选择您想卸载的三层网络&lt;/li&gt;
-&lt;li&gt;点击 &#39;Detach&#39;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3&gt;通过zstack-cli给云主机卸载一个三层网络&lt;/h3&gt;
-
-&lt;p&gt;你可以使用&lt;strong&gt; DetachL3NetworkToVm &lt;/strong&gt;命令来卸载一个三层网络，例如；&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;DetachL3NetworkFromVm vmNicUuid=d791a3f662ac48a99b9e998136eed2a1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;云主机网卡的UUID&lt;/h4&gt;
-  
-  在卸载三层网络的时候，ZStack使用了云主机的网卡UUID，而不是三层网络的UUID。这是因为一个网卡的UUID，隐含着关联了云主机的UUID和三层网络的UUID。
-&lt;/div&gt;
-
-</description>
-        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/attach-detach-l3-tutorials.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/attach-detach-l3-tutorials.html</guid>
         
         
         <category>cn_blog</category>
