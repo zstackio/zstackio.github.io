@@ -6,7 +6,7 @@ layout: communityPage.cn
 <p style="padding-top:25px">
 ZStack是一个开源项目，它遵循<a href="https://www.apache.org/licenses/LICENSE-2.0">Apache License 2.0</a>.
 ZStack的源代码托管在GitHub上，您可以clone和提交你的贡献。如果您对我们的项目有任何的问题，
-欢迎和我们及时联系。您可以选择喜欢的方式来和我们沟通，例如发邮件，提交Issue，或是直接加入QQ群。
+欢迎和我们及时联系。您可以选择喜欢的方式来和我们沟通，例如发邮件，在GitHub提交Issue，或是直接加入QQ群。
 </p>
 
 <hr>
@@ -29,7 +29,7 @@ ZStack的源代码托管在GitHub上，您可以clone和提交你的贡献。如
 
 ## 源代码
 
-访问我们在GitHub上的空间获取我们的信息:
+访问我们在GitHub上的空间获取我们的信息，喜欢ZStack也可以到GitHub的空间给我们点赞:
 
 * [zstack](https://github.com/zstackorg/zstack): ZStack核心架构Java代码.
 * [zstack-utility](https://github.com/zstackorg/zstack-utility): 包含各种ZStack Agents(例如 kvmagent, virtual router VM agent)和工具(例如 zstack-cli, zstack-ctl)的Python代码
@@ -37,6 +37,10 @@ ZStack的源代码托管在GitHub上，您可以clone和提交你的贡献。如
 * [zstack-woodpecker](https://github.com/zstackorg/zstack-woodpecker): ZStack自动化测试框架代码。
 
 <hr>
+
+## 编译源码
+
+用户可以自行[编译ZStack和ZStack All In One安装包](/cn_blog/build-zstack.html)
 
 ## 社交媒体
 
