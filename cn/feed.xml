@@ -5,9 +5,44 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 15 Aug 2015 11:08:03 +0800</pubDate>
-    <lastBuildDate>Sat, 15 Aug 2015 11:08:03 +0800</lastBuildDate>
+    <pubDate>Thu, 20 Aug 2015 09:01:53 +0800</pubDate>
+    <lastBuildDate>Thu, 20 Aug 2015 09:01:53 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack 2015 技术分享会【上海站】</title>
+        <description>&lt;p&gt;&lt;strong&gt;“用最纯粹的技术回馈IaaS社区”&lt;/strong&gt;，是整个ZStack团队的信仰。ZStack开发团队将打算借0.9版本发布之际，首次在国内举办几场技术交流会。
+继&lt;a href=&quot;./zstack-meetup-beijing-2015.html&quot;&gt;北京站&lt;/a&gt;开始报名后，上海站也公布了报名的详细情况。
+上海站交流会会于9月12号周六下午1点在上海长宁区福泉路111号上海神州数码有限公司1楼大视频会议室举行。
+为保证技术交流的质量，我们设置了活动报名人数的上限为50人，请关心ZStack现状和发展的开发者和用户名务必提前报名。&lt;/p&gt;
+
+&lt;p&gt;本次研讨会会的主题包括：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;ZStack技术架构详解&lt;/li&gt;
+&lt;li&gt;ZStack实战分享&lt;/li&gt;
+&lt;li&gt;现场互动问答&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;ZStack （zstack.org） 是全新一代开源IaaS，具有快速安装，快速部署，易维护，易升级，高性能等特点。
+自2015年4月公开发布0.6版本后，陆续发布了0.7和0.8版本，9月初前后会发布支持ceph的 0.9版本。
+目前ZStack的功能已经覆盖了大部分的企业私有云应用场景，国内外也有不少用户在测试使用。ZStack的首批客户也于7、8月份陆续部署上线运行。
+对于希望使用IaaS软件，但是由于种种技术上的原因还没有成功部署私有云的企业来说，ZStack提供了全新的选择和云端体验。&lt;/p&gt;
+
+&lt;p&gt;本次上海站技术交流会，我们要特别感谢&lt;strong&gt;上海神舟数码有限公司&lt;/strong&gt;提供场地！&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;大家可以扫描下面的二维码报名ZStack技术交流会：&lt;/strong&gt;
+&lt;img src=&quot;/images/meetups/2015/shanghai/registeration.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 20 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/zstack-meetup-shanghai-2015.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-meetup-shanghai-2015.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack 编译手册</title>
@@ -146,11 +181,15 @@ mvn test -Dtest=UnitTestSuite
 本次交流会的首站将会于9月5号周六下午13：30在北京海淀区东北旺西路8号中关村软件园内软件广场C座三楼极客演播厅举行。
 为保证技术交流的质量，我们设置了活动报名人数的上限为100人，请关心ZStack现状和发展的开发者和用户名务必提前报名。&lt;/p&gt;
 
-&lt;p&gt;   本次研讨会会的主题包括：
-     － ZStack技术架构详解
-     － ZStack实战分享
-     － ZStack合作伙伴技术分享
-     － 现场互动问答&lt;/p&gt;
+&lt;p&gt;本次研讨会会的主题包括：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;ZStack技术架构详解&lt;/li&gt;
+&lt;li&gt;ZStack实战分享&lt;/li&gt;
+&lt;li&gt;ZStack合作伙伴技术分享&lt;/li&gt;
+&lt;li&gt;现场互动问答&lt;/li&gt;
+&lt;/ol&gt;
+
 
 &lt;p&gt;ZStack （zstack.org） 是全新一代开源IaaS，具有快速安装，快速部署，易维护，易升级，高性能等特点。
 自2015年4月公开发布0.6版本后，陆续发布了0.7和0.8版本，9月初前后会发布支持ceph的 0.9版本。
@@ -2514,83 +2553,6 @@ ZStack 开发团队&lt;/p&gt;
         <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v0.8-rc2.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v0.8-rc2.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack本地存储使用手册</title>
-        <description>&lt;h2&gt;介绍&lt;/h2&gt;
-
-&lt;p&gt;本地存储（Local Storage）是继NFS主存储、iSCSI主存储之后ZStack支持的第三类主存储。
-本地存储相比网络共享存储而言，更轻量、更方便（甚至在网络速度和网络存储性能不佳的情况下，本地存储的性能也更高）
-，所以也有很多客户采用本地存储方案来搭建云系统。ZStack自v0.8.0开始支持本地存储。本教程仅会介绍如何添加本地存储来做云环境的主存储。&lt;/p&gt;
-
-&lt;p&gt;ZStack对于本地存储的使用有如下定义：
-1. 一个Cluster内的所有计算节点应该有相同的目录放本地存储。
-2. 如果一个Cluster既拥有本地主存储也挂载了NFS或者其他网络共享存储，那么云主机的根磁盘将会存放在本地存储，
-而数据磁盘将会存放在网络共享存储。
-3. 在使用网络共享存储的时候，当原始云主机磁盘被删除后，备份过的&lt;strong&gt;磁盘快照&lt;/strong&gt;依然可以用于创建磁盘镜像模板和恢复磁盘；
-但是这个操作在本地存储上无法进行。用户需要在原始磁盘删除前，使用磁盘快照功能创建磁盘镜像模板。&lt;/p&gt;
-
-&lt;h3&gt;通过UI添加本地存储&lt;/h3&gt;
-
-&lt;p&gt;用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问&lt;a href=&quot;../cn/tutorials/flat-network-ui.html&quot;&gt;创建扁平网络环境&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;在&lt;a href=&quot;../cn/tutorials/flat-network-ui.html#addPrimaryStorage&quot;&gt;创建主存储&lt;/a&gt;的时候：
-1. 选择类型&#39;LocalStorage&#39;
-2. 输入计算节点上云主据磁盘要存放的目录&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;hr&gt;
-
-
-&lt;h3&gt;通过zstack-cli添加本地存储&lt;/h3&gt;
-
-&lt;p&gt;用户关于如何添加Zone，Cluster，Host等其他资源的方法请访问&lt;a href=&quot;../cn/tutorials/flat-network-cli.html&quot;&gt;创建扁平网络环境&lt;/a&gt;。
-在&lt;a href=&quot;../cn/tutorials/flat-network-cli.html#addPrimaryStorage&quot;&gt;创建主存储&lt;/a&gt;的时候：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddLocalPrimaryStorage zoneUuid=15d546efe84a499caa36b2f6a95d6b81 name=local url=/home/volumes
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
-  &lt;h4&gt;URL&lt;/h4&gt;
-  本地主存储使用本地的一个目录来存放云主机的磁盘。当主存储挂载到Cluster上时，该目录会在Cluster内的所有计算节点上创建出来。
-&lt;/div&gt;
-
-
-
-
-&lt;div class=&quot;bs-callout bs-callout-default&quot;&gt;
-  &lt;h4&gt;关于本地存储的容量&lt;/h4&gt;
-  
-  一个cluster里面本地存储的总容量是每一个计算节点上存储容量的总和。不像网络共享存储（例如NFS主存储），
-  即使您发现ZStack系统显示的可用容量大于你所申请的磁盘空间，您可能还是会遇到空间不足（not enough capacity）的错误。
-  这是因为该Cluster内找不到任何一个单个的计算节点能够独立满足空间分配的需求。例如，您有两个计算节点，
-  每个节点上都有10GB的剩余空间，ZStack会显示当前Cluster有20GB的可用空间。当您试图去创建一个15GB的云主机磁盘的时候，
-  ZStack会告诉你找不到足够的空间。
-&lt;/div&gt;
-
-
-
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;本地储存不支持云主机漂移和有限的跨云主机数据盘挂载&lt;/h4&gt;
-  
-  由于本地存储不具备网络共享存储中，每个计算节点都可以访问该存储的能力。所以在存储漂移功能支持前，
-  使用本地存储的云主机将不会具有漂移的功能。用户需要对可能发生的数据丢失或者长时间无法恢复云主机的运行做好准备。
-  例如，需要考虑如何在应用层做到跨云主机的高可用。
-
-  对于系统中可以挂载（状态为Ready）的数据磁盘，该磁盘仅能挂载到和该磁盘在同一计算节点的云主机上。
-&lt;/div&gt;
-
-</description>
-        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/local-stroage-tutorials.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/local-stroage-tutorials.html</guid>
         
         
         <category>cn_blog</category>
