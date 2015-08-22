@@ -1,12 +1,13 @@
 ---
 layout: post.cn
-title:  "更新VM hostname和静态IP地址“
-date:   2015-8-21
+title:  "更改VM hostname和静态IP地址"
+date:   2015-8-22
 categories: blog
 author: yongkang
 category: cn_blog
-published: false
+published: true
 ---
+##简介
 ZStack在创建VM Instance的时候可以设定VM的hostname和静态IP地址。那么我们怎么在创建VM Instance之后修改这个云主机的hostname和IP地址呢？
 
 答案要从ZStack是如何支持云主机的hostname和静态IP地址说起。ZStack是通过特有的System Tags（系统标签）来支持这两个功能的。
@@ -23,6 +24,8 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
 首先我们假定用户已经通过ZStack的UI界面或者zstack-cli创建了一台指定hostname和静态IP地址的云主机。
 
 例如创建了一台云主机，该云主机的hostname为vm1，静态IP地址是10.11.0.100：
+
+<pre>
 <code>
 >>>QueryVmInstance name~=vm1 
 {
@@ -86,9 +89,10 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 如果还没有登录，请用下面的方法登录系统：
-
+<pre>
 <code>
 >>>LogInByAccount accountName=admin password=password
 {
@@ -102,9 +106,11 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 我们可以通过查询系统标签来，得到该VM的hostname和静态IP的设置。查询vm1的System Tags，也就是查询resourceUuid为vm1的UUID的系统标签：
 
+<pre>
 <code>
 >>>QuerySystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91
 {
@@ -133,11 +139,13 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 ##删除hostname和静态IP地址
 
 删除hostname和静态IP地址的方法就是删除设定的系统标签。删除系统标签和删除用户普通标签（资源别名）的方法一样都是使用DeleteTag API：
 
+<pre>
 <code>
 >>>DeleteTag uuid=0dc36ae8dad24409bfca5c8d307dc8d9
 {
@@ -149,9 +157,11 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 删除标签之后，我们将不会查询到和云主机vm1相关的标签:
 
+<pre>
 <code>
 >>>QuerySystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91
 {
@@ -159,6 +169,7 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 ## 设置新的hostname和静态IP地址
 
@@ -170,6 +181,7 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
 
 先来创建新的hostname为newVm1：
 
+<pre>
 <code>
 >>>CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=hostname::newVm1
 {
@@ -186,9 +198,11 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 再来创建新的静态IP地址为10.11.0.101（需要在对应的L3的IP地址范围内）：
 
+<pre>
 <code>
 >>>CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101
 {
@@ -205,6 +219,79 @@ ZStack 0.9版本会添加UpdateSystemTags的API。
     "success": true
 }
 </code>
+</pre>
 
 这里的31fd0dba47ee472481ee4edc9ab9d6ee是VM所在L3网络的UUID。然后让我们来重启vm1。需要注意的是，
-我们需要使用StopVmInstacne 和StartVmInstacnea，而不是RebootVmInstacne。
+我们需要使用StopVmInstacne 和StartVmInstance来重启VM，而不是RebootVmInstacne。
+
+<pre>
+<code>
+StopVmInstance uuid=beda91e5c2474ab9bc5e15ce7c83de91
+StartVmInstance uuid=beda91e5c2474ab9bc5e15ce7c83de91
+</code>
+</pre>
+
+待vm1重新启动后，我们就会发现vm1的hostname变成了newVm1，IP地址也变成了10.11.0.101。如果是通过
+UI面板重启的VM，还需要刷新一下UI面板，vm1的IP地址就会显示正常。
+
+**0.8版本中有一个bug会导致云主机在重启后，不能更改的静态IP地址。这个Bug会在0.9版本中修复**
+
+## 更新系统标签
+在0.9版本之后，我们还会支持直接更新系统标签，这样可以节省更改云主机信息的步骤。更改hostname
+系统标签的方法是：
+<pre>
+<code>
+UpdateSystemTag tag=hostname::newVm1 uuid=bde1ac5f07e04e5d93849c07875ea1ff
+</code>
+</pre>
+
+这里的UUID是之前通过QuerySystemTag 查到的hostname的Tag的UUID。
+
+更改静态IP地址系统标签的方法是：
+<code>
+UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid=0dc36ae8dad24409bfca5c8d307dc8d9
+</code>
+</pre>
+
+需要注意的是，这里有两个UUID。其中31fd0dba47ee472481ee4edc9ab9d6ee，
+是云主机网卡所在的L3 Network的UUID。而0dc36ae8dad24409bfca5c8d307dc8d9
+是之前通过QuerySystemTag API查询到的静态IP地址Tag的UUID。
+
+## 添加新的网络并设置静态IP地址
+在0.8版本之后，ZStack支持给云主机动态的添加网卡。通常动态添加的网卡也是一个动态的IP地址，
+如果需要给动态添加的网卡提前配置一个静态的IP地址，那么我们也需要依赖静态IP地址的系统标签。
+
+我们假设需要添加的网卡所属的L3网络的UUID是：31fd0dba47ee472481ee4edc9ab9d6ee
+
+云主机的UUID是：beda91e5c2474ab9bc5e15ce7c83de91
+
+需要设定的静态IP地址是：10.11.0.102
+
+那么我们添加的系统标签的方法是：
+<pre>
+<code>
+>>>CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.102
+{
+    "inventory": {
+        "createDate": "Aug 20, 2015 7:36:18 PM",
+        "inherent": false,
+        "lastOpDate": "Aug 20, 2015 7:36:18 PM",
+        "resourceType": "VmInstanceVO",
+        "resourceUuid": "beda91e5c2474ab9bc5e15ce7c83de91",
+        "tag": "staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.102",
+        "type": "System",
+        "uuid": "85d75b94b78f4fccb4c5ca8ab95a5e3f"
+    },
+    "success": true
+}
+</code>
+</pre>
+
+在添加完系统标签后，我们再添加网卡的时候，ZStack就会使用刚刚设置的静态IP地址了。
+
+**参考：**
+
+ 1. [系统标签手册](http://zstackdoc.readthedocs.org/en/latest/userManual/tag.html#system-tags)
+ 2. [静态IP地址功能介绍](./v0.7.html)
+ 3. [给云主机动态的添加删除网卡](./attach-detach-l3-tutorials.html)
+
