@@ -5,9 +5,331 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 20 Aug 2015 09:01:53 +0800</pubDate>
-    <lastBuildDate>Thu, 20 Aug 2015 09:01:53 +0800</lastBuildDate>
+    <pubDate>Sat, 22 Aug 2015 22:47:39 +0800</pubDate>
+    <lastBuildDate>Sat, 22 Aug 2015 22:47:39 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>更改VM hostname和静态IP地址</title>
+        <description>&lt;h2&gt;简介&lt;/h2&gt;
+
+&lt;p&gt;ZStack在创建VM Instance的时候可以设定VM的hostname和静态IP地址。那么我们怎么在创建VM Instance之后修改这个云主机的hostname和IP地址呢？&lt;/p&gt;
+
+&lt;p&gt;答案要从ZStack是如何支持云主机的hostname和静态IP地址说起。ZStack是通过特有的System Tags（系统标签）来支持这两个功能的。
+&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/tag.html#system-tags&quot;&gt;System Tags&lt;/a&gt;是ZStack特有的标签。
+它的出现主要是为了解决IaaS架构稳定性的问题，保证ZStack在添加新功能的时候不必修改原有的代码。
+用户在创建特定hostname和静态IP地址的云主机的时候，ZStack会创建两个特别的系统标签。ZStack对应的模块在创建云主机的过程中，
+通过读取系统标签里的内容就可以把所需的内容设置上。所以，如果用户需要修改云主机的hostname和静态ip地址，
+只需要修改之前的系统标签，再通过ZStack重启（不能在VM里面用reboot命令重启）云主机即可。&lt;/p&gt;
+
+&lt;p&gt;目前ZStack的版本（0.8）里，还不支持UpdateSystemTags的API，只能通过Delete原有System Tages，再增加一个新的System Tags的方式。
+ZStack 0.9版本会添加UpdateSystemTags的API。&lt;/p&gt;
+
+&lt;h2&gt;查询System Tags&lt;/h2&gt;
+
+&lt;p&gt;首先我们假定用户已经通过ZStack的UI界面或者zstack-cli创建了一台指定hostname和静态IP地址的云主机。&lt;/p&gt;
+
+&lt;p&gt;例如创建了一台云主机，该云主机的hostname为vm1，静态IP地址是10.11.0.100：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;QueryVmInstance name~=vm1 
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;allVolumes&quot;: [
+                {
+                    &quot;createDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+                    &quot;description&quot;: &quot;Root volume for VM[uuid:beda91e5c2474ab9bc5e15ce7c83de91]&quot;,
+                    &quot;deviceId&quot;: 0,
+                    &quot;format&quot;: &quot;qcow2&quot;,
+                    &quot;installPath&quot;: &quot;/opt/zstack/nfsprimarystorage/prim-5b4d7483ba3b4d109c8d35c971fd2c24/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-38d9adae6422474786d14d66672bcc9a/38d9adae6422474786d14d66672bcc9a.qcow2&quot;,
+                    &quot;lastOpDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+                    &quot;name&quot;: &quot;ROOT-for-vm1&quot;,
+                    &quot;primaryStorageUuid&quot;: &quot;5b4d7483ba3b4d109c8d35c971fd2c24&quot;,
+                    &quot;rootImageUuid&quot;: &quot;589c8795fbdf45549be1c7a9ebdda70b&quot;,
+                    &quot;size&quot;: 209715200,
+                    &quot;state&quot;: &quot;Enabled&quot;,
+                    &quot;status&quot;: &quot;Ready&quot;,
+                    &quot;type&quot;: &quot;Root&quot;,
+                    &quot;uuid&quot;: &quot;38d9adae6422474786d14d66672bcc9a&quot;,
+                    &quot;vmInstanceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;
+                }
+            ],
+            &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
+            &quot;clusterUuid&quot;: &quot;1fae9d050a60441eac7e15d09d7a57e0&quot;,
+            &quot;cpuNum&quot;: 1,
+            &quot;cpuSpeed&quot;: 512,
+            &quot;createDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;defaultL3NetworkUuid&quot;: &quot;31fd0dba47ee472481ee4edc9ab9d6ee&quot;,
+            &quot;hostUuid&quot;: &quot;15d0f76c5989472e83d264a1bc408355&quot;,
+            &quot;hypervisorType&quot;: &quot;KVM&quot;,
+            &quot;imageUuid&quot;: &quot;589c8795fbdf45549be1c7a9ebdda70b&quot;,
+            &quot;instanceOfferingUuid&quot;: &quot;db2320b776ca4365962870f371db7c5c&quot;,
+            &quot;lastHostUuid&quot;: &quot;15d0f76c5989472e83d264a1bc408355&quot;,
+            &quot;lastOpDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;memorySize&quot;: 134217728,
+            &quot;name&quot;: &quot;vm1&quot;,
+            &quot;platform&quot;: &quot;Linux&quot;,
+            &quot;rootVolumeUuid&quot;: &quot;38d9adae6422474786d14d66672bcc9a&quot;,
+            &quot;state&quot;: &quot;Running&quot;,
+            &quot;type&quot;: &quot;UserVm&quot;,
+            &quot;uuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+            &quot;vmNics&quot;: [
+                {
+                    &quot;createDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+                    &quot;deviceId&quot;: 0,
+                    &quot;gateway&quot;: &quot;10.11.0.1&quot;,
+                    &quot;ip&quot;: &quot;10.11.0.100&quot;,
+                    &quot;l3NetworkUuid&quot;: &quot;31fd0dba47ee472481ee4edc9ab9d6ee&quot;,
+                    &quot;lastOpDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+                    &quot;mac&quot;: &quot;fa:1f:45:81:f4:00&quot;,
+                    &quot;netmask&quot;: &quot;255.255.0.0&quot;,
+                    &quot;uuid&quot;: &quot;c9ba9bc674084ac39a02a680ba6752fa&quot;,
+                    &quot;vmInstanceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;
+                }
+            ],
+            &quot;zoneUuid&quot;: &quot;fb92b33a29bc42a8990f5db0356493b8&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;如果还没有登录，请用下面的方法登录系统：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;LogInByAccount accountName=admin password=password
+{
+    &quot;inventory&quot;: {
+        &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;createDate&quot;: &quot;Aug 20, 2015 7:29:33 PM&quot;,
+        &quot;expiredDate&quot;: &quot;Aug 20, 2015 9:29:33 PM&quot;,
+        &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
+        &quot;uuid&quot;: &quot;84ec1c14f1574806afe2ae2b1c963ab3&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;我们可以通过查询系统标签来，得到该VM的hostname和静态IP的设置。查询vm1的System Tags，也就是查询resourceUuid为vm1的UUID的系统标签：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;QuerySystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91
+{
+    &quot;inventories&quot;: [
+        {
+            &quot;createDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;inherent&quot;: false,
+            &quot;lastOpDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;resourceType&quot;: &quot;VmInstanceVO&quot;,
+            &quot;resourceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+            &quot;tag&quot;: &quot;staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.100&quot;,
+            &quot;type&quot;: &quot;System&quot;,
+            &quot;uuid&quot;: &quot;0dc36ae8dad24409bfca5c8d307dc8d9&quot;
+        },
+        {
+            &quot;createDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;inherent&quot;: false,
+            &quot;lastOpDate&quot;: &quot;Aug 20, 2015 5:46:16 PM&quot;,
+            &quot;resourceType&quot;: &quot;VmInstanceVO&quot;,
+            &quot;resourceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+            &quot;tag&quot;: &quot;hostname::vm1&quot;,
+            &quot;type&quot;: &quot;System&quot;,
+            &quot;uuid&quot;: &quot;bde1ac5f07e04e5d93849c07875ea1ff&quot;
+        }
+    ],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;h2&gt;删除hostname和静态IP地址&lt;/h2&gt;
+
+&lt;p&gt;删除hostname和静态IP地址的方法就是删除设定的系统标签。删除系统标签和删除用户普通标签（资源别名）的方法一样都是使用DeleteTag API：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;DeleteTag uuid=0dc36ae8dad24409bfca5c8d307dc8d9
+{
+    &quot;success&quot;: true
+}
+
+&gt;&gt;&gt;DeleteTag uuid=bde1ac5f07e04e5d93849c07875ea1ff
+{
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;删除标签之后，我们将不会查询到和云主机vm1相关的标签:&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;QuerySystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91
+{
+    &quot;inventories&quot;: [],
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;h2&gt;设置新的hostname和静态IP地址&lt;/h2&gt;
+
+&lt;p&gt;创建系统标签的API是CreateSystemTag，这个API需要输入几个参数：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;resourceUuid： 这里就是云主机vm1的UUID&lt;/li&gt;
+&lt;li&gt;resourceType: 这里的类型是VmInstanceVO , 更多类型可以访问&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/tag.html#resource-type&quot;&gt;系统标签介绍&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;tag: 就是具体的标签。每个系统标签的定义是不同的，这个需要根据System的定义来指定。我们稍后还会看到两个不同的系统标签。&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;先来创建新的hostname为newVm1：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=hostname::newVm1
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 20, 2015 7:29:34 PM&quot;,
+        &quot;inherent&quot;: false,
+        &quot;lastOpDate&quot;: &quot;Aug 20, 2015 7:29:34 PM&quot;,
+        &quot;resourceType&quot;: &quot;VmInstanceVO&quot;,
+        &quot;resourceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+        &quot;tag&quot;: &quot;hostname::newVm1&quot;,
+        &quot;type&quot;: &quot;System&quot;,
+        &quot;uuid&quot;: &quot;775f6655e6604c46ad6509c0270e4249&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;再来创建新的静态IP地址为10.11.0.101（需要在对应的L3的IP地址范围内）：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 20, 2015 7:36:18 PM&quot;,
+        &quot;inherent&quot;: false,
+        &quot;lastOpDate&quot;: &quot;Aug 20, 2015 7:36:18 PM&quot;,
+        &quot;resourceType&quot;: &quot;VmInstanceVO&quot;,
+        &quot;resourceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+        &quot;tag&quot;: &quot;staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101&quot;,
+        &quot;type&quot;: &quot;System&quot;,
+        &quot;uuid&quot;: &quot;85d75b94b78f4fccb4c5ca8ab95a5e3f&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;这里的31fd0dba47ee472481ee4edc9ab9d6ee是VM所在L3网络的UUID。然后让我们来重启vm1。需要注意的是，
+我们需要使用StopVmInstacne 和StartVmInstance来重启VM，而不是RebootVmInstacne。&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+StopVmInstance uuid=beda91e5c2474ab9bc5e15ce7c83de91
+StartVmInstance uuid=beda91e5c2474ab9bc5e15ce7c83de91
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;待vm1重新启动后，我们就会发现vm1的hostname变成了newVm1，IP地址也变成了10.11.0.101。如果是通过
+UI面板重启的VM，还需要刷新一下UI面板，vm1的IP地址就会显示正常。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;0.8版本中有一个bug会导致云主机在重启后，不能更改的静态IP地址。这个Bug会在0.9版本中修复&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h2&gt;更新系统标签&lt;/h2&gt;
+
+&lt;p&gt;在0.9版本之后，我们还会支持直接更新系统标签，这样可以节省更改云主机信息的步骤。更改hostname
+系统标签的方法是：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+UpdateSystemTag tag=hostname::newVm1 uuid=bde1ac5f07e04e5d93849c07875ea1ff
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;这里的UUID是之前通过QuerySystemTag 查到的hostname的Tag的UUID。&lt;/p&gt;
+
+&lt;p&gt;更改静态IP地址系统标签的方法是：
+&lt;code&gt;
+UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid=0dc36ae8dad24409bfca5c8d307dc8d9
+&lt;/code&gt;
+&lt;/pre&gt;&lt;/p&gt;
+
+&lt;p&gt;需要注意的是，这里有两个UUID。其中31fd0dba47ee472481ee4edc9ab9d6ee，
+是云主机网卡所在的L3 Network的UUID。而0dc36ae8dad24409bfca5c8d307dc8d9
+是之前通过QuerySystemTag API查询到的静态IP地址Tag的UUID。&lt;/p&gt;
+
+&lt;h2&gt;添加新的网络并设置静态IP地址&lt;/h2&gt;
+
+&lt;p&gt;在0.8版本之后，ZStack支持给云主机动态的添加网卡。通常动态添加的网卡也是一个动态的IP地址，
+如果需要给动态添加的网卡提前配置一个静态的IP地址，那么我们也需要依赖静态IP地址的系统标签。&lt;/p&gt;
+
+&lt;p&gt;我们假设需要添加的网卡所属的L3网络的UUID是：31fd0dba47ee472481ee4edc9ab9d6ee&lt;/p&gt;
+
+&lt;p&gt;云主机的UUID是：beda91e5c2474ab9bc5e15ce7c83de91&lt;/p&gt;
+
+&lt;p&gt;需要设定的静态IP地址是：10.11.0.102&lt;/p&gt;
+
+&lt;p&gt;那么我们添加的系统标签的方法是：&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;code&gt;
+&gt;&gt;&gt;CreateSystemTag resourceUuid=beda91e5c2474ab9bc5e15ce7c83de91 resourceType=VmInstanceVO tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.102
+{
+    &quot;inventory&quot;: {
+        &quot;createDate&quot;: &quot;Aug 20, 2015 7:36:18 PM&quot;,
+        &quot;inherent&quot;: false,
+        &quot;lastOpDate&quot;: &quot;Aug 20, 2015 7:36:18 PM&quot;,
+        &quot;resourceType&quot;: &quot;VmInstanceVO&quot;,
+        &quot;resourceUuid&quot;: &quot;beda91e5c2474ab9bc5e15ce7c83de91&quot;,
+        &quot;tag&quot;: &quot;staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.102&quot;,
+        &quot;type&quot;: &quot;System&quot;,
+        &quot;uuid&quot;: &quot;85d75b94b78f4fccb4c5ca8ab95a5e3f&quot;
+    },
+    &quot;success&quot;: true
+}
+&lt;/code&gt;
+&lt;/pre&gt;
+
+
+&lt;p&gt;在添加完系统标签后，我们再添加网卡的时候，ZStack就会使用刚刚设置的静态IP地址了。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;参考：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/tag.html#system-tags&quot;&gt;系统标签手册&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;./v0.7.html&quot;&gt;静态IP地址功能介绍&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;./attach-detach-l3-tutorials.html&quot;&gt;给云主机动态的添加删除网卡&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+</description>
+        <pubDate>Sat, 22 Aug 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/update-system-tags-by-delete-add.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/update-system-tags-by-delete-add.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack 2015 技术分享会【上海站】</title>
@@ -2381,178 +2703,6 @@ zstack-cli默认会记录最近一次用户登录的&lt;b&gt;session_uuid&lt;/b&
         <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/zstack-account-user-tutorials.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-account-user-tutorials.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>发布 ZStack v0.8 RC2</title>
-        <description>&lt;p&gt;大家好，很高兴今天再次宣布又一个ZStack的新版本v0.8.0-rc2正式发布。v0.8.0-rc2 里包含了0.8系列里面非常重要的4个功能：本地存储、动态添加删除L3 Network、完善的账号用户系统和修改云主机的配置。让我们来一一介绍一下他们的功能：&lt;/p&gt;
-
-&lt;h2&gt;本地存储&lt;/h2&gt;
-
-&lt;p&gt;用户可以使用计算节点的本地存储作为主存储设备。用户可以不必预先创建任何的网络主存储。本地存储具有方便、快捷、适中性能等特点。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./local-stroage-tutorials.html&quot;&gt;本地存储教程&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;动态添加、删除云主机三层网络（网卡）&lt;/h2&gt;
-
-&lt;p&gt;用户可以对一个正在运行的或是停止的云主机添加和删除三层网络。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;hr&gt;
-
-
-&lt;p&gt;&lt;img src=&quot;/images/0.8/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./attach-detach-l3-tutorials.html&quot;&gt;添加删除三层网络教程&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;完善的用户账号管理系统&lt;/h2&gt;
-
-&lt;p&gt;从本版开始，ZStack开放了完善的用户账号系统API。ZStack的账号用户系统和亚马逊的AWS采用相同的管理方式，提供了Account和User。用户不仅可以创建，修改用户密码，还可以创建不同用户组并加以不同的权限限制。
-共有云也可以基于ZStack的账号系统对接自身的billing系统。&lt;/p&gt;
-
-&lt;p&gt;详细的信息可以访问&lt;a href=&quot;./zstack-account-user-tutorials.html&quot;&gt;账号用户系统手册&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;改变云主机模板&lt;/h2&gt;
-
-&lt;p&gt;当用户选择某个模板（CPU/内存配置）创建云主机之后，可以根据需求修改云主机配置。修改后，仅需要重启云主机即可。不过该功能和账号系统一样，在v0.8里只能通过zstack-cli来调用，例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;第一个vmInstanceUuid就是你想要改变的云主机的UUID，第二个instanceOfferingUuid就是你希望改变之后的模板的UUID。&lt;/p&gt;
-
-&lt;h2&gt;从0.7版本无缝升级&lt;/h2&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;升级数据库&lt;/h4&gt;
-  
-  虽然ZStack升级程序会进行备份，不过在升级数据库前，还是希望用户手动&lt;b&gt;做好数据库的备份!&lt;/b&gt;
-  您可以使用以下的命令来备份当前zstack的数据库：
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;快速升级&lt;/h3&gt;
-
-&lt;p&gt;如果你仅仅只有一个管理节点，数据库和Dashboard也装在相同的节点上，那么你就可以用下面的方法快速升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-install-0.8.0-rc2.sh
-wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-all-in-one-0.8.0-rc2.tgz
-bash zstack-install-0.8.0-rc2.sh -u -f zstack-all-in-one-0.8.0-rc2.tgz
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;正常情况，你大概只需要等待2分钟，zstack就会帮你升级完成。&lt;/p&gt;
-
-&lt;h3&gt;使用zstack-ctl升级多节点&lt;/h3&gt;
-
-&lt;h4&gt;1. 升级第一个节点&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir zstack-0.8
-cd zstack-0.8
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;请重新安装zstack-ctl，如果你还在使用zstack v0.6系列的产品&lt;/h4&gt;
-  
-  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
-  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-  
-&lt;/div&gt;
-
-
-&lt;pre&gt;&lt;code&gt;wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0-rc2/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;2. 升级数据库&lt;/h4&gt;
-
-&lt;p&gt;备份数据库&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;如果只有一个管理节点，您可以立刻启动该节点&lt;/h4&gt;
-  使用命令&lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt;启动zstack管理节点。如果还有其他管理节点，请继续完成步骤三。
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. 升级其他管理节点&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;需要注意从 v0.8开始，zstack-ctl 统一了命令参数，所有原有--remote 指令都统一成了--host. &lt;/strong&gt;&lt;/p&gt;
-
-&lt;h4&gt;4. 升级UI&lt;/h4&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;停止UI服务&lt;/h4&gt;
-  
-  &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; 
-
-&lt;/div&gt;
-
-
-&lt;p&gt;升级本地UI服务：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;或者升级远端UI服务：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;5. 启动管理节点&lt;/h4&gt;
-
-&lt;p&gt;启动本地管理节点：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;`zstack-ctl start_node`
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;启动远程管理节点：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;`zstack-ctl start_node --host remote_host_ip`
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;所有的Agent都会随着管理节点的启动而自动升级&lt;/h4&gt;
-  当管理节点启动后，会重新连接并升级包括计算节点，备份存储，虚拟路由等等一系列的ZStack Agents。
-  用户在创建新的云主机之前，需要确保计算节点的状态已经变成Connected
-&lt;/div&gt;
-
-
-&lt;h4&gt;6. 启动UI服务&lt;/h4&gt;
-
-&lt;p&gt;启动本地UI：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;`zstack-ctl start_ui`
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;启动远端UI：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;`zstack-ctl start_ui --host remote_host_ip`
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;报告bug&lt;/h2&gt;
-
-&lt;p&gt;如果你在使用中发现任何问题或者有任何建议，请你到我们的&lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;上告诉我们，谢谢！&lt;/p&gt;
-
-&lt;p&gt;Enjoy～
-ZStack 开发团队&lt;/p&gt;
-</description>
-        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v0.8-rc2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v0.8-rc2.html</guid>
         
         
         <category>cn_blog</category>
