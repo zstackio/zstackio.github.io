@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 25 Aug 2015 21:45:59 +0800</pubDate>
-    <lastBuildDate>Tue, 25 Aug 2015 21:45:59 +0800</lastBuildDate>
+    <pubDate>Tue, 25 Aug 2015 21:47:42 +0800</pubDate>
+    <lastBuildDate>Tue, 25 Aug 2015 21:47:42 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -333,7 +333,7 @@ UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid
     
       <item>
         <title>ZStack 2015 技术分享会【上海站】</title>
-        <description>&lt;p&gt;&lt;strong&gt;“用最纯粹的技术回馈IaaS社区”&lt;/strong&gt;，是整个ZStack团队的信仰。ZStack开发团队将打算借0.9版本发布之际，首次在国内举办几场技术交流会。
+        <description>&lt;p&gt;&lt;strong&gt;“用最纯粹的技术回馈IaaS社区”&lt;/strong&gt;，是整个ZStack团队的信仰。ZStack开发团队将计划借0.9版本发布之际，首次在国内举办几场技术交流会。
 继&lt;a href=&quot;./zstack-meetup-beijing-2015.html&quot;&gt;北京站&lt;/a&gt;开始报名后，上海站也公布了报名的详细情况。
 上海站交流会会于9月12号周六下午1点在上海长宁区福泉路111号上海神州数码有限公司1楼大视频会议室举行。
 为保证技术交流的质量，我们设置了活动报名人数的上限为50人，请关心ZStack现状和发展的开发者和用户们务必提前报名。&lt;/p&gt;
@@ -499,7 +499,7 @@ mvn test -Dtest=UnitTestSuite
     
       <item>
         <title>ZStack 2015 技术分享会【北京站】</title>
-        <description>&lt;p&gt;&lt;strong&gt;“用最纯粹的技术回馈IaaS社区”&lt;/strong&gt;，是整个ZStack团队的信仰。ZStack开发团队将打算借0.9版本发布之际，首次在国内举办几场技术交流会。
+        <description>&lt;p&gt;&lt;strong&gt;“用最纯粹的技术回馈IaaS社区”&lt;/strong&gt;，是整个ZStack团队的信仰。ZStack开发团队将计划借0.9版本发布之际，首次在国内举办几场技术交流会。
 本次交流会的首站将会于9月5号周六下午13：30在北京海淀区东北旺西路8号中关村软件园内软件广场C座三楼极客演播厅举行。
 为保证技术交流的质量，我们设置了活动报名人数的上限为100人，请关心ZStack现状和发展的开发者和用户们务必提前报名。&lt;/p&gt;
 
