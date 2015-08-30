@@ -5,9 +5,677 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 25 Aug 2015 21:47:42 +0800</pubDate>
-    <lastBuildDate>Tue, 25 Aug 2015 21:47:42 +0800</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <pubDate>Sun, 30 Aug 2015 01:16:07 -0700</pubDate>
+    <lastBuildDate>Sun, 30 Aug 2015 01:16:07 -0700</lastBuildDate>
+    <generator>Jekyll v2.4.0</generator>
+    
+      <item>
+        <title>Announcing ZStack v0.9 RC2</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.9 is in the release cycle.
+Today we release 0.9 RC2 for you test. In this release, ZStack introduces two new features:&lt;/p&gt;
+
+&lt;h2&gt;Ceph Integration&lt;/h2&gt;
+
+&lt;p&gt;Beginning at this version, ZStack supports Ceph as backup storage and primary storage. To leverage the advantages of Ceph,
+users should use a Ceph cluster for both backup storage and primary storage in the same zone; by doing so, there will be
+no data copy between backup storage and primary storage when users perform operations like creating VM, creating image,
+creating a data volume from an image, all are done through COW(copy on write).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;ZStack interoperates with Ceph by deploying agents on Ceph mon servers. Users can dynamically add/remove a Ceph mon server
+into/from ZStack.&lt;/p&gt;
+
+&lt;h3&gt;Ceph Backup Storage&lt;/h3&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Ceph backup storage only works with Ceph primary storage&lt;/h4&gt;
+  
+  Given the a main advantage of using Ceph is COW, Ceph backup storage is designed to only work with Ceph primary storage.
+  Because the Ceph backup storage and primary storage use the same Ceph cluster, users should not attach a Ceph backup storage
+  to multiple zones. The best practice is to use a Ceph cluster for both backup storage and primary storage in the same zone.
+  
+  That is to say, you CANNOT use Ceph backup storage with primary storage of NFS, local storage, ISCSI.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Add through UI&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the type 'Ceph'&lt;/li&gt;
+&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;click button 'Add'&lt;/li&gt;
+&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
+&lt;li&gt;click button 'Next'&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h4&gt;Add through CLI&lt;/h4&gt;
+
+&lt;p&gt;You can use AddCephBackupStorage to add a Ceph backup storage. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephBackupStorage name=ceph monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
+the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Specifying the pool&lt;/h4&gt;
+  &lt;code&gt;AddCephBackupStorage&lt;/code&gt; receives an optional parameter &lt;code&gt;poolName&lt;/code&gt; which allows you to specify an existing
+  Ceph pool for the backup storage. If the parameter is provided, ZStack will use the pool instead of creating a new one;
+  if the pool is not existing, an error will be raised and the backup storage will fail to be added. If the parameter is omitted,
+  ZStack will automatically create a new pool with the default Ceph pool setting.
+  
+  You can use this feature to create a well-tuned Ceph pool for the backup storage.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use AddMonToCephBackupStorage to add new Ceph mon servers to a Ceph backup storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use RemoveMonFromCephBackupStorage to remove Ceph mon servers from a Ceph backup storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
+
+&lt;h4&gt;Query&lt;/h4&gt;
+
+&lt;p&gt;You can use QueryCephBackupStorage to query Ceph backup storage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;Ceph Primary Storage&lt;/h3&gt;
+
+&lt;p&gt;The Ceph primary storage works with both SFTP backup storage and Ceph backup storage.&lt;/p&gt;
+
+&lt;h4&gt;Add through UI&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the type 'Ceph'&lt;/li&gt;
+&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;click button 'Add'&lt;/li&gt;
+&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
+&lt;li&gt;click button 'Next'&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h4&gt;Add through CLI&lt;/h4&gt;
+
+&lt;p&gt;You can use AddCephPrimaryStorage to add a Ceph primary storage. For example::&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephPrimaryStorage name=ceph zoneUuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
+the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Specifying pools&lt;/h4&gt;
+  &lt;code&gt;AddCephPrimaryStorage&lt;/code&gt; receives three optional parameters &lt;code&gt;imageCachePoolName, rootVolumePoolName, dataVolumePoolName&lt;/code&gt;
+  all of which allow you to specify existing Ceph pools for the primary storage. If the parameters are provided, ZStack will use the existing pools instead of creating new ones;
+  if the pools are not existing, an error will be raised and the primary storage will fail to be added. If the parameters are omitted,
+  ZStack will automatically create new pools with the default Ceph pool setting.
+  
+  You can use this feature to create well-tuned Ceph pools for the primary storage. You can choose to only specify parameters(e.g. rootVolumePoolName) for existing pools
+  you want to use, and let ZStack to automatically create the rest.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use AddMonToCephPrimaryStorage to add new Ceph mon servers to a Ceph primary storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use RemoveMonFromCephPrimaryStorage to remove Ceph mon servers from a Ceph primary storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephPrimaryStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
+
+&lt;h4&gt;Query&lt;/h4&gt;
+
+&lt;p&gt;You can use QueryCephPrimaryStorage to query Ceph primary storage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2&gt;Elastic Load Balancer&lt;/h2&gt;
+
+&lt;p&gt;Beginning at 0.9, ZStack supports the elastic load balancer. Details can be found at &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/lb.html&quot;&gt;User Manual - Elastic Load Balancer&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Pay attention to the virtual router upgrade instructions at the end&lt;/h4&gt;
+  
+  To support the elastic load balancer, you need to upgrade the virtual router VMs in your current ZStack setup.
+  Please do read the virtual router upgrade instructions at the end of the upgrade chapter.
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Backup Database&lt;/h4&gt;
+  
+  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
+  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
+  database in case any error happens. You can backup the database following:
+  
+  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
+
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
+mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+wget http://download.zstack.org/releases/0.9/rc2/zstack-install.sh
+wget http://download.zstack.org/releases/0.9/rc2/zstack-all-in-one-0.9.0-rc2.tgz
+bash zstack-install.sh -u -f zstack-all-in-one-0.9.0-rc2.tgz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
+
+&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
+
+&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
+
+&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Install zstack-ctl if you are using 0.6 version&lt;/h4&gt;
+  
+  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
+  
+&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/0.9/rc2/zstack.war
+zstack-ctl upgrade_management_node --war-file zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
+
+&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;You can start the node now if you only have one management node&lt;/h4&gt;
+  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
+  other management nodes to upgrade, continue to perform following instructions.
+&lt;/div&gt;
+
+
+&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
+
+&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Stop UI&lt;/h4&gt;
+  
+  If you are using 0.6, stop the UI by &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; for 0.7 and 0.8, stop the UI by &lt;code&gt;zstack-ctl stop_ui&lt;/code&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
+
+&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
+
+&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.8 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
+&lt;code&gt;zstack-ctl start_node --host remote_host_ip&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
+  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+&lt;/div&gt;
+
+
+&lt;h4&gt;6. Start UI&lt;/h4&gt;
+
+&lt;p&gt;Now you can start the UI by &lt;code&gt;zstack-ctl start_ui&lt;/code&gt; on the local host or &lt;code&gt;zstack-ctl start_ui --host remote_host_ip&lt;/code&gt; on the remote host.&lt;/p&gt;
+
+&lt;h4&gt;7. Upgrade Virtual Router&lt;/h4&gt;
+
+&lt;h5&gt;Upgrade running virtual router VMs&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the virtual router VM&lt;/li&gt;
+&lt;li&gt;click button &quot;Action&quot;&lt;/li&gt;
+&lt;li&gt;click &quot;Reconnect&quot;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;After reconnecting, the virtual router VM will be upgraded to the latest version.&lt;/p&gt;
+
+&lt;h5&gt;Upgrade virtual router image and virtual router offering&lt;/h5&gt;
+
+&lt;ol&gt;
+&lt;li&gt;add the 0.9 virtual router image http://download.zstack.org/releases/0.9/rc2/zstack-virtualrouter-0.9.0-rc.qcow2 to the backup storage:&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;update the existing virtual router offering to the new virtual router image by CLI&lt;/p&gt;
+
+&lt;p&gt; UpdateVirtualRouterOffering uuid=vr_offering_uuid imageUuid=new_image_uuid&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;You cannot create new virtual router VMs if you don't upgrade the virtual offerings&lt;/h4&gt;
+  If you don't upgrade existing virtual router offerings, new virtual router VMs will fail to be created because the old
+  0.8(or 0.7, 0.6) image doesn't contain the agent required by the ZStack 0.9. You can use above CLI command to update existing
+  offerings, or simply delete them and create new ones.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Bug Report&lt;/h2&gt;
+
+&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 29 Aug 2015 00:00:00 -0700</pubDate>
+        <link>http://zstack.org/cn/blog/v0.9-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.9-rc2.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>Announcing ZStack v0.9 RC2</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.9 is in the release cycle.
+Today we release 0.9 RC2 for you test. In this release, ZStack introduces two new features:&lt;/p&gt;
+
+&lt;h2&gt;Ceph Integration&lt;/h2&gt;
+
+&lt;p&gt;Beginning at this version, ZStack supports Ceph as backup storage and primary storage. To leverage the advantages of Ceph,
+users should use a Ceph cluster for both backup storage and primary storage in the same zone; by doing so, there will be
+no data copy between backup storage and primary storage when users perform operations like creating VM, creating image,
+creating a data volume from an image, all are done through COW(copy on write).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;ZStack interoperates with Ceph by deploying agents on Ceph mon servers. Users can dynamically add/remove a Ceph mon server
+into/from ZStack.&lt;/p&gt;
+
+&lt;h3&gt;Ceph Backup Storage&lt;/h3&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Ceph backup storage only works with Ceph primary storage&lt;/h4&gt;
+  
+  Given the a main advantage of using Ceph is COW, Ceph backup storage is designed to only work with Ceph primary storage.
+  Because the Ceph backup storage and primary storage use the same Ceph cluster, users should not attach a Ceph backup storage
+  to multiple zones. The best practice is to use a Ceph cluster for both backup storage and primary storage in the same zone.
+  
+  That is to say, you CANNOT use Ceph backup storage with primary storage of NFS, local storage, ISCSI.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Add through UI&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the type 'Ceph'&lt;/li&gt;
+&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;click button 'Add'&lt;/li&gt;
+&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
+&lt;li&gt;click button 'Next'&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h4&gt;Add through CLI&lt;/h4&gt;
+
+&lt;p&gt;You can use AddCephBackupStorage to add a Ceph backup storage. For example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephBackupStorage name=ceph monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
+the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Specifying the pool&lt;/h4&gt;
+  &lt;code&gt;AddCephBackupStorage&lt;/code&gt; receives an optional parameter &lt;code&gt;poolName&lt;/code&gt; which allows you to specify an existing
+  Ceph pool for the backup storage. If the parameter is provided, ZStack will use the pool instead of creating a new one;
+  if the pool is not existing, an error will be raised and the backup storage will fail to be added. If the parameter is omitted,
+  ZStack will automatically create a new pool with the default Ceph pool setting.
+  
+  You can use this feature to create a well-tuned Ceph pool for the backup storage.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use AddMonToCephBackupStorage to add new Ceph mon servers to a Ceph backup storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use RemoveMonFromCephBackupStorage to remove Ceph mon servers from a Ceph backup storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
+
+&lt;h4&gt;Query&lt;/h4&gt;
+
+&lt;p&gt;You can use QueryCephBackupStorage to query Ceph backup storage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;Ceph Primary Storage&lt;/h3&gt;
+
+&lt;p&gt;The Ceph primary storage works with both SFTP backup storage and Ceph backup storage.&lt;/p&gt;
+
+&lt;h4&gt;Add through UI&lt;/h4&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the type 'Ceph'&lt;/li&gt;
+&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
+&lt;li&gt;click button 'Add'&lt;/li&gt;
+&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
+&lt;li&gt;click button 'Next'&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h4&gt;Add through CLI&lt;/h4&gt;
+
+&lt;p&gt;You can use AddCephPrimaryStorage to add a Ceph primary storage. For example::&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephPrimaryStorage name=ceph zoneUuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
+the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Specifying pools&lt;/h4&gt;
+  &lt;code&gt;AddCephPrimaryStorage&lt;/code&gt; receives three optional parameters &lt;code&gt;imageCachePoolName, rootVolumePoolName, dataVolumePoolName&lt;/code&gt;
+  all of which allow you to specify existing Ceph pools for the primary storage. If the parameters are provided, ZStack will use the existing pools instead of creating new ones;
+  if the pools are not existing, an error will be raised and the primary storage will fail to be added. If the parameters are omitted,
+  ZStack will automatically create new pools with the default Ceph pool setting.
+  
+  You can use this feature to create well-tuned Ceph pools for the primary storage. You can choose to only specify parameters(e.g. rootVolumePoolName) for existing pools
+  you want to use, and let ZStack to automatically create the rest.
+&lt;/div&gt;
+
+
+&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use AddMonToCephPrimaryStorage to add new Ceph mon servers to a Ceph primary storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
+
+&lt;p&gt;You can use RemoveMonFromCephPrimaryStorage to remove Ceph mon servers from a Ceph primary storage:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephPrimaryStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
+
+&lt;h4&gt;Query&lt;/h4&gt;
+
+&lt;p&gt;You can use QueryCephPrimaryStorage to query Ceph primary storage:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2&gt;Elastic Load Balancer&lt;/h2&gt;
+
+&lt;p&gt;Beginning at 0.9, ZStack supports the elastic load balancer. Details can be found at &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/lb.html&quot;&gt;User Manual - Elastic Load Balancer&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Pay attention to the virtual router upgrade instructions at the end&lt;/h4&gt;
+  
+  To support the elastic load balancer, you need to upgrade the virtual router VMs in your current ZStack setup.
+  Please do read the virtual router upgrade instructions at the end of the upgrade chapter.
+&lt;/div&gt;
+
+
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;Backup Database&lt;/h4&gt;
+  
+  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
+  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
+  database in case any error happens. You can backup the database following:
+  
+  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+
+&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
+
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
+mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+wget http://download.zstack.org/releases/0.9/rc2/zstack-install.sh
+wget http://download.zstack.org/releases/0.9/rc2/zstack-all-in-one-0.9.0-rc2.tgz
+bash zstack-install.sh -u -f zstack-all-in-one-0.9.0-rc2.tgz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
+
+&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
+
+&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
+
+&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Install zstack-ctl if you are using 0.6 version&lt;/h4&gt;
+  
+  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
+  
+&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/0.9/rc2/zstack.war
+zstack-ctl upgrade_management_node --war-file zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
+
+&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;You can start the node now if you only have one management node&lt;/h4&gt;
+  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
+  other management nodes to upgrade, continue to perform following instructions.
+&lt;/div&gt;
+
+
+&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
+
+&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Stop UI&lt;/h4&gt;
+  
+  If you are using 0.6, stop the UI by &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; for 0.7 and 0.8, stop the UI by &lt;code&gt;zstack-ctl stop_ui&lt;/code&gt;
+&lt;/div&gt;
+
+
+&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
+
+&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
+
+&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.8 RC2. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
+&lt;code&gt;zstack-ctl start_node --host remote_host_ip&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
+  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+&lt;/div&gt;
+
+
+&lt;h4&gt;6. Start UI&lt;/h4&gt;
+
+&lt;p&gt;Now you can start the UI by &lt;code&gt;zstack-ctl start_ui&lt;/code&gt; on the local host or &lt;code&gt;zstack-ctl start_ui --host remote_host_ip&lt;/code&gt; on the remote host.&lt;/p&gt;
+
+&lt;h4&gt;7. Upgrade Virtual Router&lt;/h4&gt;
+
+&lt;h5&gt;Upgrade running virtual router VMs&lt;/h5&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;select the virtual router VM&lt;/li&gt;
+&lt;li&gt;click button &quot;Action&quot;&lt;/li&gt;
+&lt;li&gt;click &quot;Reconnect&quot;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;After reconnecting, the virtual router VM will be upgraded to the latest version.&lt;/p&gt;
+
+&lt;h5&gt;Upgrade virtual router image and virtual router offering&lt;/h5&gt;
+
+&lt;ol&gt;
+&lt;li&gt;add the 0.9 virtual router image http://download.zstack.org/releases/0.9/rc2/zstack-virtualrouter-0.9.0-rc.qcow2 to the backup storage:&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;update the existing virtual router offering to the new virtual router image by CLI&lt;/p&gt;
+
+&lt;p&gt; UpdateVirtualRouterOffering uuid=vr_offering_uuid imageUuid=new_image_uuid&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+  &lt;h4&gt;You cannot create new virtual router VMs if you don't upgrade the virtual offerings&lt;/h4&gt;
+  If you don't upgrade existing virtual router offerings, new virtual router VMs will fail to be created because the old
+  0.8(or 0.7, 0.6) image doesn't contain the agent required by the ZStack 0.9. You can use above CLI command to update existing
+  offerings, or simply delete them and create new ones.
+&lt;/div&gt;
+
+
+&lt;h2&gt;Bug Report&lt;/h2&gt;
+
+&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sat, 29 Aug 2015 00:00:00 -0700</pubDate>
+        <link>http://zstack.org/blog/v0.9-rc2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.9-rc2.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
     
       <item>
         <title>更改VM hostname和静态IP地址</title>
@@ -322,7 +990,7 @@ UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid
 &lt;/ol&gt;
 
 </description>
-        <pubDate>Sat, 22 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Sat, 22 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/update-system-tags-by-delete-add.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/update-system-tags-by-delete-add.html</guid>
         
@@ -341,9 +1009,9 @@ UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid
 &lt;p&gt;本次研讨会的主题包括：&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;ZStack技术架构详解&lt;/li&gt;
-&lt;li&gt;ZStack实战分享&lt;/li&gt;
-&lt;li&gt;现场互动问答&lt;/li&gt;
+&lt;li&gt; ZStack技术架构详解&lt;/li&gt;
+&lt;li&gt; ZStack实战分享&lt;/li&gt;
+&lt;li&gt; 现场互动问答&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -357,7 +1025,7 @@ UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid
 &lt;p&gt;&lt;strong&gt;大家可以扫描下面的二维码报名ZStack技术交流会：&lt;/strong&gt;
 &lt;img src=&quot;/images/meetups/2015/shanghai/registeration.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 </description>
-        <pubDate>Thu, 20 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Thu, 20 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/zstack-meetup-shanghai-2015.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-meetup-shanghai-2015.html</guid>
         
@@ -488,7 +1156,7 @@ mvn test -Dtest=UnitTestSuite
 &lt;/code&gt;&lt;/pre&gt;
 
 </description>
-        <pubDate>Sat, 15 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Sat, 15 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/build-zstack.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/build-zstack.html</guid>
         
@@ -523,7 +1191,7 @@ mvn test -Dtest=UnitTestSuite
 &lt;p&gt;&lt;strong&gt;大家可以扫描下面的二维码报名ZStack技术交流会：&lt;/strong&gt;
 &lt;img src=&quot;/images/meetups/2015/beijing/registeration.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 </description>
-        <pubDate>Sun, 09 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Sun, 09 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/zstack-meetup-beijing-2015.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-meetup-beijing-2015.html</guid>
         
@@ -703,7 +1371,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/85&quot;&gt;Delete L2 Failed: no matching network device was found&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM&#39;s 2nd L3 won&#39;t stop VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM's 2nd L3 won't stop VM&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/82&quot;&gt;Delete normal account will delete private L3 VR (L3 is shared by admin)&lt;/a&gt;&lt;/p&gt;
 
@@ -719,15 +1387,15 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/74&quot;&gt;PS available capacity is not correct&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can&#39;t set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can't set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format &#39;raw&#39; while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format 'raw' while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/69&quot;&gt;VM console connection will be timeout, if ManagementNode use iptables to reject port access&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM&#39;s last L3 uuid wont&#39; destroy VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM's last L3 uuid wont' destroy VM&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM&#39;s volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM's volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/64&quot;&gt;Create Data Volume From Volume Snapshot failed when origianl voluem is deleted in Local Primary Storage&lt;/a&gt;&lt;/p&gt;
 
@@ -735,7 +1403,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/61&quot;&gt;Qcow Volume image size is full size, when creating from volume offering&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host&#39;s information&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host's information&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/56&quot;&gt;URL format hint is wrong for IscsiFileSystemBackendPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
@@ -750,7 +1418,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;p&gt;Enjoy～
 ZStack 开发团队&lt;/p&gt;
 </description>
-        <pubDate>Tue, 04 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Tue, 04 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/v0.8-release.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v0.8-release.html</guid>
         
@@ -773,8 +1441,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select the type to &#39;LocalStorage&#39;&lt;/li&gt;
-&lt;li&gt;input the hosts&#39; folder path.&lt;/li&gt;
+&lt;li&gt;select the type to 'LocalStorage'&lt;/li&gt;
+&lt;li&gt;input the hosts' folder path.&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -811,7 +1479,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
   &lt;h4&gt;No live migration and limited volume attaching&lt;/h4&gt;
   
-  Because local primary storage is not network shared storage, it&#39;s not possible to lively migrate a VM from one host to another 
+  Because local primary storage is not network shared storage, it's not possible to lively migrate a VM from one host to another 
   until the storage migration feature is supported in future ZStack releases. Data volumes, whose states are Ready, can only be
   attached to VMs on the same host; that is to say, once a data volume is instantiated on a local storage, it can only be attached
   to VMs on the same host where it is instantiated.
@@ -827,8 +1495,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Attach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Attach L3 Network' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -836,7 +1504,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to attach&lt;/li&gt;
-&lt;li&gt;click button &#39;Attach&#39;&lt;/li&gt;
+&lt;li&gt;click button 'Attach'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -852,8 +1520,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Detach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Detach L3 Network' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -861,7 +1529,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to detach&lt;/li&gt;
-&lt;li&gt;click button &#39;Detach&#39;&lt;/li&gt;
+&lt;li&gt;click button 'Detach'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -895,8 +1563,8 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 &lt;p&gt;&lt;img src=&quot;../../images/0.8/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Change Instance Offering&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Change Instance Offering' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -904,7 +1572,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;ol&gt;
 &lt;li&gt;select the instance offering you want to change&lt;/li&gt;
-&lt;li&gt;click the button &#39;Change&#39;&lt;/li&gt;
+&lt;li&gt;click the button 'Change'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -946,7 +1614,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
 
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
 wget --no-check-certificate https://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
@@ -1028,7 +1696,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
   &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
 &lt;/div&gt;
 
 
@@ -1044,7 +1712,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/85&quot;&gt;Delete L2 Failed: no matching network device was found&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM&#39;s 2nd L3 won&#39;t stop VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM's 2nd L3 won't stop VM&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/82&quot;&gt;Delete normal account will delete private L3 VR (L3 is shared by admin)&lt;/a&gt;&lt;/p&gt;
 
@@ -1060,15 +1728,15 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/74&quot;&gt;PS available capacity is not correct&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can&#39;t set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can't set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format &#39;raw&#39; while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format 'raw' while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/69&quot;&gt;VM console connection will be timeout, if ManagementNode use iptables to reject port access&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM&#39;s last L3 uuid wont&#39; destroy VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM's last L3 uuid wont' destroy VM&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM&#39;s volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM's volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/64&quot;&gt;Create Data Volume From Volume Snapshot failed when origianl voluem is deleted in Local Primary Storage&lt;/a&gt;&lt;/p&gt;
 
@@ -1076,7 +1744,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/61&quot;&gt;Qcow Volume image size is full size, when creating from volume offering&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host&#39;s information&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host's information&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/56&quot;&gt;URL format hint is wrong for IscsiFileSystemBackendPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
@@ -1088,9 +1756,9 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 03 Aug 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v0.8.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v0.8.html</guid>
+        <pubDate>Mon, 03 Aug 2015 00:00:00 -0700</pubDate>
+        <link>http://zstack.org/cn/blog/v0.8.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8.html</guid>
         
         
         <category>blog</category>
@@ -1111,8 +1779,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/localstorage.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select the type to &#39;LocalStorage&#39;&lt;/li&gt;
-&lt;li&gt;input the hosts&#39; folder path.&lt;/li&gt;
+&lt;li&gt;select the type to 'LocalStorage'&lt;/li&gt;
+&lt;li&gt;input the hosts' folder path.&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1149,7 +1817,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
   &lt;h4&gt;No live migration and limited volume attaching&lt;/h4&gt;
   
-  Because local primary storage is not network shared storage, it&#39;s not possible to lively migrate a VM from one host to another 
+  Because local primary storage is not network shared storage, it's not possible to lively migrate a VM from one host to another 
   until the storage migration feature is supported in future ZStack releases. Data volumes, whose states are Ready, can only be
   attached to VMs on the same host; that is to say, once a data volume is instantiated on a local storage, it can only be attached
   to VMs on the same host where it is instantiated.
@@ -1165,8 +1833,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Attach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Attach L3 Network' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1174,7 +1842,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to attach&lt;/li&gt;
-&lt;li&gt;click button &#39;Attach&#39;&lt;/li&gt;
+&lt;li&gt;click button 'Attach'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1190,8 +1858,8 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/images/0.8/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Detach L3 Network&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Detach L3 Network' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1199,7 +1867,7 @@ In this release, ZStack introduces four new features:&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;select the L3 networks you want to detach&lt;/li&gt;
-&lt;li&gt;click button &#39;Detach&#39;&lt;/li&gt;
+&lt;li&gt;click button 'Detach'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1233,8 +1901,8 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 &lt;p&gt;&lt;img src=&quot;../../images/0.8/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;select a VM and click button &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;click &#39;Change Instance Offering&#39; on the drop-down menu&lt;/li&gt;
+&lt;li&gt;select a VM and click button 'Action'&lt;/li&gt;
+&lt;li&gt;click 'Change Instance Offering' on the drop-down menu&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1242,7 +1910,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;ol&gt;
 &lt;li&gt;select the instance offering you want to change&lt;/li&gt;
-&lt;li&gt;click the button &#39;Change&#39;&lt;/li&gt;
+&lt;li&gt;click the button 'Change'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1284,7 +1952,7 @@ of the identity management system can be found in &lt;a href=&quot;http://zstack
 
 &lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
 
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
+&lt;p&gt;If you have only one management node, you can upgrade it by ZStack's installation script:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
 wget --no-check-certificate https://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
@@ -1366,7 +2034,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
   &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
 &lt;/div&gt;
 
 
@@ -1382,7 +2050,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/85&quot;&gt;Delete L2 Failed: no matching network device was found&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM&#39;s 2nd L3 won&#39;t stop VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/84&quot;&gt;Delete VM's 2nd L3 won't stop VM&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/82&quot;&gt;Delete normal account will delete private L3 VR (L3 is shared by admin)&lt;/a&gt;&lt;/p&gt;
 
@@ -1398,15 +2066,15 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/74&quot;&gt;PS available capacity is not correct&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can&#39;t set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/73&quot;&gt;Can't set fields=totalCapacity,availableCapacity,availablePhysicalCapacity for QueryPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format &#39;raw&#39; while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/72&quot;&gt;after iso installation, the root volume shows format 'raw' while the real format is qcow2&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/69&quot;&gt;VM console connection will be timeout, if ManagementNode use iptables to reject port access&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM&#39;s last L3 uuid wont&#39; destroy VM&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/68&quot;&gt;Delete VM's last L3 uuid wont' destroy VM&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM&#39;s volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/66&quot;&gt;VR VM's volume size is not counted in Primary Storage space&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/64&quot;&gt;Create Data Volume From Volume Snapshot failed when origianl voluem is deleted in Local Primary Storage&lt;/a&gt;&lt;/p&gt;
 
@@ -1414,7 +2082,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/61&quot;&gt;Qcow Volume image size is full size, when creating from volume offering&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host&#39;s information&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/57&quot;&gt;[API Request] APIUpdateHostMsg is required to update Host's information&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/56&quot;&gt;URL format hint is wrong for IscsiFileSystemBackendPrimaryStorage&lt;/a&gt;&lt;/p&gt;
 
@@ -1426,9 +2094,9 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
 </description>
-        <pubDate>Mon, 03 Aug 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v0.8.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.8.html</guid>
+        <pubDate>Mon, 03 Aug 2015 00:00:00 -0700</pubDate>
+        <link>http://zstack.org/blog/v0.8.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v0.8.html</guid>
         
         
         <category>blog</category>
@@ -1447,8 +2115,8 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 &lt;p&gt;&lt;img src=&quot;/images/0.8/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;选择一个云主机点击 &#39;Action&#39;&lt;/li&gt;
-&lt;li&gt;点击&#39;Change Instance Offering&#39;&lt;/li&gt;
+&lt;li&gt;选择一个云主机点击 'Action'&lt;/li&gt;
+&lt;li&gt;点击'Change Instance Offering'&lt;/li&gt;
 &lt;/ol&gt;
 
 
@@ -1456,7 +2124,7 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;ol&gt;
 &lt;li&gt;选择需要的云主机配置模板&lt;/li&gt;
-&lt;li&gt;点击&#39;Change&#39;&lt;/li&gt;
+&lt;li&gt;点击'Change'&lt;/li&gt;
 &lt;li&gt;需要重启云主机以让它生效&lt;/li&gt;
 &lt;/ol&gt;
 
@@ -1468,1241 +2136,9 @@ zstack-ctl upgrade_management_node --war-file zstack.war
 
 &lt;p&gt;第一个vmInstanceUuid就是你想要改变的云主机的UUID，第二个instanceOfferingUuid就是你希望改变之后的模板的UUID。&lt;/p&gt;
 </description>
-        <pubDate>Mon, 03 Aug 2015 00:00:00 +0800</pubDate>
+        <pubDate>Mon, 03 Aug 2015 00:00:00 -0700</pubDate>
         <link>http://zstack.org/cn_blog/change-vm-offering.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/change-vm-offering.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack 云环境模拟器</title>
-        <description>&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/simulator/simulator.png&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;介绍&lt;/h3&gt;
-
-&lt;p&gt;熟悉OpenStack的同学应该知道OpenStack可以用&lt;a href=&quot;https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/&quot;&gt;devstack&lt;/a&gt;来搭建一个虚拟云环境，
-使用CloudStack的同学也知道CloudStack也有一个&lt;a href=&quot;https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration&quot;&gt;虚拟云环境&lt;/a&gt;。
-在虚拟云环境中，云主机不会在物理设备上真正创建出来，一切的云场景都是构建在一个虚无的世界中，唯有IaaS的数据库和消息总线还在真实的工作。
-由于云模拟器的这种特性，我们可以用它来熟悉各种云操作和进行底层和虚拟机无关的集成测试，例如测试消息总线，测试数据库，测试IaaS的基本功能。
-ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的开发而不断增强。ZStack的数百个集成测试用例就是
-跑在ZStack的模拟器之上的。ZStack首页上例举的很多大规模并发性能测试也是基于模拟器来进行的
-（不过ZStack在用户的真实物理环境中已经拿到比在PC模拟器上还要好的数据了，平均云主机的创建时间可以低于0.08s）。在频繁的各种VM的操作之中，
-我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
-从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
-ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。&lt;/p&gt;
-
-&lt;p&gt;今天我们就要给大家展示一下ZStack的虚拟云环境如何创建。另外我们还要给大家展示一下如何一步部署ZStack模拟云环境。
-ZStack模拟器和ZStack天然集成，最早的时候ZStack的Dashboard也是可以在UI界面上添加和部署虚拟云环境。但是后来为了避免用户的误操作，
-ZStack开发团队把UI界面上添加云环境的功能给禁止了。目前虚拟云环境需要通过zstack-cli来操作。
-如果您只是想快速部署一个虚拟的云环境，而不在乎部署的过程，可以直接跳转到本文的最后，使用一键部署。
-用户可以在半分钟内完成虚拟云环境的部署，并用其创建虚拟云主机。&lt;/p&gt;
-
-&lt;h3&gt;前提&lt;/h3&gt;
-
-&lt;p&gt;已经根据&lt;a href=&quot;/cn/installation/index.html&quot;&gt;ZStack快速安装手册&lt;/a&gt;，完成ZStack的快速安装和启动。&lt;/p&gt;
-
-&lt;h3&gt;登录zstack控制终端&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-[zstack@localhost ~]$ sudo zstack-cli
-
-  ZStack command line tool
-  Type &quot;help&quot; for more information
-  Type Tab key for auto-completion
-  Type &quot;quit&quot; or &quot;exit&quot; or Ctrl-d to exit
-
-&gt;&gt;&gt;LogInByAccount accountName=admin password=password
-{
-    &quot;inventory&quot;: {
-        &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 7:59:59 AM&quot;,
-        &quot;expiredDate&quot;: &quot;Aug 3, 2015 9:59:59 AM&quot;,
-        &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-        &quot;uuid&quot;: &quot;d45bdd89b8984d65b35dd97f83387e4c&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;创建Zone&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateZone name=simulator-zone
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:00:25 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:00:25 AM&quot;,
-        &quot;name&quot;: &quot;simulator-zone&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;type&quot;: &quot;zstack&quot;,
-        &quot;uuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;创建Cluster&lt;/h3&gt;
-
-&lt;p&gt;需要大家把zoneUuid换成自己刚刚创建的Zone的UUID，并且把hypervisor的类型指定为“Simulator”：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateCluster name=simulator-cluster zoneUuid=22331c109ef64f88a5826bcf96793941 hypervisorType=Simulator
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:02:19 AM&quot;,
-        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:02:19 AM&quot;,
-        &quot;name&quot;: &quot;simulator-cluster&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;type&quot;: &quot;zstack&quot;,
-        &quot;uuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加虚拟的计算节点&lt;/h3&gt;
-
-&lt;p&gt;添加虚拟计算节点的时候，需要使用一个特别的API：&lt;strong&gt;AddSimulatorHost&lt;/strong&gt;。（添加物理KVM计算节点的API是：AddKVMHost）。
-由于是虚拟的计算节点，我们还需要给一个假设的CPU容量和内存容量（为了测试方便，该容量可以给的随意大）：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AddSimulatorHost name=simulator-host clusterUuid=c237767682d947f58efaf5e485b713e7 cpuCapacity=200000 memoryCapacity=1000000000000 managementIp=10.10.10.10
-{
-    &quot;inventory&quot;: {
-        &quot;availableCpuCapacity&quot;: 200000,
-        &quot;availableMemoryCapacity&quot;: 1000000000000,
-        &quot;clusterUuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:05:08 AM&quot;,
-        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:05:08 AM&quot;,
-        &quot;managementIp&quot;: &quot;10.10.10.10&quot;,
-        &quot;name&quot;: &quot;simulator-host&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Connected&quot;,
-        &quot;totalCpuCapacity&quot;: 200000,
-        &quot;totalMemoryCapacity&quot;: 1000000000000,
-        &quot;uuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加虚拟主存储&lt;/h3&gt;
-
-&lt;p&gt;同虚拟计算节点一样，我们需要使用一个特别的API（&lt;strong&gt;AddSimulatorPrimaryStorage&lt;/strong&gt;）来添加虚拟主存储，
-另外我们还需要给一个虚拟的可用空间以及设置类型为&lt;strong&gt;SimulatorPrimaryStorage&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AddSimulatorPrimaryStorage name=simulator-ps zoneUuid=22331c109ef64f88a5826bcf96793941 availableCapacity=10000000000000 totalCapacity=10000000000000 url=nfs://fake_url/fake_folder type=SimulatorPrimaryStorage
-{
-    &quot;inventory&quot;: {
-        &quot;attachedClusterUuids&quot;: [],
-        &quot;availableCapacity&quot;: 10000000000000,
-        &quot;availablePhysicalCapacity&quot;: 0,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
-        &quot;mountPath&quot;: &quot;/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
-        &quot;name&quot;: &quot;simulator-ps&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Connected&quot;,
-        &quot;totalCapacity&quot;: 10000000000000,
-        &quot;totalPhysicalCapacity&quot;: 0,
-        &quot;type&quot;: &quot;SimulatorPrimaryStorage&quot;,
-        &quot;url&quot;: &quot;nfs://fake_url/fake_folder&quot;,
-        &quot;uuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;然后把刚创建的主存储挂载到虚拟cluster上去：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AttachPrimaryStorageToCluster primaryStorageUuid=c6c019a5b6dc494aaacbedfb5d3beb8e clusterUuid=c237767682d947f58efaf5e485b713e7
-{
-    &quot;inventory&quot;: {
-        &quot;attachedClusterUuids&quot;: [
-            &quot;c237767682d947f58efaf5e485b713e7&quot;
-        ],
-        &quot;availableCapacity&quot;: 10000000000000,
-        &quot;availablePhysicalCapacity&quot;: 0,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:12:31 AM&quot;,
-        &quot;mountPath&quot;: &quot;/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
-        &quot;name&quot;: &quot;simulator-ps&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Connected&quot;,
-        &quot;totalCapacity&quot;: 10000000000000,
-        &quot;totalPhysicalCapacity&quot;: 0,
-        &quot;type&quot;: &quot;SimulatorPrimaryStorage&quot;,
-        &quot;url&quot;: &quot;nfs://fake_url/fake_folder&quot;,
-        &quot;uuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加虚拟备份存储&lt;/h3&gt;
-
-&lt;p&gt;同添加虚拟主存储类似，我们也需要用到特殊的&lt;strong&gt;AddSimulatorBackupStorage&lt;/strong&gt;，除了设定虚拟的可用空间外，
-我们还需要指定存储类型为SimulatorBackupStorage。创建完成后，在把它挂载到zone上：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AddSimulatorBackupStorage name=simulator-bs url=/fake_url totalCapacity=1000000000000 availableCapacity=1000000000000 type=SimulatorBackupStorage
-{
-    &quot;inventory&quot;: {
-        &quot;attachedZoneUuids&quot;: [],
-        &quot;availableCapacity&quot;: 1000000000000,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
-        &quot;name&quot;: &quot;simulator-bs&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Connected&quot;,
-        &quot;totalCapacity&quot;: 1000000000000,
-        &quot;type&quot;: &quot;SimulatorBackupStorage&quot;,
-        &quot;url&quot;: &quot;/fake_url&quot;,
-        &quot;uuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;
-    },
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;AttachBackupStorageToZone backupStorageUuid=7bde50df528b45ffb1689229c3de105b zoneUuid=22331c109ef64f88a5826bcf96793941
-{
-    &quot;inventory&quot;: {
-        &quot;attachedZoneUuids&quot;: [
-            &quot;22331c109ef64f88a5826bcf96793941&quot;
-        ],
-        &quot;availableCapacity&quot;: 1000000000000,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:22:00 AM&quot;,
-        &quot;name&quot;: &quot;simulator-bs&quot;,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Connected&quot;,
-        &quot;totalCapacity&quot;: 1000000000000,
-        &quot;type&quot;: &quot;SimulatorBackupStorage&quot;,
-        &quot;url&quot;: &quot;/fake_url&quot;,
-        &quot;uuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加虚拟云主机模版&lt;/h3&gt;
-
-&lt;p&gt;由于我们指定了备份存储为一个虚拟备份存储，添加Image的时候不需要使用真实的url。但是我们需要在Image的format上指定为&lt;strong&gt;simulator&lt;/strong&gt;，而不是qcow2或者raw。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AddImage name=simulator-image backupStorageUuids=7bde50df528b45ffb1689229c3de105b format=simulator mediaType=RootVolumeTemplate url=http://fake_url
-{
-    &quot;inventory&quot;: {
-        &quot;backupStorageRefs&quot;: [
-            {
-                &quot;backupStorageUuid&quot;: &quot;7bde50df528b45ffb1689229c3de105b&quot;,
-                &quot;createDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
-                &quot;imageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
-                &quot;installPath&quot;: &quot;/fake_url/simulator-image&quot;,
-                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;
-            }
-        ],
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
-        &quot;format&quot;: &quot;simulator&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:46:40 AM&quot;,
-        &quot;md5Sum&quot;: &quot;528068b1699f4495bcd90f1b901e6ee9&quot;,
-        &quot;mediaType&quot;: &quot;RootVolumeTemplate&quot;,
-        &quot;name&quot;: &quot;simulator-image&quot;,
-        &quot;platform&quot;: &quot;Linux&quot;,
-        &quot;size&quot;: 100,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;status&quot;: &quot;Ready&quot;,
-        &quot;system&quot;: false,
-        &quot;type&quot;: &quot;zstack&quot;,
-        &quot;url&quot;: &quot;http://fake_url&quot;,
-        &quot;uuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;创建虚拟L2&lt;/h3&gt;
-
-&lt;p&gt;添加一个虚拟的L2设备，当挂载给一个虚拟的Cluster的时候，ZStack不会检查该L2设备是否真实存在。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateL2NoVlanNetwork name=simulator-l2 physicalInterface=eth0 zoneUuid=22331c109ef64f88a5826bcf96793941
-{
-    &quot;inventory&quot;: {
-        &quot;attachedClusterUuids&quot;: [],
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
-        &quot;name&quot;: &quot;simulator-l2&quot;,
-        &quot;physicalInterface&quot;: &quot;eth0&quot;,
-        &quot;type&quot;: &quot;L2NoVlanNetwork&quot;,
-        &quot;uuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;AttachL2NetworkToCluster l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b clusterUuid=c237767682d947f58efaf5e485b713e7
-{
-    &quot;inventory&quot;: {
-        &quot;attachedClusterUuids&quot;: [
-            &quot;c237767682d947f58efaf5e485b713e7&quot;
-        ],
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:26:46 AM&quot;,
-        &quot;name&quot;: &quot;simulator-l2&quot;,
-        &quot;physicalInterface&quot;: &quot;eth0&quot;,
-        &quot;type&quot;: &quot;L2NoVlanNetwork&quot;,
-        &quot;uuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加一个L3网络&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateL3Network name=simulator-l3 l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:29:23 AM&quot;,
-        &quot;ipRanges&quot;: [],
-        &quot;l2NetworkUuid&quot;: &quot;66d4801c02154daeb361bf0a703bd14b&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:29:23 AM&quot;,
-        &quot;name&quot;: &quot;simulator-l3&quot;,
-        &quot;networkServices&quot;: [],
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;system&quot;: false,
-        &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-        &quot;uuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&gt;&gt;&gt;AddIpRange name=simulator-ip-range l3NetworkUuid=af0c2a51dd954207af9f61e43bfee757 startIp=172.16.0.2 endIp=172.16.255.254 netmask=255.255.0.0 gateway=172.16.0.1
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:30:44 AM&quot;,
-        &quot;endIp&quot;: &quot;172.16.255.254&quot;,
-        &quot;gateway&quot;: &quot;172.16.0.1&quot;,
-        &quot;l3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:30:44 AM&quot;,
-        &quot;name&quot;: &quot;simulator-ip-range&quot;,
-        &quot;netmask&quot;: &quot;255.255.0.0&quot;,
-        &quot;startIp&quot;: &quot;172.16.0.2&quot;,
-        &quot;uuid&quot;: &quot;24607ef0fa0b4b3fa6965e4c3c331abe&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;添加云主机模版&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateInstanceOffering name=simulator-vm-offering cpuNum=2 cpuSpeed=128 memorySize=256000000
-{
-    &quot;inventory&quot;: {
-        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
-        &quot;cpuNum&quot;: 2,
-        &quot;cpuSpeed&quot;: 128,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:33:14 AM&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:33:14 AM&quot;,
-        &quot;memorySize&quot;: 256000000,
-        &quot;name&quot;: &quot;simulator-vm-offering&quot;,
-        &quot;sortKey&quot;: 0,
-        &quot;state&quot;: &quot;Enabled&quot;,
-        &quot;type&quot;: &quot;UserVm&quot;,
-        &quot;uuid&quot;: &quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;创建一个虚拟的云主机&lt;/h3&gt;
-
-&lt;p&gt;创建一个虚拟的云主机我们需要指定L3，Image和InstanceOffering的UUID。它们的UUID都可以在之前的命令结果中找到：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
-{
-    &quot;inventory&quot;: {
-        &quot;allVolumes&quot;: [
-            {
-                &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-                &quot;description&quot;: &quot;Root volume for VM[uuid:63becebd92894c108a4c268d7a722ed9]&quot;,
-                &quot;deviceId&quot;: 0,
-                &quot;format&quot;: &quot;simulator&quot;,
-                &quot;installPath&quot;: &quot;nfs:/fake_url/fake_folder/vm/8657fb16029444bfb62e96eed0867cc0.qcow2&quot;,
-                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-                &quot;name&quot;: &quot;ROOT-for-sim-vm1&quot;,
-                &quot;primaryStorageUuid&quot;: &quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;,
-                &quot;rootImageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
-                &quot;size&quot;: 100,
-                &quot;state&quot;: &quot;Enabled&quot;,
-                &quot;status&quot;: &quot;Ready&quot;,
-                &quot;type&quot;: &quot;Root&quot;,
-                &quot;uuid&quot;: &quot;8657fb16029444bfb62e96eed0867cc0&quot;,
-                &quot;vmInstanceUuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;
-            }
-        ],
-        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
-        &quot;clusterUuid&quot;: &quot;c237767682d947f58efaf5e485b713e7&quot;,
-        &quot;cpuNum&quot;: 2,
-        &quot;cpuSpeed&quot;: 128,
-        &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-        &quot;defaultL3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
-        &quot;hostUuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
-        &quot;hypervisorType&quot;: &quot;Simulator&quot;,
-        &quot;imageUuid&quot;: &quot;5e40b7d5fed442848830716bfe71ec2e&quot;,
-        &quot;instanceOfferingUuid&quot;: &quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&quot;,
-        &quot;lastHostUuid&quot;: &quot;b879af2114794044a6ce2f8902da3e38&quot;,
-        &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-        &quot;memorySize&quot;: 256000000,
-        &quot;name&quot;: &quot;sim-vm1&quot;,
-        &quot;platform&quot;: &quot;Linux&quot;,
-        &quot;rootVolumeUuid&quot;: &quot;8657fb16029444bfb62e96eed0867cc0&quot;,
-        &quot;state&quot;: &quot;Running&quot;,
-        &quot;type&quot;: &quot;UserVm&quot;,
-        &quot;uuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;,
-        &quot;vmNics&quot;: [
-            {
-                &quot;createDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-                &quot;deviceId&quot;: 0,
-                &quot;gateway&quot;: &quot;172.16.0.1&quot;,
-                &quot;ip&quot;: &quot;172.16.199.179&quot;,
-                &quot;l3NetworkUuid&quot;: &quot;af0c2a51dd954207af9f61e43bfee757&quot;,
-                &quot;lastOpDate&quot;: &quot;Aug 3, 2015 8:48:27 AM&quot;,
-                &quot;mac&quot;: &quot;fa:f1:91:9a:a7:00&quot;,
-                &quot;netmask&quot;: &quot;255.255.0.0&quot;,
-                &quot;uuid&quot;: &quot;888fdf0816714cdfa16a5797d6e2c8dc&quot;,
-                &quot;vmInstanceUuid&quot;: &quot;63becebd92894c108a4c268d7a722ed9&quot;
-            }
-        ],
-        &quot;zoneUuid&quot;: &quot;22331c109ef64f88a5826bcf96793941&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;保存当前云环境&lt;/h3&gt;
-
-&lt;p&gt;如果觉得每次创建一个虚拟云环境还是需要花费一些时间来一步步添加各种资源。我们可以利用zstack-cli的dump云环境的功能，
-把当前的云环境给dump下来，然后在以后的测试中，直接还原。&lt;/p&gt;
-
-&lt;p&gt;使用zstack-cli -h 来获取相关的参数信息&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-[zstack@localhost ~]$ sudo zstack-cli -h
-Usage: -c [options]
-
-Options:
-  -h, --help            show this help message and exit
-  -H HOST, --host=HOST  [Optional] IP address or DNS name of a ZStack
-                        management node. Default value: localhost
-  -p PORT, --port=PORT  [Optional] Port that the ZStack management node is
-                        listening on. Default value: 8080
-  -d DEPLOY_CONFIG_FILE, --deploy=DEPLOY_CONFIG_FILE
-                        [Optional] deploy a cloud from a XML file.
-  -t DEPLOY_CONFIG_TEMPLATE_FILE, --tempate=DEPLOY_CONFIG_TEMPLATE_FILE
-                        [Optional] variable template file for XML file
-                        spcified in option &#39;-d&#39;
-  -D ZSTACK_CONFIG_DUMP_FILE, --dump=ZSTACK_CONFIG_DUMP_FILE
-                        [Optional] dump a cloud to a XML file
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;然后使用 -D 来dump刚刚部署好的虚拟云环境&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-[zstack@localhost ~]$ sudo zstack-cli -D /tmp/simulator-zstack-cloud.xml
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;strong&gt;如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password&lt;/strong&gt;来登录系统。&lt;/p&gt;
-
-&lt;h3&gt;Dump好的xml文件内容&lt;/h3&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-xml&quot; data-lang=&quot;xml&quot;&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; ?&amp;gt;&lt;/span&gt;
-
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;deployerConfig&amp;gt;&lt;/span&gt;
-
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;nodes&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;node&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;hostName=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10.10.3.230&amp;quot;&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;8ff3c1babe0d44c0a75ab3a93eb7c867&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/nodes&amp;gt;&lt;/span&gt;
-
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;instanceOfferings&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;instanceOffering&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;allocatorStrategy=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;DefaultHostAllocatorStrategy&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;cpuNum=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;2&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;cpuSpeed=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;128&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;memorySize=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;256000000&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-vm-offering&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;sortKey=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;UserVm&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/instanceOfferings&amp;gt;&lt;/span&gt;
-
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorages&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;simulatorBackupStorage&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;availableCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;1000000000000&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-bs&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;totalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;1000000000000&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;SimulatorBackupStorage&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;/fake_url&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;7bde50df528b45ffb1689229c3de105b&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorages&amp;gt;&lt;/span&gt;
-
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;images&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;image&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;format=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;mediaType=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;RootVolumeTemplate&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-image&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;platform=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Linux&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Ready&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;system=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;False&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;http://fake_url&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;5e40b7d5fed442848830716bfe71ec2e&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorageRef&amp;gt;&lt;/span&gt;
-        simulator-bs
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorageRef&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/images&amp;gt;&lt;/span&gt;
-
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;zones&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;zone&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-zone&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
-      &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;22331c109ef64f88a5826bcf96793941&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;backupStorageRef&amp;gt;&lt;/span&gt;
-        simulator-bs
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/backupStorageRef&amp;gt;&lt;/span&gt;
-
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;primaryStorages&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;simulatorPrimaryStorage&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;availableCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;9999999999900&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;availablePhysicalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-ps&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;totalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10000000000000&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;totalPhysicalCapacity=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;url=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;nfs://fake_url/fake_folder&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;c6c019a5b6dc494aaacbedfb5d3beb8e&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/primaryStorages&amp;gt;&lt;/span&gt;
-
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;clusters&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;cluster&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;hypervisorType=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Simulator&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-cluster&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;type=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;zstack&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;c237767682d947f58efaf5e485b713e7&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;zoneUuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;22331c109ef64f88a5826bcf96793941&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;hosts&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;host&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;managementIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;10.10.10.10&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-host&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;status=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Connected&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;b879af2114794044a6ce2f8902da3e38&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/hosts&amp;gt;&lt;/span&gt;
-
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;primaryStorageRef&amp;gt;&lt;/span&gt;
-            simulator-ps
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/primaryStorageRef&amp;gt;&lt;/span&gt;
-
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2NetworkRef&amp;gt;&lt;/span&gt;
-            simulator-l2
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2NetworkRef&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/cluster&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/clusters&amp;gt;&lt;/span&gt;
-
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2Networks&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;l2NoVlanNetwork&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-l2&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;physicalInterface=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;eth0&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;description=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;l2&amp;quot;&lt;/span&gt;
-          &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;66d4801c02154daeb361bf0a703bd14b&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;l3Networks&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;l3BasicNetwork&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-l3&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;state=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Enabled&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;system=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;False&amp;quot;&lt;/span&gt;
-              &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;af0c2a51dd954207af9f61e43bfee757&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
-              &lt;span class=&quot;nt&quot;&gt;&amp;lt;ipRange&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;endIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.255.254&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;na&quot;&gt;gateway=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.0.1&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;na&quot;&gt;name=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;simulator-ip-range&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;na&quot;&gt;netmask=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;255.255.0.0&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;na&quot;&gt;startIp=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;172.16.0.2&amp;quot;&lt;/span&gt;
-                &lt;span class=&quot;na&quot;&gt;uuid=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;24607ef0fa0b4b3fa6965e4c3c331abe&amp;quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;/&amp;gt;&lt;/span&gt;
-            &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l3BasicNetwork&amp;gt;&lt;/span&gt;
-          &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l3Networks&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2NoVlanNetwork&amp;gt;&lt;/span&gt;
-      &lt;span class=&quot;nt&quot;&gt;&amp;lt;/l2Networks&amp;gt;&lt;/span&gt;
-    &lt;span class=&quot;nt&quot;&gt;&amp;lt;/zone&amp;gt;&lt;/span&gt;
-  &lt;span class=&quot;nt&quot;&gt;&amp;lt;/zones&amp;gt;&lt;/span&gt;
-&lt;span class=&quot;nt&quot;&gt;&amp;lt;/deployerConfig&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;h3&gt;还原虚拟云环境&lt;/h3&gt;
-
-&lt;p&gt;当进行了一些测试后，希望快速还原初始化的虚拟云环境，我们就可以使用上一节的xml内容进行恢复。我们假设xml的文件为：/tmp/simulator-zstack-cloud.xml&lt;/p&gt;
-
-&lt;h4&gt;停止zstack管理节点&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;
-zstack-ctl stop_node
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h4&gt;初始化数据库&lt;/h4&gt;
-
-&lt;p&gt;&lt;strong&gt;注意：该操作会清空整个数据库中的数据&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-zstack-ctl deploydb --drop
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;如果设置了mysql的root密码，还需要添加 --root-password=MY_MYSQL_ROOT_PASSWORD 的参数。&lt;/p&gt;
-
-&lt;h4&gt;启动zstack管理节点&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;
-zstack-ctl start_node
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h4&gt;一键恢复zstack云环境&lt;/h4&gt;
-
-&lt;p&gt;&lt;strong&gt;如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password&lt;/strong&gt;来登录系统。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-zstack-cli -d /tmp/simulator-zstack-cloud.xml
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;创建一个虚拟云主机试试&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-sudo zstack-cli CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;总结&lt;/h3&gt;
-
-&lt;p&gt;在本文中，我们介绍了如何使用zstack-cli 命令来搭建一个模拟的zstack 云环境。也介绍了如何把搭建好的云环境备份下来，之后可以一键还原。
-欢迎ZStack的用户使用模拟器来熟悉ZStack云环境，以及进行各种性能和压力测试，看看ZStack系统是否可以响应数万的并发API请求。&lt;/p&gt;
-</description>
-        <pubDate>Sun, 02 Aug 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/build-zstack-cloud-simulator-environemnt.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/build-zstack-cloud-simulator-environemnt.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>可与AWS媲美的ZStack账号用户系统</title>
-        <description>&lt;h2&gt;介绍&lt;/h2&gt;
-
-&lt;p&gt;在v0.8.0之前，ZStack只支持管理员账号来使用整个云环境。自v0.8.0开始，ZStack支持了完善的用户账号系统。
-ZStack用户账号系统设计与经典的亚马逊AWS相似，都定义了Account（账号）和User（用户）。账号可以分为系统管理员账号（SystemAdmin）
-和普通账号（Normal）。其中系统管理员就是我们之前熟悉的名为 &lt;strong&gt;admin&lt;/strong&gt; 的账号。用户是某个账号下的成员，
-一个账号下可以有多个不同的用户。账号可以通过策略来限制不同用户所拥有的权限。默认情况下新创建的普通账号的用户
-只拥有该普通账号所有只读API的权限。账号所有者可以通过添加或者删除权限来限制用户的API执行能力。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;ZStack v0.8.0系统里创建和管理账户只能通过 zstack-cli 来完成。目前还无法通过UI界面来完成账户管理任务&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;一般来说，在一个复杂应用中，一个账号可以对应一个部门或者公司。同一个账号下的用户可以对应于公司里的不同角色。&lt;/p&gt;
-
-&lt;p&gt;对于通常的私有云用户来说，我们建议只需要给普通的使用者创建不同的账号来限制系统级别的操作即可，而无需在每个账号下再创建用户。
-对于共有云用户来说，您可能会有自己的账号和计费系统。您可以根据需求来对接ZStack的账号用户系统，选择是否使用用户。&lt;/p&gt;
-
-&lt;h2&gt;登录&lt;/h2&gt;
-
-&lt;p&gt;当首次安装和部署完ZStack系统，admin账号即已经添加完毕。admin用户拥有全部API的执行能力，包括构建整个云系统。
-admin用户的默认密码是：&lt;strong&gt;password&lt;/strong&gt;，用户可以通过Account API登录ZStack系统，例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli LogInByAccount accountName=admin password=password &lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h2&gt;修改密码&lt;/h2&gt;
-
-&lt;p&gt;登录ZStack系统后，可以通过&lt;strong&gt;UpdateAccountPassword&lt;/strong&gt;来修改自身的登录密码，例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli UpdateAccount password=password &lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;另外，用户也可以直接输入 &lt;strong&gt;zstack-cli&lt;/strong&gt; 命令后，进入命令行交互模式来输入ZStack API命令：&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/tutorials/account/zstackCli.png&quot;&gt;&lt;/p&gt;
-
-&lt;hr&gt;
-
-
-&lt;h2&gt;退出登录&lt;/h2&gt;
-
-&lt;p&gt;退出当前账号的登录方法是通过zstack-cli的LogOut命令，或者在ZStack UI界面里点击右上角的用户选择&lt;strong&gt;Sign Out&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h2&gt;查询资源&lt;/h2&gt;
-
-&lt;p&gt;云系统环境的搭建，可以通过&lt;strong&gt;admin&lt;/strong&gt;用户进入ZStack UI或者ZStack CLI来完成，具体的搭建过程可以参考：&lt;a href=&quot;../tutorials&quot;&gt;用户教程&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;云环境部署好后，系统管理员可以通过添加普通账号和普通用户来限制云环境的使用者的权限，例如普通用户只能在制定
-的环境里创建和查询（有限的）云主机，而不能更改整个云环境的配置。创建云主机需要至少知道三个要素：L3 Network，Image和InstanceOffering。&lt;/p&gt;
-
-&lt;p&gt;在使用&lt;strong&gt;admin&lt;/strong&gt; 账号登录后，可以查询之前部署云系统的各种资源，例如查询三层网络（L3 Network）:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli QueryL3Network
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
-            &quot;description&quot;: &quot;Test&quot;,
-            &quot;ipRanges&quot;: [
-                {
-                    &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
-                    &quot;description&quot;: &quot;Test&quot;,
-                    &quot;endIp&quot;: &quot;10.0.101.250&quot;,
-                    &quot;gateway&quot;: &quot;10.0.101.1&quot;,
-                    &quot;l3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
-                    &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
-                    &quot;name&quot;: &quot;host IP range&quot;,
-                    &quot;netmask&quot;: &quot;255.255.255.0&quot;,
-                    &quot;startIp&quot;: &quot;10.0.101.150&quot;,
-                    &quot;uuid&quot;: &quot;52414f42081b4e8eb5b3daa3ed96f685&quot;
-                }
-            ],
-            &quot;l2NetworkUuid&quot;: &quot;523de2369a7845c18c6ea44263b53be3&quot;,
-            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:31 PM&quot;,
-            &quot;name&quot;: &quot;public network&quot;,
-            &quot;networkServices&quot;: [],
-            &quot;state&quot;: &quot;Enabled&quot;,
-            &quot;system&quot;: false,
-            &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-            &quot;uuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
-            &quot;zoneUuid&quot;: &quot;f3515d3bfb8649d9837c7681a528b736&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-&lt;hr&gt;
-
-
-&lt;p&gt;也可以查询云主机镜像（Image）和云主机模板（InstanceOffering）：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli QueryImage
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;backupStorageRefs&quot;: [
-                {
-                    &quot;backupStorageUuid&quot;: &quot;ce26eab0a5114bcb81f2c5c7ce3384ae&quot;,
-                    &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:35 PM&quot;,
-                    &quot;imageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
-                    &quot;installPath&quot;: &quot;/home/sftpBackupStorage/rootVolumeTemplates/acct-36c27e8ff05c4780bf6d2fa65700f22e/0ac93029ede142849a1355d8e7be8974/f18_200m.template&quot;,
-                    &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:35 PM&quot;
-                }
-            ],
-            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:33 PM&quot;,
-            &quot;description&quot;: &quot;Test&quot;,
-            &quot;format&quot;: &quot;raw&quot;,
-            &quot;guestOsType&quot;: &quot;unknown&quot;,
-            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:33 PM&quot;,
-            &quot;md5Sum&quot;: &quot;not calculated&quot;,
-            &quot;mediaType&quot;: &quot;RootVolumeTemplate&quot;,
-            &quot;name&quot;: &quot;ttylinux&quot;,
-            &quot;platform&quot;: &quot;Linux&quot;,
-            &quot;size&quot;: 209715200,
-            &quot;state&quot;: &quot;Enabled&quot;,
-            &quot;status&quot;: &quot;Ready&quot;,
-            &quot;system&quot;: false,
-            &quot;type&quot;: &quot;zstack&quot;,
-            &quot;url&quot;: &quot;http://zstack.yyk.net/image/f18_200m.img&quot;,
-            &quot;uuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli QueryInstanceOffering
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
-            &quot;cpuNum&quot;: 1,
-            &quot;cpuSpeed&quot;: 512,
-            &quot;createDate&quot;: &quot;Jul 27, 2015 1:41:37 PM&quot;,
-            &quot;description&quot;: &quot;small install offering&quot;,
-            &quot;lastOpDate&quot;: &quot;Jul 27, 2015 1:41:37 PM&quot;,
-            &quot;memorySize&quot;: 134217728,
-            &quot;name&quot;: &quot;small-vm&quot;,
-            &quot;sortKey&quot;: 0,
-            &quot;state&quot;: &quot;Enabled&quot;,
-            &quot;type&quot;: &quot;UserVm&quot;,
-            &quot;uuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-&lt;hr&gt;
-
-
-&lt;p&gt;当然我们也可以通过ZStack的UI界面取获取各种资源的详细信息。&lt;/p&gt;
-
-&lt;h2&gt;添加账号&lt;/h2&gt;
-
-&lt;p&gt;添加普通账号的命令是 &lt;strong&gt;CreateAccount&lt;/strong&gt;, 使用方法例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli CreateAccount name=frank password=123456
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
-        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
-        &quot;name&quot;: &quot;frank&quot;,
-        &quot;type&quot;: &quot;Normal&quot;,
-        &quot;uuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;添加完普通帐号，可以用新的添加的帐号登录试试&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli LogInByAccount accountName=frank password=123456
-{
-    &quot;inventory&quot;: {
-        &quot;accountUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:03:04 PM&quot;,
-        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:03:04 PM&quot;,
-        &quot;userUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
-        &quot;uuid&quot;: &quot;6985fef9518f417296d2d9ed317d0281&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h2&gt;共享资源&lt;/h2&gt;
-
-&lt;p&gt;新添加的普通用户是没有办法读取&lt;strong&gt;admin&lt;/strong&gt;账户创建的各种资源，例如L3 Network, Image和Instance Offering:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;# zstack-cli QueryL3Network
-{
-    &quot;inventories&quot;: [],
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;如果需要让普通用户使用管理员账户创建的各种资源来创建云主机的化，我们需要把相关的资源的共享给普通用户。
-共享资源的API是 &lt;strong&gt;ShareResource&lt;/strong&gt;。使用这个API的时候，如果需要共享账户A的资源给B，那么我们首先需要用A登录系统，
-再使用ShareResource API来共享相关资源。例如我们想要把admin用户的L3 Network，Image和InstanceOffering共享给frank：&lt;/p&gt;
-
-&lt;h3&gt;1. 先进入zstack-cli的交互模式：&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-# zstack-cli 
-  ZStack command line tool
-
-  Type &quot;help&quot; for more information
-
-  Type Tab key for auto-completion
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;2. 登录admin账户：&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;LogInByAccount accountName=admin password=password
-{
-    &quot;inventory&quot;: {
-        &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:06:19 PM&quot;,
-        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:06:19 PM&quot;,
-        &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-        &quot;uuid&quot;: &quot;e69fdd16edbd416ab09c17e9ffe94c75&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;3. 共享L3 Network，Image和InstanceOffering 给账户frank。这里的uuid，都是前面在创建账户以及Query资源的时候返回的uuid。&lt;/h3&gt;
-
-&lt;p&gt;共享多个资源的时候，uuid之间是用逗号分割的。另外，我们可以用一条命令把相同的资源共享给多个账户，同样账户uuid之间用逗号分割。
-如果需要把资源共享给所有的账户，我们可以使用参数&lt;strong&gt;toPublic=true&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;ShareResource accountUuids=a20609798cd949d297eb82becfe61983 resourceUuids=8f5006aac7874a20a0c2cfcb095ce6d2,0ac93029ede142849a1355d8e7be8974,ea8d1e412df54f23aa8f2372e3547929
-{
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;4. 然后我们可以登录到frank账户检查一下是不是已经可以查询到各个资源：&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;LogOut 
-{
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;LogInByAccount accountName=frank password=123456
-{
-    &quot;inventory&quot;: {
-        &quot;accountUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:15:01 PM&quot;,
-        &quot;expiredDate&quot;: &quot;Jul 27, 2015 4:15:01 PM&quot;,
-        &quot;userUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
-        &quot;uuid&quot;: &quot;4472cdcb583a42219b8fff24b9a903aa&quot;
-    },
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;QueryL3Network fields=name,uuid
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;name&quot;: &quot;public network&quot;,
-            &quot;uuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;QueryImage fields=name,uuid
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;name&quot;: &quot;ttylinux&quot;,
-            &quot;uuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-
-&gt;&gt;&gt;QueryInstanceOffering  fields=name,uuid
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;name&quot;: &quot;small-vm&quot;,
-            &quot;uuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;
-        }
-    ],
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;当账户frank拥有了相关资源的访问能力后，就可以用他们创建自己的虚拟机了：&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateVmInstance name=frank-vm1 description=&quot;frnak 1st vm&quot; l3NetworkUuids=8f5006aac7874a20a0c2cfcb095ce6d2 imageUuid=0ac93029ede142849a1355d8e7be8974 instanceOfferingUuid=ea8d1e412df54f23aa8f2372e3547929
-{
-    &quot;inventory&quot;: {
-        &quot;allVolumes&quot;: [
-            {
-                &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-                &quot;description&quot;: &quot;Root volume for VM[uuid:801bb9b7664e4a16a06d36a894a8ef1e]&quot;,
-                &quot;deviceId&quot;: 0,
-                &quot;format&quot;: &quot;qcow2&quot;,
-                &quot;installPath&quot;: &quot;/opt/zstack/nfsprimarystorage/prim-fbc3536389e641ceaef120f10ea5db83/rootVolumes/acct-a20609798cd949d297eb82becfe61983/vol-df3977d719774d0ab3faf2c3b70aeea4/df3977d719774d0ab3faf2c3b70aeea4.qcow2&quot;,
-                &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-                &quot;name&quot;: &quot;ROOT-for-frank-vm1&quot;,
-                &quot;primaryStorageUuid&quot;: &quot;fbc3536389e641ceaef120f10ea5db83&quot;,
-                &quot;rootImageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
-                &quot;size&quot;: 209715200,
-                &quot;state&quot;: &quot;Enabled&quot;,
-                &quot;status&quot;: &quot;Ready&quot;,
-                &quot;type&quot;: &quot;Root&quot;,
-                &quot;uuid&quot;: &quot;df3977d719774d0ab3faf2c3b70aeea4&quot;,
-                &quot;vmInstanceUuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;
-            }
-        ],
-        &quot;allocatorStrategy&quot;: &quot;DefaultHostAllocatorStrategy&quot;,
-        &quot;clusterUuid&quot;: &quot;6ce598a2e2684845a6656c83038b6fa3&quot;,
-        &quot;cpuNum&quot;: 1,
-        &quot;cpuSpeed&quot;: 512,
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-        &quot;defaultL3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
-        &quot;description&quot;: &quot;frnak 1st vm&quot;,
-        &quot;hostUuid&quot;: &quot;af661086268041ea9bb07a181d1371e1&quot;,
-        &quot;hypervisorType&quot;: &quot;KVM&quot;,
-        &quot;imageUuid&quot;: &quot;0ac93029ede142849a1355d8e7be8974&quot;,
-        &quot;instanceOfferingUuid&quot;: &quot;ea8d1e412df54f23aa8f2372e3547929&quot;,
-        &quot;lastHostUuid&quot;: &quot;af661086268041ea9bb07a181d1371e1&quot;,
-        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-        &quot;memorySize&quot;: 134217728,
-        &quot;name&quot;: &quot;frank-vm1&quot;,
-        &quot;platform&quot;: &quot;Linux&quot;,
-        &quot;rootVolumeUuid&quot;: &quot;df3977d719774d0ab3faf2c3b70aeea4&quot;,
-        &quot;state&quot;: &quot;Running&quot;,
-        &quot;type&quot;: &quot;UserVm&quot;,
-        &quot;uuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;,
-        &quot;vmNics&quot;: [
-            {
-                &quot;createDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-                &quot;deviceId&quot;: 0,
-                &quot;gateway&quot;: &quot;10.0.101.1&quot;,
-                &quot;ip&quot;: &quot;10.0.101.232&quot;,
-                &quot;l3NetworkUuid&quot;: &quot;8f5006aac7874a20a0c2cfcb095ce6d2&quot;,
-                &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:21:46 PM&quot;,
-                &quot;mac&quot;: &quot;fa:f8:f4:b0:89:00&quot;,
-                &quot;netmask&quot;: &quot;255.255.255.0&quot;,
-                &quot;uuid&quot;: &quot;4587e8b851e84b159fa0622cda354fed&quot;,
-                &quot;vmInstanceUuid&quot;: &quot;801bb9b7664e4a16a06d36a894a8ef1e&quot;
-            }
-        ],
-        &quot;zoneUuid&quot;: &quot;f3515d3bfb8649d9837c7681a528b736&quot;
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-&lt;h4&gt;注意退出账户登录&lt;/h4&gt;
-zstack-cli默认会记录最近一次用户登录的&lt;b&gt;session_uuid&lt;/b&gt;用于之后API命令的操作。ZStack系统会根据session_uuid
-来获取当前用户以及用户的权限。用户session默认超时时间是120分钟（当然也可以修改全局参数改变）。如果用户在操作了API命令
-后没有及时的LogOut，zstack-cli依然会使用之前的session_uuid来进行后续的操作。这可能对你的系统产生不必要的安全问题。
-另外ZStack系统还会限制当前活跃的session数量（默认是500个，可以修改全局参数改变。过度的登录新的session而不登出的化，
-有可能因为到达session登录的上线，会导致系统拒绝新账号的登录。
-&lt;/div&gt;
-
-
-&lt;h2&gt;限制账号创建资源的数量&lt;/h2&gt;
-
-&lt;p&gt;ZStack默认限制了普通账号创建资源的数量，例如普通账号最多只能创建20个云主机（更多账号限制可以访问：
-&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html#default-quotas&quot;&gt;默认账号资源数量限制&lt;/a&gt;）&lt;/p&gt;
-
-&lt;p&gt;如果需要修改账号可使用的资源数量，需要利用&lt;strong&gt;UpdateQuota&lt;/strong&gt; API，例如（需要使用&lt;strong&gt;admin&lt;/strong&gt;用户登录后操作）:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;UpdateQuota identityUuid=a20609798cd949d297eb82becfe61983 name=vm.num value=100
-{
-    &quot;inventory&quot;: {
-        &quot;createDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
-        &quot;identityType&quot;: &quot;AccountVO&quot;,
-        &quot;identityUuid&quot;: &quot;a20609798cd949d297eb82becfe61983&quot;,
-        &quot;lastOpDate&quot;: &quot;Jul 27, 2015 2:02:36 PM&quot;,
-        &quot;name&quot;: &quot;vm.num&quot;,
-        &quot;value&quot;: 100
-    },
-    &quot;success&quot;: true
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;用户也可以使用&lt;strong&gt;QueryQuota&lt;/strong&gt; 命令来获取某个账户的所有资源限制：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;QueryQuota identityUuid=a20609798cd949d297eb82becfe61983 fields=name,value
-{
-    &quot;inventories&quot;: [
-        {
-            &quot;name&quot;: &quot;vm.memorySize&quot;,
-            &quot;value&quot;: 85899345920
-        },
-        {
-            &quot;name&quot;: &quot;eip.num&quot;,
-            &quot;value&quot;: 20
-        },
-        {
-            &quot;name&quot;: &quot;volume.data.num&quot;,
-            &quot;value&quot;: 40
-        },
-        {
-            &quot;name&quot;: &quot;l3.num&quot;,
-            &quot;value&quot;: 20
-        },
-        {
-            &quot;name&quot;: &quot;vip.num&quot;,
-            &quot;value&quot;: 20
-        },
-        {
-            &quot;name&quot;: &quot;portForwarding.num&quot;,
-            &quot;value&quot;: 20
-        },
-        {
-            &quot;name&quot;: &quot;vm.num&quot;,
-            &quot;value&quot;: 100
-        },
-        {
-            &quot;name&quot;: &quot;vm.cpuNum&quot;,
-            &quot;value&quot;: 80
-        },
-        {
-            &quot;name&quot;: &quot;volume.capacity&quot;,
-            &quot;value&quot;: 10995116277760
-        },
-        {
-            &quot;name&quot;: &quot;securityGroup.num&quot;,
-            &quot;value&quot;: 20
-        }
-    ],
-    &quot;success&quot;: true
-}&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h2&gt;给一个账号创建多用户，并设置不同的用户权限&lt;/h2&gt;
-
-&lt;p&gt;在一个大型的云环境中，可能会同时使用账号和用户，并且给同一账号下的不同用户设置不同的权限。
-接下来我们来看一个可能的案例，在这个案例中我们将会创建如下图所示的用户登录环境：&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/tutorials/account/multiUser.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;在这个部门里，你会有一个三人架构团队（David，Tony和Frank），他们负责创建和管理云主机；
-另外有一个三人的运营团队（Lucy，Arhbi和Jeff），他们不能创建云主机，但是能够打开并且操作云主机的终端。
-除此之外，这两个团队有一个共同的项目经理，他拥有全部团队的所有能力。我们来看看该如何创建一个这样的使用场景：&lt;/p&gt;
-
-&lt;h3&gt;1. 使用&lt;strong&gt;admin&lt;/strong&gt;用户登录后，创建一个新的账号：ops-team&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateAccount name=ops-team password=password&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;2. 登录ops-team账号&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;LogOut
-&gt;&gt;&gt;LogInByAccount accountName=ops-team password=password
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;3. 创建用户&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateUser name=david password=password
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;重复这步来创建其他的用户：tony, frank, lucy, arhbi, jeff, mgr&lt;/p&gt;
-
-&lt;h3&gt;4. 创建用户组&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreateUserGroup name=infra
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;重复这步来创建一个新的用户组 ops&lt;/p&gt;
-
-&lt;h3&gt;5. 添加用户到用户组&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AddUserToGroup userUuid=d7646ae8af2140c0a3ccef2ad8da816d groupUuid=92c523a43651442489f8d2d598c7c3da
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;strong&gt;注意:&lt;/strong&gt;userUuid 和 groupUuid 都是之前在创建的时候，系统返回的uuid。
-重复这步把david, tony, frank加到infra组, 把lucy, arhbi, jeff加到ops组&lt;/p&gt;
-
-&lt;h3&gt;6. 创建权限策略&lt;/h3&gt;
-
-&lt;p&gt;创建第一条策略，可以允许执行所有云主机相关的操作：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreatePolicy name=vm-management statements=&#39;[{&quot;actions&quot;:[&quot;instance:.*&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;创建第二条策略，可以允许访问云主机的console：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreatePolicy name=vm-console statements=&#39;[{&quot;actions&quot;:[&quot;instance:APIRequestConsoleAccessMsg&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;创建第三条策略，允许所有本账户可以执行的操作：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;CreatePolicy name=all statements=&#39;[{&quot;actions&quot;:[&quot;.*&quot;], &quot;effect&quot;:&quot;Allow&quot;}]&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-
-
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-&lt;h4&gt;特殊的JSON字符串&lt;/h4&gt;
-需要注意的是这里的statements是一个JSON的字符串，最外面是一个单引号，里面的每一个字符串需要用双引号包裹起来。
-如果写错，会导致策略添加失败。
-&lt;/div&gt;
-
-
-&lt;h3&gt;7. 把策略一添加到 infra小组&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AttachPolicyToUserGroup groupUuid=92c523a43651442489f8d2d598c7c3da policyUuid=afb3bfbb911a42e0a662286728e49891
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;：这里的policyUuid和groupUuid都是之前创建策略和用户组的时候，系统返回的uuid。用户需要把他们修改成自己创建的uuid。&lt;/p&gt;
-
-&lt;h3&gt;8. 把策略二添加到 ops小组&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AttachPolicyToUserGroup groupUuid=0939fc6f772d44d6a8f9d45c89c2a716 policyUuid=3bddf41e2ba6469881a65287879e5d58
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;h3&gt;9. 把策略三添加给mgr用户&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;
-&gt;&gt;&gt;AttachPolicyToUser userUuid=d55c5fba4d1b4533961db9952dc15b00 policyUuid=36c27e8ff05c4780bf6d2fa65700f22e
-&lt;/code&gt;&lt;/pre&gt;
-
-
-&lt;p&gt;现在一个拥有三种不同权限用户组，7个用户名的架构就已经创建完毕了&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;更多关于账号和用户相关的介绍和API请访问&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/identity.html&quot;&gt;ZStack账号系统&lt;/a&gt;&lt;/strong&gt;&lt;/p&gt;
-</description>
-        <pubDate>Mon, 27 Jul 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/zstack-account-user-tutorials.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-account-user-tutorials.html</guid>
         
         
         <category>cn_blog</category>
