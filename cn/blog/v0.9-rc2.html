@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - Announcing ZStack v0.9 RC2</title>
+    <title>ZStack - ZStack v0.9 RC2 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -77,8 +77,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">Announcing ZStack v0.9 RC2</h2>
-    <p class="post-meta"> by Frank Zhang on Aug 29, 2015</p>
+    <h2 class="post-title">ZStack v0.9 RC2 发布</h2>
+    <p class="post-meta"> by Yongkang You on Aug 30, 2015</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -115,195 +115,190 @@
 
 
   <article class="post-content">
-    <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.9 is in the release cycle.
-Today we release 0.9 RC2 for you test. In this release, ZStack introduces two new features:</p>
+    <p>ZStack 0.9 RC2版本今天发布，欢迎大家测试试用。在这个版本里，ZStack新加了两大重量级的功能：</p>
 
-<h2>Ceph Integration</h2>
+<h2>支持分布式存储Ceph</h2>
 
-<p>Beginning at this version, ZStack supports Ceph as backup storage and primary storage. To leverage the advantages of Ceph,
-users should use a Ceph cluster for both backup storage and primary storage in the same zone; by doing so, there will be
-no data copy between backup storage and primary storage when users perform operations like creating VM, creating image,
-creating a data volume from an image, all are done through COW(copy on write).</p>
+<p>从0.9版本开始，ZStack正式支持Ceph作为主存储和备份存储的设备。为了最大化的利用Ceph存储的高级能力，
+在一个Zone内，用户需要使用一个Ceph Cluster同时作为主存储和备份存储。这样做的好处是，
+避免了用户在创建新的云主机、备份Volume等操作时，主存储和备份存储之间不必要的数据拷贝，
+所有的数据操作都是通过COW（copy on write）来实现的。</p>
 
 <p><img src="/images/0.9/1.png" class="center-img img-responsive"></p>
 
-<p>ZStack interoperates with Ceph by deploying agents on Ceph mon servers. Users can dynamically add/remove a Ceph mon server
-into/from ZStack.</p>
+<p>ZStack和Ceph之间的交互是通过部署在Ceph Mon服务器上的Agent来完成的。用户可以动态的添加或删除Ceph的Mon服务器。</p>
 
-<h3>Ceph Backup Storage</h3>
+<h3>Ceph 备份存储</h3>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Ceph backup storage only works with Ceph primary storage</h4>
+  <h4>Ceph 备份存储只能和Ceph主存储配合使用</h4>
   
-  Given the a main advantage of using Ceph is COW, Ceph backup storage is designed to only work with Ceph primary storage.
-  Because the Ceph backup storage and primary storage use the same Ceph cluster, users should not attach a Ceph backup storage
-  to multiple zones. The best practice is to use a Ceph cluster for both backup storage and primary storage in the same zone.
+  使用Ceph的一个主要的好处是因为Ceph支持COW，所以在ZStack中，如果使用了Ceph的备份存储，那么主存储必须也是同一个Ceph。
+  由于Ceph备份存储和主存储都使用相同的Ceph cluster，所以用户不能把一个Ceph的备份存储挂载到多个ZStack的Zones上。  最好的使用方法是每一个Zone使用独立的Ceph cluster作为同一套主存储和备份存储。
   
-  That is to say, you CANNOT use Ceph backup storage with primary storage of NFS, local storage, ISCSI.
+  换句话说，当ZStack的Zone挂载了Ceph作为备份存储的时候，你不能再使用NFS，本地存储以及ISCSI作为该Zone的主存储。
 </div>
 
 
-<h4>Add through UI</h4>
+<h4>从UI添加Ceph备份存储</h4>
 
 <p><img src="/images/0.9/2.png" class="center-img img-responsive"></p>
 
 <ol>
-<li>select the type 'Ceph'</li>
-<li>input IP/hostname of a Ceph mon server</li>
-<li>input SSH user name of the Ceph mon server</li>
-<li>input SSH password of the Ceph mon server</li>
-<li>click button 'Add'</li>
-<li>repeat steps 3 ~ 5 to add other Ceph mon servers</li>
-<li>click button 'Next'</li>
+<li>选择类型 'Ceph'</li>
+<li>输入Ceph mon server的 IP/hostname</li>
+<li>输入Ceph mon server的 SSH 用户名</li>
+<li>输入Ceph mon server的 SSH 密码</li>
+<li>点击 'Add'</li>
+<li>重复步骤 3 ~ 5 来添加其他的Ceph Mon服务器</li>
+<li>点击 'Next'</li>
 </ol>
 
 
-<h4>Add through CLI</h4>
+<h4>通过CLI添加Ceph备份存储</h4>
 
-<p>You can use AddCephBackupStorage to add a Ceph backup storage. For example:</p>
+<p>你可以使用 AddCephBackupStorage 来添加 Ceph 备份存储. 例如：</p>
 
-<pre><code>&gt;&gt;&gt;AddCephBackupStorage name=ceph monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125 
+<pre><code>&gt;&gt;&gt;AddCephBackupStorage name=ceph monUrls=root:密码@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125 
 </code></pre>
 
-<p>The <code>monUrls</code> is a list of string containing Ceph mon server information, which is in format of:</p>
+<p><code>monUrls</code> 是一个字符串列表，每一个Mon服务器的信息通过逗号来分割，每一个Mon服务器的信息遵从如下的格式：</p>
 
-<pre><code>ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+<pre><code>ssh_用户名:ssh_密码@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
 </code></pre>
 
-<p><code>ssh_username</code>, <code>ssh_password</code>, <code>mon_server_ip</code> are mandatory while <code>ssh_port</code> and <code>ceph_mon_port</code> are optional. <code>ceph_mon_port</code> is
-the Ceph mon server port which is default to 6789. A full example of monUrl is <code>root:password@192.168.0.123:22/?monPort=6789</code>.</p>
+<p><code>ssh_用户名</code>, <code>ssh_密码</code>, <code>mon_server_ip</code> 是必须的内容，而<code>ssh_port</code> 和 <code>ceph_mon_port</code>是选填的。
+<code>ceph_mon_port</code> 是Ceph Mon服务器的端口，默认值为6789. 一个完整的monUrl的例子是：<code>root:password@192.168.0.123:22/?monPort=6789</code>.</p>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Specifying the pool</h4>
-  <code>AddCephBackupStorage</code> receives an optional parameter <code>poolName</code> which allows you to specify an existing
-  Ceph pool for the backup storage. If the parameter is provided, ZStack will use the pool instead of creating a new one;
-  if the pool is not existing, an error will be raised and the backup storage will fail to be added. If the parameter is omitted,
-  ZStack will automatically create a new pool with the default Ceph pool setting.
+  <h4>指定 pool</h4>
+  <code>AddCephBackupStorage</code> 有一个特别的参数<code>poolName</code>。通过它，用户可以指定一个存在的Ceph Pool。 
+  当用户指定一个pool的名字的时候，ZStack会使用这个pool。当这个pool不存在的时候，ZStack将会报告一个添加失败的错误。
+  当用户不指定特别的pool名字的时候，ZStack会自动创建一个新的pool。
   
-  You can use this feature to create a well-tuned Ceph pool for the backup storage.
+  你可以利用这个功能预先创建一个合适的pool。
 </div>
 
 
-<h4>Dynamically add new Ceph mon servers</h4>
+<h4>动态添加Mon服务器</h4>
 
-<p>You can use AddMonToCephBackupStorage to add new Ceph mon servers to a Ceph backup storage:</p>
+<p>在添加了Ceph备份存储后，用户还可以给该备份存储添加新的Ceph Mon服务器：</p>
 
 <pre><code>&gt;&gt;&gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
 </code></pre>
 
-<h4>Dynamically remove Ceph mon servers</h4>
+<h4>动态删除Mon服务器</h4>
 
-<p>You can use RemoveMonFromCephBackupStorage to remove Ceph mon servers from a Ceph backup storage:</p>
+<p>你还可以使用 RemoveMonFromCephBackupStorage 来删除一个Ceph Mon服务器。</p>
 
 <pre><code>&gt;&gt;&gt;RemoveMonFromCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
 </code></pre>
 
-<p>The <code>monHostnames</code> is a list of IPs of mon servers that you want to remove.</p>
+<p><code>monHostnames</code> 是一个通过逗号分割的字符串列表，里面是Mon的IP地址。</p>
 
-<h4>Query</h4>
+<h4>查询Ceph备份存储</h4>
 
-<p>You can use QueryCephBackupStorage to query Ceph backup storage:</p>
+<p>使用QueryCephBackupStorage可以查询所有Ceph备份存储的详情:</p>
 
 <p><img src="/images/0.9/4.png" class="center-img img-responsive"></p>
 
-<h3>Ceph Primary Storage</h3>
+<h3>Ceph主存储</h3>
 
-<p>The Ceph primary storage works with both SFTP backup storage and Ceph backup storage.</p>
+<p>Ceph主存储既可以和Ceph备份存储协同工作，也可以使用SFTP备份存储。</p>
 
-<h4>Add through UI</h4>
+<h4>通过UI添加</h4>
 
 <p><img src="/images/0.9/3.png" class="center-img img-responsive"></p>
 
 <ol>
-<li>select the type 'Ceph'</li>
-<li>input IP/hostname of a Ceph mon server</li>
-<li>input SSH user name of the Ceph mon server</li>
-<li>input SSH password of the Ceph mon server</li>
-<li>click button 'Add'</li>
-<li>repeat steps 3 ~ 5 to add other Ceph mon servers</li>
-<li>click button 'Next'</li>
+<li>选择类型 'Ceph'</li>
+<li>输入Ceph mon server的IP/hostname</li>
+<li>输入Ceph mon server的SSH 用户名</li>
+<li>输入Ceph mon server的SSH 密码</li>
+<li>点击 'Add'</li>
+<li>重复步骤 3 ~ 5 来添加其他的Ceph Mon服务器</li>
+<li>点击 'Next'</li>
 </ol>
 
 
 <h4>Add through CLI</h4>
 
-<p>You can use AddCephPrimaryStorage to add a Ceph primary storage. For example::</p>
+<p>你可以使用 AddCephPrimaryStorage 来添加一个 Ceph 主存储。 例如：:</p>
 
 <pre><code>&gt;&gt;&gt;AddCephPrimaryStorage name=ceph zoneUuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
 </code></pre>
 
-<p>The <code>monUrls</code> is a list of string containing Ceph mon server information, which is in format of:</p>
+<p><code>monUrls</code> 是一个字符串列表，每一个Mon服务器的信息通过逗号来分割，每一个Mon服务器的信息遵从如下的格式：</p>
 
-<pre><code>ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
+<pre><code>ssh_用户名:ssh_密码@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
 </code></pre>
 
-<p><code>ssh_username</code>, <code>ssh_password</code>, <code>mon_server_ip</code> are mandatory while <code>ssh_port</code> and <code>ceph_mon_port</code> are optional. <code>ceph_mon_port</code> is
-the Ceph mon server port which is default to 6789. A full example of monUrl is <code>root:password@192.168.0.123:22/?monPort=6789</code>.</p>
+<p><code>ssh_用户名</code>, <code>ssh_密码</code>, <code>mon_server_ip</code> 是必须的内容，而<code>ssh_port</code> 和 <code>ceph_mon_port</code>是选填的。
+<code>ceph_mon_port</code> 是Ceph Mon服务器的端口，默认值为6789. 一个完整的monUrl的例子是：<code>root:password@192.168.0.123:22/?monPort=6789</code>.</p>
 
-<div class="bs-callout bs-callout-info">
-  <h4>Specifying pools</h4>
-  <code>AddCephPrimaryStorage</code> receives three optional parameters <code>imageCachePoolName, rootVolumePoolName, dataVolumePoolName</code>
-  all of which allow you to specify existing Ceph pools for the primary storage. If the parameters are provided, ZStack will use the existing pools instead of creating new ones;
-  if the pools are not existing, an error will be raised and the primary storage will fail to be added. If the parameters are omitted,
-  ZStack will automatically create new pools with the default Ceph pool setting.
-  
-  You can use this feature to create well-tuned Ceph pools for the primary storage. You can choose to only specify parameters(e.g. rootVolumePoolName) for existing pools
-  you want to use, and let ZStack to automatically create the rest.
-</div>
+<p>  <h4>指定 pool</h4>
+  <code>AddCephPrimaryStorage</code> 有三个个特别的参数<code>imageCachePoolName, rootVolumePoolName, dataVolumePoolName</code>。
+  通过它们，用户可以指定存在的Ceph Pool作为主存储的Pool。
+  当用户指定pool的名字的时候，ZStack会使用这个pool。当pool不存在的时候，ZStack将会报告一个添加失败的错误。
+  当用户不指定特别的pool名字的时候，ZStack会自动创建三个新的pool。</p>
 
+<p>  你可以利用这个功能预先创建合适的pool。在指定Pool的时候，你可以只指定其中的一个或者两个，然后由ZStack来创建其余的Pool。
+</div></p>
 
-<h4>Dynamically add new Ceph mon servers</h4>
+<h4>动态添加Mon服务器</h4>
 
-<p>You can use AddMonToCephPrimaryStorage to add new Ceph mon servers to a Ceph primary storage:</p>
+<p>在添加了Ceph主存储后，用户还可以给该主存储添加新的Ceph Mon服务器：</p>
 
 <pre><code>&gt;&gt;&gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
 </code></pre>
 
-<h4>Dynamically remove Ceph mon servers</h4>
+<h4>动态删除Mon服务器</h4>
 
-<p>You can use RemoveMonFromCephPrimaryStorage to remove Ceph mon servers from a Ceph primary storage:</p>
+<p>你还可以使用 RemoveMonFromCephPrimaryStorage 来删除一个Ceph Mon服务器。</p>
 
 <pre><code>&gt;&gt;&gt;RemoveMonFromCephPrimaryStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
 </code></pre>
 
 <p>The <code>monHostnames</code> is a list of IPs of mon servers that you want to remove.</p>
 
-<h4>Query</h4>
+<h4>查询Ceph主存储</h4>
 
-<p>You can use QueryCephPrimaryStorage to query Ceph primary storage:</p>
+<p>你可以使用QueryCephPrimaryStorage来查询所有的Ceph主存储的详细信息：</p>
 
 <p><img src="/images/0.9/5.png" class="center-img img-responsive"></p>
 
-<h2>Elastic Load Balancer</h2>
+<h2>动态负载均衡</h2>
 
-<p>Beginning at 0.9, ZStack supports the elastic load balancer. Details can be found at <a href="http://zstackdoc.readthedocs.org/en/latest/userManual/lb.html">User Manual - Elastic Load Balancer</a></p>
+<p>从0.9开始，ZStack支持全新的动态负载均衡网络服务。详细的负载均衡介绍请访问<a href="http://zstackdoc.readthedocs.org/en/latest/userManual/lb.html">负载均衡用户手册</a></p>
 
-<h2>Seamless Upgrade</h2>
+<p>需要说明的是，RC2版本中有一个<a href="https://github.com/zstackorg/zstack/issues/117">Bug</a>，导致通过无缝升级的ZStack无法使用负载均衡的功能。
+用户暂时需要重新安装ZStack才可以使用。我们将在正式版中修复这个Bug。</p>
+
+<h2>无缝升级</h2>
 
 <div class="bs-callout bs-callout-warning">
-  <h4>Pay attention to the virtual router upgrade instructions at the end</h4>
+  <h4>请格外留意在文章最后的虚拟路由器的升级指令</h4>
   
-  To support the elastic load balancer, you need to upgrade the virtual router VMs in your current ZStack setup.
-  Please do read the virtual router upgrade instructions at the end of the upgrade chapter.
+  由于ZStack0.9在制裁动态路由功能的时候，添加了新的虚拟路由功能。所以不论是否使用虚拟路由功能，用户都应该升级
+  虚拟路由。详细的升级办法，会写在升级这章的最后。
 </div>
 
 
 
 
 <div class="bs-callout bs-callout-warning">
-  <h4>Backup Database</h4>
+  <h4>备份数据库</h4>
   
-  Before performing any upgrade instructions, please backup the current database. This is very <b>IMPORTANT</b>!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
+  虽然ZStack升级程序会进行备份，不过在升级数据库前，强烈建议用户手动<b>备份数据库!</b>
+  您可以使用以下的命令来备份当前zstack的数据库，以防之后的误操作：
   
   <pre><code>mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack > path_to_db_dump.sql</code></pre>
 </div>
 
 
-<h3>Upgrade by quick script</h3>
+<h3>快速升级</h3>
 
-<p>If you have only one management node, you can upgrade it by ZStack's installation script:</p>
+<p>如果你仅仅只有一个管理节点，数据库和Dashboard也装在相同的节点上，那么你就可以用下面的方法快速升级：</p>
 
 <pre><code>zstack-ctl stop_node
 mkdir -p zstack-0.9-rc2
@@ -313,22 +308,20 @@ wget http://download.zstack.org/releases/0.9/rc2/zstack-all-in-one-0.9.0-rc2.tgz
 bash zstack-install.sh -u -f zstack-all-in-one-0.9.0-rc2.tgz
 </code></pre>
 
-<p>Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.</p>
+<p>正常情况，你大概只需要等待2分钟，zstack就会帮你升级完成。</p>
 
-<h3>Upgrade by zstack-ctl</h3>
+<h3>使用zstack-ctl升级多节点</h3>
 
-<h4>1. Upgrade the first management node</h4>
-
-<p>Perform below instructions on one of your management node:</p>
+<h4>1. 升级第一个节点</h4>
 
 <pre><code>mkdir -p zstack-0.9-rc2
 cd zstack-0.9-rc2
 </code></pre>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Install zstack-ctl if you are using 0.6 version</h4>
+  <h4>请重新安装zstack-ctl，如果你还在使用zstack v0.6系列的产品</h4>
   
-  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  wget http://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
   /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
   
 </div>
@@ -338,105 +331,119 @@ cd zstack-0.9-rc2
 zstack-ctl upgrade_management_node --war-file zstack.war
 </code></pre>
 
-<h4>2. Upgrade the database</h4>
+<h4>2. 升级数据库</h4>
 
-<p>Make sure you have backup the current database following instructions on the top of this page. Then perform:</p>
+<p>请确保你已经成功备份了数据库！</p>
 
 <pre><code>zstack-ctl upgrade_db
 </code></pre>
 
 <div class="bs-callout bs-callout-info">
-  <h4>You can start the node now if you only have one management node</h4>
-  If you have only one management node, you can run <pre><code>zstack-ctl start_node</code></pre> to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
+  <h4>如果只有一个管理节点，您可以立刻启动该节点</h4>
+  使用命令<pre><code>zstack-ctl start_node</code></pre>启动zstack管理节点。如果还有其他管理节点，请继续完成步骤三。
 </div>
 
 
-<h4>3. Upgrade other management nodes</h4>
-
-<p>If you have management nodes running on remote machines, run below commands for each node</p>
+<h4>3. 升级其他管理节点</h4>
 
 <pre><code>zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
 </code></pre>
 
-<h4>4. Upgrade UI</h4>
+<h4>4. 升级UI</h4>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Stop UI</h4>
+  <h4>停止UI服务</h4>
   
-  If you are using 0.6, stop the UI by <code>/etc/init.d/zstack-dashboard stop</code>; for 0.7 and 0.8, stop the UI by <code>zstack-ctl stop_ui</code>
+  如果还在使用0.6版本，请使用命令：<code>/etc/init.d/zstack-dashboard stop</code>; 
+  对于0.6以后的版本，请使用命令：<code>zstack-ctl stop_ui</code>
 </div>
 
 
-<p>Upgrade your UI on local machine by:</p>
+<p>升级本地UI服务：</p>
 
 <pre><code>zstack-ctl install_ui
 </code></pre>
 
-<p>or</p>
+<p>或者升级远端UI服务：</p>
 
 <pre><code>zstack-ctl install_ui --host remote_machine_ip
 </code></pre>
 
-<p>if the UI is installed on a remote machine.</p>
+<h4>5. 启动管理节点</h4>
 
-<h4>5. Start management nodes</h4>
+<p>启动本地管理节点：</p>
 
-<p>Now all your management nodes have been successfully upgraded to the 0.8 RC2. You can start them by <code>zstack-ctl start_node</code> and
-<code>zstack-ctl start_node --host remote_host_ip</code></p>
+<pre><code>`zstack-ctl start_node --host remote_host_ip`
+</code></pre>
+
+<p>启动远程管理节点：</p>
+
+<pre><code>`zstack-ctl start_node --host remote_host_ip`
+</code></pre>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Agents will be automatically upgraded after starting management nodes</h4>
-  You don't need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
+  <h4>所有的Agent都会随着管理节点的启动而自动升级</h4>
+  当管理节点启动后，会重新连接并升级包括计算节点，备份存储，虚拟路由等等一系列的ZStack Agents。
+  用户在创建新的云主机之前，需要确保计算节点的状态已经变成Connected
 </div>
 
 
-<h4>6. Start UI</h4>
+<h4>6. 启动UI服务</h4>
 
-<p>Now you can start the UI by <code>zstack-ctl start_ui</code> on the local host or <code>zstack-ctl start_ui --host remote_host_ip</code> on the remote host.</p>
+<p>启动本地UI：</p>
 
-<h4>7. Upgrade Virtual Router</h4>
+<pre><code>`zstack-ctl start_ui`
+</code></pre>
 
-<h5>Upgrade running virtual router VMs</h5>
+<p>启动远端UI：</p>
 
-<p><img src="/images/0.9/6.png" class="center-img img-responsive"></p>
+<pre><code>`zstack-ctl start_ui --host remote_host_ip`
+</code></pre>
 
-<ol>
-<li>select the virtual router VM</li>
-<li>click button "Action"</li>
-<li>click "Reconnect"</li>
-</ol>
+<h4>7. 升级虚拟路由</h4>
 
-
-<p>After reconnecting, the virtual router VM will be upgraded to the latest version.</p>
-
-<h5>Upgrade virtual router image and virtual router offering</h5>
-
-<ol>
-<li>add the 0.9 virtual router image http://download.zstack.org/releases/0.9/rc2/zstack-virtualrouter-0.9.0-rc.qcow2 to the backup storage:</li>
-</ol>
-
+<h5>升级正在运行的虚拟路由器(Virtual Router VMs）</h5>
 
 <p><img src="/images/0.9/6.png" class="center-img img-responsive"></p>
 
 <ol>
-<li><p>update the existing virtual router offering to the new virtual router image by CLI</p>
+<li>选择 虚拟路由器 VM</li>
+<li>点击 "Action"</li>
+<li>点击 "Reconnect"</li>
+</ol>
+
+
+<p>待重连之后，虚拟路由器会更新到最新的版本。</p>
+
+<h5>更新虚拟路由器镜像以及虚拟路由器模板</h5>
+
+<ol>
+<li>添加新的虚拟路由器镜像 http://download.zstack.org/releases/0.9/rc2/zstack-virtualrouter-0.9.0-rc.qcow2:</li>
+</ol>
+
+
+<p><img src="/images/0.9/6.png" class="center-img img-responsive"></p>
+
+<ol>
+<li><p>通过CLI更新虚拟路由器模板:</p>
 
 <p> UpdateVirtualRouterOffering uuid=vr_offering_uuid imageUuid=new_image_uuid</p></li>
 </ol>
 
 
 <div class="bs-callout bs-callout-warning">
-  <h4>You cannot create new virtual router VMs if you don't upgrade the virtual offerings</h4>
-  If you don't upgrade existing virtual router offerings, new virtual router VMs will fail to be created because the old
-  0.8(or 0.7, 0.6) image doesn't contain the agent required by the ZStack 0.9. You can use above CLI command to update existing
-  offerings, or simply delete them and create new ones.
+  <h4>你将不能在0.9版本的ZStack中成功使用0.8版本的虚拟路由器镜像创建一个虚拟路由器！</h4>
+  如果你不更新现有的虚拟路由器模板和镜像，当你添加一个新的具有虚拟路由器的L3网络，并用其创建一个新的云主机的时候，
+  你将会遇到虚拟路由器连接失败，新的云主机无法创建等错误。所以在正常使用0.9版本之前，务必要更新虚拟路由器镜像。
 </div>
 
 
-<h2>Bug Report</h2>
+<h2>报告bug</h2>
 
-<p>If you find any bugs, please open a ticket on <a href="https://github.com/zstackorg/zstack/issues">GitHub</a></p>
+<p>如果你在使用中发现任何问题或者有任何建议，请你到我们的<a href="https://github.com/zstackorg/zstack/issues">GitHub</a>上告诉我们，谢谢！</p>
+
+<p>Enjoy～
+ZStack 开发团队</p>
 
   </article>
 
