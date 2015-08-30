@@ -133,10 +133,14 @@
 <div class="bs-callout bs-callout-info">
   <h4>Ceph 备份存储只能和Ceph主存储配合使用</h4>
   
-  使用Ceph的一个主要的好处是因为Ceph支持COW，所以在ZStack中，如果使用了Ceph的备份存储，那么主存储必须也是同一个Ceph。
+  使用Ceph的一个主要的好处是因为Ceph支持COW，所以在ZStack中，如果使用了Ceph的备份存储，那么主存储也必须是同一个Ceph。
   由于Ceph备份存储和主存储都使用相同的Ceph cluster，所以用户不能把一个Ceph的备份存储挂载到多个ZStack的Zones上。  最好的使用方法是每一个Zone使用独立的Ceph cluster作为同一套主存储和备份存储。
   
-  换句话说，当ZStack的Zone挂载了Ceph作为备份存储的时候，你不能再使用NFS，本地存储以及ISCSI作为该Zone的主存储。
+  换句话说，当ZStack的Zone仅仅挂载了Ceph作为备份存储的时候，你不能再使用NFS、本地存储以及ISCSI作为该Zone的主存储。
+  当一个Zone同时挂载Ceph备份存储和SFTP备份存储的时候，可以混用多种主存储类型。但是需要特别注意的是，
+  如果云主机的镜像文件只存在于Ceph备份存储的时候，该云主机只能在Ceph主存储上创建成功。
+  假设创建云主机时选择的L3网络所在的Cluster上没有挂载Ceph主存储，但是该云主机的镜像文件只存在在Ceph备份存储
+  上，那么创建云主机将会发生找不到合适主存储的失败。
 </div>
 
 
