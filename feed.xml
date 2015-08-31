@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 31 Aug 2015 06:41:04 +0800</pubDate>
-    <lastBuildDate>Mon, 31 Aug 2015 06:41:04 +0800</lastBuildDate>
+    <pubDate>Mon, 31 Aug 2015 08:18:40 +0800</pubDate>
+    <lastBuildDate>Mon, 31 Aug 2015 08:18:40 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -173,6 +173,23 @@
 
 &lt;p&gt;需要说明的是，RC2版本中有一个&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/117&quot;&gt;Bug&lt;/a&gt;，导致通过无缝升级的ZStack无法使用负载均衡的功能。
 用户暂时需要重新安装ZStack才可以使用。我们将在正式版中修复这个Bug。&lt;/p&gt;
+
+&lt;h2&gt;安装 0.9 RC2&lt;/h2&gt;
+
+&lt;h3&gt;单节点一键安装&lt;/h3&gt;
+
+&lt;p&gt;目前官网的安装脚本只会安装0.8正式版的ZStack。安装0.9 RC2版本的ZStack需要单独下载安装包，并通过安装脚本指定安装包路径：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+wget http://download.zstack.org/releases/0.9/rc2/zstack-install.sh
+wget http://download.zstack.org/releases/0.9/rc2/zstack-all-in-one-0.9.0-rc2.tgz
+bash zstack-install.sh -a -f zstack-all-in-one-0.9.0-rc2.tgz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;多节点安装&lt;/h3&gt;
+
+&lt;p&gt;ZStack 0.9 RC2多节点安装的步骤可以参考&lt;a href=&quot;../installation/multi-node.html&quot;&gt;多节点安装手册&lt;/a&gt;。注意的是，需要提前下载0.9 RC2的安装包，并在安装的时候通过 &lt;code&gt;-f zstack-all-in-one-0.9.0-rc2.tgz&lt;/code&gt; 来指定。&lt;/p&gt;
 
 &lt;h2&gt;无缝升级&lt;/h2&gt;
 

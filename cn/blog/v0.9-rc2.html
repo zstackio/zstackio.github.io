@@ -278,6 +278,23 @@
 <p>需要说明的是，RC2版本中有一个<a href="https://github.com/zstackorg/zstack/issues/117">Bug</a>，导致通过无缝升级的ZStack无法使用负载均衡的功能。
 用户暂时需要重新安装ZStack才可以使用。我们将在正式版中修复这个Bug。</p>
 
+<h2>安装 0.9 RC2</h2>
+
+<h3>单节点一键安装</h3>
+
+<p>目前官网的安装脚本只会安装0.8正式版的ZStack。安装0.9 RC2版本的ZStack需要单独下载安装包，并通过安装脚本指定安装包路径：</p>
+
+<pre><code>mkdir -p zstack-0.9-rc2
+cd zstack-0.9-rc2
+wget http://download.zstack.org/releases/0.9/rc2/zstack-install.sh
+wget http://download.zstack.org/releases/0.9/rc2/zstack-all-in-one-0.9.0-rc2.tgz
+bash zstack-install.sh -a -f zstack-all-in-one-0.9.0-rc2.tgz
+</code></pre>
+
+<h3>多节点安装</h3>
+
+<p>ZStack 0.9 RC2多节点安装的步骤可以参考<a href="../installation/multi-node.html">多节点安装手册</a>。注意的是，需要提前下载0.9 RC2的安装包，并在安装的时候通过 <code>-f zstack-all-in-one-0.9.0-rc2.tgz</code> 来指定。</p>
+
 <h2>无缝升级</h2>
 
 <div class="bs-callout bs-callout-warning">
