@@ -22,7 +22,7 @@ ZStack （zstack.org） 是全新一代开源IaaS，具有快速安装，快速�
 目前ZStack的功能已经覆盖了大部分的企业私有云应用场景，国内外也有不少用户在测试使用。ZStack的首批客户也于7、8月份陆续部署上线运行。
 对于希望使用IaaS软件，但是由于种种技术上的原因还没有成功部署私有云的企业来说，ZStack提供了全新的选择和云端体验。
 
-本次上海站技术交流会，我们要特别感谢**上海神舟数码有限公司**提供场地！
+本次上海站技术交流会，我们要特别感谢**上海神州数码有限公司**提供场地！
 
 **大家可以扫描下面的二维码报名ZStack技术交流会：**
 <img src="/images/meetups/2015/shanghai/registeration.png" class="center-img img-responsive">
