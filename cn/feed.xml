@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 31 Aug 2015 08:18:40 +0800</pubDate>
-    <lastBuildDate>Mon, 31 Aug 2015 08:18:40 +0800</lastBuildDate>
+    <pubDate>Mon, 31 Aug 2015 09:13:03 +0800</pubDate>
+    <lastBuildDate>Mon, 31 Aug 2015 09:13:03 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -1048,7 +1048,7 @@ UpdateSystemTag tag=staticIp::31fd0dba47ee472481ee4edc9ab9d6ee::10.11.0.101 uuid
 目前ZStack的功能已经覆盖了大部分的企业私有云应用场景，国内外也有不少用户在测试使用。ZStack的首批客户也于7、8月份陆续部署上线运行。
 对于希望使用IaaS软件，但是由于种种技术上的原因还没有成功部署私有云的企业来说，ZStack提供了全新的选择和云端体验。&lt;/p&gt;
 
-&lt;p&gt;本次上海站技术交流会，我们要特别感谢&lt;strong&gt;上海神舟数码有限公司&lt;/strong&gt;提供场地！&lt;/p&gt;
+&lt;p&gt;本次上海站技术交流会，我们要特别感谢&lt;strong&gt;上海神州数码有限公司&lt;/strong&gt;提供场地！&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;大家可以扫描下面的二维码报名ZStack技术交流会：&lt;/strong&gt;
 &lt;img src=&quot;/images/meetups/2015/shanghai/registeration.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
