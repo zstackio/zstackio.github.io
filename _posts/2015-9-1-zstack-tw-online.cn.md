@@ -6,11 +6,14 @@ categories: blog
 author: Yongkang You
 category: cn_blog
 ---
-
 近日，来自台湾的**百原科技公司**推出了第一个**ZStack繁体中文网站** `http://zstack.tw` 。
 该网站是继ZStack社区官网之后，世界上第二个以ZStack为主题的网站。
 目前虽然该网站的主要内容来自于ZStack官网，但是通过百原工程师对网站内容进行繁体中文的加工，
 辅以修改了部分IT用词之后，使得该网站更符合台、港、澳以及部分海外地区中文用户的阅读使用习惯，大大方便他们学习和使用ZStack。
+
+<img  class="img-responsive"  src="/images/blogs/zstack_tw/zstack_tw.png">
+
+<hr>
 
 台湾百原科技是一家网络科技公司。他们在服务器虚拟化、
 云计算解决方案（ZStack、seafile、Docker、KVM、VMWare、Xen、Hyper-V）、SaaS（Citrix XenApp），
@@ -23,7 +26,8 @@ ZStack社区期待ZStack可以帮助台港澳地区云计算的发展和普及�
 并期望ZStack的社区活动**台湾站**能够在今年晚些时候顺利成行。
 
 **相关链接：**
-  ZStack台灣http://www.zstack.tw
-  百原公司官网：http://www.baiyuan.com.tw
-  聯繫方式info@baiyuan.com.tw
+
+     ZStack台灣http://www.zstack.tw
+     百原公司官网：http://www.baiyuan.com.tw
+     联系方式info@baiyuan.com.tw
 
