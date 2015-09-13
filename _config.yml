@@ -19,11 +19,11 @@ highlighter: pygments
 relative_permalinks: false
 
 # multiple languages plugins.
-#gems:           ['jekyll-multiple-languages']
+gems:           ['jekyll-multiple-languages']
 
-#languages:          ['en', 'cn']
+languages:          ['en', 'cn']
 #
-#language_default:   'en'
+language_default:   'en'
 #
 fill_default_content: true
 
