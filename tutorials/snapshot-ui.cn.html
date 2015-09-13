@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack搭建扁平网络教程</title>
+    <title>ZStack - ZStack创建磁盘快照教程</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -104,20 +104,34 @@
           
           <li><a href="#createVM">创建云主机</a></li>
           
+          <li><a href="#createSnapshotTree1">创建磁盘快照</a></li>
+          
         </ol>
       </ul>
     </div>
     <div class="col-xs-9 tutorial">
-      <h3>扁平网络 Flat Network</h3>
+      <h3>磁盘快照</h3>
 
 <h4 id="overview">1. 介绍</h4>
 
 
-<p><img  class="img-responsive"  src="/images/flat_network.png"></p>
+<p><img  class="img-responsive"  src="/images/snapshot.png"></p>
 
-<p>扁平网络在私有云网络环境中非常的流行。它的网络拓扑很简单，所有的云主机都是直接接在公司内部的一个大二层的网络上。
-扁平网络也非常容易搭建。由于所有的云主机和物理主机都在一个二层广播域，在这个二层网络上的云主机可以
-通过数据中心的核心路由器链接到Internet。在这个教程里，我们假定您拥有一个可以访问Internet的IP网络。</p>
+<p>ZStack允许用户给云主机的根磁盘和数据磁盘创建自己的磁盘快照，与其他主要的IaaS软件不同，
+ZStack允许用户创建一个快照树，每一个快照的分支都是一个快照链。而其他IaaS通常只能支持创建一个快照链</p>
+
+<p>在这个教程里，我们将会给一个云主机的根磁盘创建一个拥有两个分支的快照树</p>
+
+<div class="bs-callout bs-callout-warning">
+  <h4>只有Ubuntu14.04 支持live snapshot, CentOS 6/7 均不支持</h4>
+  对于我们已经测试过的几个Linux发行商(CentOS6.x, CentOS7, and Ubuntu14.04)来说，仅仅只有Ubuntu14.04 是只是云主机live snapshot的，
+  也就是说允许在云主机不停机的情况下来创建磁盘快照。如果您的Linux是CentOS 6或者7，在创建磁盘快照前，您需要先暂停云主机的运行。
+  我们假定您正在使用Ubuntu14.04, 所以在本教程里不会特别做暂停云主机的操作。然后您需要知道的是，不论您使用的是何种操作系统，
+  尝试从某个磁盘快照还原的时候，总是需要先暂停云主机的。
+</div>
+
+
+
 
 <hr>
 
@@ -193,7 +207,7 @@ passwd root</code></pre>
 <h4 id="login">3. 登录</h4>
 
 
-<p>在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上登录ZStack管理界面：
+<p>在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上ZStack管理界面：
 默认的用户名和密码分别为admin/password:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/login.png"></p>
@@ -448,7 +462,7 @@ passwd root</code></pre>
 <li>选择格式'qcow2'</li>
 <li>选择媒体类型为'RootVolumeTemplate'</li>
 <li>选择平台'Linux'</li>
-<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2</li>
+<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2</li>
 <li><strong>勾选'System'</strong></li>
 <li>点击'Add'</li>
 </ol>
@@ -704,39 +718,165 @@ passwd root</code></pre>
 <hr>
 
 
-<p>当云主机创建完成，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png"></p>
-
-<p>在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以用'hostname'来查看主机名，
-用'ifconfig'来检查IP地址是不是属于扁平网络的地址。</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM6.png"></p>
-
-<hr>
 
 
-<p>您应该可以成功的ping www.baidu.com:</p>
+<h4 id="createSnapshotTree1">15. 创建磁盘快照</h4>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM7.png"></p>
+
+<p>在做磁盘快照前，让我们在磁盘上做一个标记，这样我们可以在回滚快照的时候检查一下是否操作成功:</p>
+
+<p>进入'VM INSTANCE'页面：
+1. 选择VM1
+2. 点击'Action'
+3. 选择'Console'</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot5.png"></p>
 
 <hr>
 
 
-<p>重复以上步骤来创建更多的VM2和VM3。他们应该都可以获得IP地址并且顺利访问Internet。</p>
+<p>在浏览器弹出的窗口中，使用<em>用户名: root, 密码: password</em>登录; 然后创建一个名为'flag1'的文件:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM8.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot6.png"></p>
 
-<div class="bs-callout bs-callout-info">
-  <h4>后续的云主机创建过程会非常的快</h4>
-  由于第一次创建云主机时，ZStack已经把云主机的磁盘放到了缓存中，虚拟路由器也成功创建，所以后续的云主机添加的过程通常不会超过2秒。
+<hr>
+
+
+<p>返回'VM INSTANCE'的页面:</p>
+
+<ol>
+<li>双击VM1进入该云主机的的详细信息</li>
+<li>选择'Volume':</li>
+<li>点击设备号ID为0的设备进入VM1的根磁盘界面</li>
+</ol>
+
+
+<p><img class="img-responsive" src="/images/tutorials/t6/createSnapshot1.png">
+<img class="img-responsive" src="/images/tutorials/t6/createSnapshot2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>点击 'Action'</li>
+<li>选择创建快照 'Take Snapshot'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot3.png"></p>
+
+<hr>
+
+
+<ol>
+<li>输入 'sp1'</li>
+<li>点击 'click'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot4.png"></p>
+
+<hr>
+
+
+<p>重复上述两步来创建另外两个快照sp2和sp3:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot7.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot8.png"></p>
+
+<hr>
+
+
+<p>点击'Snapshot'的标签，然后展开快照树，您将会看到3个磁盘快照：</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot9.png"></p>
+
+<hr>
+
+
+<p>用刚刚登录VM1的方法登录VM1并且删除标记文件'flag1'：</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot10.png"></p>
+
+<hr>
+
+
+<p>为了回滚磁盘快照，我们需要先停止云主机，在左侧面板进入'VM INSTANCE'页面：</p>
+
+<ol>
+<li>选择 VM1</li>
+<li>点击 'Action'</li>
+<li>选择 'Stop'</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-warning">
+  <h4>由于我们的ttylinux并不支持ACPID，所以停止实验用的云主机会很慢</h4>
+   ZStack 会等待60秒钟的超时后强制停止该虚拟机，通常来说您不会在一个正常安装的云主机上遇到类似问题。
 </div>
 
 
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot12.png"></p>
+
+<hr>
+
+
+<p>使用之前的方法回到之前快照的操作页面：</p>
+
+<ol>
+<li>展开快照树</li>
+<li>选择快照 'sp1'</li>
+<li>在下拉框中选择 'Revert volume to this snapshot'</li>
+<li>点击 'Revert'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot11.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot13.png"></p>
+
+<hr>
+
+
+<p>操作完毕后，再次回到'VM INSTANCE'页面启动云主机:</p>
+
+<ol>
+<li>选择 VM1</li>
+<li>点击 'Action'</li>
+<li>选择 'Start'</li>
+</ol>
+
+
+<p><img class="img-responsive" src="/images/tutorials/t6/createSnapshot14.png"></p>
+
+<hr>
+
+
+<p>打开VNC console，登录VM1，再次检查标记文件：'flag1'，这时您会可以发现我们之前删除的文件又恢复了。
+这说明我们回滚磁盘快照的操作已经成功。</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot15.png"></p>
+
+<hr>
+
+
+<p>这时，我们再次使用创建磁盘快照的方法创建两个新的快照：'sp1.1' 和 'sp1.2'：</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot16.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot17.png">
+<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot18.png"></p>
+
+<hr>
+
+
+<p>展开磁盘快照树树，您将会看到两颗磁盘快照树从'sp1'上生长出来：</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot19.png"></p>
+
 <h3>总结</h3>
 
-<p>在这个教程里，我们展示了如何快速的使用ZStack来搭建一个扁平网络环境。关于ZStack更多的三层网络的介绍，
-您可以登录<a href="http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html">L3 Network in user manual</a>来查阅。</p>
+<p>在本教程里，我们展示了如何创建磁盘快照。除了使用快照回滚功能外，您还可以选择某个磁盘快照来创建磁盘
+镜像的模版。更多关于磁盘快照的介绍，请访问我们的
+<a href="http://zdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html">用户手册</a>.</p>
 
     </div>
   </div>

@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack搭建三层网络教程</title>
+    <title>ZStack - ZStack搭建扁平网络教程</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -98,46 +98,26 @@
           
           <li><a href="#createL3Network">创建三层网络</a></li>
           
-          <li><a href="#createPublicL2Network">创建公有二层网络</a></li>
-          
-          <li><a href="#createPublicL3Network">创建公有三层网络</a></li>
-          
-          <li><a href="#createApplicationL2Network">创建应用二层网络</a></li>
-          
-          <li><a href="#createApplicationL3Network">创建应用三层网络</a></li>
-          
-          <li><a href="#createDatabaseL2Network">创建数据库二层网络</a></li>
-          
-          <li><a href="#createDatabaseL3Network">创建数据库三层网络</a></li>
-          
           <li><a href="#createInstanceOffering">添加云主机配置</a></li>
           
           <li><a href="#createVirtualRouterOffering">添加虚拟路由器配置</a></li>
           
-          <li><a href="#createWebVM">创建Web云主机</a></li>
-          
-          <li><a href="#createApplicationVM">创建应用云主机</a></li>
-          
-          <li><a href="#createDatabaseVM">创建数据库云主机</a></li>
-          
-          <li><a href="#createTestVM">确认云主机间相互连接</a></li>
+          <li><a href="#createVM">创建云主机</a></li>
           
         </ol>
       </ul>
     </div>
     <div class="col-xs-9 tutorial">
-      <h4 id="overview">1. 介绍</h4>
+      <h3>扁平网络 Flat Network</h3>
+
+<h4 id="overview">1. 介绍</h4>
 
 
-<p><img class="img-responsive" src="/images/tier_3_networks.png"></p>
+<p><img  class="img-responsive"  src="/images/flat_network.png"></p>
 
-<p>三层网络也是比较流行的网络架构，因为是用户可以把数据库，应用服务器和网页服务器分别放在不同的网络层面：
-展示层，应用层和数据库层。这种分发可以最大化的保证网络隔离和安全。</p>
-
-<p>在本教程里，文明将会创建3个三层网络：公有网络，应用层网络和数据库网络。公有网络给网页服务器提供互联网连接能力，应用层网络和
-数据库网络则是用户可以通过NAT访问公网的两个私有网络。此外，我们还会分别创建3个云主机：web-vm, application-vm 和 database-vm。
-其中web-vm会有两块网卡，一块接在公有网络，另一块接在应用层网络。applicaiton-vm也有两个网卡，一块接在应用层网络，另一块接在
-数据库网络。database-vm只有一个网卡只接数据网络。</p>
+<p>扁平网络在私有云网络环境中非常的流行。它的网络拓扑很简单，所有的云主机都是直接接在公司内部的一个大二层的网络上。
+扁平网络也非常容易搭建。由于所有的云主机和物理主机都在一个二层广播域，在这个二层网络上的云主机可以
+通过数据中心的核心路由器链接到Internet。在这个教程里，我们假定您拥有一个可以访问Internet的IP网络。</p>
 
 <hr>
 
@@ -468,7 +448,7 @@ passwd root</code></pre>
 <li>选择格式'qcow2'</li>
 <li>选择媒体类型为'RootVolumeTemplate'</li>
 <li>选择平台'Linux'</li>
-<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2</li>
+<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2</li>
 <li><strong>勾选'System'</strong></li>
 <li>点击'Add'</li>
 </ol>
@@ -491,98 +471,98 @@ passwd root</code></pre>
 
 
 
-<h4 id="createPublicL2Network">10. 创建公有二层网络</h4>
+<h4 id="createL2Network">10. 创建二层网络</h4>
 
 
 <p>点击左侧面板的'L2 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png"></p>
 
 <hr>
 
 
-<p>点击'New L2 Network':</p>
+<p>点击按钮'New L2 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png"></p>
 
 <hr>
 
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>给二层网络取个名字'PUBLIC-MANAGEMENT-L2'</li>
+<li>给二层网络取个名字'FLAT-L2'</li>
 <li>选择类型'L2NoVlanNetwork'</li>
 <li>输入物理网卡的名字'eth0'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png"></p>
 
 <hr>
 
 
 <p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createPublicL3Network">11. 创建Public L3 Network</h4>
+<h4 id="createL3Network">11. 创建三层网络</h4>
 
 
 <p>点击左侧面板的'L3 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png"></p>
 
 <hr>
 
 
 <p>点击'New L3 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png"></p>
 
 <hr>
 
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>选择二层网络(PUBLIC-MANAGEMENT-L2)</li>
-<li>给三层网络取名为'PUBLIC-MANAGEMENT-L3'</li>
+<li>选择二层网络(FLAT-L2)</li>
+<li>给三层网络取名为'FLAT-L3'</li>
 <li>选择类型'L3BasicNetwork'</li>
-<li>点击'Next'</li>
+<li>输入域名：'tutorials.zstack.org'</li>
+<li>点击'Next' (不要选择System)</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png"></p>
 
 <hr>
 
 
 <ol>
-<li>给IP地址范围取个名字'PUBLIC-IP-RANGE'</li>
-<li>选择方法'Add By Range'</li>
-<li>输入起始IP地址'192.168.0.230'</li>
+<li>命名IP range：'FLAT-IP-RANGE'</li>
+<li>选择添加方法：'Add By IP Range'</li>
+<li>输入起始IP地址 '192.168.0.230'</li>
 <li>输入结束IP地址'192.168.0.240'</li>
-<li>输入子网掩码'255.255.255.0'</li>
-<li>输入网关'192.168.0.1'</li>
-<li><strong>点击'Add'添加IP范围</strong></li>
-<li>点击'Next'</li>
+<li>输入子网掩码 '255.255.255.0'</li>
+<li>输入网关 '192.168.0.1'</li>
+<li>点击 'Add' 来添加一个 IP range</li>
+<li>点击 'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png"></p>
 
 <hr>
 
 
 <p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png"></p>
 
 <hr>
 
@@ -590,204 +570,12 @@ passwd root</code></pre>
 <ol>
 <li>选择provider'VirtualRouter'</li>
 <li>选择'DHCP'</li>
-<li>点击'Add'增加一个网络服务</li>
+<li>点击'Add'增加一个网络服务
+重复上面这步来添加DNS, 最后点击'Create':</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network6.png"></p>
-
-<hr>
-
-
-<p>重复上面这步来添加DNS网络服务, 最后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network7.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createApplicationL2Network">12. 创建应用层二层网络</h4>
-
-
-<p>再次点击'New L2 Network'来创建应用层二层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>给私有二层网络取名为'APPLICATION-L2'</li>
-<li><strong>选择类型'L2VlanNetwork'</strong></li>
-<li><strong>输入vlan号：'100'</strong></li>
-<li>输入物理网卡的名字'eth0'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network3.png"></p>
-
-<hr>
-
-
-<p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createApplicationL3Network">13. 创建应用层三层网络</h4>
-
-
-<p>再次点击'New L3 Network'来创建给云主机的应用层三层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>选择二层网络(APPLICATION-L2)</li>
-<li>给三层网络取名为'APPLICATION-L3'</li>
-<li>选择类型'L3BasicNetwork'</li>
-<li>输入域名：'application.zstack.org'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network1.png"></p>
-
-<hr>
-
-
-<ol>
-<li>取个名字'APPLICATION-IP-RANGE'</li>
-<li>选择方法'Add BY CIDR'</li>
-<li>输入IP地址范围 '10.0.0.0/24'</li>
-<li><strong>点击'Add'</strong></li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network2.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network3.png"></p>
-
-<hr>
-
-
-<p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network4.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network5.png"></p>
-
-<hr>
-
-
-<ol>
-<li>选择provider'VirtualRouter'</li>
-<li>选择'DHCP'</li>
-<li>点击'Add'增加一个网络服务</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network6.png"></p>
-
-<hr>
-
-
-<p>重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network7.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createDatabaseL2Network">14. 创建Database L2 Network</h4>
-
-
-<p>再次点击'New L2 Network'来创建数据库层二层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>给私有二层网络取名为'DATABASE-L2'</li>
-<li><strong>选择类型'L2VlanNetwork'</strong></li>
-<li><strong>输入vlan号：'101'</strong></li>
-<li>输入物理网卡的名字'eth0'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network3.png"></p>
-
-<hr>
-
-
-<p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createDatabaseL3Network">15. 创建数据库层三层网络</h4>
-
-
-<p>再次点击'New L3 Network'来创建给云主机的数据层三层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>选择二层网络(DATABASE-L2)</li>
-<li>给三层网络取名为'DATABASE-L3'</li>
-<li>选择类型'L3BasicNetwork'</li>
-<li>输入域名：'database.zstack.org'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network1.png"></p>
-
-<hr>
-
-
-<ol>
-<li>取个名字'APPLICATION-IP-RANGE'</li>
-<li>选择方法'Add BY CIDR'</li>
-<li>输入IP地址范围 '172.16.1.0/24'</li>
-<li><strong>点击'Add'</strong></li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network2.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network3.png"></p>
-
-<hr>
-
-
-<p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network4.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network5.png"></p>
-
-<hr>
-
-
-<ol>
-<li>选择provider'VirtualRouter'</li>
-<li>选择'DHCP'</li>
-<li>点击'Add'增加一个网络服务</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network6.png"></p>
-
-<hr>
-
-
-<p>重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network7.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png"></p>
 
 <hr>
 
@@ -853,31 +641,33 @@ passwd root</code></pre>
 <li>输入CPU主频'512'</li>
 <li>输入内存大小'512M'</li>
 <li>选择磁盘镜像'VIRTUAL-ROUTER"</li>
-<li>选择management L3 network 'PUBLIC-MANAGEMENT-L3'</li>
-<li>选择public L3 network 'PUBLIC-MANAGEMENT-L3'</li>
+<li>选择management L3 network 'FLAT-L3'</li>
+<li>选择public L3 network 'FLAT-L3'</li>
 <li>勾选'DEFAULT OFFERING'</li>
 <li>点击'Create'</li>
 </ol>
 
+
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createWebVM">18. 创建WEB云主机</h4>
+<h4 id="createVM">14. 创建云主机</h4>
 
 
 <p>点击左边面板的'Instance':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png"></p>
 
 <hr>
 
 
 <p>点击'New VmInstance':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png"></p>
 
 <hr>
 
@@ -885,23 +675,21 @@ passwd root</code></pre>
 <ol>
 <li>选择模板'512M-512HZ'</li>
 <li>选择磁盘镜像'ttylinux'</li>
-<li>选择三层网络'PUBLIC-MANAGEMENT-L3'，<strong>并且点击'Add'</strong></li>
-<li>选择三层网络'APPLICATION-L3'，<strong>并且点击'Add'</strong></li>
-<li>选择'PUBLIC-MANAGEMENT-L3'作为默认三层网络</li>
-<li>输入云主机的名字'WEB-VM'</li>
-<li>输入云主机的网络名字： 'web'</li>
+<li>选择三层网络'FLAT-L3'，<strong>并且点击'Add'</strong></li>
+<li>输入云主机的名字'VM1'</li>
+<li>输入云主机的网络名字： 'vm1'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM2.png"></p>
 
 <hr>
 
 
-<p>点击'Create':</p>
+<p>点击 'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>启动第一个云主机会花费较长的时间</h4>
@@ -916,138 +704,39 @@ passwd root</code></pre>
 <hr>
 
 
+<p>当云主机创建完成，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):</p>
 
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png"></p>
 
-<h4 id="createApplicationVM">19. 创建应用云主机</h4>
+<p>在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以用'hostname'来查看主机名，
+用'ifconfig'来检查IP地址是不是属于扁平网络的地址。</p>
 
-
-<p>点击'New VmInstance' to open the dialog again:</p>
-
-<hr>
-
-
-<ol>
-<li>选择模板'512M-512HZ'</li>
-<li>选择磁盘镜像'ttylinux'</li>
-<li>选择三层网络'APPLICATION-L3'，<strong>并且点击'Add'</strong></li>
-<li>选择三层网络'DATABASE-L3'，<strong>并且点击'Add'</strong></li>
-<li>选择'APPLICATION-L3'作为默认三层网络</li>
-<li>输入云主机的名字'APPLICATION-VM'</li>
-<li>输入云主机的网络名字： 'application'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM6.png"></p>
 
 <hr>
 
 
-<p>点击'Create':</p>
+<p>您应该可以成功的ping www.baidu.com:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM7.png"></p>
 
-<div class="bs-callout bs-callout-warning">
-  <h4>还是优点慢，因为需要创建一个新的虚拟路由器给数据库层网络</h4>
-  因为这是第一个数据库层网络的云主机，ZStack会在创建APPLICATION-VM之前，主动创建一个虚拟路由器。
-  这大概会需要1分钟的时间。在此之后，再创建在DATABASE-L3上的虚拟机将会非常的快。
+<hr>
+
+
+<p>重复以上步骤来创建更多的VM2和VM3。他们应该都可以获得IP地址并且顺利访问Internet。</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM8.png"></p>
+
+<div class="bs-callout bs-callout-info">
+  <h4>后续的云主机创建过程会非常的快</h4>
+  由于第一次创建云主机时，ZStack已经把云主机的磁盘放到了缓存中，虚拟路由器也成功创建，所以后续的云主机添加的过程通常不会超过2秒。
 </div>
 
 
-
-
-<hr>
-
-
-
-
-<h4 id="createDatabaseVM">20. 创建数据库云主机</h4>
-
-
-<p>再次点击'New VmInstance':</p>
-
-<ol>
-<li>选择模板'512M-512HZ'</li>
-<li>选择磁盘镜像'ttylinux'</li>
-<li>选择三层网络'DATABASE-L3'，<strong>并且点击'Add'</strong></li>
-<li>输入云主机的名字'DATABASE-VM'</li>
-<li>输入云主机的网络名字： 'database'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseVM1.png"></p>
-
-<hr>
-
-
-<p>点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="testVM">21. 确认网络联通性</h4>
-
-
-<p>选择 WEB-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole1.png"></p>
-
-<hr>
-
-
-<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
-
-<ol>
-<li>ping www.baidu.com, 应该可以成功.</li>
-<li>ping APPLICATION-VM, 应该可以成功.</li>
-<li>ping DATABASE-VM, 应该会失败（因为访问不到数据库网络）.</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole2.png"></p>
-
-<hr>
-
-
-<p>选择 APPLICATION-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
-
-<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
-
-<ol>
-<li>ping www.baidu.com, 应该可以成功.</li>
-<li>ping WEB-VM, 应该可以成功.</li>
-<li>ping DATABASE-VM, 应该会成功.</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/applicationVMConsole1.png"></p>
-
-<hr>
-
-
-<p>选择 DATABASE-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
-
-<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
-
-<ol>
-<li>ping www.baidu.com, 应该可以成功.</li>
-<li>ping WEB-VM, 应该会失败.</li>
-<li>ping APPLICATION-VM, 应该会成功.</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/databaseVMConsole1.png"></p>
-
 <h3>总结</h3>
 
-<p>在本教程里，我们展示了如何在ZStack里创建一个三层网络模型。仅仅作为演示，我们没有使用任何的安全组。您可以参考安全组
-的教程，并结合本教程做一个更加安全的生产环境。如果想要了解更多的细节，请访问我们的
-<a href="http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html">用户手册</a>.</p>
+<p>在这个教程里，我们展示了如何快速的使用ZStack来搭建一个扁平网络环境。关于ZStack更多的三层网络的介绍，
+您可以登录<a href="http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html">L3 Network in user manual</a>来查阅。</p>
 
     </div>
   </div>

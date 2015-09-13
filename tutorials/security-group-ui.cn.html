@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack搭建动态端口映射教程</title>
+    <title>ZStack - ZStack搭建安全组教程</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -98,35 +98,37 @@
           
           <li><a href="#createL3Network">创建三层网络</a></li>
           
+          <li><a href="#createSecurityGroup">创建安全组</a></li>
+          
           <li><a href="#createInstanceOffering">添加云主机配置</a></li>
           
           <li><a href="#createVirtualRouterOffering">添加虚拟路由器配置</a></li>
           
-          <li><a href="#createVM">创建云主机</a></li>
+          <li><a href="#createInnerVM">创建INNER-VM</a></li>
           
-          <li><a href="#createPortForwardingRule">创建端口映射规则</a></li>
+          <li><a href="#joinInnerVM">把INNER-VM加入安全组</a></li>
           
-          <li><a href="#rebindPortForwardingRule">重新绑定端口映射规则</a></li>
+          <li><a href="#createOuterVM">创建OUTER-VM</a></li>
           
-          <li><a href="#create2ndPortForwardingRule">创建第二个端口映射规则</a></li>
+          <li><a href="#sshLogin">从OUTER-VM SSH登录INNER-VM</a></li>
+          
+          <li><a href="#deleteSecurityGroupRule">删除安全组规则</a></li>
+          
+          <li><a href="#sshLoginFailure">确认无法使用SSH登录INNER-VM</a></li>
           
         </ol>
       </ul>
     </div>
     <div class="col-xs-9 tutorial">
-      <h3>动态的端口映射</h3>
+      <h3>安全组</h3>
 
-<h4 id="overview">1. 介绍</h4>
+<h4 id="overview">1. Overview</h4>
 
 
-<p><img class="img-responsive" src="/images/port_forwarding.png"></p>
+<p><img  class="img-responsive"  src="/images/flat_network_with_security_group.png"></p>
 
-<p>众所周知EIP可以用于绑定一个公网IP地址给一个私网的云主机。EIP默认会把所有的端口都无私的分配给绑定的云主机使用。
-为了进行端口的安全控制，我们可以使用安全组来限制。除此之外，我们还可以使用动态的端口映射来达到相似的效果。
-与EIP不同的是，动态端口绑定可以把一个VIP地址的不同端口分别分配给不同的云主机使用。这样就是可以实现
-同一个公网IP地址可以给多个云主机共享的目的。</p>
-
-<p>在这个教程里，我们将会演示如何给一个云主机创建端口映射规则，绑定相同规则到其他主机以及多主机共享相同VIP的场景。</p>
+<p>安全组是一个虚拟防火墙，它能控制一组虚拟机的网络访问规则。在本次教案里，我们将会创建一个扁平网络，
+并在这个扁平网络上添加安全组规则。我们将会看到在不同安全组规则的情况下，两台云主机之间的网络连接从通到断的过程。</p>
 
 <hr>
 
@@ -457,7 +459,7 @@ passwd root</code></pre>
 <li>选择格式'qcow2'</li>
 <li>选择媒体类型为'RootVolumeTemplate'</li>
 <li>选择平台'Linux'</li>
-<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2</li>
+<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2</li>
 <li><strong>勾选'System'</strong></li>
 <li>点击'Add'</li>
 </ol>
@@ -499,14 +501,14 @@ passwd root</code></pre>
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>给二层网络取个名字'PUBLIC-MANAGEMENT-L2'</li>
+<li>给二层网络取个名字'FLAT-L2'</li>
 <li>选择类型'L2NoVlanNetwork'</li>
 <li>输入物理网卡的名字'eth0'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png"></p>
 
 <hr>
 
@@ -514,30 +516,6 @@ passwd root</code></pre>
 <p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png"></p>
-
-<hr>
-
-
-<p>再次点击'New L2 Network'来创建私有二层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>给私有二层网络取名为'PRIVATE-L2'</li>
-<li><strong>选择类型'L2VlanNetwork'</strong></li>
-<li><strong>输入vlan号：'100'</strong></li>
-<li>输入物理网卡的名字'eth0'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network5.png"></p>
-
-<hr>
-
-
-<p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network6.png"></p>
 
 <hr>
 
@@ -563,92 +541,39 @@ passwd root</code></pre>
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>选择二层网络(PUBLIC-MANAGEMENT-L2)</li>
-<li>给三层网络取名为'PUBLIC-MANAGEMENT-L3'</li>
-<li>选择类型'L3BasicNetwork'</li>
-<li>选择'system network'</li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network3.png"></p>
-
-<hr>
-
-
-<ol>
-<li>给IP地址范围取个名字'PUBLIC-IP-RANGE'</li>
-<li>选择方法'Add By Range'</li>
-<li>输入起始IP地址'192.168.0.230'</li>
-<li>输入结束IP地址'192.168.0.240'</li>
-<li>输入子网掩码'255.255.255.0'</li>
-<li>输入网关'192.168.0.1'</li>
-<li><strong>点击'Add'添加IP范围</strong></li>
-<li>点击'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png"></p>
-
-<hr>
-
-
-<p>点击 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network5.png"></p>
-
-<hr>
-
-
-<p>点击 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network6.png"></p>
-
-<div class="bs-callout bs-callout-info">
-  <h4>'无需给PUBLIC-MANAGEMENT-L3选择网络服务'</h4>
-  在本教程里，不会有用户的云主机创建在PUBLIC-MANAGEMENT-L3上（因为之前选择了System），所以我们也不需要添加额外的网络服务。
-</div>
-
-
-
-
-<hr>
-
-
-<p>再次点击'New L3 Network'来创建给云主机的私有三层网络:</p>
-
-<ol>
-<li>选择zone(ZONE1)</li>
-<li>选择二层网络(PRIVATE-L2)</li>
-<li>给三层网络取名为'PRIVATE-L3'</li>
+<li>选择二层网络(FLAT-L2)</li>
+<li>给三层网络取名为'FLAT-L3'</li>
 <li>选择类型'L3BasicNetwork'</li>
 <li>输入域名：'tutorials.zstack.org'</li>
-<li>点击'Next'</li>
+<li>点击'Next' (不要选择System)</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network7.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png"></p>
 
 <hr>
 
 
 <ol>
-<li>取个名字'PRIVATE-IP-RANGE'</li>
-<li>选择方法'Add BY CIDR'</li>
-<li>输入IP地址范围 '10.0.0.0/24'</li>
-<li><strong>点击'Add'</strong></li>
-<li>点击'Next'</li>
+<li>命名IP range：'FLAT-IP-RANGE'</li>
+<li>选择添加方法：'Add By IP Range'</li>
+<li>输入起始IP地址 '192.168.0.230'</li>
+<li>输入结束IP地址'192.168.0.240'</li>
+<li>输入子网掩码 '255.255.255.0'</li>
+<li>输入网关 '192.168.0.1'</li>
+<li>点击 'Add' 来添加一个 IP range</li>
+<li>点击 'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network8.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png"></p>
 
 <hr>
 
 
 <p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network9.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png"></p>
 
 <hr>
 
@@ -656,25 +581,96 @@ passwd root</code></pre>
 <ol>
 <li>选择provider'VirtualRouter'</li>
 <li>选择'DHCP'</li>
-<li>点击'Add'增加一个网络服务</li>
+<li>点击'Add'增加一个网络服务
+重复上面这步来添加DNS, 最后点击'Create':</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network10.png"></p>
+<hr>
+
+
+<ol>
+<li>选择 provider 'SecurityGroup'</li>
+<li>选择 service 'SecurityGroup'</li>
+<li>点击 'Add' 来添加安全组规则</li>
+<li>现在您已经添加了三个网络服务: DHCP, DNS, and SecurityGroup</li>
+<li>点击 'Create'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createL3Network7.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createL3Network8.png"></p>
 
 <hr>
 
 
-<p>重复上面这步来添加其他的网络服务：DNS, SNAT, PortForwarding, 最后点击'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createL3Network11.png"></p>
+
+<h4 id="createSecurityGroup">12. 创建安全组</h4>
+
+
+<p>点击左侧面板的 'Security Group':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup1.png"></p>
+
+<hr>
+
+
+<p>点击 'New Security Group':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>输入名字 'SECURITY-GROUP-1'</li>
+<li>点击 'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup3.png"></p>
+
+<hr>
+
+
+<ol>
+<li>选择类型 'Ingress'</li>
+<li>输入起始端口号 22</li>
+<li>输入结束端口号 22</li>
+<li>选择协议 'TCP'</li>
+<li>点击'Add'</li>
+<li>点击'Next'</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-info">
+  <h4>这个规则是对所有IP开放的</h4>
+  这里我们故意漏掉了一个输入项'ALLOWED CIDR', 默认的CIDR是0.0.0.0/0 也就是对全部的IP地址开放22端口
+  您也可以设置一个特别的CIDR(例如 16.16.16.0/24, 16.16.16.16/32) 来限制可以访问22端口的IP地址。
+</div>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup4.png">
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png"></p>
+
+<hr>
+
+
+<ol>
+<li>选择 三层网络'FLAT-L3'</li>
+<li>点击 'Create'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup6.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createInstanceOffering">12. 创建云主机模板</h4>
+<h4 id="createInstanceOffering">13. 创建云主机模板</h4>
 
 
 <p>点击左边面板的'Instance Offering':</p>
@@ -709,7 +705,7 @@ passwd root</code></pre>
 
 
 
-<h4 id="createVirtualRouterOffering">13. 创建虚拟机路由器模板</h4>
+<h4 id="createVirtualRouterOffering">14. 创建虚拟机路由器模板</h4>
 
 
 <p>点击左边面板的'Virtual Router Offering':</p>
@@ -733,21 +729,21 @@ passwd root</code></pre>
 <li>输入CPU主频'512'</li>
 <li>输入内存大小'512M'</li>
 <li>选择磁盘镜像'VIRTUAL-ROUTER"</li>
-<li>选择management L3 network 'PUBLIC-MANAGEMENT-L3'</li>
-<li>选择public L3 network 'PUBLIC-MANAGEMENT-L3'</li>
+<li>选择management L3 network 'FLAT-L3'</li>
+<li>选择public L3 network 'FLAT-L3'</li>
 <li>勾选'DEFAULT OFFERING'</li>
 <li>点击'Create'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createVM">14. 创建云主机</h4>
+<h4 id="createVM">15. 创建云主机 INNER-VM</h4>
 
 
 <p>点击左边面板的'Instance':</p>
@@ -767,19 +763,19 @@ passwd root</code></pre>
 <ol>
 <li>选择模板'512M-512HZ'</li>
 <li>选择磁盘镜像'ttylinux'</li>
-<li>选择三层网络'PRIVATE-L3'，<strong>并且点击'Add'</strong></li>
-<li>输入云主机的名字'VM1'</li>
-<li>输入云主机的网络名字： 'vm1'</li>
+<li>选择三层网络'FLAT-L3'，<strong>并且点击'Add'</strong></li>
+<li>输入云主机的名字'INNER-VM1'</li>
+<li>输入云主机的网络名字： 'inner'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createInnerVM3.png"></p>
 
 <hr>
 
 
-<p>点击'Create':</p>
+<p>点击 'Create':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png"></p>
 
@@ -798,78 +794,52 @@ passwd root</code></pre>
 
 
 
-<h4 id="createPortForwardingRule">15. 创建端口映射规则</h4>
+<h4 id="joinInnerVM">16. 把INNER-VM加入安全组</h4>
 
 
-<p>点击左侧面板的 'Port Forwarding':</p>
+<p>在安全组页面, 选择 'SECURITY-GROUP-1', 然后点击 button 'Action' and 选择 item 'Add Vm Nic'.</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule1.png"></p>
-
-<p>点击 'New Port Forwarding Rule':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup1.png"></p>
 
 <hr>
 
 
 <ol>
-<li>选择创建VIP的方法'Create New VIP'</li>
-<li>选择三层网络 'PUBLIC-MANAGEMENT-L3'</li>
-<li>点击'Create VIP'来新建一个VIP</li>
+<li>选择 INNER-VM 里唯一的网卡</li>
+<li>点击 'Add'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup2.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createOuterVM">17. 创建云主机OUTER-VM</h4>
+
+
+<p>点击左边面板的'Instance' 并选择 'New VmInstance' 来创建 OUTER-VM:</p>
+
+<ol>
+<li>选择模板'512M-512HZ'</li>
+<li>选择磁盘镜像'ttylinux'</li>
+<li>选择三层网络'FLAT-L3'，<strong>并且点击'Add'</strong></li>
+<li>输入云主机的名字'OUTER-VM1'</li>
+<li>输入云主机的网络名字： 'outer'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule3.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM1.png"></p>
 
 <hr>
 
 
-<ol>
-<li>输入名字 'PORT-FORWARDING1'</li>
-<li>选择协议 'TCP'</li>
-<li>输入VIP起始端口号 22</li>
-<li>输入VIP结束端口号 22</li>
-<li>输入云主机起始端口号 22</li>
-<li>输入云主机结束端口号 22</li>
-<li>点击 'next'</li>
-</ol>
+<p>点击 'Create':</p>
 
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule5.png"></p>
-
-<hr>
-
-
-<ol>
-<li>选择云主机 'VM1'</li>
-<li>点击 'Create'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule6.png"></p>
-
-<hr>
-
-
-<p>从一个可以访问公网的机器SSH登录(192.168.0.239), 您将会登录到VM1:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule7.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/createPortForwardingRule8.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="rebindPortForwardingRule">16. 重新绑定端口转发规则</h4>
-
-
-<p>跟着 <a href="#createVM">14. 创建云主机</a>的方法创建一个新的在私网PRIVATE-L3上的云主机(VM2):</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule1.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM2.png"></p>
 
 <div class="bs-callout bs-callout-info">
   <h4>后续的云主机创建过程会非常的快</h4>
@@ -882,116 +852,105 @@ passwd root</code></pre>
 <hr>
 
 
-<p>到port forwarding控制页面:</p>
+
+
+<h4 id="sshLogin">18. 从OUTER－VM SSH 登录INNER-VM </h4>
+
+
+<p>当云主机INNER-VM 创建成功，点击'Action'，再点击'Console'来打开云主机的终端(需要在浏览器上允许弹出窗口):</p>
+
+<p>在弹出的窗口中，用root用户的password密码来登录ttylinux。登录后，您可以用'hostname'来查看主机名，
+用'ifconfig'来检查IP地址是不是属于扁平网络的地址。您可以看到INNER-VM的IP地址是192.168.0.236。</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/sshLogin1.png"></p>
+
+<hr>
+
+
+<p>点击控制面板最左上角的'VM INSTANCE'来返回云主机控制页面：</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/sshLogin2.png"></p>
+
+<hr>
+
 
 <ol>
-<li>选择 'PORT-FORWARDING1'</li>
+<li>选择 OUTER-VM</li>
 <li>点击 'Action'</li>
-<li>选择 'Detach'</li>
-<li>点击 'Detach'</li>
+<li>选择 'Console' 来打开 VNC console</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule3.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/sshLogin3.png"></p>
 
 <hr>
 
 
-<p>to reattach the 'PORT-FORWARDING1' to VM2:</p>
+<p>在浏览器新弹出的窗口里用 <em>用户名: root, 密码: password</em> 来登陆。</p>
 
 <ol>
-<li>选择 'PORT-FORWARDING1'</li>
+<li>ping INNER-VM (192.168.0.236), 您将会看到ping不通，原因是我们没有在安全组里面允许ICMP的协议</li>
+<li>ssh INNER-VM, 您将会看到登录界面。</li>
+<li>用OUTER-VM 相同的用户名和密码登录，运行'ifconfig'，您会看到INNER-VM的IP地址(192.168.0.236)</li>
+<li>使用logout来退出ssh登录。</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-info">
+  <h4>请使用您环境里的IP地址</h4>
+  我们教程所使用的IP地址和您环境里的不同，请替换成真实环境里的IP地址。
+</div>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t4/sshLogin4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="deleteSecurityGroupRule">19. 删除安全组规则</h4>
+
+
+<p>点击进入左侧控制面板的'Security Group':</p>
+
+<ol>
+<li>选择 'SECURITY-GROUP-1'</li>
 <li>点击 'Action'</li>
-<li>选择 'Attach'</li>
+<li>选择 'Delete Rule'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule5.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule1.png"></p>
 
 <hr>
 
 
 <ol>
-<li>选择云主机 'VM2'</li>
-<li>点击 'Attach'</li>
+<li>选择 checkbox of rule 22</li>
+<li>点击 button 'Delete'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule6.png"></p>
-
-<hr>
-
-
-<p>当用SSH再次登录公网IP (192.168.0.239)时, 您将会登录VM2:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule7.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/rebindPortForwardingRule8.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule2.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="create2ndPortForwardingRule">17. 创建第二条端口转发规则</h4>
+<h4 id="sshLoginFailure">20. 确认OUTER-VM 不能再次SSH 登录 INNER-VM</h4>
 
 
-<p>跟随<a href="#createPortForwardingRule">15. 创建端口转发规则</a>来创建第二条规则。
-这一次我们要把相同VIP的2222号端口绑定给VM1的22端口。</p>
+<p>返回OUTER-VM，再次ssh INNNER-VM，您将会看到连接被拒绝。</p>
 
-<p>到port forwarding页面，再次点击 'New Port Forwarding Rule':</p>
-
-<ol>
-<li>选择VIP创建方法'Create New VIP'</li>
-<li>选择三层网络 'PUBLIC-MANAGEMENT-L3'</li>
-<li>点击 'Create VIP'</li>
-<li>点击 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule1.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>输入名字 'PORT-FORWARDING2'</li>
-<li>选择协议 'TCP'</li>
-<li>输入VIP起始端口号 2222</li>
-<li>输入VIP结束端口号 2222</li>
-<li>输入云主机起始端口号 22</li>
-<li>输入云主机结束端口号 22</li>
-<li>点击 'next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule3.png"></p>
-
-<hr>
-
-
-<ol>
-<li>选择云主机 'VM1'</li>
-<li>点击 'Create'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule4.png"></p>
-
-<hr>
-
-
-<p>SSH登录公网IP地址(192.168.0.240)的2222端口, 您将会登录到VM1:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule5.png">
-<img  class="img-responsive"  src="/images/tutorials/t5/2ndPortForwardingRule6.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t4/sshLoginFailure1.png"></p>
 
 <h3>总结</h3>
 
-<p>在本教程里，我们展示了如果创建端口映射，以及如何从公有网络上通过VIP和设定的端口映射访问私有云主机。
-尽管我们仅仅为每个VIP展示了一个端口映射的规则，但是实际上，只要分配的端口之间不冲突，
-同一个VIP可以把不同的端口分配给不同的云主机。更多关于动态端口映射的信息请访问<a href="http://zdoc.readthedocs.org/en/latest/userManual/portForwarding.html">用户手册</a>.</p>
+<p>本次教程我们演示了最基本的安全组设置方法。尽管我们仅仅只展示一个安全组规则和添加到一个云主机，
+但是您可以创建给一个云主机添加多天安全组，也可以把一条安全组添加给多个云主机。
+更多关于安全组的信息，您可以访问我们的<a href="http://zdoc.readthedocs.org/en/latest/userManual/securityGroup.html">用户手册</a>.</p>
 
     </div>
   </div>

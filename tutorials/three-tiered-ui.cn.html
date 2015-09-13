@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack创建磁盘快照教程</title>
+    <title>ZStack - ZStack搭建三层网络教程</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -98,40 +98,46 @@
           
           <li><a href="#createL3Network">创建三层网络</a></li>
           
+          <li><a href="#createPublicL2Network">创建公有二层网络</a></li>
+          
+          <li><a href="#createPublicL3Network">创建公有三层网络</a></li>
+          
+          <li><a href="#createApplicationL2Network">创建应用二层网络</a></li>
+          
+          <li><a href="#createApplicationL3Network">创建应用三层网络</a></li>
+          
+          <li><a href="#createDatabaseL2Network">创建数据库二层网络</a></li>
+          
+          <li><a href="#createDatabaseL3Network">创建数据库三层网络</a></li>
+          
           <li><a href="#createInstanceOffering">添加云主机配置</a></li>
           
           <li><a href="#createVirtualRouterOffering">添加虚拟路由器配置</a></li>
           
-          <li><a href="#createVM">创建云主机</a></li>
+          <li><a href="#createWebVM">创建Web云主机</a></li>
           
-          <li><a href="#createSnapshotTree1">创建磁盘快照</a></li>
+          <li><a href="#createApplicationVM">创建应用云主机</a></li>
+          
+          <li><a href="#createDatabaseVM">创建数据库云主机</a></li>
+          
+          <li><a href="#createTestVM">确认云主机间相互连接</a></li>
           
         </ol>
       </ul>
     </div>
     <div class="col-xs-9 tutorial">
-      <h3>磁盘快照</h3>
-
-<h4 id="overview">1. 介绍</h4>
+      <h4 id="overview">1. 介绍</h4>
 
 
-<p><img  class="img-responsive"  src="/images/snapshot.png"></p>
+<p><img class="img-responsive" src="/images/tier_3_networks.png"></p>
 
-<p>ZStack允许用户给云主机的根磁盘和数据磁盘创建自己的磁盘快照，与其他主要的IaaS软件不同，
-ZStack允许用户创建一个快照树，每一个快照的分支都是一个快照链。而其他IaaS通常只能支持创建一个快照链</p>
+<p>三层网络也是比较流行的网络架构，因为是用户可以把数据库，应用服务器和网页服务器分别放在不同的网络层面：
+展示层，应用层和数据库层。这种分发可以最大化的保证网络隔离和安全。</p>
 
-<p>在这个教程里，我们将会给一个云主机的根磁盘创建一个拥有两个分支的快照树</p>
-
-<div class="bs-callout bs-callout-warning">
-  <h4>只有Ubuntu14.04 支持live snapshot, CentOS 6/7 均不支持</h4>
-  对于我们已经测试过的几个Linux发行商(CentOS6.x, CentOS7, and Ubuntu14.04)来说，仅仅只有Ubuntu14.04 是只是云主机live snapshot的，
-  也就是说允许在云主机不停机的情况下来创建磁盘快照。如果您的Linux是CentOS 6或者7，在创建磁盘快照前，您需要先暂停云主机的运行。
-  我们假定您正在使用Ubuntu14.04, 所以在本教程里不会特别做暂停云主机的操作。然后您需要知道的是，不论您使用的是何种操作系统，
-  尝试从某个磁盘快照还原的时候，总是需要先暂停云主机的。
-</div>
-
-
-
+<p>在本教程里，文明将会创建3个三层网络：公有网络，应用层网络和数据库网络。公有网络给网页服务器提供互联网连接能力，应用层网络和
+数据库网络则是用户可以通过NAT访问公网的两个私有网络。此外，我们还会分别创建3个云主机：web-vm, application-vm 和 database-vm。
+其中web-vm会有两块网卡，一块接在公有网络，另一块接在应用层网络。applicaiton-vm也有两个网卡，一块接在应用层网络，另一块接在
+数据库网络。database-vm只有一个网卡只接数据网络。</p>
 
 <hr>
 
@@ -207,7 +213,7 @@ passwd root</code></pre>
 <h4 id="login">3. 登录</h4>
 
 
-<p>在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上ZStack管理界面：
+<p>在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上登录ZStack管理界面：
 默认的用户名和密码分别为admin/password:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/login.png"></p>
@@ -462,7 +468,7 @@ passwd root</code></pre>
 <li>选择格式'qcow2'</li>
 <li>选择媒体类型为'RootVolumeTemplate'</li>
 <li>选择平台'Linux'</li>
-<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2</li>
+<li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2</li>
 <li><strong>勾选'System'</strong></li>
 <li>点击'Add'</li>
 </ol>
@@ -485,98 +491,98 @@ passwd root</code></pre>
 
 
 
-<h4 id="createL2Network">10. 创建二层网络</h4>
+<h4 id="createPublicL2Network">10. 创建公有二层网络</h4>
 
 
 <p>点击左侧面板的'L2 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network1.png"></p>
 
 <hr>
 
 
-<p>点击按钮'New L2 Network':</p>
+<p>点击'New L2 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network2.png"></p>
 
 <hr>
 
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>给二层网络取个名字'FLAT-L2'</li>
+<li>给二层网络取个名字'PUBLIC-MANAGEMENT-L2'</li>
 <li>选择类型'L2NoVlanNetwork'</li>
 <li>输入物理网卡的名字'eth0'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network3.png"></p>
 
 <hr>
 
 
 <p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network4.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createL3Network">11. 创建三层网络</h4>
+<h4 id="createPublicL3Network">11. 创建Public L3 Network</h4>
 
 
 <p>点击左侧面板的'L3 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network1.png"></p>
 
 <hr>
 
 
 <p>点击'New L3 Network':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png"></p>
 
 <hr>
 
 
 <ol>
 <li>选择zone(ZONE1)</li>
-<li>选择二层网络(FLAT-L2)</li>
-<li>给三层网络取名为'FLAT-L3'</li>
+<li>选择二层网络(PUBLIC-MANAGEMENT-L2)</li>
+<li>给三层网络取名为'PUBLIC-MANAGEMENT-L3'</li>
 <li>选择类型'L3BasicNetwork'</li>
-<li>输入域名：'tutorials.zstack.org'</li>
-<li>点击'Next' (不要选择System)</li>
+<li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png"></p>
 
 <hr>
 
 
 <ol>
-<li>命名IP range：'FLAT-IP-RANGE'</li>
-<li>选择添加方法：'Add By IP Range'</li>
-<li>输入起始IP地址 '192.168.0.230'</li>
+<li>给IP地址范围取个名字'PUBLIC-IP-RANGE'</li>
+<li>选择方法'Add By Range'</li>
+<li>输入起始IP地址'192.168.0.230'</li>
 <li>输入结束IP地址'192.168.0.240'</li>
-<li>输入子网掩码 '255.255.255.0'</li>
-<li>输入网关 '192.168.0.1'</li>
-<li>点击 'Add' 来添加一个 IP range</li>
-<li>点击 'Next'</li>
+<li>输入子网掩码'255.255.255.0'</li>
+<li>输入网关'192.168.0.1'</li>
+<li><strong>点击'Add'添加IP范围</strong></li>
+<li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png"></p>
 
 <hr>
 
 
 <p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network4.png"></p>
 
 <hr>
 
@@ -584,12 +590,204 @@ passwd root</code></pre>
 <ol>
 <li>选择provider'VirtualRouter'</li>
 <li>选择'DHCP'</li>
-<li>点击'Add'增加一个网络服务
-重复上面这步来添加DNS, 最后点击'Create':</li>
+<li>点击'Add'增加一个网络服务</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network6.png"></p>
+
+<hr>
+
+
+<p>重复上面这步来添加DNS网络服务, 最后点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network7.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createApplicationL2Network">12. 创建应用层二层网络</h4>
+
+
+<p>再次点击'New L2 Network'来创建应用层二层网络:</p>
+
+<ol>
+<li>选择zone(ZONE1)</li>
+<li>给私有二层网络取名为'APPLICATION-L2'</li>
+<li><strong>选择类型'L2VlanNetwork'</strong></li>
+<li><strong>输入vlan号：'100'</strong></li>
+<li>输入物理网卡的名字'eth0'</li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network3.png"></p>
+
+<hr>
+
+
+<p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createApplicationL3Network">13. 创建应用层三层网络</h4>
+
+
+<p>再次点击'New L3 Network'来创建给云主机的应用层三层网络:</p>
+
+<ol>
+<li>选择zone(ZONE1)</li>
+<li>选择二层网络(APPLICATION-L2)</li>
+<li>给三层网络取名为'APPLICATION-L3'</li>
+<li>选择类型'L3BasicNetwork'</li>
+<li>输入域名：'application.zstack.org'</li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network1.png"></p>
+
+<hr>
+
+
+<ol>
+<li>取个名字'APPLICATION-IP-RANGE'</li>
+<li>选择方法'Add BY CIDR'</li>
+<li>输入IP地址范围 '10.0.0.0/24'</li>
+<li><strong>点击'Add'</strong></li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network3.png"></p>
+
+<hr>
+
+
+<p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network5.png"></p>
+
+<hr>
+
+
+<ol>
+<li>选择provider'VirtualRouter'</li>
+<li>选择'DHCP'</li>
+<li>点击'Add'增加一个网络服务</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network6.png"></p>
+
+<hr>
+
+
+<p>重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network7.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createDatabaseL2Network">14. 创建Database L2 Network</h4>
+
+
+<p>再次点击'New L2 Network'来创建数据库层二层网络:</p>
+
+<ol>
+<li>选择zone(ZONE1)</li>
+<li>给私有二层网络取名为'DATABASE-L2'</li>
+<li><strong>选择类型'L2VlanNetwork'</strong></li>
+<li><strong>输入vlan号：'101'</strong></li>
+<li>输入物理网卡的名字'eth0'</li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network3.png"></p>
+
+<hr>
+
+
+<p>选择cluster(CLUSTER1)作为挂载对象，然后点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createDatabaseL3Network">15. 创建数据库层三层网络</h4>
+
+
+<p>再次点击'New L3 Network'来创建给云主机的数据层三层网络:</p>
+
+<ol>
+<li>选择zone(ZONE1)</li>
+<li>选择二层网络(DATABASE-L2)</li>
+<li>给三层网络取名为'DATABASE-L3'</li>
+<li>选择类型'L3BasicNetwork'</li>
+<li>输入域名：'database.zstack.org'</li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network1.png"></p>
+
+<hr>
+
+
+<ol>
+<li>取个名字'APPLICATION-IP-RANGE'</li>
+<li>选择方法'Add BY CIDR'</li>
+<li>输入IP地址范围 '172.16.1.0/24'</li>
+<li><strong>点击'Add'</strong></li>
+<li>点击'Next'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network2.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network3.png"></p>
+
+<hr>
+
+
+<p>输入'8.8.8.8'(您也可以输入国内的DNS，例如114.114.114.114)，然后点击'Add'来添加一个DNS服务器，接着点击'Next':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network5.png"></p>
+
+<hr>
+
+
+<ol>
+<li>选择provider'VirtualRouter'</li>
+<li>选择'DHCP'</li>
+<li>点击'Add'增加一个网络服务</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network6.png"></p>
+
+<hr>
+
+
+<p>重复上面这步来添加其他的网络服务：DNS, SNAT, 最后点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network7.png"></p>
 
 <hr>
 
@@ -655,33 +853,31 @@ passwd root</code></pre>
 <li>输入CPU主频'512'</li>
 <li>输入内存大小'512M'</li>
 <li>选择磁盘镜像'VIRTUAL-ROUTER"</li>
-<li>选择management L3 network 'FLAT-L3'</li>
-<li>选择public L3 network 'FLAT-L3'</li>
+<li>选择management L3 network 'PUBLIC-MANAGEMENT-L3'</li>
+<li>选择public L3 network 'PUBLIC-MANAGEMENT-L3'</li>
 <li>勾选'DEFAULT OFFERING'</li>
 <li>点击'Create'</li>
 </ol>
 
-
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png"></p>
 
 <hr>
 
 
 
 
-<h4 id="createVM">14. 创建云主机</h4>
+<h4 id="createWebVM">18. 创建WEB云主机</h4>
 
 
 <p>点击左边面板的'Instance':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM1.png"></p>
 
 <hr>
 
 
 <p>点击'New VmInstance':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM2.png"></p>
 
 <hr>
 
@@ -689,21 +885,23 @@ passwd root</code></pre>
 <ol>
 <li>选择模板'512M-512HZ'</li>
 <li>选择磁盘镜像'ttylinux'</li>
-<li>选择三层网络'FLAT-L3'，<strong>并且点击'Add'</strong></li>
-<li>输入云主机的名字'VM1'</li>
-<li>输入云主机的网络名字： 'vm1'</li>
+<li>选择三层网络'PUBLIC-MANAGEMENT-L3'，<strong>并且点击'Add'</strong></li>
+<li>选择三层网络'APPLICATION-L3'，<strong>并且点击'Add'</strong></li>
+<li>选择'PUBLIC-MANAGEMENT-L3'作为默认三层网络</li>
+<li>输入云主机的名字'WEB-VM'</li>
+<li>输入云主机的网络名字： 'web'</li>
 <li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM3.png"></p>
 
 <hr>
 
 
-<p>点击 'Create':</p>
+<p>点击'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM4.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>启动第一个云主机会花费较长的时间</h4>
@@ -720,163 +918,136 @@ passwd root</code></pre>
 
 
 
-<h4 id="createSnapshotTree1">15. 创建磁盘快照</h4>
+<h4 id="createApplicationVM">19. 创建应用云主机</h4>
 
 
-<p>在做磁盘快照前，让我们在磁盘上做一个标记，这样我们可以在回滚快照的时候检查一下是否操作成功:</p>
-
-<p>进入'VM INSTANCE'页面：
-1. 选择VM1
-2. 点击'Action'
-3. 选择'Console'</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot5.png"></p>
-
-<hr>
-
-
-<p>在浏览器弹出的窗口中，使用<em>用户名: root, 密码: password</em>登录; 然后创建一个名为'flag1'的文件:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot6.png"></p>
-
-<hr>
-
-
-<p>返回'VM INSTANCE'的页面:</p>
-
-<ol>
-<li>双击VM1进入该云主机的的详细信息</li>
-<li>选择'Volume':</li>
-<li>点击设备号ID为0的设备进入VM1的根磁盘界面</li>
-</ol>
-
-
-<p><img class="img-responsive" src="/images/tutorials/t6/createSnapshot1.png">
-<img class="img-responsive" src="/images/tutorials/t6/createSnapshot2.png"></p>
+<p>点击'New VmInstance' to open the dialog again:</p>
 
 <hr>
 
 
 <ol>
-<li>点击 'Action'</li>
-<li>选择创建快照 'Take Snapshot'</li>
+<li>选择模板'512M-512HZ'</li>
+<li>选择磁盘镜像'ttylinux'</li>
+<li>选择三层网络'APPLICATION-L3'，<strong>并且点击'Add'</strong></li>
+<li>选择三层网络'DATABASE-L3'，<strong>并且点击'Add'</strong></li>
+<li>选择'APPLICATION-L3'作为默认三层网络</li>
+<li>输入云主机的名字'APPLICATION-VM'</li>
+<li>输入云主机的网络名字： 'application'</li>
+<li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot3.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM1.png"></p>
 
 <hr>
 
 
-<ol>
-<li>输入 'sp1'</li>
-<li>点击 'click'</li>
-</ol>
+<p>点击'Create':</p>
 
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot4.png"></p>
-
-<hr>
-
-
-<p>重复上述两步来创建另外两个快照sp2和sp3:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot7.png">
-<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot8.png"></p>
-
-<hr>
-
-
-<p>点击'Snapshot'的标签，然后展开快照树，您将会看到3个磁盘快照：</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot9.png"></p>
-
-<hr>
-
-
-<p>用刚刚登录VM1的方法登录VM1并且删除标记文件'flag1'：</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot10.png"></p>
-
-<hr>
-
-
-<p>为了回滚磁盘快照，我们需要先停止云主机，在左侧面板进入'VM INSTANCE'页面：</p>
-
-<ol>
-<li>选择 VM1</li>
-<li>点击 'Action'</li>
-<li>选择 'Stop'</li>
-</ol>
-
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
 
 <div class="bs-callout bs-callout-warning">
-  <h4>由于我们的ttylinux并不支持ACPID，所以停止实验用的云主机会很慢</h4>
-   ZStack 会等待60秒钟的超时后强制停止该虚拟机，通常来说您不会在一个正常安装的云主机上遇到类似问题。
+  <h4>还是优点慢，因为需要创建一个新的虚拟路由器给数据库层网络</h4>
+  因为这是第一个数据库层网络的云主机，ZStack会在创建APPLICATION-VM之前，主动创建一个虚拟路由器。
+  这大概会需要1分钟的时间。在此之后，再创建在DATABASE-L3上的虚拟机将会非常的快。
 </div>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot12.png"></p>
+
 
 <hr>
 
 
-<p>使用之前的方法回到之前快照的操作页面：</p>
+
+
+<h4 id="createDatabaseVM">20. 创建数据库云主机</h4>
+
+
+<p>再次点击'New VmInstance':</p>
 
 <ol>
-<li>展开快照树</li>
-<li>选择快照 'sp1'</li>
-<li>在下拉框中选择 'Revert volume to this snapshot'</li>
-<li>点击 'Revert'</li>
+<li>选择模板'512M-512HZ'</li>
+<li>选择磁盘镜像'ttylinux'</li>
+<li>选择三层网络'DATABASE-L3'，<strong>并且点击'Add'</strong></li>
+<li>输入云主机的名字'DATABASE-VM'</li>
+<li>输入云主机的网络名字： 'database'</li>
+<li>点击'Next'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot11.png">
-<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot13.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseVM1.png"></p>
 
 <hr>
 
 
-<p>操作完毕后，再次回到'VM INSTANCE'页面启动云主机:</p>
+<p>点击'Create':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="testVM">21. 确认网络联通性</h4>
+
+
+<p>选择 WEB-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole1.png"></p>
+
+<hr>
+
+
+<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
 
 <ol>
-<li>选择 VM1</li>
-<li>点击 'Action'</li>
-<li>选择 'Start'</li>
+<li>ping www.baidu.com, 应该可以成功.</li>
+<li>ping APPLICATION-VM, 应该可以成功.</li>
+<li>ping DATABASE-VM, 应该会失败（因为访问不到数据库网络）.</li>
 </ol>
 
 
-<p><img class="img-responsive" src="/images/tutorials/t6/createSnapshot14.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole2.png"></p>
 
 <hr>
 
 
-<p>打开VNC console，登录VM1，再次检查标记文件：'flag1'，这时您会可以发现我们之前删除的文件又恢复了。
-这说明我们回滚磁盘快照的操作已经成功。</p>
+<p>选择 APPLICATION-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot15.png"></p>
+<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
+
+<ol>
+<li>ping www.baidu.com, 应该可以成功.</li>
+<li>ping WEB-VM, 应该可以成功.</li>
+<li>ping DATABASE-VM, 应该会成功.</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/applicationVMConsole1.png"></p>
 
 <hr>
 
 
-<p>这时，我们再次使用创建磁盘快照的方法创建两个新的快照：'sp1.1' 和 'sp1.2'：</p>
+<p>选择 DATABASE-VM, 点击'Action'，点击 'Console' 来打开云主机的控制终端:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot16.png">
-<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot17.png">
-<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot18.png"></p>
+<p>在浏览器弹出的窗口里，输入<em>用户名: root, 密码: password</em>登录云主机</p>
 
-<hr>
+<ol>
+<li>ping www.baidu.com, 应该可以成功.</li>
+<li>ping WEB-VM, 应该会失败.</li>
+<li>ping APPLICATION-VM, 应该会成功.</li>
+</ol>
 
 
-<p>展开磁盘快照树树，您将会看到两颗磁盘快照树从'sp1'上生长出来：</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot19.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/databaseVMConsole1.png"></p>
 
 <h3>总结</h3>
 
-<p>在本教程里，我们展示了如何创建磁盘快照。除了使用快照回滚功能外，您还可以选择某个磁盘快照来创建磁盘
-镜像的模版。更多关于磁盘快照的介绍，请访问我们的
-<a href="http://zdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html">用户手册</a>.</p>
+<p>在本教程里，我们展示了如何在ZStack里创建一个三层网络模型。仅仅作为演示，我们没有使用任何的安全组。您可以参考安全组
+的教程，并结合本教程做一个更加安全的生产环境。如果想要了解更多的细节，请访问我们的
+<a href="http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html">用户手册</a>.</p>
 
     </div>
   </div>
