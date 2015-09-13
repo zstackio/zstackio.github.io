@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack 云环境模拟器</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/cn/">主 页</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack 云环境模拟器</h2>
+    <p class="post-meta"> by Yongkang You on Aug 2, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p><img  class="img-responsive"  src="/images/blogs/simulator/simulator.png"></p>
+
+<h3>介绍</h3>
+
+<p>熟悉OpenStack的同学应该知道OpenStack可以用<a href="https://ask.openstack.org/en/question/28/openstack-api-mocker-or-simulator/">devstack</a>来搭建一个虚拟云环境，
+使用CloudStack的同学也知道CloudStack也有一个<a href="https://cwiki.apache.org/confluence/display/CLOUDSTACK/Simulator+integration">虚拟云环境</a>。
+在虚拟云环境中，云主机不会在物理设备上真正创建出来，一切的云场景都是构建在一个虚无的世界中，唯有IaaS的数据库和消息总线还在真实的工作。
+由于云模拟器的这种特性，我们可以用它来熟悉各种云操作和进行底层和虚拟机无关的集成测试，例如测试消息总线，测试数据库，测试IaaS的基本功能。
+ZStack的模拟器是ZStack开发伊始就存在的，并随着ZStack功能的开发而不断增强。ZStack的数百个集成测试用例就是
+跑在ZStack的模拟器之上的。ZStack首页上例举的很多大规模并发性能测试也是基于模拟器来进行的
+（不过ZStack在用户的真实物理环境中已经拿到比在PC模拟器上还要好的数据了，平均云主机的创建时间可以低于0.08s）。在频繁的各种VM的操作之中，
+我们可以稳定的获得ZStack仅仅用一个管理节点就可以高效的模拟管理数十万的计算节点和上百万的云主机的常规并发操作。
+从而验证了Rabbitmq完全可以胜任大规模并发环境的IaaS操作（只要调度方法正确）。
+ZStack模拟器是和ZStack天然集成的，用户不需要进行额外的配置。只要正常启动ZStack管理程序后，就可以部署虚拟云环境。</p>
+
+<p>今天我们就要给大家展示一下ZStack的虚拟云环境如何创建。另外我们还要给大家展示一下如何一步部署ZStack模拟云环境。
+ZStack模拟器和ZStack天然集成，最早的时候ZStack的Dashboard也是可以在UI界面上添加和部署虚拟云环境。但是后来为了避免用户的误操作，
+ZStack开发团队把UI界面上添加云环境的功能给禁止了。目前虚拟云环境需要通过zstack-cli来操作。
+如果您只是想快速部署一个虚拟的云环境，而不在乎部署的过程，可以直接跳转到本文的最后，使用一键部署。
+用户可以在半分钟内完成虚拟云环境的部署，并用其创建虚拟云主机。</p>
+
+<h3>前提</h3>
+
+<p>已经根据<a href="/cn/installation/index.html">ZStack快速安装手册</a>，完成ZStack的快速安装和启动。</p>
+
+<h3>登录zstack控制终端</h3>
+
+<pre><code>
+[zstack@localhost ~]$ sudo zstack-cli
+
+  ZStack command line tool
+  Type "help" for more information
+  Type Tab key for auto-completion
+  Type "quit" or "exit" or Ctrl-d to exit
+
+>>>LogInByAccount accountName=admin password=password
+{
+    "inventory": {
+        "accountUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+        "createDate": "Aug 3, 2015 7:59:59 AM",
+        "expiredDate": "Aug 3, 2015 9:59:59 AM",
+        "userUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+        "uuid": "d45bdd89b8984d65b35dd97f83387e4c"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>创建Zone</h3>
+
+<pre><code>
+>>>CreateZone name=simulator-zone
+{
+    "inventory": {
+        "createDate": "Aug 3, 2015 8:00:25 AM",
+        "lastOpDate": "Aug 3, 2015 8:00:25 AM",
+        "name": "simulator-zone",
+        "state": "Enabled",
+        "type": "zstack",
+        "uuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>创建Cluster</h3>
+
+<p>需要大家把zoneUuid换成自己刚刚创建的Zone的UUID，并且把hypervisor的类型指定为“Simulator”：</p>
+
+<pre><code>
+>>>CreateCluster name=simulator-cluster zoneUuid=22331c109ef64f88a5826bcf96793941 hypervisorType=Simulator
+{
+    "inventory": {
+        "createDate": "Aug 3, 2015 8:02:19 AM",
+        "hypervisorType": "Simulator",
+        "lastOpDate": "Aug 3, 2015 8:02:19 AM",
+        "name": "simulator-cluster",
+        "state": "Enabled",
+        "type": "zstack",
+        "uuid": "c237767682d947f58efaf5e485b713e7",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加虚拟的计算节点</h3>
+
+<p>添加虚拟计算节点的时候，需要使用一个特别的API：<strong>AddSimulatorHost</strong>。（添加物理KVM计算节点的API是：AddKVMHost）。
+由于是虚拟的计算节点，我们还需要给一个假设的CPU容量和内存容量（为了测试方便，该容量可以给的随意大）：</p>
+
+<pre><code>
+>>>AddSimulatorHost name=simulator-host clusterUuid=c237767682d947f58efaf5e485b713e7 cpuCapacity=200000 memoryCapacity=1000000000000 managementIp=10.10.10.10
+{
+    "inventory": {
+        "availableCpuCapacity": 200000,
+        "availableMemoryCapacity": 1000000000000,
+        "clusterUuid": "c237767682d947f58efaf5e485b713e7",
+        "createDate": "Aug 3, 2015 8:05:08 AM",
+        "hypervisorType": "Simulator",
+        "lastOpDate": "Aug 3, 2015 8:05:08 AM",
+        "managementIp": "10.10.10.10",
+        "name": "simulator-host",
+        "state": "Enabled",
+        "status": "Connected",
+        "totalCpuCapacity": 200000,
+        "totalMemoryCapacity": 1000000000000,
+        "uuid": "b879af2114794044a6ce2f8902da3e38",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加虚拟主存储</h3>
+
+<p>同虚拟计算节点一样，我们需要使用一个特别的API（<strong>AddSimulatorPrimaryStorage</strong>）来添加虚拟主存储，
+另外我们还需要给一个虚拟的可用空间以及设置类型为<strong>SimulatorPrimaryStorage</strong>:</p>
+
+<pre><code>
+>>>AddSimulatorPrimaryStorage name=simulator-ps zoneUuid=22331c109ef64f88a5826bcf96793941 availableCapacity=10000000000000 totalCapacity=10000000000000 url=nfs://fake_url/fake_folder type=SimulatorPrimaryStorage
+{
+    "inventory": {
+        "attachedClusterUuids": [],
+        "availableCapacity": 10000000000000,
+        "availablePhysicalCapacity": 0,
+        "createDate": "Aug 3, 2015 8:12:31 AM",
+        "lastOpDate": "Aug 3, 2015 8:12:31 AM",
+        "mountPath": "/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e",
+        "name": "simulator-ps",
+        "state": "Enabled",
+        "status": "Connected",
+        "totalCapacity": 10000000000000,
+        "totalPhysicalCapacity": 0,
+        "type": "SimulatorPrimaryStorage",
+        "url": "nfs://fake_url/fake_folder",
+        "uuid": "c6c019a5b6dc494aaacbedfb5d3beb8e",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<p>然后把刚创建的主存储挂载到虚拟cluster上去：</p>
+
+<pre><code>
+>>>AttachPrimaryStorageToCluster primaryStorageUuid=c6c019a5b6dc494aaacbedfb5d3beb8e clusterUuid=c237767682d947f58efaf5e485b713e7
+{
+    "inventory": {
+        "attachedClusterUuids": [
+            "c237767682d947f58efaf5e485b713e7"
+        ],
+        "availableCapacity": 10000000000000,
+        "availablePhysicalCapacity": 0,
+        "createDate": "Aug 3, 2015 8:12:31 AM",
+        "lastOpDate": "Aug 3, 2015 8:12:31 AM",
+        "mountPath": "/primarystoragesimulator/c6c019a5b6dc494aaacbedfb5d3beb8e",
+        "name": "simulator-ps",
+        "state": "Enabled",
+        "status": "Connected",
+        "totalCapacity": 10000000000000,
+        "totalPhysicalCapacity": 0,
+        "type": "SimulatorPrimaryStorage",
+        "url": "nfs://fake_url/fake_folder",
+        "uuid": "c6c019a5b6dc494aaacbedfb5d3beb8e",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加虚拟备份存储</h3>
+
+<p>同添加虚拟主存储类似，我们也需要用到特殊的<strong>AddSimulatorBackupStorage</strong>，除了设定虚拟的可用空间外，
+我们还需要指定存储类型为SimulatorBackupStorage。创建完成后，在把它挂载到zone上：</p>
+
+<pre><code>
+>>>AddSimulatorBackupStorage name=simulator-bs url=/fake_url totalCapacity=1000000000000 availableCapacity=1000000000000 type=SimulatorBackupStorage
+{
+    "inventory": {
+        "attachedZoneUuids": [],
+        "availableCapacity": 1000000000000,
+        "createDate": "Aug 3, 2015 8:22:00 AM",
+        "lastOpDate": "Aug 3, 2015 8:22:00 AM",
+        "name": "simulator-bs",
+        "state": "Enabled",
+        "status": "Connected",
+        "totalCapacity": 1000000000000,
+        "type": "SimulatorBackupStorage",
+        "url": "/fake_url",
+        "uuid": "7bde50df528b45ffb1689229c3de105b"
+    },
+    "success": true
+}
+
+>>>AttachBackupStorageToZone backupStorageUuid=7bde50df528b45ffb1689229c3de105b zoneUuid=22331c109ef64f88a5826bcf96793941
+{
+    "inventory": {
+        "attachedZoneUuids": [
+            "22331c109ef64f88a5826bcf96793941"
+        ],
+        "availableCapacity": 1000000000000,
+        "createDate": "Aug 3, 2015 8:22:00 AM",
+        "lastOpDate": "Aug 3, 2015 8:22:00 AM",
+        "name": "simulator-bs",
+        "state": "Enabled",
+        "status": "Connected",
+        "totalCapacity": 1000000000000,
+        "type": "SimulatorBackupStorage",
+        "url": "/fake_url",
+        "uuid": "7bde50df528b45ffb1689229c3de105b"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加虚拟云主机模版</h3>
+
+<p>由于我们指定了备份存储为一个虚拟备份存储，添加Image的时候不需要使用真实的url。但是我们需要在Image的format上指定为<strong>simulator</strong>，而不是qcow2或者raw。</p>
+
+<pre><code>
+>>>AddImage name=simulator-image backupStorageUuids=7bde50df528b45ffb1689229c3de105b format=simulator mediaType=RootVolumeTemplate url=http://fake_url
+{
+    "inventory": {
+        "backupStorageRefs": [
+            {
+                "backupStorageUuid": "7bde50df528b45ffb1689229c3de105b",
+                "createDate": "Aug 3, 2015 8:46:40 AM",
+                "imageUuid": "5e40b7d5fed442848830716bfe71ec2e",
+                "installPath": "/fake_url/simulator-image",
+                "lastOpDate": "Aug 3, 2015 8:46:40 AM"
+            }
+        ],
+        "createDate": "Aug 3, 2015 8:46:40 AM",
+        "format": "simulator",
+        "lastOpDate": "Aug 3, 2015 8:46:40 AM",
+        "md5Sum": "528068b1699f4495bcd90f1b901e6ee9",
+        "mediaType": "RootVolumeTemplate",
+        "name": "simulator-image",
+        "platform": "Linux",
+        "size": 100,
+        "state": "Enabled",
+        "status": "Ready",
+        "system": false,
+        "type": "zstack",
+        "url": "http://fake_url",
+        "uuid": "5e40b7d5fed442848830716bfe71ec2e"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>创建虚拟L2</h3>
+
+<p>添加一个虚拟的L2设备，当挂载给一个虚拟的Cluster的时候，ZStack不会检查该L2设备是否真实存在。</p>
+
+<pre><code>
+>>>CreateL2NoVlanNetwork name=simulator-l2 physicalInterface=eth0 zoneUuid=22331c109ef64f88a5826bcf96793941
+{
+    "inventory": {
+        "attachedClusterUuids": [],
+        "createDate": "Aug 3, 2015 8:26:46 AM",
+        "lastOpDate": "Aug 3, 2015 8:26:46 AM",
+        "name": "simulator-l2",
+        "physicalInterface": "eth0",
+        "type": "L2NoVlanNetwork",
+        "uuid": "66d4801c02154daeb361bf0a703bd14b",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+
+>>>AttachL2NetworkToCluster l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b clusterUuid=c237767682d947f58efaf5e485b713e7
+{
+    "inventory": {
+        "attachedClusterUuids": [
+            "c237767682d947f58efaf5e485b713e7"
+        ],
+        "createDate": "Aug 3, 2015 8:26:46 AM",
+        "lastOpDate": "Aug 3, 2015 8:26:46 AM",
+        "name": "simulator-l2",
+        "physicalInterface": "eth0",
+        "type": "L2NoVlanNetwork",
+        "uuid": "66d4801c02154daeb361bf0a703bd14b",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加一个L3网络</h3>
+
+<pre><code>
+>>>CreateL3Network name=simulator-l3 l2NetworkUuid=66d4801c02154daeb361bf0a703bd14b
+{
+    "inventory": {
+        "createDate": "Aug 3, 2015 8:29:23 AM",
+        "ipRanges": [],
+        "l2NetworkUuid": "66d4801c02154daeb361bf0a703bd14b",
+        "lastOpDate": "Aug 3, 2015 8:29:23 AM",
+        "name": "simulator-l3",
+        "networkServices": [],
+        "state": "Enabled",
+        "system": false,
+        "type": "L3BasicNetwork",
+        "uuid": "af0c2a51dd954207af9f61e43bfee757",
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+>>>AddIpRange name=simulator-ip-range l3NetworkUuid=af0c2a51dd954207af9f61e43bfee757 startIp=172.16.0.2 endIp=172.16.255.254 netmask=255.255.0.0 gateway=172.16.0.1
+{
+    "inventory": {
+        "createDate": "Aug 3, 2015 8:30:44 AM",
+        "endIp": "172.16.255.254",
+        "gateway": "172.16.0.1",
+        "l3NetworkUuid": "af0c2a51dd954207af9f61e43bfee757",
+        "lastOpDate": "Aug 3, 2015 8:30:44 AM",
+        "name": "simulator-ip-range",
+        "netmask": "255.255.0.0",
+        "startIp": "172.16.0.2",
+        "uuid": "24607ef0fa0b4b3fa6965e4c3c331abe"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>添加云主机模版</h3>
+
+<pre><code>
+>>>CreateInstanceOffering name=simulator-vm-offering cpuNum=2 cpuSpeed=128 memorySize=256000000
+{
+    "inventory": {
+        "allocatorStrategy": "DefaultHostAllocatorStrategy",
+        "cpuNum": 2,
+        "cpuSpeed": 128,
+        "createDate": "Aug 3, 2015 8:33:14 AM",
+        "lastOpDate": "Aug 3, 2015 8:33:14 AM",
+        "memorySize": 256000000,
+        "name": "simulator-vm-offering",
+        "sortKey": 0,
+        "state": "Enabled",
+        "type": "UserVm",
+        "uuid": "3ea91a8e7d3a4cd7b87eaf2f516aa827"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>创建一个虚拟的云主机</h3>
+
+<p>创建一个虚拟的云主机我们需要指定L3，Image和InstanceOffering的UUID。它们的UUID都可以在之前的命令结果中找到：</p>
+
+<pre><code>
+CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
+{
+    "inventory": {
+        "allVolumes": [
+            {
+                "createDate": "Aug 3, 2015 8:48:27 AM",
+                "description": "Root volume for VM[uuid:63becebd92894c108a4c268d7a722ed9]",
+                "deviceId": 0,
+                "format": "simulator",
+                "installPath": "nfs:/fake_url/fake_folder/vm/8657fb16029444bfb62e96eed0867cc0.qcow2",
+                "lastOpDate": "Aug 3, 2015 8:48:27 AM",
+                "name": "ROOT-for-sim-vm1",
+                "primaryStorageUuid": "c6c019a5b6dc494aaacbedfb5d3beb8e",
+                "rootImageUuid": "5e40b7d5fed442848830716bfe71ec2e",
+                "size": 100,
+                "state": "Enabled",
+                "status": "Ready",
+                "type": "Root",
+                "uuid": "8657fb16029444bfb62e96eed0867cc0",
+                "vmInstanceUuid": "63becebd92894c108a4c268d7a722ed9"
+            }
+        ],
+        "allocatorStrategy": "DefaultHostAllocatorStrategy",
+        "clusterUuid": "c237767682d947f58efaf5e485b713e7",
+        "cpuNum": 2,
+        "cpuSpeed": 128,
+        "createDate": "Aug 3, 2015 8:48:27 AM",
+        "defaultL3NetworkUuid": "af0c2a51dd954207af9f61e43bfee757",
+        "hostUuid": "b879af2114794044a6ce2f8902da3e38",
+        "hypervisorType": "Simulator",
+        "imageUuid": "5e40b7d5fed442848830716bfe71ec2e",
+        "instanceOfferingUuid": "3ea91a8e7d3a4cd7b87eaf2f516aa827",
+        "lastHostUuid": "b879af2114794044a6ce2f8902da3e38",
+        "lastOpDate": "Aug 3, 2015 8:48:27 AM",
+        "memorySize": 256000000,
+        "name": "sim-vm1",
+        "platform": "Linux",
+        "rootVolumeUuid": "8657fb16029444bfb62e96eed0867cc0",
+        "state": "Running",
+        "type": "UserVm",
+        "uuid": "63becebd92894c108a4c268d7a722ed9",
+        "vmNics": [
+            {
+                "createDate": "Aug 3, 2015 8:48:27 AM",
+                "deviceId": 0,
+                "gateway": "172.16.0.1",
+                "ip": "172.16.199.179",
+                "l3NetworkUuid": "af0c2a51dd954207af9f61e43bfee757",
+                "lastOpDate": "Aug 3, 2015 8:48:27 AM",
+                "mac": "fa:f1:91:9a:a7:00",
+                "netmask": "255.255.0.0",
+                "uuid": "888fdf0816714cdfa16a5797d6e2c8dc",
+                "vmInstanceUuid": "63becebd92894c108a4c268d7a722ed9"
+            }
+        ],
+        "zoneUuid": "22331c109ef64f88a5826bcf96793941"
+    },
+    "success": true
+}
+</code></pre>
+
+
+<h3>保存当前云环境</h3>
+
+<p>如果觉得每次创建一个虚拟云环境还是需要花费一些时间来一步步添加各种资源。我们可以利用zstack-cli的dump云环境的功能，
+把当前的云环境给dump下来，然后在以后的测试中，直接还原。</p>
+
+<p>使用zstack-cli -h 来获取相关的参数信息</p>
+
+<pre><code>
+[zstack@localhost ~]$ sudo zstack-cli -h
+Usage: -c [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -H HOST, --host=HOST  [Optional] IP address or DNS name of a ZStack
+                        management node. Default value: localhost
+  -p PORT, --port=PORT  [Optional] Port that the ZStack management node is
+                        listening on. Default value: 8080
+  -d DEPLOY_CONFIG_FILE, --deploy=DEPLOY_CONFIG_FILE
+                        [Optional] deploy a cloud from a XML file.
+  -t DEPLOY_CONFIG_TEMPLATE_FILE, --tempate=DEPLOY_CONFIG_TEMPLATE_FILE
+                        [Optional] variable template file for XML file
+                        spcified in option '-d'
+  -D ZSTACK_CONFIG_DUMP_FILE, --dump=ZSTACK_CONFIG_DUMP_FILE
+                        [Optional] dump a cloud to a XML file
+</code></pre>
+
+
+<p>然后使用 -D 来dump刚刚部署好的虚拟云环境</p>
+
+<pre><code>
+[zstack@localhost ~]$ sudo zstack-cli -D /tmp/simulator-zstack-cloud.xml
+</code></pre>
+
+
+<p><strong>如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password</strong>来登录系统。</p>
+
+<h3>Dump好的xml文件内容</h3>
+
+<div class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version=&quot;1.0&quot; ?&gt;</span>
+
+<span class="nt">&lt;deployerConfig&gt;</span>
+
+  <span class="nt">&lt;nodes&gt;</span>
+    <span class="nt">&lt;node</span> <span class="na">hostName=</span><span class="s">&quot;10.10.3.230&quot;</span> <span class="na">uuid=</span><span class="s">&quot;8ff3c1babe0d44c0a75ab3a93eb7c867&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/nodes&gt;</span>
+
+  <span class="nt">&lt;instanceOfferings&gt;</span>
+    <span class="nt">&lt;instanceOffering</span> <span class="na">allocatorStrategy=</span><span class="s">&quot;DefaultHostAllocatorStrategy&quot;</span>
+      <span class="na">cpuNum=</span><span class="s">&quot;2&quot;</span>
+      <span class="na">cpuSpeed=</span><span class="s">&quot;128&quot;</span>
+      <span class="na">memorySize=</span><span class="s">&quot;256000000&quot;</span>
+      <span class="na">name=</span><span class="s">&quot;simulator-vm-offering&quot;</span>
+      <span class="na">sortKey=</span><span class="s">&quot;0&quot;</span>
+      <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;UserVm&quot;</span>
+      <span class="na">uuid=</span><span class="s">&quot;3ea91a8e7d3a4cd7b87eaf2f516aa827&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/instanceOfferings&gt;</span>
+
+  <span class="nt">&lt;backupStorages&gt;</span>
+    <span class="nt">&lt;simulatorBackupStorage</span> <span class="na">availableCapacity=</span><span class="s">&quot;1000000000000&quot;</span>
+      <span class="na">name=</span><span class="s">&quot;simulator-bs&quot;</span>
+      <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+      <span class="na">status=</span><span class="s">&quot;Connected&quot;</span>
+      <span class="na">totalCapacity=</span><span class="s">&quot;1000000000000&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;SimulatorBackupStorage&quot;</span>
+      <span class="na">url=</span><span class="s">&quot;/fake_url&quot;</span>
+      <span class="na">uuid=</span><span class="s">&quot;7bde50df528b45ffb1689229c3de105b&quot;</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/backupStorages&gt;</span>
+
+  <span class="nt">&lt;images&gt;</span>
+    <span class="nt">&lt;image</span> <span class="na">format=</span><span class="s">&quot;simulator&quot;</span>
+      <span class="na">mediaType=</span><span class="s">&quot;RootVolumeTemplate&quot;</span>
+      <span class="na">name=</span><span class="s">&quot;simulator-image&quot;</span>
+      <span class="na">platform=</span><span class="s">&quot;Linux&quot;</span>
+      <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+      <span class="na">status=</span><span class="s">&quot;Ready&quot;</span>
+      <span class="na">system=</span><span class="s">&quot;False&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;zstack&quot;</span>
+      <span class="na">url=</span><span class="s">&quot;http://fake_url&quot;</span>
+      <span class="na">uuid=</span><span class="s">&quot;5e40b7d5fed442848830716bfe71ec2e&quot;</span><span class="nt">&gt;</span>
+
+      <span class="nt">&lt;backupStorageRef&gt;</span>
+        simulator-bs
+      <span class="nt">&lt;/backupStorageRef&gt;</span>
+    <span class="nt">&lt;/image&gt;</span>
+  <span class="nt">&lt;/images&gt;</span>
+
+  <span class="nt">&lt;zones&gt;</span>
+    <span class="nt">&lt;zone</span> <span class="na">name=</span><span class="s">&quot;simulator-zone&quot;</span>
+      <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+      <span class="na">type=</span><span class="s">&quot;zstack&quot;</span>
+      <span class="na">uuid=</span><span class="s">&quot;22331c109ef64f88a5826bcf96793941&quot;</span><span class="nt">&gt;</span>
+
+      <span class="nt">&lt;backupStorageRef&gt;</span>
+        simulator-bs
+      <span class="nt">&lt;/backupStorageRef&gt;</span>
+
+      <span class="nt">&lt;primaryStorages&gt;</span>
+        <span class="nt">&lt;simulatorPrimaryStorage</span> <span class="na">availableCapacity=</span><span class="s">&quot;9999999999900&quot;</span>
+          <span class="na">availablePhysicalCapacity=</span><span class="s">&quot;0&quot;</span>
+          <span class="na">name=</span><span class="s">&quot;simulator-ps&quot;</span>
+          <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+          <span class="na">status=</span><span class="s">&quot;Connected&quot;</span>
+          <span class="na">totalCapacity=</span><span class="s">&quot;10000000000000&quot;</span>
+          <span class="na">totalPhysicalCapacity=</span><span class="s">&quot;0&quot;</span>
+          <span class="na">url=</span><span class="s">&quot;nfs://fake_url/fake_folder&quot;</span>
+          <span class="na">uuid=</span><span class="s">&quot;c6c019a5b6dc494aaacbedfb5d3beb8e&quot;</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/primaryStorages&gt;</span>
+
+      <span class="nt">&lt;clusters&gt;</span>
+        <span class="nt">&lt;cluster</span> <span class="na">hypervisorType=</span><span class="s">&quot;Simulator&quot;</span>
+          <span class="na">name=</span><span class="s">&quot;simulator-cluster&quot;</span>
+          <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+          <span class="na">type=</span><span class="s">&quot;zstack&quot;</span>
+          <span class="na">uuid=</span><span class="s">&quot;c237767682d947f58efaf5e485b713e7&quot;</span>
+          <span class="na">zoneUuid=</span><span class="s">&quot;22331c109ef64f88a5826bcf96793941&quot;</span><span class="nt">&gt;</span>
+
+          <span class="nt">&lt;hosts&gt;</span>
+            <span class="nt">&lt;host</span> <span class="na">managementIp=</span><span class="s">&quot;10.10.10.10&quot;</span>
+              <span class="na">name=</span><span class="s">&quot;simulator-host&quot;</span>
+              <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+              <span class="na">status=</span><span class="s">&quot;Connected&quot;</span>
+              <span class="na">uuid=</span><span class="s">&quot;b879af2114794044a6ce2f8902da3e38&quot;</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/hosts&gt;</span>
+
+          <span class="nt">&lt;primaryStorageRef&gt;</span>
+            simulator-ps
+          <span class="nt">&lt;/primaryStorageRef&gt;</span>
+
+          <span class="nt">&lt;l2NetworkRef&gt;</span>
+            simulator-l2
+          <span class="nt">&lt;/l2NetworkRef&gt;</span>
+        <span class="nt">&lt;/cluster&gt;</span>
+      <span class="nt">&lt;/clusters&gt;</span>
+
+      <span class="nt">&lt;l2Networks&gt;</span>
+        <span class="nt">&lt;l2NoVlanNetwork</span> <span class="na">name=</span><span class="s">&quot;simulator-l2&quot;</span>
+          <span class="na">physicalInterface=</span><span class="s">&quot;eth0&quot;</span>
+          <span class="na">description=</span><span class="s">&quot;l2&quot;</span>
+          <span class="na">uuid=</span><span class="s">&quot;66d4801c02154daeb361bf0a703bd14b&quot;</span><span class="nt">&gt;</span>
+
+          <span class="nt">&lt;l3Networks&gt;</span>
+            <span class="nt">&lt;l3BasicNetwork</span> <span class="na">name=</span><span class="s">&quot;simulator-l3&quot;</span>
+              <span class="na">state=</span><span class="s">&quot;Enabled&quot;</span>
+              <span class="na">system=</span><span class="s">&quot;False&quot;</span>
+              <span class="na">uuid=</span><span class="s">&quot;af0c2a51dd954207af9f61e43bfee757&quot;</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;ipRange</span> <span class="na">endIp=</span><span class="s">&quot;172.16.255.254&quot;</span>
+                <span class="na">gateway=</span><span class="s">&quot;172.16.0.1&quot;</span>
+                <span class="na">name=</span><span class="s">&quot;simulator-ip-range&quot;</span>
+                <span class="na">netmask=</span><span class="s">&quot;255.255.0.0&quot;</span>
+                <span class="na">startIp=</span><span class="s">&quot;172.16.0.2&quot;</span>
+                <span class="na">uuid=</span><span class="s">&quot;24607ef0fa0b4b3fa6965e4c3c331abe&quot;</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;/l3BasicNetwork&gt;</span>
+          <span class="nt">&lt;/l3Networks&gt;</span>
+        <span class="nt">&lt;/l2NoVlanNetwork&gt;</span>
+      <span class="nt">&lt;/l2Networks&gt;</span>
+    <span class="nt">&lt;/zone&gt;</span>
+  <span class="nt">&lt;/zones&gt;</span>
+<span class="nt">&lt;/deployerConfig&gt;</span></code></pre></div>
+
+
+<h3>还原虚拟云环境</h3>
+
+<p>当进行了一些测试后，希望快速还原初始化的虚拟云环境，我们就可以使用上一节的xml内容进行恢复。我们假设xml的文件为：/tmp/simulator-zstack-cloud.xml</p>
+
+<h4>停止zstack管理节点</h4>
+
+<pre><code>
+zstack-ctl stop_node
+</code></pre>
+
+
+<h4>初始化数据库</h4>
+
+<p><strong>注意：该操作会清空整个数据库中的数据</strong></p>
+
+<pre><code>
+zstack-ctl deploydb --drop
+</code></pre>
+
+
+<p>如果设置了mysql的root密码，还需要添加 --root-password=MY_MYSQL_ROOT_PASSWORD 的参数。</p>
+
+<h4>启动zstack管理节点</h4>
+
+<pre><code>
+zstack-ctl start_node
+</code></pre>
+
+
+<h4>一键恢复zstack云环境</h4>
+
+<p><strong>如果还没有登录zstack-cli或者session已经超时，请使用zstack-cli LogInByAccount accountName=admin password=password</strong>来登录系统。</p>
+
+<pre><code>
+zstack-cli -d /tmp/simulator-zstack-cloud.xml
+</code></pre>
+
+
+<h3>创建一个虚拟云主机试试</h3>
+
+<pre><code>
+sudo zstack-cli CreateVmInstance name=sim-vm1 l3NetworkUuids=af0c2a51dd954207af9f61e43bfee757 imageUuid=5e40b7d5fed442848830716bfe71ec2e instanceOfferingUuid=3ea91a8e7d3a4cd7b87eaf2f516aa827
+</code></pre>
+
+
+<h3>总结</h3>
+
+<p>在本文中，我们介绍了如何使用zstack-cli 命令来搭建一个模拟的zstack 云环境。也介绍了如何把搭建好的云环境备份下来，之后可以一键还原。
+欢迎ZStack的用户使用模拟器来熟悉ZStack云环境，以及进行各种性能和压力测试，看看ZStack系统是否可以响应数万的并发API请求。</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">社区</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> 订阅邮件组</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">社区介绍</a></li>
+          <li><a class="footer-text-link" href="/cn/misc/qq.html">QQ群</li>
+          <li><a class="footer-text-link" href="/cn/misc/wechat.html">微信订阅号</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">资源</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">安装手册</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">新手入门</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">新闻博客</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">更多文档</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">联系我们</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack 是开源的IaaS软件，其开源代码遵守 Apache 2.0 协议的规定.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>我们非常重视您的观点，请把您的想法告诉我们。 &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

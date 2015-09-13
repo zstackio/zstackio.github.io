@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - 发布 ZStack v0.8 RC2</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/cn/">主 页</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">发布 ZStack v0.8 RC2</h2>
+    <p class="post-meta"> by yongkang on Jul 27, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p>大家好，很高兴今天再次宣布又一个ZStack的新版本v0.8.0-rc2正式发布。v0.8.0-rc2 里包含了0.8系列里面非常重要的4个功能：本地存储、动态添加删除L3 Network、完善的账号用户系统和修改云主机的配置。让我们来一一介绍一下他们的功能：</p>
+
+<h2>本地存储</h2>
+
+<p>用户可以使用计算节点的本地存储作为主存储设备。用户可以不必预先创建任何的网络主存储。本地存储具有方便、快捷、适中性能等特点。</p>
+
+<p><img src="/images/0.8/localstorage.png" class="center-img img-responsive"></p>
+
+<p>详细的信息可以访问<a href="./local-stroage-tutorials.html">本地存储教程</a></p>
+
+<h2>动态添加、删除云主机三层网络（网卡）</h2>
+
+<p>用户可以对一个正在运行的或是停止的云主机添加和删除三层网络。</p>
+
+<p><img src="/images/0.8/2.png" class="center-img img-responsive"></p>
+
+<hr>
+
+
+<p><img src="/images/0.8/3.png" class="center-img img-responsive"></p>
+
+<p>详细的信息可以访问<a href="./attach-detach-l3-tutorials.html">添加删除三层网络教程</a></p>
+
+<h2>完善的用户账号管理系统</h2>
+
+<p>从本版开始，ZStack开放了完善的用户账号系统API。ZStack的账号用户系统和亚马逊的AWS采用相同的管理方式，提供了Account和User。用户不仅可以创建，修改用户密码，还可以创建不同用户组并加以不同的权限限制。
+共有云也可以基于ZStack的账号系统对接自身的billing系统。</p>
+
+<p>详细的信息可以访问<a href="./zstack-account-user-tutorials.html">账号用户系统手册</a></p>
+
+<h2>改变云主机模板</h2>
+
+<p>当用户选择某个模板（CPU/内存配置）创建云主机之后，可以根据需求修改云主机配置。修改后，仅需要重启云主机即可。不过该功能和账号系统一样，在v0.8里只能通过zstack-cli来调用，例如：</p>
+
+<pre><code>&gt;&gt;&gt;ChangeInstanceOffering vmInstanceUuid=f9837cfbde574a7ab512ab3283d8da60 instanceOfferingUuid=d791a3f662ac48a99b9e998136eed2a1
+</code></pre>
+
+<p>第一个vmInstanceUuid就是你想要改变的云主机的UUID，第二个instanceOfferingUuid就是你希望改变之后的模板的UUID。</p>
+
+<h2>从0.7版本无缝升级</h2>
+
+<div class="bs-callout bs-callout-warning">
+  <h4>升级数据库</h4>
+  
+  虽然ZStack升级程序会进行备份，不过在升级数据库前，还是希望用户手动<b>做好数据库的备份!</b>
+  您可以使用以下的命令来备份当前zstack的数据库：
+  
+  <pre><code>mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack > path_to_db_dump.sql</code></pre>
+</div>
+
+
+<h3>快速升级</h3>
+
+<p>如果你仅仅只有一个管理节点，数据库和Dashboard也装在相同的节点上，那么你就可以用下面的方法快速升级：</p>
+
+<pre><code>wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-install-0.8.0-rc2.sh
+wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/zstack-all-in-one-0.8.0-rc2.tgz
+bash zstack-install-0.8.0-rc2.sh -u -f zstack-all-in-one-0.8.0-rc2.tgz
+</code></pre>
+
+<p>正常情况，你大概只需要等待2分钟，zstack就会帮你升级完成。</p>
+
+<h3>使用zstack-ctl升级多节点</h3>
+
+<h4>1. 升级第一个节点</h4>
+
+<pre><code>mkdir zstack-0.8
+cd zstack-0.8
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>请重新安装zstack-ctl，如果你还在使用zstack v0.6系列的产品</h4>
+  
+  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
+  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
+  
+</div>
+
+
+<pre><code>wget --no-check-certificate http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0-rc2/zstack.war
+zstack-ctl upgrade_management_node --war-file zstack.war
+</code></pre>
+
+<h4>2. 升级数据库</h4>
+
+<p>备份数据库</p>
+
+<pre><code>zstack-ctl upgrade_db
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>如果只有一个管理节点，您可以立刻启动该节点</h4>
+  使用命令<pre><code>zstack-ctl start_node</code></pre>启动zstack管理节点。如果还有其他管理节点，请继续完成步骤三。
+</div>
+
+
+<h4>3. 升级其他管理节点</h4>
+
+<pre><code>zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
+</code></pre>
+
+<p><strong>需要注意从 v0.8开始，zstack-ctl 统一了命令参数，所有原有--remote 指令都统一成了--host. </strong></p>
+
+<h4>4. 升级UI</h4>
+
+<div class="bs-callout bs-callout-info">
+  <h4>停止UI服务</h4>
+  
+  <code>/etc/init.d/zstack-dashboard stop</code>; 
+
+</div>
+
+
+<p>升级本地UI服务：</p>
+
+<pre><code>zstack-ctl install_ui
+</code></pre>
+
+<p>或者升级远端UI服务：</p>
+
+<pre><code>zstack-ctl install_ui --host remote_machine_ip
+</code></pre>
+
+<h4>5. 启动管理节点</h4>
+
+<p>启动本地管理节点：</p>
+
+<pre><code>`zstack-ctl start_node`
+</code></pre>
+
+<p>启动远程管理节点：</p>
+
+<pre><code>`zstack-ctl start_node --host remote_host_ip`
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>所有的Agent都会随着管理节点的启动而自动升级</h4>
+  当管理节点启动后，会重新连接并升级包括计算节点，备份存储，虚拟路由等等一系列的ZStack Agents。
+  用户在创建新的云主机之前，需要确保计算节点的状态已经变成Connected
+</div>
+
+
+<h4>6. 启动UI服务</h4>
+
+<p>启动本地UI：</p>
+
+<pre><code>`zstack-ctl start_ui`
+</code></pre>
+
+<p>启动远端UI：</p>
+
+<pre><code>`zstack-ctl start_ui --host remote_host_ip`
+</code></pre>
+
+<h2>报告bug</h2>
+
+<p>如果你在使用中发现任何问题或者有任何建议，请你到我们的<a href="https://github.com/zstackorg/zstack/issues">GitHub</a>上告诉我们，谢谢！</p>
+
+<p>Enjoy～
+ZStack 开发团队</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">社区</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> 订阅邮件组</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">社区介绍</a></li>
+          <li><a class="footer-text-link" href="/cn/misc/qq.html">QQ群</li>
+          <li><a class="footer-text-link" href="/cn/misc/wechat.html">微信订阅号</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">资源</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">安装手册</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">新手入门</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">新闻博客</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">更多文档</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">联系我们</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack 是开源的IaaS软件，其开源代码遵守 Apache 2.0 协议的规定.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>我们非常重视您的观点，请把您的想法告诉我们。 &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

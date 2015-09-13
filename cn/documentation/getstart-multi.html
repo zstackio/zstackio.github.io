@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - 通过多节点安装来启动ZStack</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+<body>
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">简体</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container doc big-font">
+  <h2 id="manual">通过多节点安装来启动ZStack</h2>
+
+
+<p>当您使用<a href="../installation/multi-node.html">多节点安装手册</a>完成ZStack的安装之后，您可以继续进行一些必要的配置
+以便用它来自动云环境。ZStack的管控工具<code>zstack-ctl</code>会安装到每一个ZStack管理节点，您可以使用它来控制本地管理节点，
+或其他管理节点。</p>
+
+<h3>zstack.properties</h3>
+
+<p>特别需要注意的是，zstack.properties是ZStack的核心配置文件。它会存放在每一个管理节点中。
+每一个管理节点上的zstack.properties文件的内容基本上是一致的。它的路径可以通过<code>zstack-ctl status</code>来获得。
+如果是默认安装的话，它会存放在/usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 。
+你可以手动编辑它，也可以通过<code>zstack-ctl configure<code>来完成配置。不过通常情况下，
+当用户在使用</code>zstack-ctl<code>命令来安装或者部署对应的服务的时候，</code>zstack-ctl`会自动的完成部署。</p>
+
+<h3>1. 配置ZStack第一个管理节点</h3>
+
+<p>在多台管理节点的环境下，最好的配置方式是在第一台管理节点上完成配置后，把配置文件复制到其他的管理节点上去。
+我们已经在<a href="../installation/multi-node.html">多节点安手册</a>中，通过第一个管理节点安装了MySQL和RabbitMQ。</p>
+
+<div class="bs-callout bs-callout-info">
+  <h4>选择第一个节点的原因</h4>
+  我们选择第一个管理节点是因为<code>zstack-ctl install_rabbitmq</code>命令已经把RabbitMQ服务器的IP地址更新到了 
+zstack.properties 文件。您可以使用任意一个节点，只要您使用下面1.2步骤里的方法更新了RabbitMQ IP地址。
+</div>
+
+
+<h4>1.1 初始化数据库</h4>
+
+<p>安装完ZStack管理节点和MySQL服务器后，ZStack的数据库并没有建立。您需要运行下面的命令来初始化数据库：</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine --root-password=root_password_of_mysql --zstack-password=password_for_mysql_user_zstack
+
+例如: zstack-ctl deploydb --host=192.168.0.212 --root-password=abcd --zstack-password=1234
+</code></pre>
+
+<p>如果您的MySQL是通过<code>zstack-ctl install_db</code>来安装的，那么MySQL默认的root密码是为空的，您可以不用<code>--root-password</code>:</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine --zstack-password=password_for_mysql_user_zstack
+
+例如: zstack-ctl deploydb --host=192.168.0.212 --zstack-password=1234
+</code></pre>
+
+<p>或者您不需要给自己的ZStack数据设置任何的访问密码：</p>
+
+<pre><code>zstack-ctl deploydb --host=ip_of_mysql_machine 
+
+例如: zstack-ctl deploydb --host=192.168.0.212
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>初始化数据库的命令会把数据的访问信息更新到zstack.properties</h4>
+  <code>zstack</code>用户是ZStack用于访问ZStack数据库的用户名。
+  <code>deploydb</code> 会把MySQL数据库的地址、访问的用户名和密码等信息更新到 zstack.properties 文件中的: <code>DbFacadeDataSource.jdbcUrl</code>, <code>DbFacadeDataSource.user</code>,
+  <code>DbFacadeDataSource.password</code>, <code>RESTApiDataSource.jdbcUrl</code>, <code>RESTApiDataSource.user</code> and <code>RESTApiDataSource.password</code>.
+</div>
+
+
+<h4>1.2. 配置 RabbitMQ 服务</h4>
+
+<p>如果您通过<code>zstack-ctl install_rabbitmq</code>命令来安装RabbitMQ服务，您不需要配置RabbitMQ的IP地址，因为zstack-ctl已经把
+相关的配置<code>CloudBus.serverIp.0</code>更新到了zstack.properties里面。
+如果您的RabbitMQ服务是装在非ZStack管理节点的机器上，您还需要配置RabbitMQ的用户名和密码：</p>
+
+<pre><code>zstack-ctl configure CloudBus.rabbitmqUsername = zstack
+zstack-ctl configure CloudBus.rabbitmqPassword = zstack123
+</code></pre>
+
+<h3>2. 复制zstack.properties到其他管理节点</h3>
+
+<p>一旦完成了第一个管理节点的配置，您就可以把配置文件复制到其他管理节点：</p>
+
+<pre><code>zstack-ctl configure --duplicate-to-remote=ip_of_other_node
+
+例如: zstack-ctl configure --duplicate-to-remote=192.168.0.225
+</code></pre>
+
+<p>重复执行上述命令，直到把配置文件都复制到了所有的管理节点。</p>
+
+<p>但是您还需要给每一个管理节点手动配置一下各自的IP地址：</p>
+
+<pre><code>zstack-ctl configure --host=ip_of_remote_zstack management.server.ip=ip_of_current_management_node
+
+例如: zstack-ctl configure --host=192.168.0.226 management.server.ip=192.168.0.226
+</code></pre>
+
+<p>最后保存一下config文件：</p>
+
+<pre><code>zstack-ctl save_config
+</code></pre>
+
+<h3>3. 启动管理节点</h3>
+
+<h4>3.1 启动第一个管理节点</h4>
+
+<p>在第一个管理节点上，您只需要执行下面的一条命令就可以启动ZStack管理进程:</p>
+
+<pre><code>zstack-ctl start_node
+</code></pre>
+
+<p>或者使用我们在 /etc/init.d/目录里的服务程序:</p>
+
+<pre><code>/etc/init.d/zstack-server start
+</code></pre>
+
+<h4>3.2 启动其他管理节点</h4>
+
+<p>当第一个管理节点启动成功后，您就可以使用下面的命令来启动其他的管理节点：</p>
+
+<pre><code>zstack-ctl start_node --host=ip_of_other_node
+
+例如: zstack-ctl start_node --host=192.168.0.224
+</code></pre>
+
+<p>重复这条命令，直到所有的管理节点都已经启动完毕。</p>
+
+<h3>4. 启动Web管理界面</h3>
+
+<p>在第一个管理节点，如果ZStack Dashboard UI是安装在本地的，您可以使用下面的命令启动：</p>
+
+<pre><code>zstack-ctl start_ui 
+</code></pre>
+
+<p>如果UI不是安装在本地，那么您可以使用如下命令启动：</p>
+
+<pre><code>zstack-ctl start_ui --host=ip_of_ui_host
+</code></pre>
+
+<p>默认情况下ZStack的UI是加载在5000端口，您可以在Chrome浏览器或者FireFox浏览器（IE浏览器可能会遇到使用问题）上打开如下地址：</p>
+
+<pre><code>`http://ip_of_ui_machine:5000`.
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+  <h4>所有的管理节点可以共享相同的Web UI</h4>
+  所有的管理节点都可以共享相同的ZStack UI界面。您无需在每个管理节点上都安装和启动一份UI界面。
+  当然您也可以启动多个Web UI并使用相关HA软件来保证Web 界面的高可用性。
+</div>
+
+
+<h3>zstack-ctl 命令的更多使用方法：</h3>
+
+<p>停止本机ZStack管理节点:</p>
+
+<pre><code>zstack-ctl stop_node
+</code></pre>
+
+<p>停止非本机的管理节点:</p>
+
+<pre><code>zstack-ctl stop_node --host=ip_of_node
+
+例如: zstack-ctl stop_node --host=192.168.0.224
+</code></pre>
+
+<p>ZStack管理节点上的日志文件默认存放在 <code>/var/log/zstack/management-server.log</code>, 您可以通过下面的命令监控最新产生的日志：</p>
+
+<pre><code>zstack-ctl taillog
+</code></pre>
+
+<p>您可以通过下面的命令来添加或者更新ZStack的配置文件（我们前面已经用过）：</p>
+
+<pre><code>zstack-ctl configure property_name=property_value
+
+例如: zstack-ctl configure CloudBus.serverIp.0=192.168.0.225 
+</code></pre>
+
+<p>您也可以通过下面的命令来添加或者更新非本机的ZStack配置文件：</p>
+
+<pre><code>zstack-ctl configure --host=ip_of_node property_name=property_value
+
+例如: zstack-ctl configure --host=192.168.0.224 CloudBus.serverIp.0=192.168.0.225 
+</code></pre>
+
+<h3>使用ZStack命令行工具</h3>
+
+<p>除了ZStack Web界面，您还可以使用ZStack命令行工具来操作ZStack：</p>
+
+<pre><code>zstack-cli
+</code></pre>
+
+<p>现在您的多节点ZStack环境已经准备完毕，您可以跟着<a href="../tutorials">用户教程</a>来搭建自己的云环境了
+如果要获得更多的关于ZStack Web界面和命令行工具的使用说明，请访问我们的<a href="http://zdoc.readthedocs.org/en/latest/">用户手册</a>来获取完整的帮助.</p>
+
+</div>
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+
+</body>
+
+</html>
