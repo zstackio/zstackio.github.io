@@ -72,12 +72,12 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       国内用户在访问我们美国服务器时速度较慢，请使用以下链接：
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh -o install-zstack.sh
-sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
+      <pre><code>curl -L {{site.install_script_en}} -o install-zstack.sh
+sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
-      <pre><code>wget -O install-zstack.sh http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh
-sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.8/0.8.0/zstack-all-in-one-0.8.0.tgz</code></pre>
+      <pre><code>wget -O install-zstack.sh {{site.install_script_en}}
+sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
@@ -100,12 +100,12 @@ sudo bash install-zstack.sh -a -f http://7xi3lj.com1.z0.glb.clouddn.com/releases
 
 ##### Use *curl*:
 
-    curl -L http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh -o install-zstack.sh
+    curl -L {{site.install_script_en}} -o install-zstack.sh
     sudo bash install-zstack.sh -i
     
 ##### Use *wget*:
 
-    wget -O install-zstack.sh http://download.zstack.org/releases/0.8/0.8.0/zstack-install-0.8.0.sh 
+    wget -O install-zstack.sh {{site.install_script_en}}
     sudo bash install-zstack.sh -i
     
 
@@ -248,7 +248,7 @@ that may cause troubles. You can download and install Tomcat from the official s
 Assuming your Tomcat `$CATALINA_HOME` is */usr/local/apache-tomcat*, you can download and install ZStack by:
 
     cd /usr/local/apache-tomcat/webapps
-    wget http://download.zstack.org/releases/0.6/war-0.6.2/zstack.war
+    wget {{site.war_en}}
     unzip zstack.war -d zstack
     
 **In following sections, we assume the `$CATALINA_HOME` is */usr/local/apache-tomcat/*.**

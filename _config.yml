@@ -19,10 +19,22 @@ highlighter: pygments
 relative_permalinks: false
 
 # multiple languages plugins.
-gems:           ['jekyll-multiple-languages']
+#gems:           ['jekyll-multiple-languages']
 
-languages:          ['en', 'cn']
+#languages:          ['en', 'cn']
 #
-language_default:   'en'
+#language_default:   'en'
 #
 fill_default_content: true
+
+install_script_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-install.sh"
+vr_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
+all_in_one_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-all-in-one-0.9.0.tgz"
+war_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack.war"
+tgz: "zstack-all-in-one-0.9.0.tgz"
+
+install_script_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-install.sh"
+vr_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
+all_in_one_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-all-in-one-0.9.0.tgz"
+war_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack.war"
+

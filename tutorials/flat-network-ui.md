@@ -305,7 +305,7 @@ click 'New Image' button again to add the virtual router image:
 3. choose format 'qcow2'
 4. choose media type 'RootVolumeTemplate'
 5. choose platform 'Linux'
-6. input URL https://download.zstack.org/releases/0.8/0.8.0/zstack-virtualruoter-0.8.0.qcow2
+6. input URL {{site.vr_en}}
 7. **check 'System' checkbox**
 8. click button 'Add'
 
@@ -313,7 +313,7 @@ click 'New Image' button again to add the virtual router image:
   <h4>Fast link for users of Mainland China</h4>
   由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
   
-  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualruoter-0.8.0.qcow2</code></pre>
+  <pre><code>{{site.vr_ch}}</code></pre>
 </div>
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
