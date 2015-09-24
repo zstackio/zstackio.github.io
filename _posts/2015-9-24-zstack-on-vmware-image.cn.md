@@ -17,13 +17,13 @@ http://pan.baidu.com/s/1pJmqR8n
 
 配置说明：
 
-1. 操作系统centos7，预设帐号root，默认密码zstack
+1.操作系统centos7，预设帐号root，默认密码zstack
 
-2. 网络模式是NAT模式，默认ip位置是192.168.230.140
+2.网络模式是NAT模式，默认ip位置是192.168.230.140
 
-3. 开机后记得启动zstack node服务与ui ｀zstack-ctl start_node;zstack-ctl start_ui｀
+3.开机后记得启动zstack node服务与ui ｀zstack-ctl start_node;zstack-ctl start_ui｀
 
-4. 已经下载安装了两个VM的qcow2文件： ttylinux.qcow2， zstack-virtualrouter-0.9.0.qcow2
+4.已经下载安装了两个VM的qcow2文件： ttylinux.qcow2， zstack-virtualrouter-0.9.0.qcow2
 
  镜像所在目录：
 
@@ -33,7 +33,7 @@ http://pan.baidu.com/s/1pJmqR8n
 
  http://192.168.230.140/qcow2
 
-5. Linux安装ISO的文件也已下载，共有两个ISO档案，练习安装虚拟机会用到：
+5.Linux安装ISO的文件也已下载，共有两个ISO档案，练习安装虚拟机会用到：
 
  CentOS-7-x86_64-Minimal-1503-01.iso
 
