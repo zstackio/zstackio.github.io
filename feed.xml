@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 24 Sep 2015 21:35:49 +0800</pubDate>
-    <lastBuildDate>Thu, 24 Sep 2015 21:35:49 +0800</lastBuildDate>
+    <pubDate>Thu, 24 Sep 2015 21:37:34 +0800</pubDate>
+    <lastBuildDate>Thu, 24 Sep 2015 21:37:34 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -21,13 +21,13 @@
 
 &lt;p&gt;配置说明：&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;操作系统centos7，预设帐号root，默认密码zstack&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;网络模式是NAT模式，默认ip位置是192.168.230.140&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;开机后记得启动zstack node服务与ui ｀zstack-ctl start_node;zstack-ctl start_ui｀&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;已经下载安装了两个VM的qcow2文件： ttylinux.qcow2， zstack-virtualrouter-0.9.0.qcow2&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
+&lt;p&gt;1.操作系统centos7，预设帐号root，默认密码zstack&lt;/p&gt;
 
+&lt;p&gt;2.网络模式是NAT模式，默认ip位置是192.168.230.140&lt;/p&gt;
+
+&lt;p&gt;3.开机后记得启动zstack node服务与ui ｀zstack-ctl start_node;zstack-ctl start_ui｀&lt;/p&gt;
+
+&lt;p&gt;4.已经下载安装了两个VM的qcow2文件： ttylinux.qcow2， zstack-virtualrouter-0.9.0.qcow2&lt;/p&gt;
 
 &lt;p&gt; 镜像所在目录：&lt;/p&gt;
 
@@ -37,10 +37,7 @@
 
 &lt;p&gt; http://192.168.230.140/qcow2&lt;/p&gt;
 
-&lt;ol&gt;
-&lt;li&gt;Linux安装ISO的文件也已下载，共有两个ISO档案，练习安装虚拟机会用到：&lt;/li&gt;
-&lt;/ol&gt;
-
+&lt;p&gt;5.Linux安装ISO的文件也已下载，共有两个ISO档案，练习安装虚拟机会用到：&lt;/p&gt;
 
 &lt;p&gt; CentOS-7-x86_64-Minimal-1503-01.iso&lt;/p&gt;
 
