@@ -97,6 +97,11 @@ h5, .h5 {
   border:1px solid #021a40;
 }
 
+.post  img {
+  padding:1px;
+  border:1px solid #021a40;
+}
+
 .tutorial-home .btn {
   width: 180px;
 }
