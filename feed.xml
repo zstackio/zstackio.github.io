@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 04 Oct 2015 16:10:40 +0800</pubDate>
-    <lastBuildDate>Sun, 04 Oct 2015 16:10:40 +0800</lastBuildDate>
+    <pubDate>Sun, 04 Oct 2015 16:18:46 +0800</pubDate>
+    <lastBuildDate>Sun, 04 Oct 2015 16:18:46 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -19,7 +19,7 @@
 &lt;p&gt;首先，让我们来简单介绍一下两种不同的IaaS网络方案：&lt;a href=&quot;http://zstack.org/cn/tutorials/flat-network-ui.html&quot;&gt;扁平网络&lt;/a&gt;和
 &lt;a href=&quot;http://zstack.org/cn/tutorials/ec2-ui.html&quot;&gt;EIP网络&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2&gt;扁平网络&lt;/h2&gt;
+&lt;h2&gt;1. 扁平网络&lt;/h2&gt;
 
 &lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/flat_network.png&quot;&gt;&lt;/p&gt;
 
@@ -48,7 +48,7 @@
 需要注意的是，扁平网络的云主机之间没有二层网络隔离，网络安全需要通过三层的安全组（Security Group）提供。
 用户在选择Public-L3网络服务的时候，需要选上Security Group。通常情况下，三层网络安全控制已经可以达到要求。&lt;/p&gt;
 
-&lt;h2&gt;EIP 网络&lt;/h2&gt;
+&lt;h2&gt;2. EIP 网络&lt;/h2&gt;
 
 &lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/eip.png&quot;&gt;&lt;/p&gt;
 
@@ -85,7 +85,7 @@
 需要预先在原有网络上DHCP服务器预留一段静态IP地址用于虚拟路由器的IP地址和EIP的IP地址。预留出来的IP地址，
 也就是用户设置在Public-L3上面的IP Range。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;h2&gt;单机配置扁平网络和EIP网络&lt;/h2&gt;
+&lt;h2&gt;3. 单机配置扁平网络和EIP网络&lt;/h2&gt;
 
 &lt;p&gt;实战过程中，很多用户会常会在单机上尝试练习扁平网络和EIP网络模式。如果用户能够简单的配置原有网络环境，
 那么可以轻松的测试。但是通常情况下，用户的单机网络环境可能和我们之前定义的网络环境有些差异。
@@ -95,34 +95,50 @@
 我们给该网络设备配置上一个172.16.0.1的IP地址，并将该设备用于Public-L2，这样就可以创建一个干净的网络环境用于ZStack测试。
 如果单机的网卡设备不是eth0，也可以做个替换，例如把eth0换成em1。&lt;/p&gt;
 
-&lt;p&gt;具体的配置为：
- * Public-L2：eth0.10
- * Public L3 IP Range: 172.16.0.2~172.16.0.254
- * Public L3 Netmask: 255.255.255.0
- * Public L3 Gateway: 172.16.0.1
- * Private-L2(EIP模式）：eth0，vlan 100
- ＊Private L3 CIDR: 10.0.0.1/24&lt;/p&gt;
+&lt;p&gt;具体的配置为：&lt;/p&gt;
 
-&lt;p&gt;eth0.10的创建方法：
- * vconfig add eth0 10
- * ifconfig eth0.10 172.16.0.1 netmask 255.255.255.0&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Public-L2：eth0.10&lt;/li&gt;
+&lt;li&gt;Public L3 IP Range: 172.16.0.2~172.16.0.254&lt;/li&gt;
+&lt;li&gt;Public L3 Netmask: 255.255.255.0&lt;/li&gt;
+&lt;li&gt;Public L3 Gateway: 172.16.0.1&lt;/li&gt;
+&lt;li&gt;Private-L2(EIP模式）：eth0，vlan 100&lt;/li&gt;
+&lt;li&gt;Private L3 CIDR: 10.0.0.1/24&lt;/li&gt;
+&lt;/ol&gt;
 
-&lt;p&gt;为何要给eth0.10设置172.16.0.1的IP地址？有两个原因：
- * 虚拟路由器会从Public L3上获得一个172.16.0.x的IP地址，ZStack需要连接它
- * 需要把172.16.0.1作为网关，连接eth0，让云主机可以连通公网。&lt;/p&gt;
 
-&lt;p&gt;打通eth0.10到eth0的网络：
- * iptables -A POSTROUTING -o eth0 -j MASQUERADE
- * iptables -A FORWARD -i eth0.10 -j ACCEPT
- * iptables -A FORWARD -i br_eth0.10 -j ACCEPT&lt;/p&gt;
+&lt;p&gt;eth0.10的创建方法：&lt;/p&gt;
 
-&lt;h3&gt;练习扁平网络&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;vconfig add eth0 10&lt;/li&gt;
+&lt;li&gt;ifconfig eth0.10 172.16.0.1 netmask 255.255.255.0&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;为何要给eth0.10设置172.16.0.1的IP地址？有两个原因：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;虚拟路由器会从Public L3上获得一个172.16.0.x的IP地址，ZStack需要连接它&lt;/li&gt;
+&lt;li&gt;需要把172.16.0.1作为网关，连接eth0，让云主机可以连通公网。&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;打通eth0.10到eth0的网络：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;iptables -A POSTROUTING -o eth0 -j MASQUERADE&lt;/li&gt;
+&lt;li&gt;iptables -A FORWARD -i eth0.10 -j ACCEPT&lt;/li&gt;
+&lt;li&gt;iptables -A FORWARD -i br_eth0.10 -j ACCEPT&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;3.1 练习扁平网络&lt;/h3&gt;
 
 &lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/misc/single-machine-flat-network.png&quot;&gt;&lt;/p&gt;
 
 &lt;p&gt;如上图所示，扁平网络模式下的云主机和虚拟路由器都将会获得172.16.0.x的IP地址。&lt;/p&gt;
 
-&lt;h3&gt;练习EIP网络&lt;/h3&gt;
+&lt;h3&gt;3.2 练习EIP网络&lt;/h3&gt;
 
 &lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/misc/single-machine-eip-network.png&quot;&gt;&lt;/p&gt;
 
@@ -134,12 +150,12 @@
 
 &lt;h2&gt;参考文献：&lt;/h2&gt;
 
-&lt;ul&gt;
+&lt;ol&gt;
 &lt;li&gt;&lt;a href=&quot;./virtualrouter-introduction.html&quot;&gt;ZStack 虚拟路由器工作流程&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;/cn/tutorials/flat-network-ui.html&quot;&gt;扁平网络教程&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;/cn/tutorials/ec2-ui.html&quot;&gt;EIP网络教程&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/virtualRouter.html?highlight=virtual%20router&quot;&gt;虚拟路由器&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
+&lt;/ol&gt;
 
 </description>
         <pubDate>Sun, 04 Oct 2015 00:00:00 +0800</pubDate>

@@ -123,7 +123,7 @@
 <p>首先，让我们来简单介绍一下两种不同的IaaS网络方案：<a href="http://zstack.org/cn/tutorials/flat-network-ui.html">扁平网络</a>和
 <a href="http://zstack.org/cn/tutorials/ec2-ui.html">EIP网络</a></p>
 
-<h2>扁平网络</h2>
+<h2>1. 扁平网络</h2>
 
 <p><img  class="img-responsive"  src="/images/flat_network.png"></p>
 
@@ -152,7 +152,7 @@
 需要注意的是，扁平网络的云主机之间没有二层网络隔离，网络安全需要通过三层的安全组（Security Group）提供。
 用户在选择Public-L3网络服务的时候，需要选上Security Group。通常情况下，三层网络安全控制已经可以达到要求。</p>
 
-<h2>EIP 网络</h2>
+<h2>2. EIP 网络</h2>
 
 <p><img  class="img-responsive"  src="/images/eip.png"></p>
 
@@ -189,7 +189,7 @@
 需要预先在原有网络上DHCP服务器预留一段静态IP地址用于虚拟路由器的IP地址和EIP的IP地址。预留出来的IP地址，
 也就是用户设置在Public-L3上面的IP Range。</strong></p>
 
-<h2>单机配置扁平网络和EIP网络</h2>
+<h2>3. 单机配置扁平网络和EIP网络</h2>
 
 <p>实战过程中，很多用户会常会在单机上尝试练习扁平网络和EIP网络模式。如果用户能够简单的配置原有网络环境，
 那么可以轻松的测试。但是通常情况下，用户的单机网络环境可能和我们之前定义的网络环境有些差异。
@@ -199,34 +199,50 @@
 我们给该网络设备配置上一个172.16.0.1的IP地址，并将该设备用于Public-L2，这样就可以创建一个干净的网络环境用于ZStack测试。
 如果单机的网卡设备不是eth0，也可以做个替换，例如把eth0换成em1。</p>
 
-<p>具体的配置为：
- * Public-L2：eth0.10
- * Public L3 IP Range: 172.16.0.2~172.16.0.254
- * Public L3 Netmask: 255.255.255.0
- * Public L3 Gateway: 172.16.0.1
- * Private-L2(EIP模式）：eth0，vlan 100
- ＊Private L3 CIDR: 10.0.0.1/24</p>
+<p>具体的配置为：</p>
 
-<p>eth0.10的创建方法：
- * vconfig add eth0 10
- * ifconfig eth0.10 172.16.0.1 netmask 255.255.255.0</p>
+<ol>
+<li>Public-L2：eth0.10</li>
+<li>Public L3 IP Range: 172.16.0.2~172.16.0.254</li>
+<li>Public L3 Netmask: 255.255.255.0</li>
+<li>Public L3 Gateway: 172.16.0.1</li>
+<li>Private-L2(EIP模式）：eth0，vlan 100</li>
+<li>Private L3 CIDR: 10.0.0.1/24</li>
+</ol>
 
-<p>为何要给eth0.10设置172.16.0.1的IP地址？有两个原因：
- * 虚拟路由器会从Public L3上获得一个172.16.0.x的IP地址，ZStack需要连接它
- * 需要把172.16.0.1作为网关，连接eth0，让云主机可以连通公网。</p>
 
-<p>打通eth0.10到eth0的网络：
- * iptables -A POSTROUTING -o eth0 -j MASQUERADE
- * iptables -A FORWARD -i eth0.10 -j ACCEPT
- * iptables -A FORWARD -i br_eth0.10 -j ACCEPT</p>
+<p>eth0.10的创建方法：</p>
 
-<h3>练习扁平网络</h3>
+<ol>
+<li>vconfig add eth0 10</li>
+<li>ifconfig eth0.10 172.16.0.1 netmask 255.255.255.0</li>
+</ol>
+
+
+<p>为何要给eth0.10设置172.16.0.1的IP地址？有两个原因：</p>
+
+<ol>
+<li>虚拟路由器会从Public L3上获得一个172.16.0.x的IP地址，ZStack需要连接它</li>
+<li>需要把172.16.0.1作为网关，连接eth0，让云主机可以连通公网。</li>
+</ol>
+
+
+<p>打通eth0.10到eth0的网络：</p>
+
+<ol>
+<li>iptables -A POSTROUTING -o eth0 -j MASQUERADE</li>
+<li>iptables -A FORWARD -i eth0.10 -j ACCEPT</li>
+<li>iptables -A FORWARD -i br_eth0.10 -j ACCEPT</li>
+</ol>
+
+
+<h3>3.1 练习扁平网络</h3>
 
 <p><img  class="img-responsive"  src="/images/blogs/misc/single-machine-flat-network.png"></p>
 
 <p>如上图所示，扁平网络模式下的云主机和虚拟路由器都将会获得172.16.0.x的IP地址。</p>
 
-<h3>练习EIP网络</h3>
+<h3>3.2 练习EIP网络</h3>
 
 <p><img  class="img-responsive"  src="/images/blogs/misc/single-machine-eip-network.png"></p>
 
@@ -238,12 +254,12 @@
 
 <h2>参考文献：</h2>
 
-<ul>
+<ol>
 <li><a href="./virtualrouter-introduction.html">ZStack 虚拟路由器工作流程</a></li>
 <li><a href="/cn/tutorials/flat-network-ui.html">扁平网络教程</a></li>
 <li><a href="/cn/tutorials/ec2-ui.html">EIP网络教程</a></li>
 <li><a href="http://zstackdoc.readthedocs.org/en/latest/userManual/virtualRouter.html?highlight=virtual%20router">虚拟路由器</a></li>
-</ul>
+</ol>
 
 
   </article>
