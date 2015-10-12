@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - Documentation</title>
+    <title>ZStack - ZStack Feature Matrix</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -110,7 +110,7 @@
 <div class="container doc big-font">
   <h2>Feature Matrix</h2>
 
-<p>In current version (0.6), the supported features are listed as follows:</p>
+<p>In current version (0.9), the supported features are listed as follows:</p>
 
 <table class="table black-table">
   <thead>
@@ -137,15 +137,15 @@
     <tr>
       <td rowspan=5>Storage</td>
       <td>Primary Storage</td>
-      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder</td>
+      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder. Support NFS, Local Storage, iSCSI and Ceph. </td>
     </tr>
     <tr>
       <td>Backup Storage</td>
-      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image</td>
+      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image. Support Sftp and Ceph.</td>
     </tr>
     <tr>
       <td>Image</td>
-      <td>Templates for creating volumes. Similar to OpenStack's Glance in combination with Backup Storage</td>
+      <td>Templates for creating volumes. Similar to OpenStack's Glance in combination with Backup Storage. Support raw, Qcow2 and ISO.</td>
     </tr>
     <tr>
       <td>Volume</td>
@@ -167,7 +167,7 @@
     </tr>
     
     <tr>
-      <td rowspan=6>Network Services</td>
+      <td rowspan=7>Network Services</td>
       <td>DHCP</td>
       <td></td>
     </tr>
@@ -191,7 +191,17 @@
       <td>Security Group</td>
       <td>A distributed firewall. Similar to Amazon EC2 security group</td>
     </tr>
+    <tr>
+      <td>Elastic Load Balancer</td>
+      <td>Similar to Amazon EC2 Elastic Load Balancer</td>
+    </tr>
     
+    <tr>
+      <td>Account & Identity</td>
+      <td>Identity Management</td>
+      <td>Resource access control for accounts and users. Similar to Amazon IAM</td>
+    </tr>
+
     <tr>
       <td rowspan=2>Configurations</td>
       <td>Instance Offering</td>

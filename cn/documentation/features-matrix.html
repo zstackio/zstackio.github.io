@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - Documentation</title>
+    <title>ZStack - ZStack功能列表</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -86,21 +86,21 @@
 
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navHome"><a href="/cn/">主 页</a></li>
                 <li id="navInstallation">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
                   <ul class="dropdown-menu" role="menu">
-                    <li><a href="/installation/">Quick Installation</a></li>
-                    <li><a href="/installation/manual.html">Manual Installation</a></li>
-                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
                   </ul>
                 </li>
-                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
-                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
-                <li id="navBlog"><a href="/blog">Blog</a></li>
-                <li id="navCommunity"><a href="/community">Community</a></li>
-                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
-                <li id="navIssues"><a href="/cn">中文</a></li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
             </ul>
         </div>
     </div>
@@ -108,66 +108,66 @@
 
 
 <div class="container doc big-font">
-  <h2>Feature Matrix</h2>
+  <h2>ZStack 功能列表</h2>
 
-<p>In current version (0.6), the supported features are listed as follows:</p>
+<p>在目前的版本中（0.9），ZStack支持如下功能：</p>
 
 <table class="table black-table">
   <thead>
-    <th>Category</th>
-    <th>Name</th>
-    <th>Note</th>
+    <th>分类</th>
+    <th>功能</th>
+    <th>备注</th>
   </thead>
   
   <tbody>
     <tr>
-      <td rowspan=3>Compute</td>
-      <td>Zone</td>
-      <td>A logic group of resources. Similar to Amazon EC2 availability zone</td>
+      <td rowspan=3>计算</td>
+      <td>区域</td>
+      <td>由一些集群组成的一个逻辑资源组。类似于Amazon EC2 availability zone</td>
     </tr>
     <tr>
-      <td>Cluster</td>
-      <td>A logic group of hosts</td>
+      <td>集群</td>
+      <td>由一些主机组成的逻辑组</td>
     </tr>
     <tr>
-      <td>Host</td>
-      <td>only KVM support</td>
-    </tr>
-    
-    <tr>
-      <td rowspan=5>Storage</td>
-      <td>Primary Storage</td>
-      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder</td>
-    </tr>
-    <tr>
-      <td>Backup Storage</td>
-      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image</td>
-    </tr>
-    <tr>
-      <td>Image</td>
-      <td>Templates for creating volumes. Similar to OpenStack's Glance in combination with Backup Storage</td>
-    </tr>
-    <tr>
-      <td>Volume</td>
-      <td>Virtual disks</td>
-    </tr>
-    <tr>
-      <td>Volume Snapshot</td>
-      <td>Snapshots of volumes</td>
+      <td>主机</td>
+      <td>目前仅支持KVM</td>
     </tr>
     
     <tr>
-      <td rowspan=2>Networking</td>
-      <td>L2 Network</td>
-      <td>Layer2 broadcast domains for traffic isolation. Supporting non-VLAN and VLAN</td>
+      <td rowspan=5>存储</td>
+      <td>主存储</td>
+      <td>用于放置虚拟机磁盘卷的块存储设备。类似于 OpenStack的Cinder。 支持NFS, Local Storage, iSCSI 和 Ceph </td>
     </tr>
     <tr>
-      <td>L3 Network</td>
-      <td>Subnets with network services</td>
+      <td>备份存储</td>
+      <td>用于存放虚拟机镜像文件的存储。如果加上镜像文件，就相当于OpenStack的Glance。 支持Sftp 和 Ceph</td>
+    </tr>
+    <tr>
+      <td>镜像</td>
+      <td>用于创建虚拟机磁盘卷的模板文件。如果加上备份存储，就像当于OpenStack的Glance。支持raw, Qcow2 和 ISO.</td>
+    </tr>
+    <tr>
+      <td>磁盘卷</td>
+      <td>虚拟机磁盘卷</td>
+    </tr>
+    <tr>
+      <td>磁盘卷快照</td>
+      <td>虚拟机的磁盘卷快照</td>
     </tr>
     
     <tr>
-      <td rowspan=6>Network Services</td>
+      <td rowspan=2>网络</td>
+      <td>二层网络</td>
+      <td>二层广播域，用于隔离网络通讯。支持VLAN和非VLAN</td>
+    </tr>
+    <tr>
+      <td>三层网络</td>
+      <td>子网以及各种网络服务</td>
+    </tr>
+    
+    <tr>
+      <td rowspan=7>网络服务</td>
       <td>DHCP</td>
       <td></td>
     </tr>
@@ -177,29 +177,39 @@
     </tr>
     <tr>
       <td>SNAT</td>
-      <td>Source NAT</td>
+      <td>源地址转换</td>
     </tr>
     <tr>
-      <td>Elastic Port Forwarding</td>
-      <td>Port forwarding rules that can be bound to virtual machines dynamically</td>
+      <td>动态端口转发</td>
+      <td>设置端口转发规则可以把网络包动态转发给不同的虚拟机的不同端口</td>
     </tr>
     <tr>
       <td>EIP</td>
-      <td>Similar to Amazon EC2 elastic IP</td>
+      <td>类似于 Amazon EC2 elastic IP</td>
     </tr>
     <tr>
-      <td>Security Group</td>
-      <td>A distributed firewall. Similar to Amazon EC2 security group</td>
+      <td>安全组</td>
+      <td>分布式防火墙。类似于Amazon EC2 security group</td>
+    </tr>
+    <tr>
+      <td>动态负载均衡</td>
+      <td>类似于Amazon EC2 Elastic Load Balancer</td>
     </tr>
     
     <tr>
-      <td rowspan=2>Configurations</td>
-      <td>Instance Offering</td>
-      <td>A specification for creating virtual machines. Similar to OpenStack flavor</td>
+      <td>账号系统</td>
+      <td>账号管理</td>
+      <td>针对账户、用户的资源权限管理系统。类似于Amazon IAM</td>
+    </tr>
+
+    <tr>
+      <td rowspan=2>配置</td>
+      <td>实例方案</td>
+      <td>虚拟机的资配置清单。类似于OpenStack flavor</td>
     </tr>
     <tr>
-      <td>Disk Offering</td>
-      <td>A specification for creating volumes</td>
+      <td>磁盘卷方案</td>
+      <td>虚拟机磁盘卷的大小配置</td>
     </tr>
   </tbody>
 </table>
@@ -211,25 +221,25 @@
   <div class="container zstack-footer-before zstack-footer-after">
     <div class="row zstack-footer-links">
       <div class="col-sm-3 col-sm-offset-1">
-        <p class="footer-text-title">Community</p>
+        <p class="footer-text-title">社区</p>
         <ul class="footer-ul">
-          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
-          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
-          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
-          <li>Gitter</li>
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> 订阅邮件组</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">社区介绍</a></li>
+          <li><a class="footer-text-link" href="/cn/misc/qq.html">QQ群</li>
+          <li><a class="footer-text-link" href="/cn/misc/wechat.html">微信订阅号</a></li>
         </ul>
       </div>
       <div class="col-sm-3">
-        <p class="footer-text-title">Resources</p>
+        <p class="footer-text-title">资源</p>
         <ul class="footer-ul">
-          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
-          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
-          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a></li>
-          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">安装手册</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">使用教程</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli命令行工具</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">新闻博客</a></li>
         </ul>
       </div>
       <div class="col-sm-4">
-        <p class="footer-text-title">Connect Us</p>
+        <p class="footer-text-title">联系我们</p>
         <ul class="footer-ul">
           <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
           <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
@@ -238,7 +248,7 @@
           <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
         </ul>
         <ul class="footer-ul zstack-footer-before2">
-          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+          <li><i>ZStack 是开源的IaaS软件，其开源代码遵守 Apache 2.0 协议的规定.</i></li>
         </ul>
       </div>
     </div>
@@ -246,7 +256,7 @@
 </div>
 <div class="footer-last">
   <div>
-      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+      <i><b>我们非常重视您的观点，请把您的想法告诉我们。 &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
   </div>
 </div>
 
