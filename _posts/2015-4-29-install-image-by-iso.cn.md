@@ -14,6 +14,10 @@ ZStack解决了这个麻烦，提供了非常便捷的安装方式。如果用�
 
 第一，用户需要把系统安装ISO，通过Image菜单添加到ZStack的备份存储中。（ZStack all in one 安装的时候如果选择了-a参数，会把/usr/local/zstack/http_root作为httpd的目录，用户可以把ISO文件放在这个目录里，访问的方法是http://localhost/image/YOUR_ISO_NAME。）**不过我们还是强烈建议用户自己创建一个httpd的服务器，把自己用于安装的ISO放到这个服务器里面，以后可以长期使用。**
 
+需要注意的是，在添加ISO的时候，如果添加的是Windows的ISO，那么在Platform的地方请选择Windows。
+否则你的Windows安装程序会因为缺少virtio driver而找不到磁盘。当你你可以在安装好Windows后，添加VirtIO driver，
+[并让你的数据磁盘运行在高速的VirtIO驱动上](http://zstack.org/cn_blog/install-virtio-for-windows.html)
+
 <img  class="img-responsive"  src="/images/tutorials/iso/add-iso.png">
 
 <hr>
