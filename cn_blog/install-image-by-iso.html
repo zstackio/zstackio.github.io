@@ -127,8 +127,6 @@
 否则你的Windows安装程序会因为缺少virtio driver而找不到磁盘。当你你可以在安装好Windows后，添加VirtIO driver，
 <a href="http://zstack.org/cn_blog/install-virtio-for-windows.html">并让你的数据磁盘运行在高速的VirtIO驱动上</a></p>
 
-<p>另外在MediaType和Format两个域，均需要选择为<strong>ISO</strong>格式。</p>
-
 <p><img  class="img-responsive"  src="/images/tutorials/iso/add-iso.png"></p>
 
 <hr>
@@ -159,15 +157,15 @@
 
 <p><img  class="img-responsive"  src="/images/tutorials/iso/vm-installation.png"></p>
 
-<pre><code>**安装好系统后，请不要让虚拟机自己reboot，否则虚拟机启动后可能会无法启动刚刚安装好的系统，而是又进入了安装的界面。这个时候只需要通过ZStack UI界面把虚拟机做一次Stop和Start的操作即可。**
-</code></pre>
-
 <hr>
 
 
 <p>第六，将已经安装完毕配置完成的虚拟机stop（需要通过ZStack UI界面来stop 虚拟机）。</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/iso/vm-installation-stop-vm.png"></p>
+
+<pre><code>请在下一次启动虚拟机之前，到虚拟机的详细信息里的Volume标签下，把ISO的Image给detach掉，否则虚拟机启动后可能会无法启动刚刚安装好的系统。
+</code></pre>
 
 <hr>
 
@@ -183,20 +181,6 @@
 <p>Action成功之后，我们就会在Image的section里面看到刚刚添加的Root Volume Template了。</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/iso/create-root-template2.png"></p>
-
-<pre><code>如果使用的是CentOS操作系统，为了让使用该虚拟机的模板的云主机在启动后自动获得IP地址，那么需要在保存模板前，在安装好的虚拟机上做如下操作：
-
-    1. edit /etc/sysconfig/network-scripts/ifcfg-eth0:
-</code></pre>
-
-<pre><code>DEVICE=eth0
-TYPE=Ethernet
-ONBOOT=yes
-BOOTPROTO=dhcp
-</code></pre>
-
-<pre><code>    2. rm -f /etc/udev/rules.d/70-persistent-net.rules
-</code></pre>
 
 <hr>
 
