@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 13 Oct 2015 18:02:38 +0800</pubDate>
-    <lastBuildDate>Tue, 13 Oct 2015 18:02:38 +0800</lastBuildDate>
+    <pubDate>Tue, 13 Oct 2015 18:07:12 +0800</pubDate>
+    <lastBuildDate>Tue, 13 Oct 2015 18:07:12 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -87,6 +87,36 @@ zstack-cli ReconnectHost uuid=$host_uuid
         
         
         <category>cn_blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack Zhaitech Cooperation</title>
+        <description>&lt;h1&gt;Cooperation with the machine learning startup -- Zhaitech&lt;/h1&gt;
+
+&lt;p&gt;Today we are happy to announce that we have reached a cooperation agreement with Daqula Zhang, the CEO of the machine learning startup ZhaiTech. According the agreement, Zhaitech will choose ZStack as the unique cloud platform for their machine learning software, for both consumers and business customers; ZStack will provide the professional IaaS solution for Zhaitech, helping setup the on-premise cloud services.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 11 Oct 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/blog/zhaitech.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/zhaitech.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack Zhaitech Cooperation</title>
+        <description>&lt;h1&gt;Cooperation with the machine learning startup -- Zhaitech&lt;/h1&gt;
+
+&lt;p&gt;Today we are happy to announce that we have reached a cooperation agreement with Daqula Zhang, the CEO of the machine learning startup ZhaiTech. According the agreement, Zhaitech will choose ZStack as the unique cloud platform for their machine learning software, for both consumers and business customers; ZStack will provide the professional IaaS solution for Zhaitech, helping setup the on-premise cloud services.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 11 Oct 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/zhaitech.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/zhaitech.html</guid>
+        
+        
+        <category>blog</category>
         
       </item>
     
@@ -1629,36 +1659,6 @@ zstack-ctl upgrade_management_node --war-file zstack.war
         <pubDate>Sun, 13 Sep 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn/blog/v0.9.html</link>
         <guid isPermaLink="true">http://zstack.org/cn/blog/v0.9.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack Zhaitech Cooperation</title>
-        <description>&lt;h1&gt;Cooperation with the machine learning startup -- Zhaitech&lt;/h1&gt;
-
-&lt;p&gt;Today we are happy to announce that we have reached a cooperation agreement with Daqula Zhang, the CEO of the machine learning startup ZhaiTech. According the agreement, Zhaitech will choose ZStack as the unique cloud platform for their machine learning software, for both consumers and business customers; ZStack will provide the professional IaaS solution for Zhaitech, helping setup the on-premise cloud services.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Sep 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/cooperation-with-Zhaitech.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/cooperation-with-Zhaitech.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack Zhaitech Cooperation</title>
-        <description>&lt;h1&gt;Cooperation with the machine learning startup -- Zhaitech&lt;/h1&gt;
-
-&lt;p&gt;Today we are happy to announce that we have reached a cooperation agreement with Daqula Zhang, the CEO of the machine learning startup ZhaiTech. According the agreement, Zhaitech will choose ZStack as the unique cloud platform for their machine learning software, for both consumers and business customers; ZStack will provide the professional IaaS solution for Zhaitech, helping setup the on-premise cloud services.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Sep 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/cooperation-with-Zhaitech.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/cooperation-with-Zhaitech.html</guid>
         
         
         <category>blog</category>
