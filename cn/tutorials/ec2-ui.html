@@ -456,7 +456,7 @@ passwd root</code></pre>
 <li>选择媒体类型为'RootVolumeTemplate'</li>
 <li>选择平台'Linux'</li>
 <li>输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2</li>
-<li><strong>勾选'System'</strong></li>
+<li><strong>勾选'System'（非虚拟路由器的普通Image不能选择System，否则该Image无法用于创建虚拟机）</strong></li>
 <li>点击'Add'</li>
 </ol>
 
@@ -564,7 +564,7 @@ passwd root</code></pre>
 <li>选择二层网络(PUBLIC-MANAGEMENT-L2)</li>
 <li>给三层网络取名为'PUBLIC-MANAGEMENT-L3'</li>
 <li>选择类型'L3BasicNetwork'</li>
-<li>选择'system network'</li>
+<li>勾选'system network'（普通L3网络不能选择System，否则该L3将无法用于创建虚拟机）</li>
 <li>点击'Next'</li>
 </ol>
 
