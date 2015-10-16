@@ -291,7 +291,7 @@ passwd root</code></pre>
 4. 选择媒体类型为'RootVolumeTemplate'
 5. 选择平台'Linux'
 6. 输入下载地址 {{site.vr_ch}}
-7. **勾选'System'**
+7. **勾选'System'（非虚拟路由器的普通Image不能选择System，否则该Image无法用于创建虚拟机）**
 8. 点击'Add'
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
