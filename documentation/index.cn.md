@@ -50,6 +50,14 @@ ZStack工具的使用方法、全局配置、系统标签、以及详尽的API�
 
 <hr>
 
+<h3><i class="fa fa-share-square-o">&nbsp; 演讲幻灯片</i></h3>
+
+[私有云请做减法](/misc/virtualization-plus-it168-2015.pdf) -- it168 2015中国架构师大会 10月。
+
+[IaaS软件架构设计](/misc/iaas-design-cloud-connect-2015.pdf) -- Cloud Connect 2015 上海站 9月。
+
+<hr>
+
 <h3><i class="fa fa-cube">&nbsp; 架构设计</i></h3>
 
 点击[这里](https://docs.google.com/presentation/d/1mslQwl373-pZKuzZEbIIPd1mHG2ythI3RoyCVKRSeS8/edit?usp=sharing) 了解ZStack的架构奥秘。
