@@ -230,7 +230,7 @@
 <p>打通eth0.10到eth0的网络：</p>
 
 <ol>
-<li>iptables -A POSTROUTING -o eth0 -j MASQUERADE</li>
+<li>iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE</li>
 <li>iptables -A FORWARD -i eth0.10 -j ACCEPT</li>
 <li>iptables -A FORWARD -i br_eth0.10 -j ACCEPT</li>
 </ol>
