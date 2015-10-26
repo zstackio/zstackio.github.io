@@ -112,7 +112,7 @@ eth0.10的创建方法：
 
 打通eth0.10到eth0的网络：
 
- 1. iptables -A POSTROUTING -o eth0 -j MASQUERADE
+ 1. iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
  2. iptables -A FORWARD -i eth0.10 -j ACCEPT
  3. iptables -A FORWARD -i br_eth0.10 -j ACCEPT
 

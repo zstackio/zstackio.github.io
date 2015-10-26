@@ -11,6 +11,13 @@ ZStack的源代码托管在GitHub上，您可以clone和提交你的贡献。如
 
 <hr>
 
+## 演讲幻灯片
+
+[私有云请做减法](/misc/virtualization-plus-it168-2015.pdf)it168 2015中国架构师大会 10月。
+
+[IaaS软件架构设计](/misc/iaas-design-cloud-connect-2015.pdf) -- Cloud Connect 2015 上海站 9月。
+
+<hr>
 ## 邮件组
 
 <h3><i class="fa fa-google">&nbsp; ZStack Google Groups邮件组</i></h3>
