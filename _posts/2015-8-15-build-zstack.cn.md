@@ -36,13 +36,11 @@ git clone https://github.com/zstackorg/zstack-dashboard.git
 </code></pre>
 
 ***
-## 下载安装编译依赖
+## 设置安装编译依赖
 编译OS最好是在CentOS6.6或者CentOS7.1里进行。在编译之前，需要确保系统上已经安装了ant，maven，java-1.7.0-openjdk-devel，bzip2，gzip等工具。
 另外由于ZStack核心是Java代码，里面需要很多maven的依赖库，但是很多maven的依赖库的第一选择都是放在google管理的软件仓库。
-由于总所周知的原因，会导致第一次编译ZStack的时候异常缓慢，甚至是无法通过。不过maven的.m2/库是可以在不同机器上共享的。
-我们在百度云盘里放置了一份编译的依赖包：http://pan.baidu.com/s/1eQvUmWU。
-大家下载之后，可以根据说明，把依赖库的内容放到/root/.m2 的目录里即可（随着ZStack的开发，ZStack可能会引入一些新的库文件，
-有可能在编译新的ZStack的时候，还是会遇到动态下载少量的依赖包，不过由于新的依赖包数量不多，所以下载速度应该可以接收）。
+由于总所周知的原因，会导致第一次编译ZStack的时候异常缓慢，甚至是无法通过。大家可以通过设置maven的国内镜像来解决这个问题。
+解决的办法可以看oschina的blog：http://blog.csdn.net/pzw_0612/article/details/46482767
 
 另外如果有条件，大家也可以使用http代理服务器加速maven依赖包的下载，设置的方法可以参考：https://maven.apache.org/guides/mini/guide-proxies.html
 
