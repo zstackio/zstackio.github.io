@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack 文档</title>
+    <title>ZStack - ZStack FAQ</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -31,6 +31,175 @@
     <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
 
 </head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/cn/">主 页</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-3" style="margin-top: 25px">
+      <ul class="nav nav-pills nav-stacked left-slider">
+        <ol>
+          
+          <li><a href="#q1">Q1. 管理节点重启后，如何重新启动ZStack Management Node</a></li>
+          
+          <li><a href="#q2">Q2.管理节点IP地址变化了該怎麼辦?</a></li>
+          
+          <li><a href="#q3">Q3.如何更改UI的Admin密码?</a></li>
+          
+          <li><a href="#q4">Q4.如何手动启动ZStack管理节点</a></li>
+          
+          <li><a href="#q5">Q5.如何手动延长ZStack管理节点启动时间</a></li>
+          
+          <li><a href="#q6">Q6.手動ZStack UI管理界面</a></li>
+          
+          <li><a href="#q7">Q7.Vmware ESXi設定嵌套虚拟化的虚拟机</a></li>
+          
+          <li><a href="#q8">Q8.如何重新安装ZStack</a></li>
+          
+          <li><a href="#q9">Q9.VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败</a></li>
+          
+        </ol>
+      </ul>
+    </div>
+    <div class="col-xs-9 tutorial">
+      <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
+
+
+<p>管理节点重启后，用户只需要做三步：</p>
+
+<p>1, ｀zstack-ctl start_node｀</p>
+
+<p>2, ｀zstack-ctl start_ui｀</p>
+
+<p>3, 进入UI界面 找到VirtualRouter 点击 action->start</p>
+
+<hr />
+
+<h2 id='q2'> Q2.管理节点IP地址变化了该怎么办? </h2>
+
+
+<p>到管理节点上运行｀zstack-ctl status｀ 就知道zstack.properties在哪個路徑。</p>
+
+<p>编辑zstack.properties里所有老IP的IP地址，換成新IP地址。</p>
+
+<p>修改完毕后，重启ZStack管理节点：</p>
+
+<p>｀ zstack-ctl stop_node; zstack-ctl start_node｀</p>
+
+<hr />
+
+<h2 id='q3'>Q3.如何更改UI的Admin密码? </h2>
+
+
+<p>在管理节点上运行如下命令(如果password已經更改，請用改過的密碼替換password):</p>
+
+<p>｀zstack-cli LogInByAccount accountName=admin password=password｀</p>
+
+<p>然后运行如下命令（NEW_PASSWORD 就是新要使用的密码）：
+｀zstacl-cli UpdateAccount uuid=36c27e8ff05c4780bf6d2fa65700f22e password=NEW_PASSWORD｀</p>
+
+<hr />
+
+<h2 id='q4'>Q4.如何手动启动ZStack管理节点</h2>
+
+
+<p>zstack-ctl start_node</p>
+
+<hr />
+
+<h2 id='q5'>Q5.如何手动延长ZStack管理节点启动时间</h2>
+
+
+<p>如果用户在虚拟机中运行ZStack，很可能会遇到启动超时失败，例如系统提示：</p>
+
+<p>no management-node-ready message received within 120 seconds, please check error in log file /tmp/zstack_installation.log</p>
+
+<p>如果之后运行 ｀zstack-ctl status｀ 又显示ZStack为Running的状态，那么可以试用如下的参数直接增加timeout的时间：</p>
+
+<p>zstack-ctl start_node --timeout 300</p>
+
+<hr />
+
+<h2 id='q6'>Q6.手動ZStack UI管理界面</h2>
+
+
+<p><code>zstack-ctl start_ui</code></p>
+
+<hr />
+
+<h2 id='q7'>Q7.Vmware ESXi設定嵌套虚拟化的虚拟机</h2>
+
+
+<p>有两个方法：</p>
+
+<p>一，登陆 VMware ESXi 控制台打开 VMware ESXi 5.0 的 SSH 服务（默认 SSH 服务是关闭的），然后用 ssh 登陆 VMware ESXi 后在 config 文件 （vi /etc/vmware/config）中最后加入 vhv.enable = “TRUE” 一行。</p>
+
+<p>这个做掉后需要重启 ESXi，之后启动的虚拟机都会支持。</p>
+
+<p>二，如果不能重启整改ESXi，就通过vphere 下载想要设置嵌套虚拟化的虚拟机的 config文件（xxx.vmx) 然后在这个文件的最后加上 vhv.enable = "TRUE" 一行。做这个操作前，需要停止这个虚拟机。加上设置后，再把修改的config，拷贝覆盖原有配置文件，重新启动虚拟机。</p>
+
+<p>資料來源:http://www.oschina.net/question/54100_43989</p>
+
+<hr />
+
+<h2 id='q8>Q8.如何重新安装ZStack</h2>
+
+
+<p>删除千万小心，如果需要彻底重装ZStack，只需要两步：</p>
+
+<p>｀rm -rf /usr/local/zstack｀</p>
+
+<p>ALL_IN_ONE.tgz是用户预先下载的ZStack All In One Package。</p>
+
+<p>｀bash zstack-install.sh -a -D -f ALL_IN_ONE.tgz｀</p>
+
+<hr />
+
+<h2 id='q9>Q9.在VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败</h2>
+
+
+<p>需要在VMware的VSwitch设备上打开混杂模式，以及Vlan号。</p>
+
+    </div>
+  </div>
+</div>
 
 <script src="/js/jquery-1.9.1.js"></script>
 <script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
@@ -71,210 +240,6 @@
   });
 </script>
 
-<body>
-<nav id="header" class="navbar navbar-default" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="/">ZStack</a>
-        </div>
-
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li id="navHome"><a href="/cn/">主 页</a></li>
-                <li id="navInstallation">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
-                  <ul class="dropdown-menu" role="menu">
-                    <li><a href="/cn/installation/">一键安装</a></li>
-                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
-                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
-                  </ul>
-                </li>
-                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
-                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
-                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
-                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
-                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
-                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-
-<div class="container doc big-font">
-  <h2>
-<i class="fa fa-university">&nbsp; ZStack文档</i>
-</h2>
-
-
-
-
-<h3><i class="fa fa-cogs">&nbsp; 安装手册</i></h3>
-
-
-<p>最快的方式：<a href="../installation/index.html">一键安装</a>.</p>
-
-<p>如果希望部署生产环境： <a href="../installation/manual.html">手动安装</a>.</p>
-
-<p>如果希望搭建多节点高可靠性环境： <a href="../installation/multi-node.html">多节点安装</a>.</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-book">&nbsp; 启动ZStack</i></h3>
-
-
-<p><a href="getstart-quick.html">一键安装后，快速使用ZStack</a>.</p>
-
-<p><a href="getstart-manual.html">手动安装后，启动ZStack</a>.</p>
-
-<p><a href="getstart-multi.html">多节点安装后，启动ZStack</a>.</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-archive">&nbsp; 教程</i></h3>
-
-
-<p>探索6大经典IaaS模型、及更多的部署ZStack的方式，仅需要一台Linux服务器，请访问<a href="../tutorials">教程</a>。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-question-circle">&nbsp; FAQ</i></h3>
-
-
-<p>遇到一些使用问题，可以看看我们的常见问题<a href="./faq.html">FAQ</a>。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-user">&nbsp; 用户手册</i></h3>
-
-
-<p><a href="http://zstackdoc.readthedocs.org/en/latest/">用户手册</a> 完整的介绍了ZStack各个功能和模块、
-ZStack工具的使用方法、全局配置、系统标签、以及详尽的API功能和参数。如果想要进行二次开放集成，用户手册将是你的红宝书。</p>
-
-<p>如何调用ZStack命令行命令，请访问<a href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a>.</p>
-
-<p>如何调用各种ZStack Query API查询IaaS系统的各种资源，请访问：<a href="http://zstackdoc.readthedocs.org/en/latest/userManual/query.html">ZStack查询系统</a>.</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-building-o">&nbsp; 功能列表</i></h3>
-
-
-<p>点击<a href="features-matrix.html">这里</a>来获取当前ZStack版本的各项功能。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-share-square-o">&nbsp; 演讲幻灯片</i></h3>
-
-
-<p><a href="/misc/virtualization-plus-it168-2015.pdf">私有云请做减法</a> -- it168 2015中国架构师大会 10月。</p>
-
-<p><a href="/misc/iaas-design-cloud-connect-2015.pdf">IaaS软件架构设计</a> -- Cloud Connect 2015 上海站 9月。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-cube">&nbsp; 架构设计</i></h3>
-
-
-<p>点击<a href="https://docs.google.com/presentation/d/1mslQwl373-pZKuzZEbIIPd1mHG2ythI3RoyCVKRSeS8/edit?usp=sharing">这里</a> 了解ZStack的架构奥秘。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-exclamation-triangle">&nbsp; 疑问</i></h3>
-
-
-<p><a href="troubles/index.html">Troubleshooting</a> 列举了一些用户在使用过程中，可能遇到的但非ZStack本身的问题。</p>
-
-<hr>
-
-
-
-
-<h3><i class="fa fa-pencil">&nbsp; 博客</i></h3>
-
-
-<p>访问我们的 <a href="/cnr/blog/">博客</a>来获取各种ZStack的新闻、用法，更有堪称ZStack架构设计之谜的16篇经典博文：</p>
-
-<h4>可伸缩性:</h4>
-
-<p><a href="../blog/asynchronous-architecture.html">ZStack's Scalability Secrets Part 1: Asynchronous Architecture</a></p>
-
-<p><a href="../blog/stateless-clustering.html">ZStack's Scalability Secrets Part 2: Stateless Services</a></p>
-
-<p><a href="../blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></p>
-
-<h4>插件系统:</h4>
-
-<p><a href="../blog/microservices.html">The In-Process Microservices Architecture</a></p>
-
-<p><a href="../blog/plugin.html">The Versatile Plugin System</a></p>
-
-<p><a href="../blog/tag.html">The Tag System</a></p>
-
-<p><a href="../blog/workflow.html">The Workflow Engine</a></p>
-
-<p><a href="../blog/cascade.html">The Cascade Framework</a></p>
-
-<h4>查询 API:</h4>
-
-<p><a href="../blog/query.html">The Query API</a></p>
-
-<h4>自动化:</h4>
-
-<p><a href="../blog/ansible.html">Full Automation By Ansible</a></p>
-
-<h4>存储和网络:</h4>
-
-<p><a href="../blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></p>
-
-<p><a href="../blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></p>
-
-<p><a href="../blog/storage.html">Storage Model: Primary Storage and Backup Storage</a></p>
-
-<h4>测试:</h4>
-
-<p><a href="../blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></p>
-
-<p><a href="../blog/system-testing.html">The Automation Testing System 2: System Testing</a></p>
-
-<p><a href="../blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></p>
-
-<hr>
-
-
-
-
-</div>
 
 <div id="footer">
   <div class="container zstack-footer-before zstack-footer-after">
@@ -318,7 +283,6 @@ ZStack工具的使用方法、全局配置、系统标签、以及详尽的API�
       <i><b>我们非常重视您的观点，请把您的想法告诉我们。 &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
   </div>
 </div>
-
 
 </body>
 
