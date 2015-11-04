@@ -33,6 +33,12 @@ layout: docPage.cn
 
 <hr>
 
+<h3><i class="fa fa-question-circle">&nbsp; FAQ</i></h3>
+
+遇到一些使用问题，可以看看我们的常见问题[FAQ](./faq.html)。
+
+<hr>
+
 <h3><i class="fa fa-user">&nbsp; 用户手册</i></h3>
 
 [用户手册](http://zstackdoc.readthedocs.org/en/latest/) 完整的介绍了ZStack各个功能和模块、
