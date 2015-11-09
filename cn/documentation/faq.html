@@ -95,6 +95,10 @@
           
           <li><a href="#q9">Q9.VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败</a></li>
           
+          <li><a href="#q10">Q10.计算节点的IP是内网IP，管理节点IP有公网和内网，怎么通过管理节点连接VM的console</a></li>
+          
+          <li><a href="#q11">Q11.Windows VM 怎么设置使用VirtIO</a></li>
+          
         </ol>
       </ul>
     </div>
@@ -179,23 +183,53 @@
 
 <hr />
 
-<h2 id='q8>Q8.如何重新安装ZStack</h2>
+<h2 id='q8'>Q8.如何重新安装ZStack</h2>
 
 
 <p>删除千万小心，如果需要彻底重装ZStack，只需要两步：</p>
 
-<p>｀rm -rf /usr/local/zstack｀</p>
+<p><code>rm -rf /usr/local/zstack</code></p>
 
 <p>ALL_IN_ONE.tgz是用户预先下载的ZStack All In One Package。</p>
 
-<p>｀bash zstack-install.sh -a -D -f ALL_IN_ONE.tgz｀</p>
+<p><code>bash zstack-install.sh -a -D -f ALL_IN_ONE.tgz</code></p>
 
 <hr />
 
-<h2 id='q9>Q9.在VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败</h2>
+<h2 id='q9'>Q9.在VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败</h2>
 
 
 <p>需要在VMware的VSwitch设备上打开混杂模式，以及Vlan号。</p>
+
+<hr />
+
+<h2 id='q10'> Q10.计算节点的IP是内网IP，管理节点IP有公网和内网，怎么通过管理节点连接VM的console</h2>
+
+
+<p>如果管理节点上有公网IP地址和私网IP地址，但是Host的IP地址为私网IP地址。这个时候需要在管理节点上做个设置，才可以访问实例（Instance）的控制台（console）。
+我们假设管理节点公网IP地址是'150.20.150.21'</p>
+
+<p><code>zstack-ctl configure consoleProxyOverriddenIp=150.20.150.21</code></p>
+
+<p>然后重启ZStack：</p>
+
+<p><code>zstack-ctl stop_node</code></p>
+
+<p><code>zstack-ctl start_node</code></p>
+
+<hr />
+
+<h2 id='q11'> Q11.Windows VM 怎么设置使用VirtIO </h2>
+
+
+<p>ZStack 默认创建Windows虚拟机的根磁盘使用IDE，而数据磁盘使用VirtIO。当用户给Windows虚拟机安装了VirtIO驱动后，
+也可以让Windows虚拟机的根磁盘使用VirtIO设备。方法是给该虚拟机添加一条系统标签：</p>
+
+<p><code>zstack-cli CreateSystemTag resourceType=VmInstanceVO resourceUuid=TARGET_VM_UUID tag=windows::virtioVolume</code></p>
+
+<p>关于如何给Windows VM 安装 VirtIO driver，请看<a href="/cn_blog/install-virtio-for-windows.html">博客</a></p>
+
+<hr />
 
     </div>
   </div>
