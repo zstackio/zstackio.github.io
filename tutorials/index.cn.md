@@ -15,27 +15,6 @@ layout: tutorialPage.cn
     <b>此外，我们还准备了大量的<a href="http://so.iqiyi.com/so/q_zstack?source=input&sr=1026211706497">视频教程</a>，大家可以点击观看。</b>
     </p>
   </div>
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/eip.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
-      <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
-      <p>
-        <a href="ec2-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="ec2-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
-</div>
-
-
-<div  style="background: #f7f7f7">
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -49,6 +28,28 @@ layout: tutorialPage.cn
             图形界面版本
           </a>
           <a href="flat-network-cli.html" class="btn btn-default" role="button">
+            命令行版本
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div  style="background: #f7f7f7">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <img class="img-responsive" src="/images/eip.png">
+      </div>
+      <div class="col-sm-6" style="padding-top: 50px">
+        <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
+        <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
+        <p>
+          <a href="ec2-ui.html" class="btn btn-primary" role="button">
+            图形界面版本
+          </a>
+          <a href="ec2-cli.html" class="btn btn-default" role="button">
             命令行版本
           </a>
         </p>
