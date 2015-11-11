@@ -5,9 +5,87 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 11 Nov 2015 13:41:04 +0800</pubDate>
-    <lastBuildDate>Wed, 11 Nov 2015 13:41:04 +0800</lastBuildDate>
+    <pubDate>Thu, 12 Nov 2015 00:06:36 +0800</pubDate>
+    <lastBuildDate>Thu, 12 Nov 2015 00:06:36 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack 助力PaaS／SaaS 高效集成IaaS －－ ZStack云环境的快速备份和还原</title>
+        <description>&lt;p&gt;ZStack的快速安装能力解决了传统基础架构即服务软件部署过程过于繁琐的问题。不过安装IaaS软件本身只是第一步。
+安装ZStack之后，用户还需要在ZStack上添加计算、存储、网络等相关资源，才能创建云主机。如果用户需要反复的测试部署云环境的过程，例如：&lt;/p&gt;
+
+&lt;p&gt;1，给不同的客户演示ZStack的环境的使用过程
+2，PaaS和SaaS产品，需要集成ZStack作为IaaS管控层。在搭建PaaS／SaaS私有云的过程中，快速搭建ZStack云环境。&lt;/p&gt;
+
+&lt;p&gt;ZStack已经充分的考虑了PaaS／SaaS用户的快速集成，以及需要经常的搭建演示相同的ZStack环境的需求。
+对此，ZStack提供了备份和还原云的能力。用户只需要把当前搭建好的云环境备份到一个xml文件中，
+之后就可以在一个新装的ZStack环境里使用该xml文件快速还原云环境。&#39;&#39;&#39;这一切都要归功于ZStack的全API交付能力&#39;&#39;&#39;。
+所谓IaaS API的全交付能力，就是指通过API便可以创建IaaS所需要的全部资源。&lt;/p&gt;
+
+&lt;p&gt;下面我们就来看一看ZStack的备份和还原云是怎么操作的。&lt;/p&gt;
+
+&lt;p&gt;假设我们已经搭建了ZStack，并且配置了一个可以创建虚拟机的云环境。那么备份当前云环境的命令非常简单：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;首先你需要用zstack-cli登录zstack环境（如果没有更改过密码，密码就是password）：&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;zstack-cli LogInByAccount accountName=admin password=password&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如果IaaS已经部署（或者部署了一部分，例如你可以只部署到下载完Image Template和添加完主存储和备份存储的相关操作。
+那么下次还原的时候，也可以是恢复一个IaaS云环境的中间状态），就可以用下面的命令来备份云环境到一个xml文件中去，
+备份的参数是 &#39;-D&#39; （切勿和还原的小 &#39;-d&#39; 搞混淆，每次执行命令前也可以使用&#39;-h&#39;查看）：&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;zstack-cli -D /tmp/ec2-cloud.xml&lt;/p&gt;
+
+&lt;p&gt;dump好的xml文件的内容是这样的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/blogs/dump-zstack/dump-xml.png&quot;&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;需要注意的是zstack-cli在备份云环境的时候，调用的是Query相关的API。由于Query API无法取到两个重要信息的：
+&#39;&#39;&#39;Host的用户名和密码，SftpBackupStorage的用户名和密码&#39;&#39;&#39;，所以这两个信息需要用户手动添加，不过手动编辑一下还是非常简单的：&lt;/p&gt;
+
+&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/blogs/dump-zstack/dump-xml2.png&quot;&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;ol&gt;
+&lt;li&gt;还原IaaS环境前，为了保证一个干净的环境，请务必停止ZStack server，重新初始化数据库，和再重启ZStack server
+(如果是全新安装的ZStack，可以跳过这步。)：&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;&lt;code&gt;zstack-ctl stop_node&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;zstack-ctl deploydb --host=YOUR_DB_IP_ADDRESS --drop&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;使用下面这条命令来还原IaaS环境：&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;zstack-cli -d /tmp/ec2-cloud.xml&lt;/p&gt;
+
+&lt;p&gt;如果用户的image是放在本地的，整个还原过程会非常快速（例如小于1分钟）。&lt;/p&gt;
+
+&lt;p&gt;有了云环境的快速备份和还原，ZStack是不是非常适合我们的PaaS和SaaS软件集成呢？ZStack欢迎和各种PaaS和SaaS的应用服务公司合作。&lt;/p&gt;
+</description>
+        <pubDate>Wed, 11 Nov 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/zstack-dump-and-redeploy-cloud.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-dump-and-redeploy-cloud.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>更新计算节点和备份存储的密码</title>
@@ -1662,44 +1740,6 @@ zstack-ctl upgrade_management_node --war-file zstack.war
         
         
         <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack登录台湾——第一个繁体中文网站 zstack.tw 上线</title>
-        <description>&lt;p&gt;近日，来自台湾的&lt;strong&gt;百原科技公司&lt;/strong&gt;推出了第一个&lt;strong&gt;ZStack繁体中文网站&lt;/strong&gt; &lt;code&gt;http://zstack.tw&lt;/code&gt; 。
-该网站是继ZStack社区官网之后，世界上第二个以ZStack为主题的网站。
-目前虽然该网站的主要内容来自于ZStack官网，但是通过百原工程师对网站内容进行繁体中文的加工，
-辅以修改了部分IT用词之后，使得该网站更符合台、港、澳以及部分海外地区中文用户的阅读使用习惯，大大方便他们学习和使用ZStack。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/zstack_tw/zstack_tw.png&quot;&gt;&lt;/p&gt;
-
-&lt;hr&gt;
-
-
-&lt;p&gt;台湾百原科技是一家网络科技公司。他们在服务器虚拟化、
-云计算解决方案（ZStack、seafile、Docker、KVM、VMWare、Xen、Hyper-V）、SaaS（Citrix XenApp），
-分布式存储（GlusterFS、Ceph、Rockstor）等领域有深厚的实战经验。
-他们客户的需求主要覆盖了信息安全，网络购物、以及云端商城建设。
-百原科技也曾使用过OpenStack和CloudStack的解决方案，不过ZStack的方便快捷的能力更加合适该公司的发展方向。
-基于以往的实战经验，他们快速的构建了ZStack解决方案，并开始在台湾地区推广ZStack项目。&lt;/p&gt;
-
-&lt;p&gt;ZStack社区期待ZStack可以帮助台港澳地区云计算的发展和普及，
-并期望ZStack的社区活动&lt;strong&gt;台湾站&lt;/strong&gt;能够在今年晚些时候顺利成行。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;相关链接：&lt;/strong&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; ZStack台灣http://www.zstack.tw
- 百原公司官网：http://www.baiyuan.com.tw
- 联系方式info@baiyuan.com.tw
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Tue, 01 Sep 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/zstack-tw-online.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-tw-online.html</guid>
-        
-        
-        <category>cn_blog</category>
         
       </item>
     
