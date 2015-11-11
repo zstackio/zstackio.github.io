@@ -5,27 +5,29 @@ sections:
   - id: q1
     title: Q1. 管理节点重启后，如何重新启动ZStack Management Node
   - id: q2
-    title: Q2.管理节点IP地址变化了該怎麼辦?
+    title: Q2. 管理节点IP地址变化了該怎麼辦?
   - id: q3
-    title: Q3.如何更改UI的Admin密码?
+    title: Q3. 如何更改UI的Admin密码?
   - id: q4
-    title: Q4.如何手动启动ZStack管理节点
+    title: Q4. 如何手动启动ZStack管理节点
   - id: q5
-    title: Q5.如何手动延长ZStack管理节点启动时间
+    title: Q5. 如何手动延长ZStack管理节点启动时间
   - id: q6
-    title: Q6.手動ZStack UI管理界面
+    title: Q6. 手動ZStack UI管理界面
   - id: q7
-    title: Q7.Vmware ESXi設定嵌套虚拟化的虚拟机
+    title: Q7. Vmware ESXi設定嵌套虚拟化的虚拟机
   - id: q8
-    title: Q8.如何重新安装ZStack
+    title: Q8. 如何重新安装ZStack
   - id: q9
-    title: Q9.VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败
+    title: Q9. VMWare的嵌套虚拟化的虚拟机里创建ZStack的VR VM失败
   - id: q10
-    title: Q10.计算节点的IP是内网IP，管理节点IP有公网和内网，怎么通过管理节点连接VM的console
+    title: Q10. 计算节点的IP是内网IP，管理节点IP有公网和内网，怎么通过管理节点连接VM的console
   - id: q11
-    title: Q11.Windows VM 怎么设置使用VirtIO
-
-
+    title: Q11. Windows VM 怎么设置使用VirtIO
+  - id: q12
+    title: Q12. ZStack 报告主、备份存储容量和物理机上看到的容量不一致
+  - id: q13
+    title: Q13. 计算节点是内网IP，如何通过管理节点上的公网IP连接虚拟机的console 
 
 ---
 
@@ -143,6 +145,34 @@ ZStack 默认创建Windows虚拟机的根磁盘使用IDE，而数据磁盘使用
 `zstack-cli CreateSystemTag resourceType=VmInstanceVO resourceUuid=TARGET_VM_UUID tag=windows::virtioVolume`
 
 关于如何给Windows VM 安装 VirtIO driver，请看[博客](/cn_blog/install-virtio-for-windows.html)
+
+---
+
+<h2 id='q12'> Q12. ZStack 报告主、备份存储容量和物理机上看到的容量不一致</h2>
+
+ZStack使用的是 thin clone 模式（copy on write技术），所以VM可以很快的被创建。
+在KVM环境下，不论VM的镜像文件是10G还是100G，VM创建的时候只有一个很小的qcow2的独立文件被创建出来。
+这个qcow2文件和原始的镜像文件一起共同组成了新的VM的硬盘。当有新的数据产生的时候，该qcow2文件的大小会不断增加。
+文件大小的上限为原始VM的镜像文件的配置上限（例如10G，20G），也同VM的操作系统启动后看到的硬盘的实际大小相一致。
+由于ZStack默认不支持资源超分（超卖），所以ZStack在计算空间的时候，会按照VM使用空间的上限来扣除可用空间的数量。
+于是用户在系统上用df命令看到的可用空间可能还有很大，但是ZStack已经把VM未来可能会占用的所有空间都已经计算在内了。
+于是，就会导致用户可能看到硬盘上还有很多空间，但是不能创建虚拟机的错误。
+
+关于资源超分的支持，请联系ZStack社区获取帮助。
+
+---
+
+<h2 id='q13'> Q13. 计算节点是内网IP，如何通过管理节点上的公网IP连接虚拟机的console </h2>
+
+用户需要进行如下设置：
+
+`zstack-ctl configure consoleProxyOverriddenIp=MANAGEMENT_NODE_PUBLIC_IP_ADDRESS`
+
+并重启zstack：
+
+`zstack-ctl stop_node`
+
+`zstack-ctl start_node`
 
 ---
 
