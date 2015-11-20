@@ -470,6 +470,12 @@ click button 'New Security Group' to open the dialog:
   You can specify a CIDR(e.g. 16.16.16.0/24, 16.16.16.16/32) to restrict what traffics can access the port.
 </div>
 
+<div class="bs-callout bs-callout-info">
+  <h4>ICMP start port & end port</h4>
+  If select ICMP, the start port and end port mean ICMP type. To use '-1' for all ICMP types. 
+  For details port definition, please visit [ZStack API Doc](http://zstackdoc.readthedocs.org/en/latest/userManual/securityGroup.html#security-group-rule-inventory)
+</div>
+
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup4.png">
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
