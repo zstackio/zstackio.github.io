@@ -442,6 +442,12 @@ passwd root</code></pre>
   您也可以设置一个特别的CIDR(例如 16.16.16.0/24, 16.16.16.16/32) 来限制可以访问22端口的IP地址。
 </div>
 
+<div class="bs-callout bs-callout-info">
+  <h4>ICMP 开始结束端口</h4>
+  如果协议类型选择了ICMP，开始结束端口用于表明ICMP的类型。如果希望使用全部的ICMP类型，可以把开始和结束端口号都设置为'-1'。
+  具体关于安全组定义的详情，可以访问[ZStack API 手册](http://zstackdoc.readthedocs.org/en/latest/userManual/securityGroup.html#security-group-rule-inventory)
+</div>
+
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup4.png">
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
