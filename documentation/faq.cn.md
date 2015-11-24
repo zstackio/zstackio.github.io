@@ -62,7 +62,7 @@ sections:
 ｀zstack-cli LogInByAccount accountName=admin password=password｀
 
 然后运行如下命令（NEW_PASSWORD 就是新要使用的密码）：
-｀zstacl-cli UpdateAccount uuid=36c27e8ff05c4780bf6d2fa65700f22e password=NEW_PASSWORD｀
+｀zstack-cli UpdateAccount uuid=36c27e8ff05c4780bf6d2fa65700f22e password=NEW_PASSWORD｀
 
 ---
 

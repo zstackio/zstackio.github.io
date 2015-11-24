@@ -47,3 +47,8 @@ https://fedoraproject.org/wiki/Windows_Virtio_Drivers
 Widnows virtio驱动对detach volume支持不好，我们发现在volume detach后在windows里仍可以看到该磁盘，但操作的时候会导致系统挂起。
 建议用户在detach volume后重启windows。
 </div>
+
+8. 用户也可以把安装好VirtIO驱动的Windows image重新保存成标准模板，这样之后再创建新的Windows虚拟机就自带高速的磁盘驱动。
+这个对于使用Windows虚拟机做生产环境的用户来说非常重要。但是'''需要特别注意'''的是，由于ZStack默认给镜像类型为Windows的虚拟机使用IDE的硬盘，
+所以用户在创建安装了VirtIO驱动的Windows镜像的时候，请把'PLATFORM'选择为Linux或者Paravirtualization，
+这样ZStack在创建Windows虚拟机的时候，就会使用VirtIO的硬盘。

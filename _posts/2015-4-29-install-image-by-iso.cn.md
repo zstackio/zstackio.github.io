@@ -82,4 +82,9 @@ BOOTPROTO=dhcp
 <img  class="img-responsive"  src="/images/tutorials/iso/create-new-ubuntu-img.png">
 
 <hr>
+
+第八，关于安装Windows和相关的VirtIO驱动，用户可以访问[给Windows镜像安装VirtIO](./install-virtio-for-windows.html)
+
+<hr>
+
 Okay，打完收工。是不是觉得用ZStack安装新的虚拟机模板会很容易呢？如果你还想了解更多的试用场景，请关注ZStack的官方微信。如果你有特别的场景需求，可以把你的需求发送到ZStack中国社区的QQ群：410185063。你会得到及时的解答和帮助。
