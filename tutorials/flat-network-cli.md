@@ -473,4 +473,4 @@ you can also reach internet in the VM:
 ### Summary
 
 In this tutorial, we showed you how to create a flat network in ZStack. For more details about ZStack's L3 network, visit
-[L3 Network in user manual](http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html).
+[L3 Network in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/l3Network.html).

@@ -161,6 +161,6 @@ ZStack管理节点上的日志文件默认存放在 `/var/log/zstack/management-
     zstack-cli
     
 现在您的多节点ZStack环境已经准备完毕，您可以跟着[用户教程](../tutorials)来搭建自己的云环境了
-如果要获得更多的关于ZStack Web界面和命令行工具的使用说明，请访问我们的[用户手册](http://zdoc.readthedocs.org/en/latest/)来获取完整的帮助.
+如果要获得更多的关于ZStack Web界面和命令行工具的使用说明，请访问我们的[用户手册](http://zstackdoc.readthedocs.org/en/latest/)来获取完整的帮助.
 
 

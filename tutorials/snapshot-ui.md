@@ -637,7 +637,7 @@ expand the snapshot tree, now you should see two branches that are both derived 
 
 In this tutorial, we showed you how to create volume snapshot in ZStack. Besides reverting a volume to
 an old snapshot, you can also create image template and volumes from snapshots. For details, please visit
-[Volume Snapshot in user manual](http://zdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html).
+[Volume Snapshot in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html).
 
 
 

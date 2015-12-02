@@ -613,5 +613,5 @@ go back to OUTER-VM and ssh INNER-VM again, it should fail.
 In this tutorial, we showed you the basics of using security group. Though we only show one security group with
 one L3 network and one VM; you can actually create many security groups and attach them to different L3 networks;
 you can also put many VMs in the same security group. For more details,
-please visit [Security Group in user manual](http://zdoc.readthedocs.org/en/latest/userManual/securityGroup.html).
+please visit [Security Group in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/securityGroup.html).
 

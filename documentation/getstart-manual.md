@@ -99,5 +99,5 @@ You can launch ZStack command line tool by:
     zstack-cli
 
 Now your ZStack environment is ready, please visit [Tutorials](../tutorials) to create your first cloud deployment
-using either web UI or command line tool, or check out [User Manual](http://zdoc.readthedocs.org/en/latest/) for a full reference.
+using either web UI or command line tool, or check out [User Manual](http://zstackdoc.readthedocs.org/en/latest/) for a full reference.
 

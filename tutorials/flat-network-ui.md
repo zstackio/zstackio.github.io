@@ -530,7 +530,7 @@ repeat above steps to create vm2 and vm3. They should all get IP address and sho
 ### Summary
 
 In this tutorial, we showed you how to create a flat network in ZStack. For more details about ZStack's L3 network, visit
-[L3 Network in user manual](http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html).
+[L3 Network in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/l3Network.html).
 
 
 

@@ -17,7 +17,7 @@ To use command line tool, type `zstack-cli` on the machine that ZStack is instal
       root@ubuntu1404:~# zstack-cli
       
 Now your ZStack environment is ready, please visit [Tutorials](../tutorials) to create your first cloud deployment
-using either web UI or command line tool, or check out [User Manual](http://zdoc.readthedocs.org/en/latest/) for a full reference.
+using either web UI or command line tool, or check out [User Manual](http://zstackdoc.readthedocs.org/en/latest/) for a full reference.
 We also suggest you read [Getting Started With Manual Installation](getstart-manual.html) for useful `zstack-ctl` commands
 that can configure and control ZStack management node.
 

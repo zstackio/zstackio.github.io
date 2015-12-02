@@ -679,4 +679,4 @@ When ssh 22 port, it will be routed to VM2:
 
 In this tutorial, we showed you how to create port forwarding rules that allow public traffic to reach
 specific ports of VMs on the private L3 network. For more details, please visit
-[Elastic Port Forwarding in user manual](http://zdoc.readthedocs.org/en/latest/userManual/portForwarding.html).
+[Elastic Port Forwarding in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/portForwarding.html).

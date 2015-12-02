@@ -17,7 +17,7 @@ layout: docPage.cn
       
 现在您的ZStack操作环境已经准备就绪，请访问我们的[用户教程](../tutorials)来创建你的第一个云环境：
 
-如果要获得更多的关于ZStack Web界面和命令行工具的使用说明，请访问我们的[用户手册](http://zdoc.readthedocs.org/en/latest/)来获取完整的帮助.
+如果要获得更多的关于ZStack Web界面和命令行工具的使用说明，请访问我们的[用户手册](http://zstackdoc.readthedocs.org/en/latest/)来获取完整的帮助.
 我们也建议您可以阅读[通过手动安装来快速使用ZStack](getstart-manual.html)来了解更多的关于ZStack管控工具 `zstack-ctl` 的详细命令。
 利用zstack-ctl您可以更加自由的控制和管理ZStack的各种资源。
 

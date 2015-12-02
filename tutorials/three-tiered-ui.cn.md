@@ -738,4 +738,4 @@ passwd root</code></pre>
 
 在本教程里，我们展示了如何在ZStack里创建一个三层网络模型。仅仅作为演示，我们没有使用任何的安全组。您可以参考安全组
 的教程，并结合本教程做一个更加安全的生产环境。如果想要了解更多的细节，请访问我们的
-[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/l3Network.html).
+[用户手册](http://zstackdoc.readthedocs.org/en/latest/userManual/l3Network.html).

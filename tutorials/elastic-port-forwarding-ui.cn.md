@@ -697,4 +697,4 @@ SSH登录公网IP地址(192.168.0.240)的2222端口, 您将会登录到VM1:
 
 在本教程里，我们展示了如果创建端口映射，以及如何从公有网络上通过VIP和设定的端口映射访问私有云主机。
 尽管我们仅仅为每个VIP展示了一个端口映射的规则，但是实际上，只要分配的端口之间不冲突，
-同一个VIP可以把不同的端口分配给不同的云主机。更多关于动态端口映射的信息请访问[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/portForwarding.html).
+同一个VIP可以把不同的端口分配给不同的云主机。更多关于动态端口映射的信息请访问[用户手册](http://zstackdoc.readthedocs.org/en/latest/userManual/portForwarding.html).

@@ -616,7 +616,7 @@ passwd root</code></pre>
 
 在本教程里，我们展示了如何创建磁盘快照。除了使用快照回滚功能外，您还可以选择某个磁盘快照来创建磁盘
 镜像的模版。更多关于磁盘快照的介绍，请访问我们的
-[用户手册](http://zdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html).
+[用户手册](http://zstackdoc.readthedocs.org/en/latest/userManual/volumeSnapshot.html).
 
 
 
