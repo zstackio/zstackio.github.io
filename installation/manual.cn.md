@@ -71,11 +71,11 @@ layout: installationPage.cn
       
 <h4 style="margin-bottom:15px; margin-top:15px">使用 <i>curl</i>:</h4>
 <pre><code>curl -L {{site.install_script_en}} -o install-zstack.sh
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
       
 <h4 style="margin-bottom:15px">使用 <i>wget</i>:</h4>
 <pre><code>wget -O install-zstack.sh {{site.install_script_en}}
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
       
 <div class="bs-callout bs-callout-danger">
   <h4>注意DNS劫持</h4>

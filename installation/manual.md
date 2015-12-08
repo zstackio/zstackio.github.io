@@ -73,11 +73,11 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L {{site.install_script_en}} -o install-zstack.sh
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O install-zstack.sh {{site.install_script_en}}
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
       
       在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
       先设置好镜像repo可以大大加快安装速度。
