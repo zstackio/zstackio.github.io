@@ -5,7 +5,7 @@ sections:
   - id: q1
     title: Q1. 管理节点重启后，如何重新启动ZStack Management Node
   - id: q2
-    title: Q2. 管理节点IP地址变化了該怎麼辦?
+    title: Q2. 管理节点IP地址变化了該怎么办?
   - id: q3
     title: Q3. 如何更改UI的Admin密码?
   - id: q4
@@ -45,9 +45,8 @@ sections:
 
 <h2 id='q2'> Q2.管理节点IP地址变化了该怎么办? </h2>
 
-到管理节点上运行｀zstack-ctl status｀ 就知道zstack.properties在哪個路徑。
-
-编辑zstack.properties里所有老IP的IP地址，換成新IP地址。
+编辑zstack.properties里所有老IP的IP地址，換成新IP地址。 zstack.properties的安装路径通常在：
+/usr/local/zstack/apache-tomcat-7.0.35/webapps/zstack/WEB-INF/classes/zstack.properties
 
 修改完毕后，重启ZStack管理节点：
 
