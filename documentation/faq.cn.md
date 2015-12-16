@@ -13,7 +13,7 @@ sections:
   - id: q5
     title: Q5. 如何手动延长ZStack管理节点启动时间
   - id: q6
-    title: Q6. 手動ZStack UI管理界面
+    title: Q6. 手动启动ZStack UI管理界面
   - id: q7
     title: Q7. Vmware ESXi設定嵌套虚拟化的虚拟机
   - id: q8
@@ -28,6 +28,8 @@ sections:
     title: Q12. ZStack 报告主、备份存储容量和物理机上看到的容量不一致
   - id: q13
     title: Q13. 计算节点是内网IP，如何通过管理节点上的公网IP连接虚拟机的console 
+  - id: q14
+    title: Q14. 修改 zstack-dashboard 默认使用的5000端口
 
 ---
 
@@ -83,7 +85,7 @@ zstack-ctl start_node --timeout 300
 
 ---
 
-<h2 id='q6'>Q6.手動ZStack UI管理界面</h2>
+<h2 id='q6'>Q6.手动启动ZStack UI管理界面</h2>
 
 `zstack-ctl start_ui`
 
@@ -175,3 +177,12 @@ ZStack使用的是 thin clone 模式（copy on write技术），所以VM可以�
 
 ---
 
+<h2 id='q14'> Q14. 修改 zstack-dashboard 默认的5000端口</h2>
+
+例如要修改端口号为5888，让dashboard的访问URL变为 http://本地IP地址:5888
+vim /var/lib/zstack/virtualenv/zstack-dashboard/lib/python2.7/site-packages/zstack_dashboard/web.py
+
+修改：
+app.run(host="0.0.0.0", port="5888", threaded=True)
+
+---
