@@ -3,11 +3,10 @@ layout: post
 title:  "ZStack开发分享－－给Qemu增加Cache Mode"
 date:   2015-12-22
 categories: blog
-author: Matts Yan 
+author: Matt Yen 
 category: cn_blog
 ---
 ## 前言
-
 笔者一直以来都持续关心着各种云相关的软件发展的情形和趋势, 但始终没有真正的去折腾它。
 直到今年五月份在 Ceph 群组里听到了一个名为 ZStack的 IaaS 开源软件, 于是在自己的好奇心驱使下加入了 ZStack中国社区QQ群组。
 在群里潜水了几个月后发现安装似乎很容易, 所以开始试著依照
