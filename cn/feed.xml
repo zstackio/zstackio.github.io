@@ -5,9 +5,140 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 16 Dec 2015 14:49:24 +0800</pubDate>
-    <lastBuildDate>Wed, 16 Dec 2015 14:49:24 +0800</lastBuildDate>
+    <pubDate>Tue, 22 Dec 2015 18:05:24 +0800</pubDate>
+    <lastBuildDate>Tue, 22 Dec 2015 18:05:24 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack开发分享－－给Qemu增加Cache Mode</title>
+        <description>&lt;h2&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;笔者一直以来都持续关心着各种云相关的软件发展的情形和趋势, 但始终没有真正的去折腾它。
+直到今年五月份在 Ceph 群组里听到了一个名为 ZStack的 IaaS 开源软件, 于是在自己的好奇心驱使下加入了 ZStack中国社区QQ群组。
+在群里潜水了几个月后发现安装似乎很容易, 所以开始试著依照
+http://ZStack.org/cn/installation/ 上的一键安装来安装 ZStack, 果然是非常容易安装&lt;/p&gt;
+
+&lt;p&gt;接着按照&lt;a href=&quot;http://ZStack.org/cn/tutorials/flat-network-ui.html&quot;&gt;扁平网络的教程&lt;/a&gt;, 正准备继续折腾，却发生VM 无法启动的问题, 顿时觉得有点小失望。&lt;/p&gt;
+
+&lt;p&gt;详细的错误讯息请见
+https://github.com/ZStackorg/ZStack/issues/146&lt;/p&gt;
+
+&lt;p&gt;后来通过Google搜索发现原来是 Qemu 的 Cache Option 和文件系统兼容性所引起的问题。
+这个问题的起源是因为我的机器里用的文件系统是ZFS (操作系统是 Ubuntu 14.04), 但是ZFS 不支持 O_DIRECT 所造成的。
+因为 ZStack 0.9中在创建 VM 时都是使用 &#39;cache=none&#39;, 但是在 ZFS 作为 VM 主存储时 cache 必须为 writethrough 或者 writeback 才行。
+去群里向原开发者请教之后发现可以通过在 GlobalConfig中增加一个配置来实现Qemu cache 模式的切换，来解决这个问题。
+看起来这个方法实现起来也不会太困难, 于是开始着手解决这个问题。&lt;/p&gt;
+
+&lt;h2&gt;实际动手&lt;/h2&gt;
+
+&lt;p&gt;先参考一些官方的文件来了解 ZStack 源代码
+(以下些许内容取自 ZStack 官网 http://ZStack.org/cn )
+目前ZStack的源代码由三个软件仓库构成：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;ZStack使用Java编写，是ZStack的核心，负责IaaS各种资源管理调度和消息通讯；&lt;/li&gt;
+&lt;li&gt;ZStack-utility目前主要使用Python编写，包含ZStack的各种终端代理和其他工具。 这些终端代理负责接收来自ZStack核心的消息并执行对应的操作，例如和Libvirt通讯来管理VM的生命周期、各种存储（例如Ceph，iSCSI，SFTP）的管理、 虚拟路由器里管理VM的IP地址等等。除了终端代理工具外，这个软件仓库还包含了ZStack其他的工具，例如ZStack的编辑打包工具、 ZStack安装程序、ZStack命令行工具、ZStack管控工具等等。&lt;/li&gt;
+&lt;li&gt;ZStack-dashboard使用JavaScript编写，是ZStack的图形界面。&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;(为免篇幅太长, 关于怎么从 Github 取出源码的部分在此省略了)&lt;/p&gt;
+
+&lt;p&gt;基本上修改的思路为三个步骤：
+ 1. 新增一个全局的变量叫 CacheMode （Java编写）
+ 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的)
+ 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置&lt;/p&gt;
+
+&lt;h3&gt;步骤一&lt;/h3&gt;
+
+&lt;p&gt;首先修改 ZStack 的部分,
+在 conf/globalConfig/kvm.xml新增一个element&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;在 plugin/kvm/src/main/java/org/ZStack/kvm/KVMGlobalConfig.java 新增全局的变量&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;到此基本上已经在 Web UI 的 Global Configure 新增一个配置 vm.CacheMode (见下图)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;步骤二&lt;/h3&gt;
+
+&lt;p&gt;修改 ZStack 的部分,
+在plugin/kvm/src/main/java/org/ZStack/kvm/KVMAgentCommands.java 中
+public static class VolumeTO 中新增私有的变量及公有的方法&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;接著修改 plugin/kvm/src/main/java/org/ZStack/kvm/KVMHost.java
+在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 ZStack-utility agent&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;到这边 ZStack 部分算是修改完成&lt;/p&gt;
+
+&lt;h3&gt;依照官方说明的方法来编译ZStack Java 源码&lt;/h3&gt;
+
+&lt;p&gt;http://ZStack.org/cn_blog/build-ZStack.html&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;cd ZStack&lt;/code&gt;
+&lt;code&gt;mvn -DskipTests clean install&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;如果过程顺利应该会看到如下的输出&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/7.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;步骤三&lt;/h3&gt;
+
+&lt;p&gt;最后我们还要修改 ZStack-utility agent在收到我们新增的全局配置后做出对应的修改
+kvmagent/kvmagent/plugins/vm_plugin.py&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/8.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/9.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;步骤四&lt;/h3&gt;
+
+&lt;p&gt;依照官方说明的方法来编译ZStack All In One 安装包
+http://ZStack.org/cn_blog/build-ZStack.html&lt;/p&gt;
+
+&lt;h3&gt;编译ZStack All In One安装包&lt;/h3&gt;
+
+&lt;p&gt;如果ZStack的Java源码已经编译通过，我们就可以开始尝试编译ZStack All In One安装包了：
+&lt;code&gt;cd ~/ZStack-repos/&lt;/code&gt;
+&lt;code&gt;wget -c http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.35/bin/apache-tomcat-7.0.35.zip&lt;/code&gt;
+&lt;code&gt;cd ZStack-utility/ZStackbuild&lt;/code&gt;
+&lt;code&gt;ant -DZStack_build_root=/root/ZStack-repos all-in-one&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;因为default git 都会去 checkout master 分支来编译  ZStack All In One包,下面是我使用的方式&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ant    -DZStack.build_version=0.9fix
+-DZStackutility.build_version=0.9fix
+-DZStackdashboard.build_version=0.9
+-Dbuild_name=qa
+-DZStack_build_root=/home/matt/ZStack-github all-in-one&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;(关于 –D 相关的选项, 可以看 ZStack-utility/ZStackbuild/build.properties)
+如果过程顺利应该会看到如下的输出&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/10.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;后话&lt;/h3&gt;
+
+&lt;p&gt;对于新增全局配置的修改大致上就是这样, 唯一要特别注意的地方是, 修改 ZStack Java代码的部分, 关于新增全局配置的变量和方法该摆放在哪一个类, 为了以后代码的维护以及可读性, 最好还是可以跟原始开发者讨论讨论, 本范例会修改在 VolumeTO 类 里, 不代表著所有新增的全局配置都需要修改在那边（意思是有经过些许判断的）, 主要还是得依照新增的配置去找出比较相关的类去修改会比较适当, 以上为个人一点小小的心得。&lt;/p&gt;
+</description>
+        <pubDate>Tue, 22 Dec 2015 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack 助力PaaS／SaaS 高效集成IaaS －－ ZStack云环境的快速备份和还原</title>
@@ -1335,408 +1466,6 @@ zstack-ctl upgrade_management_node --war-file zstack.war
         <pubDate>Sun, 13 Sep 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/blog/v0.9.html</link>
         <guid isPermaLink="true">http://zstack.org/blog/v0.9.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>Announcing ZStack v0.9</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.9 is released.
-In this release, ZStack introduces two new features:&lt;/p&gt;
-
-&lt;h2&gt;Ceph Integration&lt;/h2&gt;
-
-&lt;p&gt;Beginning at this version, ZStack supports Ceph as backup storage and primary storage. To leverage the advantages of Ceph,
-users should use a Ceph cluster for both backup storage and primary storage in the same zone; by doing so, there will be
-no data copy between backup storage and primary storage when users perform operations like creating VM, creating image,
-creating a data volume from an image, all are done through COW(copy on write).&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;ZStack interoperates with Ceph by deploying agents on Ceph mon servers. Users can dynamically add/remove a Ceph mon server
-into/from ZStack.&lt;/p&gt;
-
-&lt;h3&gt;Ceph Backup Storage&lt;/h3&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Ceph backup storage only works with Ceph primary storage&lt;/h4&gt;
-  
-  Given the a main advantage of using Ceph is COW, Ceph backup storage is designed to only work with Ceph primary storage.
-  Because the Ceph backup storage and primary storage use the same Ceph cluster, users should not attach a Ceph backup storage
-  to multiple zones. The best practice is to use a Ceph cluster for both backup storage and primary storage in the same zone.
-  
-  That is to say, you CANNOT use Ceph backup storage with primary storage of NFS, local storage, ISCSI.
-&lt;/div&gt;
-
-
-&lt;h4&gt;Add through UI&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;select the type &#39;Ceph&#39;&lt;/li&gt;
-&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
-&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
-&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
-&lt;li&gt;click button &#39;Add&#39;&lt;/li&gt;
-&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
-&lt;li&gt;click button &#39;Next&#39;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h4&gt;Add through CLI&lt;/h4&gt;
-
-&lt;p&gt;You can use AddCephBackupStorage to add a Ceph backup storage. For example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephBackupStorage name=ceph monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
-the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Specifying the pool&lt;/h4&gt;
-  &lt;code&gt;AddCephBackupStorage&lt;/code&gt; receives an optional parameter &lt;code&gt;poolName&lt;/code&gt; which allows you to specify an existing
-  Ceph pool for the backup storage. If the parameter is provided, ZStack will use the pool instead of creating a new one;
-  if the pool is not existing, an error will be raised and the backup storage will fail to be added. If the parameter is omitted,
-  ZStack will automatically create a new pool with the default Ceph pool setting.
-  
-  You can use this feature to create a well-tuned Ceph pool for the backup storage.
-&lt;/div&gt;
-
-
-&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
-
-&lt;p&gt;You can use AddMonToCephBackupStorage to add new Ceph mon servers to a Ceph backup storage:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
-
-&lt;p&gt;You can use RemoveMonFromCephBackupStorage to remove Ceph mon servers from a Ceph backup storage:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
-
-&lt;h4&gt;Query&lt;/h4&gt;
-
-&lt;p&gt;You can use QueryCephBackupStorage to query Ceph backup storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;Ceph Primary Storage&lt;/h3&gt;
-
-&lt;p&gt;The Ceph primary storage works with both SFTP backup storage and Ceph backup storage.&lt;/p&gt;
-
-&lt;h4&gt;Add through UI&lt;/h4&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;select the type &#39;Ceph&#39;&lt;/li&gt;
-&lt;li&gt;input IP/hostname of a Ceph mon server&lt;/li&gt;
-&lt;li&gt;input SSH user name of the Ceph mon server&lt;/li&gt;
-&lt;li&gt;input SSH password of the Ceph mon server&lt;/li&gt;
-&lt;li&gt;click button &#39;Add&#39;&lt;/li&gt;
-&lt;li&gt;repeat steps 3 ~ 5 to add other Ceph mon servers&lt;/li&gt;
-&lt;li&gt;click button &#39;Next&#39;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h4&gt;Add through CLI&lt;/h4&gt;
-
-&lt;p&gt;You can use AddCephPrimaryStorage to add a Ceph primary storage. For example::&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddCephPrimaryStorage name=ceph zoneUuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;monUrls&lt;/code&gt; is a list of string containing Ceph mon server information, which is in format of:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh_username:ssh_password@mon_server_ip:[ssh_port][/?monPort=ceph_mon_port]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;code&gt;ssh_username&lt;/code&gt;, &lt;code&gt;ssh_password&lt;/code&gt;, &lt;code&gt;mon_server_ip&lt;/code&gt; are mandatory while &lt;code&gt;ssh_port&lt;/code&gt; and &lt;code&gt;ceph_mon_port&lt;/code&gt; are optional. &lt;code&gt;ceph_mon_port&lt;/code&gt; is
-the Ceph mon server port which is default to 6789. A full example of monUrl is &lt;code&gt;root:password@192.168.0.123:22/?monPort=6789&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Specifying pools&lt;/h4&gt;
-  &lt;code&gt;AddCephPrimaryStorage&lt;/code&gt; receives three optional parameters &lt;code&gt;imageCachePoolName, rootVolumePoolName, dataVolumePoolName&lt;/code&gt;
-  all of which allow you to specify existing Ceph pools for the primary storage. If the parameters are provided, ZStack will use the existing pools instead of creating new ones;
-  if the pools are not existing, an error will be raised and the primary storage will fail to be added. If the parameters are omitted,
-  ZStack will automatically create new pools with the default Ceph pool setting.
-  
-  You can use this feature to create well-tuned Ceph pools for the primary storage. You can choose to only specify parameters(e.g. rootVolumePoolName) for existing pools
-  you want to use, and let ZStack to automatically create the rest.
-&lt;/div&gt;
-
-
-&lt;h4&gt;Dynamically add new Ceph mon servers&lt;/h4&gt;
-
-&lt;p&gt;You can use AddMonToCephPrimaryStorage to add new Ceph mon servers to a Ceph primary storage:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;AddMonToCephBackupStorage uuid=d914841733fa499c9dc6d63ea339469d monUrls=root:password@192.168.0.123,root:password@192.168.0.124,root:password@192.168.0.125
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;Dynamically remove Ceph mon servers&lt;/h4&gt;
-
-&lt;p&gt;You can use RemoveMonFromCephPrimaryStorage to remove Ceph mon servers from a Ceph primary storage:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;RemoveMonFromCephPrimaryStorage uuid=d914841733fa499c9dc6d63ea339469d monHostnames=192.168.0.123,192.168.0.124
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The &lt;code&gt;monHostnames&lt;/code&gt; is a list of IPs of mon servers that you want to remove.&lt;/p&gt;
-
-&lt;h4&gt;Query&lt;/h4&gt;
-
-&lt;p&gt;You can use QueryCephPrimaryStorage to query Ceph primary storage:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h2&gt;Elastic Load Balancer&lt;/h2&gt;
-
-&lt;p&gt;Beginning at 0.9, ZStack supports the elastic load balancer. Details can be found at &lt;a href=&quot;http://zstackdoc.readthedocs.org/en/latest/userManual/lb.html&quot;&gt;User Manual - Elastic Load Balancer&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Seamless Upgrade&lt;/h2&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Pay attention to the virtual router upgrade instructions at the end&lt;/h4&gt;
-  
-  To support the elastic load balancer, you need to upgrade the virtual router VMs in your current ZStack setup.
-  Please do read the virtual router upgrade instructions at the end of the upgrade chapter.
-&lt;/div&gt;
-
-
-
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;Backup Database&lt;/h4&gt;
-  
-  Before performing any upgrade instructions, please backup the current database. This is very &lt;b&gt;IMPORTANT&lt;/b&gt;!
-  Though ZStack will automatically backup the current database during upgrade, we strongly recommend you to manually backup the
-  database in case any error happens. You can backup the database following:
-  
-  &lt;pre&gt;&lt;code&gt;mysqldump -u root -proot_password --host mysql_ip --port mysql_port zstack &gt; path_to_db_dump.sql&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-
-&lt;h3&gt;Upgrade by quick script&lt;/h3&gt;
-
-&lt;p&gt;If you have only one management node, you can upgrade it by ZStack&#39;s installation script:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl stop_node
-mkdir -p zstack-0.9
-cd zstack-0.9
-wget http://download.zstack.org/releases/0.9/0.9.0/zstack-install.sh
-wget http://download.zstack.org/releases/0.9/0.9.0/zstack-all-in-one-0.9.0.tgz
-bash zstack-install.sh -u -f 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Be patient for a few minutes, the script will upgrade the database, management node, zstack-cli, zstack-ctl and zstack-dashboard.&lt;/p&gt;
-
-&lt;h3&gt;Upgrade by zstack-ctl&lt;/h3&gt;
-
-&lt;h4&gt;1. Upgrade the first management node&lt;/h4&gt;
-
-&lt;p&gt;Perform below instructions on one of your management node:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir -p zstack-0.9
-cd zstack-0.9
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Install zstack-ctl if you are using 0.6 version&lt;/h4&gt;
-  
-  wget --no-check-certificate https://download.zstack.org/releases/0.7/rc2/zstackctl-0.7.tar.gz
-  /var/lib/zstack/virtualenv/zstackctl/bin/pip install --ignore-installed zstackctl-0.7.tar.gz
-  
-&lt;/div&gt;
-
-
-&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/0.9/0.9.0/zstack.war
-zstack-ctl upgrade_management_node --war-file zstack.war
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;2. Upgrade the database&lt;/h4&gt;
-
-&lt;p&gt;Make sure you have backup the current database following instructions on the top of this page. Then perform:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_db
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;You can start the node now if you only have one management node&lt;/h4&gt;
-  If you have only one management node, you can run &lt;pre&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/pre&gt; to start the ZStack now. If you have
-  other management nodes to upgrade, continue to perform following instructions.
-&lt;/div&gt;
-
-
-&lt;h4&gt;3. Upgrade other management nodes&lt;/h4&gt;
-
-&lt;p&gt;If you have management nodes running on remote machines, run below commands for each node&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl upgrade_management_node --war-file path_to_the_war --host remote_host_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Upgrade UI&lt;/h4&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Stop UI&lt;/h4&gt;
-  
-  If you are using 0.6, stop the UI by &lt;code&gt;/etc/init.d/zstack-dashboard stop&lt;/code&gt;; for 0.7 and 0.8, stop the UI by &lt;code&gt;zstack-ctl stop_ui&lt;/code&gt;
-&lt;/div&gt;
-
-
-&lt;p&gt;Upgrade your UI on local machine by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;zstack-ctl install_ui --host remote_machine_ip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;if the UI is installed on a remote machine.&lt;/p&gt;
-
-&lt;h4&gt;5. Start management nodes&lt;/h4&gt;
-
-&lt;p&gt;Now all your management nodes have been successfully upgraded to the 0.9. You can start them by &lt;code&gt;zstack-ctl start_node&lt;/code&gt; and
-&lt;code&gt;zstack-ctl start_node --host remote_host_ip&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
-  &lt;h4&gt;Agents will be automatically upgraded after starting management nodes&lt;/h4&gt;
-  You don&#39;t need to bother with agent upgrade; they will be upgraded after management nodes reconnect them.
-&lt;/div&gt;
-
-
-&lt;h4&gt;6. Start UI&lt;/h4&gt;
-
-&lt;p&gt;Now you can start the UI by &lt;code&gt;zstack-ctl start_ui&lt;/code&gt; on the local host or &lt;code&gt;zstack-ctl start_ui --host remote_host_ip&lt;/code&gt; on the remote host.&lt;/p&gt;
-
-&lt;h4&gt;7. Upgrade Virtual Router&lt;/h4&gt;
-
-&lt;h5&gt;Upgrade running virtual router VMs&lt;/h5&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;select the virtual router VM&lt;/li&gt;
-&lt;li&gt;click button &quot;Action&quot;&lt;/li&gt;
-&lt;li&gt;click &quot;Reconnect&quot;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;After reconnecting, the virtual router VM will be upgraded to the latest version.&lt;/p&gt;
-
-&lt;h5&gt;Upgrade virtual router image and virtual router offering&lt;/h5&gt;
-
-&lt;ol&gt;
-&lt;li&gt;add the 0.9 virtual router image http://download.zstack.org/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2 to the backup storage:&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;img src=&quot;/images/0.9/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;update the existing virtual router offering to the new virtual router image by CLI&lt;/p&gt;
-
-&lt;p&gt; UpdateVirtualRouterOffering uuid=vr_offering_uuid imageUuid=new_image_uuid&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
-  &lt;h4&gt;You cannot create new virtual router VMs if you don&#39;t upgrade the virtual offerings&lt;/h4&gt;
-  If you don&#39;t upgrade existing virtual router offerings, new virtual router VMs will fail to be created because the old
-  0.8(or 0.7, 0.6) image doesn&#39;t contain the agent required by the ZStack 0.9. You can use above CLI command to update existing
-  offerings, or simply delete them and create new ones.
-&lt;/div&gt;
-
-
-&lt;h2&gt;Fixed Issues&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/123&quot;&gt;Delete VIP hang, when using separated VR to do Load Balancer #123&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/122&quot;&gt;New created volume doesn&#39;t exist, if original volume is deleted in ceph #122&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/121&quot;&gt;Parallel VM creation might fail #121&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/119&quot;&gt;ceph mon url doesn&#39;t support password of @ #119&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/118&quot;&gt;cannot use eth0:1 as L2 interface #118&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/117&quot;&gt;ZStack 0.9 doesn&#39;t have Load Balancer if upgrading from 0.8 #117&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/116&quot;&gt;Delete VR pub L3 IP range when VR is starting, will block user vm creation #116&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/115&quot;&gt;VIP can&#39;t be deleted, when load balancer creation failed #115&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/114&quot;&gt;VIP&#39;s IP won&#39;t be cleaned up in VR, when delete VIP for LB #114&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/113&quot;&gt;Add Nic to listener might be failed #113&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/112&quot;&gt;attach volume might fail #112&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/111&quot;&gt;Ceph mon is not cleaned up, when ceph pool is added failed #111&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/110&quot;&gt;GetFreeIp won&#39;t return next available ip, if previous ip is used #110&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/109&quot;&gt;Delete Ceph PS failed: FutureCompletion timeout after 1 seconds #109&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/108&quot;&gt;Delete VIP failed, due to used by load balancer #108&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/107&quot;&gt;Update System Tags won&#39;t work if using RebootVM &lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/106&quot;&gt;Update systemTags for static IP won&#39;t effect #106&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/104&quot;&gt;Delete Ceph PS won&#39;t cleanup pools #104&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/103&quot;&gt;The same ceph primary storage can&#39;t be added to 2 Zones #103&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/101&quot;&gt;new added DNS won&#39;t be added to VR, until call Reconnect VR #101&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/100&quot;&gt;DNS is not removed after Delete L3 DNS #100&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/99&quot;&gt;VM migration failed if using ceph ps #99&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/98&quot;&gt;Query API with multiple conditions might return wrong result #98&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/97&quot;&gt;Header sub-project build from source code : bad version number found in aspectj. #97&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/96&quot;&gt;Can NOT acquire the lock again before unlock, GLock is non reentrant #96&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/95&quot;&gt;iso duplicate primary key issue when downloading iso to local storage #95&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/94&quot;&gt;BackupVolumeSnapshot doesn&#39;t support with Ceph PS and BS #94&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/93&quot;&gt;Delete Image won&#39;t cleanup rbd in Ceph BS pool #93&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/92&quot;&gt;vm reboot fail when using ceph bs and ps #92&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/91&quot;&gt;vm creation failed with both ceph ps and ceph bs #91&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/90&quot;&gt;create vm fail with ceph ps and sftp bs #90&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/89&quot;&gt;AddCephPrimaryStorage fail #89&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/zstackorg/zstack/issues/88&quot;&gt;UpdateImage with platform=Paravirtualization failed #88&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Bug Report&lt;/h2&gt;
-
-&lt;p&gt;If you find any bugs, please open a ticket on &lt;a href=&quot;https://github.com/zstackorg/zstack/issues&quot;&gt;GitHub&lt;/a&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 13 Sep 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v0.9.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v0.9.html</guid>
         
         
         <category>blog</category>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack开发分享－－给Qemu增加Cache Mode</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack开发分享－－给Qemu增加Cache Mode</h2>
+    <p class="post-meta"> by Matts Yan on Dec 22, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <h2>前言</h2>
+
+<p>笔者一直以来都持续关心着各种云相关的软件发展的情形和趋势, 但始终没有真正的去折腾它。
+直到今年五月份在 Ceph 群组里听到了一个名为 ZStack的 IaaS 开源软件, 于是在自己的好奇心驱使下加入了 ZStack中国社区QQ群组。
+在群里潜水了几个月后发现安装似乎很容易, 所以开始试著依照
+http://ZStack.org/cn/installation/ 上的一键安装来安装 ZStack, 果然是非常容易安装</p>
+
+<p>接着按照<a href="http://ZStack.org/cn/tutorials/flat-network-ui.html">扁平网络的教程</a>, 正准备继续折腾，却发生VM 无法启动的问题, 顿时觉得有点小失望。</p>
+
+<p>详细的错误讯息请见
+https://github.com/ZStackorg/ZStack/issues/146</p>
+
+<p>后来通过Google搜索发现原来是 Qemu 的 Cache Option 和文件系统兼容性所引起的问题。
+这个问题的起源是因为我的机器里用的文件系统是ZFS (操作系统是 Ubuntu 14.04), 但是ZFS 不支持 O_DIRECT 所造成的。
+因为 ZStack 0.9中在创建 VM 时都是使用 'cache=none', 但是在 ZFS 作为 VM 主存储时 cache 必须为 writethrough 或者 writeback 才行。
+去群里向原开发者请教之后发现可以通过在 GlobalConfig中增加一个配置来实现Qemu cache 模式的切换，来解决这个问题。
+看起来这个方法实现起来也不会太困难, 于是开始着手解决这个问题。</p>
+
+<h2>实际动手</h2>
+
+<p>先参考一些官方的文件来了解 ZStack 源代码
+(以下些许内容取自 ZStack 官网 http://ZStack.org/cn )
+目前ZStack的源代码由三个软件仓库构成：</p>
+
+<ol>
+<li>ZStack使用Java编写，是ZStack的核心，负责IaaS各种资源管理调度和消息通讯；</li>
+<li>ZStack-utility目前主要使用Python编写，包含ZStack的各种终端代理和其他工具。 这些终端代理负责接收来自ZStack核心的消息并执行对应的操作，例如和Libvirt通讯来管理VM的生命周期、各种存储（例如Ceph，iSCSI，SFTP）的管理、 虚拟路由器里管理VM的IP地址等等。除了终端代理工具外，这个软件仓库还包含了ZStack其他的工具，例如ZStack的编辑打包工具、 ZStack安装程序、ZStack命令行工具、ZStack管控工具等等。</li>
+<li>ZStack-dashboard使用JavaScript编写，是ZStack的图形界面。</li>
+</ol>
+
+
+<p>(为免篇幅太长, 关于怎么从 Github 取出源码的部分在此省略了)</p>
+
+<p>基本上修改的思路为三个步骤：
+ 1. 新增一个全局的变量叫 CacheMode （Java编写）
+ 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的)
+ 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置</p>
+
+<h3>步骤一</h3>
+
+<p>首先修改 ZStack 的部分,
+在 conf/globalConfig/kvm.xml新增一个element</p>
+
+<p><img src="/images/blogs/cache_mode/1.png" class="center-img img-responsive"></p>
+
+<p>在 plugin/kvm/src/main/java/org/ZStack/kvm/KVMGlobalConfig.java 新增全局的变量</p>
+
+<p><img src="/images/blogs/cache_mode/2.png" class="center-img img-responsive"></p>
+
+<p>到此基本上已经在 Web UI 的 Global Configure 新增一个配置 vm.CacheMode (见下图)</p>
+
+<p><img src="/images/blogs/cache_mode/3.png" class="center-img img-responsive"></p>
+
+<h3>步骤二</h3>
+
+<p>修改 ZStack 的部分,
+在plugin/kvm/src/main/java/org/ZStack/kvm/KVMAgentCommands.java 中
+public static class VolumeTO 中新增私有的变量及公有的方法</p>
+
+<p><img src="/images/blogs/cache_mode/4.png" class="center-img img-responsive"></p>
+
+<p>接著修改 plugin/kvm/src/main/java/org/ZStack/kvm/KVMHost.java
+在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 ZStack-utility agent</p>
+
+<p><img src="/images/blogs/cache_mode/5.png" class="center-img img-responsive"></p>
+
+<p>到这边 ZStack 部分算是修改完成</p>
+
+<h3>依照官方说明的方法来编译ZStack Java 源码</h3>
+
+<p>http://ZStack.org/cn_blog/build-ZStack.html</p>
+
+<p><code>cd ZStack</code>
+<code>mvn -DskipTests clean install</code></p>
+
+<p><img src="/images/blogs/cache_mode/6.png" class="center-img img-responsive"></p>
+
+<p>如果过程顺利应该会看到如下的输出</p>
+
+<p><img src="/images/blogs/cache_mode/7.png" class="center-img img-responsive"></p>
+
+<h3>步骤三</h3>
+
+<p>最后我们还要修改 ZStack-utility agent在收到我们新增的全局配置后做出对应的修改
+kvmagent/kvmagent/plugins/vm_plugin.py</p>
+
+<p><img src="/images/blogs/cache_mode/8.png" class="center-img img-responsive"></p>
+
+<p><img src="/images/blogs/cache_mode/9.png" class="center-img img-responsive"></p>
+
+<h3>步骤四</h3>
+
+<p>依照官方说明的方法来编译ZStack All In One 安装包
+http://ZStack.org/cn_blog/build-ZStack.html</p>
+
+<h3>编译ZStack All In One安装包</h3>
+
+<p>如果ZStack的Java源码已经编译通过，我们就可以开始尝试编译ZStack All In One安装包了：
+<code>cd ~/ZStack-repos/</code>
+<code>wget -c http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.35/bin/apache-tomcat-7.0.35.zip</code>
+<code>cd ZStack-utility/ZStackbuild</code>
+<code>ant -DZStack_build_root=/root/ZStack-repos all-in-one</code></p>
+
+<p>因为default git 都会去 checkout master 分支来编译  ZStack All In One包,下面是我使用的方式</p>
+
+<p><code>ant    -DZStack.build_version=0.9fix
+-DZStackutility.build_version=0.9fix
+-DZStackdashboard.build_version=0.9
+-Dbuild_name=qa
+-DZStack_build_root=/home/matt/ZStack-github all-in-one</code></p>
+
+<p>(关于 –D 相关的选项, 可以看 ZStack-utility/ZStackbuild/build.properties)
+如果过程顺利应该会看到如下的输出</p>
+
+<p><img src="/images/blogs/cache_mode/10.png" class="center-img img-responsive"></p>
+
+<h3>后话</h3>
+
+<p>对于新增全局配置的修改大致上就是这样, 唯一要特别注意的地方是, 修改 ZStack Java代码的部分, 关于新增全局配置的变量和方法该摆放在哪一个类, 为了以后代码的维护以及可读性, 最好还是可以跟原始开发者讨论讨论, 本范例会修改在 VolumeTO 类 里, 不代表著所有新增的全局配置都需要修改在那边（意思是有经过些许判断的）, 主要还是得依照新增的配置去找出比较相关的类去修改会比较适当, 以上为个人一点小小的心得。</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
