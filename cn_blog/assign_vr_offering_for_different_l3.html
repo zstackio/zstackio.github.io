@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack使用教程</title>
+    <title>ZStack - 给不同L3网络设置不同的 VirtualRouter Offering</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -71,196 +71,118 @@
 </nav>
 
 
-<div class="big-font tutorial-home">
-  <div class="container">
-  <div class="row" style="padding-top: 25px">
-    <p>
-    这套教程仅仅展示了用ZStack来创建一些经典的云环境的方法。当您熟悉了ZStack的基本功能后，
-    您完全可以灵活的创造更多的云解决方案。在您跟随使用教程来搭建自己的云主机的时候，我们假定您已经通过
-    ZStack的<a href="../installation/index.html">快速安装手册</a>完成了ZStack在单台Linux机器上的安装。
-    您可以在单台Linux机器上完成所有教程的案例而无需更多的主机。
-    </p>
-    <p>
-    <b>此外，我们还准备了大量的<a href="http://so.iqiyi.com/so/q_zstack?source=input&sr=1026211706497">视频教程</a>，大家可以点击观看。</b>
-    </p>
-  </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>扁平网络</h3>
-        <p>在一个扁平网络中，所有的云主机都在一个大二层的网络环境中。它们属于一个相同的子网。他们的网关和路由通常由数据中心的其他节点或者交换机提供。ZStack的虚拟机交换机可以给云主机分配动态或者静态的IP地址。这个是私有云环境中的典型环境。</p>
-        <p>
-          <a href="flat-network-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="flat-network-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/eip.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
-        <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
-        <p>
-          <a href="ec2-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="ec2-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="container">
+<div class="container big-font">
   <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/tier_3_networks.png">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">给不同L3网络设置不同的 VirtualRouter Offering</h2>
+    <p class="post-meta"> by Yongkang You on Dec 31, 2015</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
     </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>三层网络</h3>
-      <p>在传统的互联网业务中流行着三层网络架构，分别给三类服务器提供隔离的网络环境：Web服务器，应用服务器和数据库服务器。其中Web服务器可以跨接共有网络和应用层网络，应用服务器可以跨接应用层网络和数据库网络，而数据库服务器只存在于数据库网络。</p>
-      <p>
-        <a href="three-tiered-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="three-tiered-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
+  </header>
+
+
+  <article class="post-content">
+    <h2>前言</h2>
+
+<p>当用户的网络环境中有多套公有L3网络并且使用了 VirtualRouter(VR) 的网络服务的时候，就需要给创建虚拟机的L3网络配置不同的VR Offering。</p>
+
+<p>由于每个VR Offering会设置特定的管理网络L3和公有网络L3，所以不同公有网络的L3网络应该配备不同的VR Offering，
+否则会导致使用其中某个L3网络的虚拟机无法获得正常的网络连接能力。</p>
+
+<h2>网络场景描述</h2>
+
+<p>让我们先来看三种网络场景。第一张图描述了在一个典型的EIP网络模型下，有两个用户的私有网络，整个环境共用了相同的管理网络和公有网络。
+在这个场景中，不同的用户网络进行了隔离。用户网络内的虚拟机通讯只发生在私有网络上。当需要访问外网环境时，
+VM会通过不同的VR连接相同的公有网络。在这里，我们只需要设置一个默认的VR Offering即可，因为两个VR都是使用相同的公有网络。也就是说VR的配置相同。</p>
+
+<p><img src="/images/blogs/vroffering/zstack_1_pub_l3-2_pri_l3.png" class="center-img img-responsive"></p>
+
+<p>有时候，由于一些特殊的原因（例如需要分摊流量、需要设置不同的公网出口等），我们会配置类似于第二张图的场景。
+这个场景和第一张图唯一的不同是在于，两个私有网络访问公网的时候并不是通过相同的共有网络。
+这个时候我们就需要给两个私有网络（private l3）配置不同的VR Offering。让其中一个VR走 Public L3-1 访问公网，
+而另外一个走 Public L3-2 访问公网。</p>
+
+<p><img src="/images/blogs/vroffering/zstack_2_pub_l3_2_pri_l3.png" class="center-img img-responsive"></p>
+
+<p>在扁平网络（Flat Network）模式中，我们更可能遇到多个公有网络的场景。每个公有网络有独立的网关。
+例如下图所示，两个VR只负责给各自的L3网络做DHCP和DNS服务，
+虚拟机VM1和VM3分别通过不同的公有网络进行网络通讯。这个时候我们也需要给两个公有网络（public l3）配置不同的 VR Offering。
+VM会根据所在的不同的L3网络连接公有网络。</p>
+
+<p><img src="/images/blogs/vroffering/zstack_2_pub_l3.png" class="center-img img-responsive"></p>
+
+<h2>给不同的L3网络设置不同的VR Offering</h2>
+
+<p>首先我们要根据公有网络的数量创建相同数量VR Offering，我们可以把最常用L3的VR Offering设置成默认的。</p>
+
+<p>接着我们就可以给不同L3网络配置不同VR Offering。具体的方法是通过设置系统标签（System Tag）的方式来完成的。
+设置系统标签的zstack-cli命令是：</p>
+
+<p><code>CreateSystemTag resourceType=InstanceOfferingVO resourceUuid=YOUR_VR_OFFERING_UUID tag=guestL3Network::YOUR_L3_NETWORK_UUID</code></p>
+
+<p>这里的YOUR_VR_OFFERING_UUID需要替换成目标VR Offering的UUID
+YOUR_L3_NETWORK_UUID替换为用于创建VM的L3网络的UUID。EIP模式下（图二），该网络是Private L3。
+扁平模式下（图三），该网络是Public L3的UUID。千万留意该L3 网络UUID不可以指定错误。</p>
+
+<p>如果还不熟悉zstack-cli命令，可以参考ZStack的用户教程里各种<a href="http://zstack.org/cn/tutorials/flat-network-cli.html">命令行版本</a>的操作方法。</p>
+
+<p>设置完后，ZStack就可以正确识别不同L3网络的VR Offering，并为不同VM使用不同的网络服务。</p>
+
+<p>更多关于网络服务和VR的信息可以参考：<a href="http://zstackdoc.readthedocs.org/en/latest/userManual/virtualRouter.html">ZStack API文档</a></p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
 </div>
 
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat_network_with_security_group.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>安全组防火墙</h3>
-        <p>云主机可以通过设置安全组来控制进出云主机的网络包的安全规则，以达到安全防护的目的。</p>
-        <p>
-          <a href="security-group-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="security-group-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
     </div>
   </div>
-</div>
-
-
-
-
-<div class="container">
-  <div class="row">
-    <div class="col-sm-6">
-      <img class="img-responsive" src="/images/port_forwarding.png">
-    </div>
-    <div class="col-sm-6" style="padding-top: 50px">
-      <h3>端口转发</h3>
-      <p>端口转发可以把共有网络的IP地址通过区分端口的方式让多台云主机共享相同的公网IP地址，同时也具有防火墙的功能。</p>
-      <p>
-        <a href="elastic-port-forwarding-ui.html" class="btn btn-primary" role="button">
-          图形界面版本
-        </a>
-        <a href="elastic-port-forwarding-cli.html" class="btn btn-default" role="button">
-          命令行版本
-        </a>
-      </p>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div  style="background: #f7f7f7">
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-6">
-        <img class="img-responsive" src="/images/snapshot.png">
-      </div>
-      <div class="col-sm-6" style="padding-top: 50px">
-        <h3>磁盘快照</h3>
-        <p>我们将在一个快照树上创建两个磁盘快照的分支</p>
-        <p>
-          <a href="snapshot-ui.html" class="btn btn-primary" role="button">
-            图形界面版本
-          </a>
-          <a href="snapshot-cli.html" class="btn btn-default" role="button">
-            命令行版本
-          </a>
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-<div class="container">
-  <div class="row">
-    <h2>更多教程：</h2>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/install-image-by-iso.html>使用ISO安装模板</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/local-stroage-tutorials.html>本地存储教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/build-zstack-network-on-single-machine.html>扁平模式还是EIP摸索——单机搭建ZStack教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/zstack-account-user-tutorials.html>账号用户系统教程</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/attach-detach-l3-tutorials.html>添加删除三层网络教程</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/update-system-tags-by-delete-add.html>更改云主机静态IP地址和hostname</a>
-    </div>
-    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
-        <a href=/cn_blog/assign_vr_offering_for_different_l3.html>给不同的L3网络设置不同的 VirtualRouter Offering</a>
-    </div>
-  </div>
-</div>
-
-
-
-
 </div>
 
 <script src="/js/jquery-1.9.1.js"></script>
@@ -347,5 +269,7 @@
 </div>
 
 </body>
+
+
 
 </html>
