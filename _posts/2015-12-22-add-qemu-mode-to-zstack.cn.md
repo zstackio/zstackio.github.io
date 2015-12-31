@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: post.cn
 title:  "ZStack开发分享－－给Qemu增加Cache Mode"
 date:   2015-12-22
 categories: blog

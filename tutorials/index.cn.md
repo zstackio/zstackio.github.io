@@ -165,6 +165,9 @@ layout: tutorialPage.cn
     <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
         <a href=/cn_blog/update-system-tags-by-delete-add.html>更改云主机静态IP地址和hostname</a>
     </div>
+    <div class="col-sm-3" style="padding-top: 50px; padding-bottom: 50px">
+        <a href=/cn_blog/assign_vr_offering_for_different_l3.html>给不同的L3网络设置不同的 VirtualRouter Offering</a>
+    </div>
   </div>
 </div>
 
