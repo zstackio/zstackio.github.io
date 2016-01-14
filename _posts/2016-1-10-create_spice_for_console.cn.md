@@ -1,3 +1,12 @@
+---
+layout: post.cn
+title:  "给ZStack添加SPice协议的支持（-）"
+date:   2016-1-10
+categories: blog
+author: Nan Su 
+category: cn_blog
+---
+## 前言
 #前言
 读研时方向选定云计算虚拟化，之前一直在摸索学习各种IaaS软件，因老板项目需要找一款合适的开源软件做私有云，无奈实力所限OpenStack这样重量级的实在玩不动。在CloudStack群里有大牛推荐用ZStack简单好用，遂依照 http://ZStack.org/cn/installation/上的一键安装来安装 ZStack, 我这样的小白用all in one和扁平网络的方式，一个小时居然能跑起了VM，兴奋不已。
 
