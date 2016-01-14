@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - 给ZStack添加SPice协议的支持（-）</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/cn/">主 页</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">安 装 <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/cn/installation/">一键安装</a></li>
+                    <li><a href="/cn/installation/manual.html">手动安装</a></li>
+                    <li><a href="/cn/installation/multi-node.html">多节点安装</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/cn/tutorials">教 程</a></li>
+                <li id="navDocumentation"><a href="/cn/documentation">文 档</a></li>
+                <li id="navBlog"><a href="/cn/blog">博 客</a></li>
+                <li id="navCommunity"><a href="/cn/community">社 区</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">提 问</a></li>
+                <li id="navIssues"><a href="http://zstack.tw">繁体</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">给ZStack添加SPice协议的支持（-）</h2>
+    <p class="post-meta"> by Nan Su on Jan 10, 2016</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <h2>前言</h2>
+
+<h1>前言</h1>
+
+<p>读研时方向选定云计算虚拟化，之前一直在摸索学习各种IaaS软件，因老板项目需要找一款合适的开源软件做私有云，无奈实力所限OpenStack这样重量级的实在玩不动。在CloudStack群里有大牛推荐用ZStack简单好用，遂依照 http://ZStack.org/cn/installation/上的一键安装来安装 ZStack, 我这样的小白用all in one和扁平网络的方式，一个小时居然能跑起了VM，兴奋不已。</p>
+
+<p>后来老板要做VDI，了解相关信息之后发现可用的开源协议只有SPICE了，于是很自然的将Zstack和SPCIE结合起来。有朋友可能会问zs自身的conslo就有VNC啊，也可以接虚拟机图像。但是VNC主要用于linux的服务器的管理，由于无声音和usb传输，不满足于虚拟桌面的使用。而SPICE几乎全面超过VNC，尤其在图像质量和重定向这两部分，几乎是开源的不二选择。</p>
+
+<h1>实践操作</h1>
+
+<p>桌面虚拟化与服务器虚拟化的本质区别就是在协议优化，当然这里只讲怎么连上去。Zstack本身拥有VNC协议的Console，SPICE-client连接到VM的方式与VNC相同——都是通过套接字识别VM。在询问群主意见后，决定加一个开关ConsoleMode让其能在SPICE和VNC间自由切换。那么问题来了，具体怎么做呢？</p>
+
+<p>正好看到ZStack开发分享http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html，作为一只小白，照葫芦画瓢的事情当然最好不过了。思路立马清晰了：1. 新增一个全局的变量叫 ConsoleMode（Java编写） 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的) 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置（哈哈，写到这里我自己都笑了）。</p>
+
+<h2>步骤一</h2>
+
+<p>首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
+<img src="http://10.177.11.103/1.jpg" alt="" /></p>
+
+<pre><code>&lt;config&gt;
+     &lt;category&gt;kvm&lt;/category&gt;
+     &lt;name&gt;consoleMode&lt;/name&gt;
+   &lt;description&gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&lt;/description&gt;
+     &lt;type&gt;java.lang.String&lt;/type&gt;
+     &lt;defaultValue&gt;vnc&lt;/defaultValue&gt;
+&lt;/config&gt;
+</code></pre>
+
+<p>在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
+<img src="zstackorg.github.io/images/blogs/spice/2.jpg" alt="" /></p>
+
+<pre><code>@GlobalConfigValidation(validValues = {"vnc","spice"})
+public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, "consoleMode");
+</code></pre>
+
+<p> 到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
+<img src="zstackorg.github.io/images/blogs/spice/3.jpg" alt="" /></p>
+
+<h2>步骤二</h2>
+
+<p>修改 ZStack 的部分, 在plugin/kvm/src/main/java/org/zstack/kvm/KVMAgentCommands.java 中 public static class StartVmCmd 中新增私有的变量及公有的方法
+<img src="zstackorg.github.io/images/blogs/spice/4.jpg" alt="" /></p>
+
+<pre><code>private String consoleMode;
+
+public String getConsoleMode() {
+         return consoleMode;
+     }
+     public void setConsoleMode(String consoleMode) {
+         this.consoleMode = consoleMode;
+     }
+</code></pre>
+
+<p>接著修改 plugin/kvm/src/main/java/org/zstack/kvm/KVMHost.java 在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 zstack-utility agent
+<img src="zstackorg.github.io/images/blogs/spice/6.jpg" alt="" /></p>
+
+<h2>步骤三</h2>
+
+<p>最后我们还要修改 zstack-utility agent在收到我们新增的全局配置后做出对应的修改 kvmagent/kvmagent/plugins/vm_plugin.py
+<img src="zstackorg.github.io/images/blogs/spice/5.jpg" alt="" /></p>
+
+<pre><code>def get_console_port(self)
+if (g.type_ =='vnc')or(g.type_=='spice'):
+
+def make_console():
+if cmd.consoleMode == 'spice':
+            make_spice()
+        else:
+            make_vnc()
+
+def make_spice():
+        devices = elements['devices']
+        spice = e(devices, 'graphics', None, {'type':'spice', 'port':'5900', 'autoport':'yes'})
+        e(spice, "listen", None, {'type':'address', 'address':'0.0.0.0'})
+</code></pre>
+
+<h2>步骤四</h2>
+
+<p>依照官方说明的方法来编译ZStack All In One 安装包http://zstack.org/cn_blog/build-zstack.html</p>
+
+<h1>总结</h1>
+
+<p>限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，效果不错~最后严重感谢惯C哥的帮助^_^</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">社区</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> 订阅邮件组</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">社区介绍</a></li>
+          <li><a class="footer-text-link" href="/cn/misc/qq.html">QQ群</li>
+          <li><a class="footer-text-link" href="/cn/misc/wechat.html">微信订阅号</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">资源</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">安装手册</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">使用教程</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli命令行工具</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">新闻博客</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">联系我们</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack 是开源的IaaS软件，其开源代码遵守 Apache 2.0 协议的规定.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>我们非常重视您的观点，请把您的想法告诉我们。 &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
