@@ -186,3 +186,13 @@ vim /var/lib/zstack/virtualenv/zstack-dashboard/lib/python2.7/site-packages/zsta
 app.run(host="0.0.0.0", port="5888", threaded=True)
 
 ---
+
+<h2 id='q15'> Q15. 管理节点上有多个IP地址，如何让ZStck启动在某个非default路由的IP地址上？</h2>
+
+先用下面的命令设置管理节点的ip地址：
+`zstack-ctl configure management.server.ip=YOUR_EXPECTED_IP_ADDRESS`
+
+然后重启zstack即可：
+`zstack-ctl stop_node; zstack-ctl start_node`
+
+---
