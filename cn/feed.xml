@@ -5,15 +5,13 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 14 Jan 2016 17:42:53 +0800</pubDate>
-    <lastBuildDate>Thu, 14 Jan 2016 17:42:53 +0800</lastBuildDate>
+    <pubDate>Thu, 14 Jan 2016 17:44:27 +0800</pubDate>
+    <lastBuildDate>Thu, 14 Jan 2016 17:44:27 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
         <title>给ZStack添加SPice协议的支持（-）</title>
         <description>&lt;h2&gt;前言&lt;/h2&gt;
-
-&lt;h1&gt;前言&lt;/h1&gt;
 
 &lt;p&gt;读研时方向选定云计算虚拟化，之前一直在摸索学习各种IaaS软件，因老板项目需要找一款合适的开源软件做私有云，无奈实力所限OpenStack这样重量级的实在玩不动。在CloudStack群里有大牛推荐用ZStack简单好用，遂依照 http://ZStack.org/cn/installation/上的一键安装来安装 ZStack, 我这样的小白用all in one和扁平网络的方式，一个小时居然能跑起了VM，兴奋不已。&lt;/p&gt;
 

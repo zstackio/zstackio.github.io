@@ -117,8 +117,6 @@
   <article class="post-content">
     <h2>前言</h2>
 
-<h1>前言</h1>
-
 <p>读研时方向选定云计算虚拟化，之前一直在摸索学习各种IaaS软件，因老板项目需要找一款合适的开源软件做私有云，无奈实力所限OpenStack这样重量级的实在玩不动。在CloudStack群里有大牛推荐用ZStack简单好用，遂依照 http://ZStack.org/cn/installation/上的一键安装来安装 ZStack, 我这样的小白用all in one和扁平网络的方式，一个小时居然能跑起了VM，兴奋不已。</p>
 
 <p>后来老板要做VDI，了解相关信息之后发现可用的开源协议只有SPICE了，于是很自然的将Zstack和SPCIE结合起来。有朋友可能会问zs自身的conslo就有VNC啊，也可以接虚拟机图像。但是VNC主要用于linux的服务器的管理，由于无声音和usb传输，不满足于虚拟桌面的使用。而SPICE几乎全面超过VNC，尤其在图像质量和重定向这两部分，几乎是开源的不二选择。</p>
