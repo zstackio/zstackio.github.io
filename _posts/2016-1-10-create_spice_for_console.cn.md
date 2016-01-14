@@ -16,7 +16,7 @@ category: cn_blog
 正好看到ZStack开发分享http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html，作为一只小白，照葫芦画瓢的事情当然最好不过了。思路立马清晰了：1. 新增一个全局的变量叫 ConsoleMode（Java编写） 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的) 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置（哈哈，写到这里我自己都笑了）。
 ##步骤一
 首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-![](http://10.177.11.103/1.jpg)
+<img src="/images/blogs/spice/1.jpg" class="center-img img-responsive">
 
     <config>
          <category>kvm</category>
@@ -27,17 +27,17 @@ category: cn_blog
     </config>
 
 在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
-![](zstackorg.github.io/images/blogs/spice/2.jpg)
+<img src="/images/blogs/spice/2.jpg" class="center-img img-responsive">
 
     @GlobalConfigValidation(validValues = {"vnc","spice"})
     public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, "consoleMode");
 
  到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
-![](zstackorg.github.io/images/blogs/spice/3.jpg)
+<img src="/images/blogs/spice/3.jpg" class="center-img img-responsive">
 
 ##步骤二
 修改 ZStack 的部分, 在plugin/kvm/src/main/java/org/zstack/kvm/KVMAgentCommands.java 中 public static class StartVmCmd 中新增私有的变量及公有的方法
-![](zstackorg.github.io/images/blogs/spice/4.jpg)
+<img src="/images/blogs/spice/4.jpg" class="center-img img-responsive">
 
     private String consoleMode;
 
@@ -48,10 +48,10 @@ category: cn_blog
              this.consoleMode = consoleMode;
          }
 接著修改 plugin/kvm/src/main/java/org/zstack/kvm/KVMHost.java 在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 zstack-utility agent
-![](zstackorg.github.io/images/blogs/spice/6.jpg)
+<img src="/images/blogs/spice/6.jpg" class="center-img img-responsive">
 ##步骤三
 最后我们还要修改 zstack-utility agent在收到我们新增的全局配置后做出对应的修改 kvmagent/kvmagent/plugins/vm_plugin.py
-![](zstackorg.github.io/images/blogs/spice/5.jpg)
+<img src="/images/blogs/spice/5.jpg" class="center-img img-responsive">
 
     def get_console_port(self)
     if (g.type_ =='vnc')or(g.type_=='spice'):
@@ -70,4 +70,5 @@ category: cn_blog
 依照官方说明的方法来编译ZStack All In One 安装包http://zstack.org/cn_blog/build-zstack.html
 
 #总结
-限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，效果不错~最后严重感谢惯C哥的帮助^_^
+限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer才能连接哦，附上效果图~最后严重感谢惯C哥的帮助^_^
+<img src="/images/blogs/spice/7.jpg" class="center-img img-responsive">
