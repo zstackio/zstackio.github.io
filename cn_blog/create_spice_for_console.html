@@ -130,31 +130,29 @@
 <h2>步骤一</h2>
 
 <p>首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-<img src="http://10.177.11.103/1.jpg" alt="" /></p>
-
-<pre><code>&lt;config&gt;
-     &lt;category&gt;kvm&lt;/category&gt;
-     &lt;name&gt;consoleMode&lt;/name&gt;
-   &lt;description&gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&lt;/description&gt;
-     &lt;type&gt;java.lang.String&lt;/type&gt;
-     &lt;defaultValue&gt;vnc&lt;/defaultValue&gt;
-&lt;/config&gt;
-</code></pre>
+<img src="/images/blogs/spice/1.jpg" class="center-img img-responsive">
+    <config>
+         <category>kvm</category>
+         <name>consoleMode</name>
+       <description>You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]</description>
+         <type>java.lang.String</type>
+         <defaultValue>vnc</defaultValue>
+    </config></p>
 
 <p>在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
-<img src="zstackorg.github.io/images/blogs/spice/2.jpg" alt="" /></p>
+<img src="/images/blogs/spice/2.jpg" class="center-img img-responsive"></p>
 
 <pre><code>@GlobalConfigValidation(validValues = {"vnc","spice"})
 public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, "consoleMode");
 </code></pre>
 
 <p> 到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
-<img src="zstackorg.github.io/images/blogs/spice/3.jpg" alt="" /></p>
+<img src="/images/blogs/spice/3.jpg" class="center-img img-responsive"></p>
 
 <h2>步骤二</h2>
 
 <p>修改 ZStack 的部分, 在plugin/kvm/src/main/java/org/zstack/kvm/KVMAgentCommands.java 中 public static class StartVmCmd 中新增私有的变量及公有的方法
-<img src="zstackorg.github.io/images/blogs/spice/4.jpg" alt="" /></p>
+<img src="/images/blogs/spice/4.jpg" class="center-img img-responsive"></p>
 
 <pre><code>private String consoleMode;
 
@@ -167,12 +165,12 @@ public String getConsoleMode() {
 </code></pre>
 
 <p>接著修改 plugin/kvm/src/main/java/org/zstack/kvm/KVMHost.java 在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 zstack-utility agent
-<img src="zstackorg.github.io/images/blogs/spice/6.jpg" alt="" /></p>
+<img src="/images/blogs/spice/6.jpg" class="center-img img-responsive"></p>
 
 <h2>步骤三</h2>
 
 <p>最后我们还要修改 zstack-utility agent在收到我们新增的全局配置后做出对应的修改 kvmagent/kvmagent/plugins/vm_plugin.py
-<img src="zstackorg.github.io/images/blogs/spice/5.jpg" alt="" /></p>
+<img src="/images/blogs/spice/5.jpg" class="center-img img-responsive"></p>
 
 <pre><code>def get_console_port(self)
 if (g.type_ =='vnc')or(g.type_=='spice'):
@@ -195,7 +193,8 @@ def make_spice():
 
 <h1>总结</h1>
 
-<p>限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，效果不错~最后严重感谢惯C哥的帮助^_^</p>
+<p>限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，附效果图一张~最后严重感谢惯C哥的帮助^_^
+<img src="/images/blogs/spice/7.jpg" class="center-img img-responsive"></p>
 
   </article>
 

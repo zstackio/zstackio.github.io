@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 14 Jan 2016 17:44:27 +0800</pubDate>
-    <lastBuildDate>Thu, 14 Jan 2016 17:44:27 +0800</lastBuildDate>
+    <pubDate>Mon, 18 Jan 2016 15:57:51 +0800</pubDate>
+    <lastBuildDate>Mon, 18 Jan 2016 15:57:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -26,31 +26,29 @@
 &lt;h2&gt;步骤一&lt;/h2&gt;
 
 &lt;p&gt;首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-&lt;img src=&quot;http://10.177.11.103/1.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;config&amp;gt;
-     &amp;lt;category&amp;gt;kvm&amp;lt;/category&amp;gt;
-     &amp;lt;name&amp;gt;consoleMode&amp;lt;/name&amp;gt;
-   &amp;lt;description&amp;gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&amp;lt;/description&amp;gt;
-     &amp;lt;type&amp;gt;java.lang.String&amp;lt;/type&amp;gt;
-     &amp;lt;defaultValue&amp;gt;vnc&amp;lt;/defaultValue&amp;gt;
-&amp;lt;/config&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
+&lt;img src=&quot;/images/blogs/spice/1.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;
+    &lt;config&gt;
+         &lt;category&gt;kvm&lt;/category&gt;
+         &lt;name&gt;consoleMode&lt;/name&gt;
+       &lt;description&gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&lt;/description&gt;
+         &lt;type&gt;java.lang.String&lt;/type&gt;
+         &lt;defaultValue&gt;vnc&lt;/defaultValue&gt;
+    &lt;/config&gt;&lt;/p&gt;
 
 &lt;p&gt;在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
-&lt;img src=&quot;zstackorg.github.io/images/blogs/spice/2.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/2.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;@GlobalConfigValidation(validValues = {&quot;vnc&quot;,&quot;spice&quot;})
 public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, &quot;consoleMode&quot;);
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt; 到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
-&lt;img src=&quot;zstackorg.github.io/images/blogs/spice/3.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/3.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;h2&gt;步骤二&lt;/h2&gt;
 
 &lt;p&gt;修改 ZStack 的部分, 在plugin/kvm/src/main/java/org/zstack/kvm/KVMAgentCommands.java 中 public static class StartVmCmd 中新增私有的变量及公有的方法
-&lt;img src=&quot;zstackorg.github.io/images/blogs/spice/4.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/4.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;private String consoleMode;
 
@@ -63,12 +61,12 @@ public String getConsoleMode() {
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;接著修改 plugin/kvm/src/main/java/org/zstack/kvm/KVMHost.java 在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 zstack-utility agent
-&lt;img src=&quot;zstackorg.github.io/images/blogs/spice/6.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/6.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;h2&gt;步骤三&lt;/h2&gt;
 
 &lt;p&gt;最后我们还要修改 zstack-utility agent在收到我们新增的全局配置后做出对应的修改 kvmagent/kvmagent/plugins/vm_plugin.py
-&lt;img src=&quot;zstackorg.github.io/images/blogs/spice/5.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/5.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;def get_console_port(self)
 if (g.type_ ==&#39;vnc&#39;)or(g.type_==&#39;spice&#39;):
@@ -91,7 +89,8 @@ def make_spice():
 
 &lt;h1&gt;总结&lt;/h1&gt;
 
-&lt;p&gt;限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，效果不错~最后严重感谢惯C哥的帮助^_^&lt;/p&gt;
+&lt;p&gt;限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，附效果图一张~最后严重感谢惯C哥的帮助^_^
+&lt;img src=&quot;/images/blogs/spice/7.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 10 Jan 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/create_spice_for_console.html</link>
