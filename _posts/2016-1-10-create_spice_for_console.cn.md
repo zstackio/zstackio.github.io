@@ -17,6 +17,7 @@ category: cn_blog
 ##步骤一
 首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
 <img src="/images/blogs/spice/1.jpg" class="center-img img-responsive">
+
     <config>
          <category>kvm</category>
          <name>consoleMode</name>
@@ -27,7 +28,7 @@ category: cn_blog
 
 在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
 <img src="/images/blogs/spice/2.jpg" class="center-img img-responsive">
-
+  
     @GlobalConfigValidation(validValues = {"vnc","spice"})
     public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, "consoleMode");
 
