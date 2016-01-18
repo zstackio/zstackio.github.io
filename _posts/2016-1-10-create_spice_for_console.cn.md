@@ -1,6 +1,6 @@
 ---
 layout: post.cn
-title:  "给ZStack添加SPice协议的支持（-）"
+title:  "给ZStack添加SPice协议的支持（一）"
 date:   2016-1-10
 categories: blog
 author: Nan Su 
