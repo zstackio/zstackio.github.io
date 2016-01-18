@@ -27,9 +27,13 @@ category: cn_blog
 
 在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
 <img src="/images/blogs/spice/2.jpg" class="center-img img-responsive">
-
-    @GlobalConfigValidation(validValues = {"vnc","spice"})
-    public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, "consoleMode");
+    <config>
+         <category>kvm</category>
+         <name>consoleMode</name>
+         <description>You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]</description>
+         <type>java.lang.String</type>
+         <defaultValue>vnc</defaultValue>
+    </config>
 
  到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
 <img src="/images/blogs/spice/3.jpg" class="center-img img-responsive">
