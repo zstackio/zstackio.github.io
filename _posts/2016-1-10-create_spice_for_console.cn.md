@@ -17,6 +17,7 @@ category: cn_blog
 ##步骤一
 首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
 <img src="/images/blogs/spice/1.jpg" class="center-img img-responsive">
+
     <config>
          <category>kvm</category>
          <name>consoleMode</name>
