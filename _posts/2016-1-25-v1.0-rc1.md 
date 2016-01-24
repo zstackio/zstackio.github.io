@@ -1,0 +1,14 @@
+---
+published: false
+layout: post
+title: ZStack v1.0 RC1 release
+date: 2016-01-25T08:00:00.000Z
+author: Frank Zhang
+categories: blog
+---
+
+Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v1.0 is in the release cycle. In this release, ZStack introduces following new features:
+
+## Flat Network Provider
+
+A new network provider, flat network provider, which provides DHCP, Userdata services is available for users only using flat networks. Compared to the virtual router provider, the main advantage of the new provider is you don't need a virtual router VM to work as a DHCP server, which simplify the effort of deploying a flat network siginificantlly.
