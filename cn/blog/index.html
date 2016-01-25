@@ -116,6 +116,331 @@
       
         
     <div>
+      <a href="/cn_blog/v1.0-rc1.html"><h3>ZStack v1.0 RC1 发布</h3></a>
+      <p class="post-meta"> by Frank Zhang on Jan 25, 2016</p>
+      <p>ZStack 1.0 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们加入了以下新功能。</p>
+
+<h2>1. Flat Network Provider</h2>
+
+<p>Flat Network Provider是一种新的网络服务提供模式，它提供DHCP和Userdata服务。相对于已有的Virtual Router Provider，Flat Network Provider最大的优势在于不需要启动一个Virtual Router虚拟机就可以为VM提供DHCP服务，这大大简化了部署一个扁平网络的复杂度。此外，由于采用了分布式DHCP系统，Flat Network Provider不存在传统DHCP系统的单点失败情况，因为每个物理机上都会有一个DHCP服务器服务运行在该物理机上的VM。在高并发创建或启动VM的时候，DHCP的负载会被分发到不同物理机上去，大大提供了系统整体的并发性。下图是分布式DHCP系统的一个总体架构图：</p>
+
+<p><img src="/images/1.0/1.PNG" class="center-img img-responsive"></p>
+
+<h3>1.1 使用Flat Network Provider</h3>
+
+<p>当你在创建一个L3网络的时候，在最后一步选择网络服务时做如下操作：</p>
+
+<p><img src="/images/1.0/2.png" class="center-img img-responsive"></p>
+
+<ol>
+<li>选择“Flat Network Service Provider"做为网络服务提供商</li>
+<li>选择DHCP服务</li>
+<li>点击“添加”按钮</li>
+<li>重复步骤2和3添加user data服务</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-info">
+<h4>你可以将Flat Network Provider和Virtual Router Provider混合使用</h4>
+尽管Flat Network Provider的主要目的是为扁平网络情况提供DHCP服务器，你也可以讲它跟已有的Virtual Router Provider混合使用。
+例如使用Flat Network Provider提供DHCP，用Virtual Router Provider提供DNS/SNAT等其他服务。
+</div>
+
+
+<h2>2. User Data</h2>
+
+<p>标准的<a href="https://cloudinit.readthedocs.org/en/latest/">Cloud-init</a>在该版本中得到支持。要使用user data，你需要在VM的操作系统中安装cloud-init包。User data使用了ZStack的系统标签（System Tags）机制实现，其格式为：</p>
+
+<pre><code>    userdata::{the content}
+    例如：
+    userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true
+</code></pre>
+
+<p>你应该已经注意到了上面的user data中包含了一个非常长的字符串，它其实是cloud-init的YAML配置文件minify后的结果。因为ZStack的CLI工具只能接受单行字符串，在传递cloud-init YAML配置的时候你需要先把它变成一个单行的字符串。你可以使用下面脚本：</p>
+
+<pre><code>    sed ':a;N;$!ba;s/\n/\\n/g' YAML文件路径
+</code></pre>
+
+<p>输出的长字符串会打印到屏幕，你可以复制黏贴。</p>
+
+<h3>2.1 使用User Data</h3>
+
+<p>当你在VM的操作系统中安装完cloud-init包后，我们强烈建议你把它保存成一个模板，这样从该模板新建的VM都会有cloud-init的包。使用下面步骤安装cloud-init包：</p>
+
+<ol>
+<li>yum install cloud-init 或 apt-get install cloud-init</li>
+<li><p>在/etc/cloud/cloud.cfg文件中添加如下内容：</p>
+
+<pre><code> datasource_list:
+   - CloudStack
+</code></pre></li>
+</ol>
+
+
+<p>cloud-init支持AWS，CloudStack，OpenStack多种获取user data的方式，ZStack使用的是CloudStack方式，即用DHCP服务器提供user data。</p>
+
+<h4>2.1.1 添加User Data</h4>
+
+<p>你可以在新建VM的时候指定user data：</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>或者对一个已经创建的VM指定user data：</p>
+
+<pre><code>    CreateSystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b resourceType=VmInstanceVO tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID。</p>
+
+<h4>2.1.2 获得user data</h4>
+
+<p>你可以用<code>QuerySystemTag</code>获取一个VM的user data，例如：</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=userdata%
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID。</p>
+
+<h4>2.1.3 删除user data</h4>
+
+<p>你可以用<code>DeleteTag</code>从一个VM上删除user data，例如：</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。</p>
+
+<h4>2.1.4 更新user data</h4>
+
+<p>你可以用<code>UpdateSystemTag</code>更新一个VM上已有的user data，例如：</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。</p>
+
+<h4>2.2 注入SSH公钥</h4>
+
+<p>SSH公钥是用户使用user data最常见的用法，为此我们特别提供了一个专门的system tag，格式为：</p>
+
+<pre><code>    sshkey::{content}
+    例如：
+    sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy
+</code></pre>
+
+<h5>2.2.1 注入SSH公钥</h5>
+
+<p>你可以在创建VM的时候指定公钥，例如：</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy'
+</code></pre>
+
+<p>也可以给一个已有的VM指定公钥，例如：</p>
+
+<pre><code>    CreateSystemTag resourceType=VmInstanceVO resourceUuid=606d9a2fa723407c93438789eaf72cea tag="sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7NtheqzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNAMVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3"
+</code></pre>
+
+<h5>2.2.2 获得公钥</h5>
+
+<p>你可以用<code>QuerySystemTag</code>获得一个VM的公钥，例如：</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=sshkey%
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID</p>
+
+<h5>2.2.3 删除公钥</h5>
+
+<p>你可以用<code>DeleteTag</code>从VM上删除一个公钥：</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。</p>
+
+<h5>2.2.4 更新公钥</h5>
+
+<p>你可以使用<code>UpdateSystemTag</code>更新一个VM的公钥，例如：</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7Nthe    qzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNA    MVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3'
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。</p>
+
+<div class="bs-callout bs-callout-warning">
+<h4>你或许需要重启VM让公钥生效</h4>
+
+如果你是给一个已有的VM创建公钥或者更新公钥，你需要做如下步骤：<br>
+1. 删除在VM中删除已有的cloud-init数据，rm -rf /var/lib/cloud<br>
+2. 重启VM<br>
+
+对于给新建的VM指定公钥，你无需做这些步骤。
+</div>
+
+
+<h2>3. 本地存储的磁盘迁移</h2>
+
+<p>在本版本中，你可以在本地存储的不同物理机间迁移虚拟机的磁盘(volume)，解决使用本地存储虚拟机不能迁移的的问题。</p>
+
+<h3>3.1 迁移磁盘</h3>
+
+<p>你可以用<code>LocalStorageMigrateVolume</code>迁移VM的root volume和data volume。例如：</p>
+
+<pre><code>    LocalStorageMigrateVolume volumeUuid=cdbda88fef1a42f386ff111b729159d9 destHostUuid=252d484d93e64fea946148097162b60f
+</code></pre>
+
+<h3>3.2 迁移规则</h3>
+
+<ol>
+<li>如果迁移的是root volume，需要先关闭虚拟机</li>
+<li>如果迁移的是data volume，需要先将data volume从虚拟机卸载（detach)</li>
+<li>如果volume上有快照（snapshots），快照会被一并迁移</li>
+</ol>
+
+
+<h3>3.3 使用磁盘迁移迁移VM</h3>
+
+<p>你可以使用磁盘迁移功能在不同物理机上冷迁移虚拟机：</p>
+
+<ol>
+<li>关闭虚拟机</li>
+<li>将虚拟机的root volume迁移到目的物理机</li>
+<li>启动虚拟机</li>
+</ol>
+
+
+<blockquote><p>ZStack实际是支持本地存储的虚拟机热迁移的。但在我们的压力测试中，我们发现KVM的带存储热迁移不稳定。我们在一个虚拟机中做一次Linux内核编译，并在这个过程中做带存储热迁移，迁移完成后重启虚拟机，发现虚拟机磁盘损坏。为了保护用户数据，我们在API层面关闭了虚拟机带存储热迁移的功能。</p></blockquote>
+
+<h2>4. ISO API</h2>
+
+<p>在该版本中，你可以使用API向一个VM加载或卸载一个ISO，并且改变VM的启动设备顺序。</p>
+
+<h3>4.1 添加ISO</h3>
+
+<p>你可以用<code>AttachIsoToVmInstance</code>向一个VM添加一个ISO，例如：</p>
+
+<pre><code>    AttachIsoToVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c isoUuid=815dcd3d83dd429298ba2c9b1685c1ad
+</code></pre>
+
+<h3>4.2 卸载ISO</h3>
+
+<p>你可以用<code>DetachIsoFromVmInstance</code>从一个VM上卸载一个ISO，例如：</p>
+
+<pre><code>    DetachIsoFromVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<h3>4.3 设置启动设备顺序</h3>
+
+<p>你可以用<code>SetVmBootOrder</code>设置VM的启动设备顺序，例如：</p>
+
+<pre><code>    SetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b bootOrder=HardDisk,CdRom
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<blockquote><p>合法的启动顺序包括：HardDisk和CdRom</p></blockquote>
+
+<h3>4.4 获得启动设备顺序</h3>
+
+<p>你可以用<code>GetVmBootOrder</code>获得VM的启动设备顺序，例如：</p>
+
+<pre><code>    GetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<h3>4.5 设备启动顺序规则</h3>
+
+<ul>
+<li>如果使用ISO创建一个VM，则该VM的启动设备自动被设置为CdRom。当操作系统安装完成并重启后，启动顺序自动改成HardDisk</li>
+<li>如果使用template创建一个VM，改VM的启动设备自动被设置为HardDisk</li>
+<li>加载一个ISO到一个VM不改变其启动顺序。如果需要，你可以用<code>SetVmBootOrder</code>更改</li>
+</ul>
+
+
+<h2>5. Spice支持</h2>
+
+<p>在该版本中，我们支持Spice协议作为VM图形终端协议。你可以通过更改全局选项进行设置，例如：</p>
+
+<pre><code>    UpdateGlobalConfig category=kvm name=vm.consoleMode value=spice
+</code></pre>
+
+<blockquote><p>合法的协议包括：vnc和spice</p></blockquote>
+
+<p>目前ZStack还没有针对spice的console proxy，你需要下载一个spice客户端直接连接VM在物理机上的spice端口。你可以用下面的API来获得物理机的IP和VM的spice端口号：</p>
+
+<pre><code>    &gt;&gt;&gt;GetVmConsoleAddress uuid=9cd68155905e47b5b0698ecba9126242
+    {
+        "hostIp": "192.168.199.136",
+        "port": 5902,
+        "protocol": "spice",
+        "success": true
+    }
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。感谢来至武汉纺织大学的Nan Su(fengcai_ji@163.com)同学贡献了这个功能。</p>
+
+<h2>6. I18N支持</h2>
+
+<p>在该版本中，我们支持多语言版本，目前支持英文和中文，你可以通过点击语言图标进行切换。</p>
+
+<p><img src="/images/1.0/3.png" class="center-img img-responsive"></p>
+
+<p>感谢来自武汉纺织大学的Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com)贡献了该功能。</p>
+
+<h2>7. VM状态的实时捕获</h2>
+
+<p>在该版本中，我们支持VM状态的实时捕获。如果用户绕过ZStack对VM进行了操作，其状态会实时的发送回管理节点进行更新。也就是说你可以在VM内部
+通过halt命令来关闭虚拟机，而不用通过ZStack UI。虽然不推荐，但如果你用virsh关闭或者启动了一个VM，其在ZStack中的状态也会被实时更新。</p>
+
+<h2>8. 安装</h2>
+
+<p>你可以通过下面方式安装：</p>
+
+<pre><code>    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -R aliyun
+</code></pre>
+
+<blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
+
+<h2>9. 升级</h2>
+
+<p>一如既往的，我们支持一键无缝升级：</p>
+
+<pre><code>    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -u
+</code></pre>
+
+<blockquote><p>如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。</p></blockquote>
+
+      <a href="/cn_blog/v1.0-rc1.html">Read more >></a>
+      <div style="margin-top: 15px">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn_blog/v1.0-rc1.html" data-a2a-title="ZStack v1.0 RC1 发布">
+          <a class="a2a_button_facebook" ></a>
+          <a class="a2a_button_twitter"></a>
+          <a class="a2a_button_google_plus"></a>
+          <a class="a2a_button_linkedin"></a>
+          <a class="a2a_button_reddit"></a>
+          <a class="a2a_button_hacker_news"></a>
+          <a class="a2a_button_sina_weibo"></a>
+          <span class="a2a_divider"></span>
+          <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+        </div>
+      </div>
+    </div>
+    <hr>
+      
+    
+      
+        
+    <div>
       <a href="/cn_blog/create_spice_for_console.html"><h3>给ZStack添加SPice协议的支持（一）</h3></a>
       <p class="post-meta"> by Nan Su on Jan 10, 2016</p>
       <h2>前言</h2>
@@ -386,14 +711,14 @@ VR实际上是一个用于提供服务的特殊虚拟机，
       
         
     <div>
-      <a href="/blog/v0.9.html"><h3>Announcing ZStack v0.9</h3></a>
+      <a href="/cn/blog/v0.9.html"><h3>Announcing ZStack v0.9</h3></a>
       <p class="post-meta"> by Frank Zhang on Sep 13, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.9 is released.
 In this release, ZStack introduces two new features:</p>
 
-      <a href="/blog/v0.9.html">Read more >></a>
+      <a href="/cn/blog/v0.9.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.9.html" data-a2a-title="Announcing ZStack v0.9">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.9.html" data-a2a-title="Announcing ZStack v0.9">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -631,14 +956,14 @@ Today we release 0.9 RC2 for you test. In this release, ZStack introduces two ne
       
         
     <div>
-      <a href="/blog/v0.8.html"><h3>Announcing ZStack v0.8</h3></a>
+      <a href="/cn/blog/v0.8.html"><h3>Announcing ZStack v0.8</h3></a>
       <p class="post-meta"> by Frank Zhang on Aug 3, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is released.
 In this release, ZStack introduces four new features:</p>
 
-      <a href="/blog/v0.8.html">Read more >></a>
+      <a href="/cn/blog/v0.8.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.8.html" data-a2a-title="Announcing ZStack v0.8">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.8.html" data-a2a-title="Announcing ZStack v0.8">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -838,14 +1163,14 @@ ZStack用户账号系统设计与经典的亚马逊AWS相似，都定义了Accou
       
         
     <div>
-      <a href="/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
+      <a href="/cn/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
       <p class="post-meta"> by Frank Zhang on Jul 26, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is in the release cycle.
 Today we release 0.8 RC2 for you test. In this release, ZStack introduces four new features:</p>
 
-      <a href="/blog/v0.8-rc2.html">Read more >></a>
+      <a href="/cn/blog/v0.8-rc2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1001,16 +1326,16 @@ Today we release 0.7.0 RC2 for you test.</p>
       
         
     <div>
-      <a href="/blog/intel.html"><h3>Intel is ZStack's partner now</h3></a>
+      <a href="/cn/blog/intel.html"><h3>Intel is ZStack's partner now</h3></a>
       <p class="post-meta"> by Frank Zhang on Jun 14, 2015</p>
       <p>Today we are glad to announce that Intel, the world's largest and highest valued semiconductor chip maker, becomes ZStack's partner!
 Intel has been investigating many resources in the cloud computing, including help open source technology to create enterprise-ready
 IaaS infrastructure. ZStack, as its leading IaaS technology brings a lot of potential for future enterprise cloud, gets much attention
 from Intel and finally becomes Intel's partner in IaaS area.</p>
 
-      <a href="/blog/intel.html">Read more >></a>
+      <a href="/cn/blog/intel.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/intel.html" data-a2a-title="Intel is ZStack's partner now">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/intel.html" data-a2a-title="Intel is ZStack's partner now">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1251,7 +1576,7 @@ and has built an architecture that tackles issues mentioned before.</p>
       
         
     <div>
-      <a href="/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
+      <a href="/cn/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 5, 2015</p>
       <p>Three years ago, when I was working on another IaaS software, my friend joked: "you guys are making a product
 killing IT administrators' job." I did think so then. In my opinion, enterprises could
@@ -1264,9 +1589,9 @@ infrastructure, but also a dev team or a consultant company to maintain the IaaS
 engineers, as people with such skills are easier to get good pay (searching OpenStack on online hiring websites
 will prove this), but sad for developers like me who are supposed to create something to relieve life.</p>
 
-      <a href="/blog/why-zstack.html">Read more >></a>
+      <a href="/cn/blog/why-zstack.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1315,15 +1640,15 @@ node can manage hundreds of thousands of physical servers, millions of virtual m
       
         
     <div>
-      <a href="/blog/stateless-clustering.html"><h3>ZStack's Scalability Secrets Part 2: Stateless Services</h3></a>
+      <a href="/cn/blog/stateless-clustering.html"><h3>ZStack's Scalability Secrets Part 2: Stateless Services</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Every ZStack service is stateless. Making services high available and scaled out can be as easy as starting
 redundant service instances then load balancing them; furthermore, ZStack encloses all services into a single process called management node,
 which makes deploying and managing services extremely simple.</em></p>
 
-      <a href="/blog/stateless-clustering.html">Read more >></a>
+      <a href="/cn/blog/stateless-clustering.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/stateless-clustering.html" data-a2a-title="ZStack's Scalability Secrets Part 2: Stateless Services">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/stateless-clustering.html" data-a2a-title="ZStack's Scalability Secrets Part 2: Stateless Services">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1344,7 +1669,7 @@ which makes deploying and managing services extremely simple.</em></p>
       
         
     <div>
-      <a href="/blog/lock-free.html"><h3>ZStack's Scalability Secrets Part 3: Lock-free Architecture</h3></a>
+      <a href="/cn/blog/lock-free.html"><h3>ZStack's Scalability Secrets Part 3: Lock-free Architecture</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Lots of tasks in IaaS software need to execute in sequence; for example, when a task of starting a virtual machine is running,
 a stopping task of the same virtual machine must wait for the previous starting task to finish. On the other side,
@@ -1353,9 +1678,9 @@ Synchronization and fine-grained parallelization in a distributed system are not
 Rising to the challenge, ZStack offers a lock-free architecture built on queues, allowing tasks to control their parallelism
 level easily from 1(synchronized) to N(parallel).</em></p>
 
-      <a href="/blog/lock-free.html">Read more >></a>
+      <a href="/cn/blog/lock-free.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/lock-free.html" data-a2a-title="ZStack's Scalability Secrets Part 3: Lock-free Architecture">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/lock-free.html" data-a2a-title="ZStack's Scalability Secrets Part 3: Lock-free Architecture">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1376,15 +1701,15 @@ level easily from 1(synchronized) to N(parallel).</em></p>
       
         
     <div>
-      <a href="/blog/microservices.html"><h3>The In-Process Microservices Architecture</h3></a>
+      <a href="/cn/blog/microservices.html"><h3>The In-Process Microservices Architecture</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>To tackle challenges such as significant operations overhead, duplication of effort, testability that microservices usually faces, and
 to achieve the benefits such as code decoupling, easy to scale-out that microservices brings in, ZStack encompasses all services in
 a single process called management node, building a in-process microservices architecture.</em></p>
 
-      <a href="/blog/microservices.html">Read more >></a>
+      <a href="/cn/blog/microservices.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/microservices.html" data-a2a-title="The In-Process Microservices Architecture">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/microservices.html" data-a2a-title="The In-Process Microservices Architecture">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1436,16 +1761,16 @@ which can not only extend ZStack's functionality, but also hook into business lo
       
         
     <div>
-      <a href="/blog/workflow.html"><h3>The Workflow Engine</h3></a>
+      <a href="/cn/blog/workflow.html"><h3>The Workflow Engine</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Tasks in IaaS software normally have long execution paths; an error may happen at any given step. In order to keep the integrity of the system,
 an IaaS software must provide a mechanism that can roll back prior executed steps. With a workflow engine, every step in ZStack
 wrapped in individual flow can be rolled back on error. Besides, key execution paths can be configured by assembling workflows
 in configuration files, which decouples the architecture further.</em></p>
 
-      <a href="/blog/workflow.html">Read more >></a>
+      <a href="/cn/blog/workflow.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/workflow.html" data-a2a-title="The Workflow Engine">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/workflow.html" data-a2a-title="The Workflow Engine">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1528,16 +1853,16 @@ the cascade framework by implementing a simple extension point, which decouples 
       
         
     <div>
-      <a href="/blog/query.html"><h3>The Query API</h3></a>
+      <a href="/cn/blog/query.html"><h3>The Query API</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>A common challenge for users of IaaS software is how to find a wanted resource quickly and precisely; for example,
 finding the VM that has EIP(16.16.16.16) from 10,000 VMs. Most IaaS software solves this problem by ad-hoc query logic in APIs.
 ZStack, instead of ad-hoc, equips with a framework that can automatically generate queries for every field of every resource,
 and join queries that span multiple resources, helping users to manage enormous resources in the cloud.</em></p>
 
-      <a href="/blog/query.html">Read more >></a>
+      <a href="/cn/blog/query.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/query.html" data-a2a-title="The Query API">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/query.html" data-a2a-title="The Query API">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1590,16 +1915,16 @@ and upgraded by Ansible; users may not even notice their existences.</em></p>
       
         
     <div>
-      <a href="/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
+      <a href="/cn/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack abstracts the networking model into L2 and L3 networks. An L2 network provides a type of L2 isolation method, while an L3 network
 basically represents a subnet associated with OSI layer 4 ~ layer 7 network services. The idea is to use terms and
 concepts with which administrators have been familiar to describe ZStack's networking model, allowing administrators to
 create networking topologies easily and precisely.</em></p>
 
-      <a href="/blog/network-l2.html">Read more >></a>
+      <a href="/cn/blog/network-l2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1620,7 +1945,7 @@ create networking topologies easily and precisely.</em></p>
       
         
     <div>
-      <a href="/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
+      <a href="/cn/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>In ZStack's networking model, OSI layer 4 ~ 7 network services are implemented as small plugins from different service providers.
 The default provider, called virtual router provider, uses a customized Linux VM as a virtual appliance to provide
@@ -1628,9 +1953,9 @@ network services including DHCP, DNS, SNAT, EIP, and Port Forwarding for every L
 of no single failure point, and no special requirements for physical infrastructure so that users can realize various network services
 on commodity hardware without purchasing expensive equipments.</em></p>
 
-      <a href="/blog/virtual-router.html">Read more >></a>
+      <a href="/cn/blog/virtual-router.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1681,16 +2006,16 @@ vendors can easily plug in their products by implementing corresponding storage 
       
         
     <div>
-      <a href="/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
+      <a href="/cn/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack
 is fully automated. The automation testing system consists of three parts: integration testing, system testing, and model-based
 testing. The integration testing system is built based on JUnit using simulators. With various utilities the integration testing
 system supplies, developers can quickly write test cases to validate a new feature or a bug fix.</em></p>
 
-      <a href="/blog/integration-testing.html">Read more >></a>
+      <a href="/cn/blog/integration-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1711,16 +2036,16 @@ system supplies, developers can quickly write test cases to validate a new featu
       
         
     <div>
-      <a href="/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
+      <a href="/cn/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack's <a href="http://en.wikipedia.org/wiki/System_testing">system testing</a>
 system runs test cases in real hardware environment; like integration testing,
 the system testing is full automated and covers aspects of functional tests,
 stress tests, and performance tests.</em></p>
 
-      <a href="/blog/system-testing.html">Read more >></a>
+      <a href="/cn/blog/system-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1741,7 +2066,7 @@ stress tests, and performance tests.</em></p>
       
         
     <div>
-      <a href="/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
+      <a href="/cn/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>The <a href="http://en.wikipedia.org/wiki/Model-based_testing">model-based testing</a> system
 is a sub-project in zstack-woodpecker. With finite-state machines and
@@ -1750,9 +2075,9 @@ unless a defect is found, or pre-defined exit conditions are met. ZStack relies 
 corner cases that hardly happen in real world, which compensates integration testing and
 system testing in terms of test coverage.</em></p>
 
-      <a href="/blog/model-based-testing.html">Read more >></a>
+      <a href="/cn/blog/model-based-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1775,6 +2100,11 @@ system testing in terms of test coverage.</em></p>
     <ul class="nav nav-pills nav-stacked left-slider">
       <ol>
         
+        
+          
+            
+        <li style="padding: 10px"><a href="/cn_blog/v1.0-rc1.html">ZStack v1.0 RC1 发布</a></li>
+          
         
           
             
@@ -1830,7 +2160,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/v0.9.html">Announcing ZStack v0.9</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.9.html">Announcing ZStack v0.9</a></li>
           
         
           
@@ -1877,7 +2207,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/v0.8.html">Announcing ZStack v0.8</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.8.html">Announcing ZStack v0.8</a></li>
           
         
           
@@ -1914,7 +2244,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
           
         
           
@@ -1952,7 +2282,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/intel.html">Intel is ZStack's partner now</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/intel.html">Intel is ZStack's partner now</a></li>
           
         
           
@@ -2007,7 +2337,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
           
         
           
@@ -2021,21 +2351,21 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/stateless-clustering.html">ZStack's Scalability Secrets Part 2: Stateless Services</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/stateless-clustering.html">ZStack's Scalability Secrets Part 2: Stateless Services</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/microservices.html">The In-Process Microservices Architecture</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/microservices.html">The In-Process Microservices Architecture</a></li>
           
         
           
@@ -2049,7 +2379,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/workflow.html">The Workflow Engine</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/workflow.html">The Workflow Engine</a></li>
           
         
           
@@ -2070,7 +2400,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/query.html">The Query API</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/query.html">The Query API</a></li>
           
         
           
@@ -2084,14 +2414,14 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
           
         
           
@@ -2105,21 +2435,21 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
           
         
           

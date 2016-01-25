@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack v1.0 RC1 发布</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack v1.0 RC1 发布</h2>
+    <p class="post-meta"> by Frank Zhang on Jan 25, 2016</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p>ZStack 1.0 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们加入了以下新功能。</p>
+
+<h2>1. Flat Network Provider</h2>
+
+<p>Flat Network Provider是一种新的网络服务提供模式，它提供DHCP和Userdata服务。相对于已有的Virtual Router Provider，Flat Network Provider最大的优势在于不需要启动一个Virtual Router虚拟机就可以为VM提供DHCP服务，这大大简化了部署一个扁平网络的复杂度。此外，由于采用了分布式DHCP系统，Flat Network Provider不存在传统DHCP系统的单点失败情况，因为每个物理机上都会有一个DHCP服务器服务运行在该物理机上的VM。在高并发创建或启动VM的时候，DHCP的负载会被分发到不同物理机上去，大大提供了系统整体的并发性。下图是分布式DHCP系统的一个总体架构图：</p>
+
+<p><img src="/images/1.0/1.PNG" class="center-img img-responsive"></p>
+
+<h3>1.1 使用Flat Network Provider</h3>
+
+<p>当你在创建一个L3网络的时候，在最后一步选择网络服务时做如下操作：</p>
+
+<p><img src="/images/1.0/2.png" class="center-img img-responsive"></p>
+
+<ol>
+<li>选择“Flat Network Service Provider"做为网络服务提供商</li>
+<li>选择DHCP服务</li>
+<li>点击“添加”按钮</li>
+<li>重复步骤2和3添加user data服务</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-info">
+<h4>你可以将Flat Network Provider和Virtual Router Provider混合使用</h4>
+尽管Flat Network Provider的主要目的是为扁平网络情况提供DHCP服务器，你也可以讲它跟已有的Virtual Router Provider混合使用。
+例如使用Flat Network Provider提供DHCP，用Virtual Router Provider提供DNS/SNAT等其他服务。
+</div>
+
+
+<h2>2. User Data</h2>
+
+<p>标准的<a href="https://cloudinit.readthedocs.org/en/latest/">Cloud-init</a>在该版本中得到支持。要使用user data，你需要在VM的操作系统中安装cloud-init包。User data使用了ZStack的系统标签（System Tags）机制实现，其格式为：</p>
+
+<pre><code>    userdata::{the content}
+    例如：
+    userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true
+</code></pre>
+
+<p>你应该已经注意到了上面的user data中包含了一个非常长的字符串，它其实是cloud-init的YAML配置文件minify后的结果。因为ZStack的CLI工具只能接受单行字符串，在传递cloud-init YAML配置的时候你需要先把它变成一个单行的字符串。你可以使用下面脚本：</p>
+
+<pre><code>    sed ':a;N;$!ba;s/\n/\\n/g' YAML文件路径
+</code></pre>
+
+<p>输出的长字符串会打印到屏幕，你可以复制黏贴。</p>
+
+<h3>2.1 使用User Data</h3>
+
+<p>当你在VM的操作系统中安装完cloud-init包后，我们强烈建议你把它保存成一个模板，这样从该模板新建的VM都会有cloud-init的包。使用下面步骤安装cloud-init包：</p>
+
+<ol>
+<li>yum install cloud-init 或 apt-get install cloud-init</li>
+<li><p>在/etc/cloud/cloud.cfg文件中添加如下内容：</p>
+
+<pre><code> datasource_list:
+   - CloudStack
+</code></pre></li>
+</ol>
+
+
+<p>cloud-init支持AWS，CloudStack，OpenStack多种获取user data的方式，ZStack使用的是CloudStack方式，即用DHCP服务器提供user data。</p>
+
+<h4>2.1.1 添加User Data</h4>
+
+<p>你可以在新建VM的时候指定user data：</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>或者对一个已经创建的VM指定user data：</p>
+
+<pre><code>    CreateSystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b resourceType=VmInstanceVO tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID。</p>
+
+<h4>2.1.2 获得user data</h4>
+
+<p>你可以用<code>QuerySystemTag</code>获取一个VM的user data，例如：</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=userdata%
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID。</p>
+
+<h4>2.1.3 删除user data</h4>
+
+<p>你可以用<code>DeleteTag</code>从一个VM上删除user data，例如：</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。</p>
+
+<h4>2.1.4 更新user data</h4>
+
+<p>你可以用<code>UpdateSystemTag</code>更新一个VM上已有的user data，例如：</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。</p>
+
+<h4>2.2 注入SSH公钥</h4>
+
+<p>SSH公钥是用户使用user data最常见的用法，为此我们特别提供了一个专门的system tag，格式为：</p>
+
+<pre><code>    sshkey::{content}
+    例如：
+    sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy
+</code></pre>
+
+<h5>2.2.1 注入SSH公钥</h5>
+
+<p>你可以在创建VM的时候指定公钥，例如：</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy'
+</code></pre>
+
+<p>也可以给一个已有的VM指定公钥，例如：</p>
+
+<pre><code>    CreateSystemTag resourceType=VmInstanceVO resourceUuid=606d9a2fa723407c93438789eaf72cea tag="sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7NtheqzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNAMVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3"
+</code></pre>
+
+<h5>2.2.2 获得公钥</h5>
+
+<p>你可以用<code>QuerySystemTag</code>获得一个VM的公钥，例如：</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=sshkey%
+</code></pre>
+
+<p>这里的<code>resourceUuid</code>是VM的UUID</p>
+
+<h5>2.2.3 删除公钥</h5>
+
+<p>你可以用<code>DeleteTag</code>从VM上删除一个公钥：</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。</p>
+
+<h5>2.2.4 更新公钥</h5>
+
+<p>你可以使用<code>UpdateSystemTag</code>更新一个VM的公钥，例如：</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7Nthe    qzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNA    MVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3'
+</code></pre>
+
+<p>这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。</p>
+
+<div class="bs-callout bs-callout-warning">
+<h4>你或许需要重启VM让公钥生效</h4>
+
+如果你是给一个已有的VM创建公钥或者更新公钥，你需要做如下步骤：<br>
+1. 删除在VM中删除已有的cloud-init数据，rm -rf /var/lib/cloud<br>
+2. 重启VM<br>
+
+对于给新建的VM指定公钥，你无需做这些步骤。
+</div>
+
+
+<h2>3. 本地存储的磁盘迁移</h2>
+
+<p>在本版本中，你可以在本地存储的不同物理机间迁移虚拟机的磁盘(volume)，解决使用本地存储虚拟机不能迁移的的问题。</p>
+
+<h3>3.1 迁移磁盘</h3>
+
+<p>你可以用<code>LocalStorageMigrateVolume</code>迁移VM的root volume和data volume。例如：</p>
+
+<pre><code>    LocalStorageMigrateVolume volumeUuid=cdbda88fef1a42f386ff111b729159d9 destHostUuid=252d484d93e64fea946148097162b60f
+</code></pre>
+
+<h3>3.2 迁移规则</h3>
+
+<ol>
+<li>如果迁移的是root volume，需要先关闭虚拟机</li>
+<li>如果迁移的是data volume，需要先将data volume从虚拟机卸载（detach)</li>
+<li>如果volume上有快照（snapshots），快照会被一并迁移</li>
+</ol>
+
+
+<h3>3.3 使用磁盘迁移迁移VM</h3>
+
+<p>你可以使用磁盘迁移功能在不同物理机上冷迁移虚拟机：</p>
+
+<ol>
+<li>关闭虚拟机</li>
+<li>将虚拟机的root volume迁移到目的物理机</li>
+<li>启动虚拟机</li>
+</ol>
+
+
+<blockquote><p>ZStack实际是支持本地存储的虚拟机热迁移的。但在我们的压力测试中，我们发现KVM的带存储热迁移不稳定。我们在一个虚拟机中做一次Linux内核编译，并在这个过程中做带存储热迁移，迁移完成后重启虚拟机，发现虚拟机磁盘损坏。为了保护用户数据，我们在API层面关闭了虚拟机带存储热迁移的功能。</p></blockquote>
+
+<h2>4. ISO API</h2>
+
+<p>在该版本中，你可以使用API向一个VM加载或卸载一个ISO，并且改变VM的启动设备顺序。</p>
+
+<h3>4.1 添加ISO</h3>
+
+<p>你可以用<code>AttachIsoToVmInstance</code>向一个VM添加一个ISO，例如：</p>
+
+<pre><code>    AttachIsoToVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c isoUuid=815dcd3d83dd429298ba2c9b1685c1ad
+</code></pre>
+
+<h3>4.2 卸载ISO</h3>
+
+<p>你可以用<code>DetachIsoFromVmInstance</code>从一个VM上卸载一个ISO，例如：</p>
+
+<pre><code>    DetachIsoFromVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<h3>4.3 设置启动设备顺序</h3>
+
+<p>你可以用<code>SetVmBootOrder</code>设置VM的启动设备顺序，例如：</p>
+
+<pre><code>    SetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b bootOrder=HardDisk,CdRom
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<blockquote><p>合法的启动顺序包括：HardDisk和CdRom</p></blockquote>
+
+<h3>4.4 获得启动设备顺序</h3>
+
+<p>你可以用<code>GetVmBootOrder</code>获得VM的启动设备顺序，例如：</p>
+
+<pre><code>    GetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。</p>
+
+<h3>4.5 设备启动顺序规则</h3>
+
+<ul>
+<li>如果使用ISO创建一个VM，则该VM的启动设备自动被设置为CdRom。当操作系统安装完成并重启后，启动顺序自动改成HardDisk</li>
+<li>如果使用template创建一个VM，改VM的启动设备自动被设置为HardDisk</li>
+<li>加载一个ISO到一个VM不改变其启动顺序。如果需要，你可以用<code>SetVmBootOrder</code>更改</li>
+</ul>
+
+
+<h2>5. Spice支持</h2>
+
+<p>在该版本中，我们支持Spice协议作为VM图形终端协议。你可以通过更改全局选项进行设置，例如：</p>
+
+<pre><code>    UpdateGlobalConfig category=kvm name=vm.consoleMode value=spice
+</code></pre>
+
+<blockquote><p>合法的协议包括：vnc和spice</p></blockquote>
+
+<p>目前ZStack还没有针对spice的console proxy，你需要下载一个spice客户端直接连接VM在物理机上的spice端口。你可以用下面的API来获得物理机的IP和VM的spice端口号：</p>
+
+<pre><code>    &gt;&gt;&gt;GetVmConsoleAddress uuid=9cd68155905e47b5b0698ecba9126242
+    {
+        "hostIp": "192.168.199.136",
+        "port": 5902,
+        "protocol": "spice",
+        "success": true
+    }
+</code></pre>
+
+<p>这里的<code>uuid</code>是VM的UUID。感谢来至武汉纺织大学的Nan Su(fengcai_ji@163.com)同学贡献了这个功能。</p>
+
+<h2>6. I18N支持</h2>
+
+<p>在该版本中，我们支持多语言版本，目前支持英文和中文，你可以通过点击语言图标进行切换。</p>
+
+<p><img src="/images/1.0/3.png" class="center-img img-responsive"></p>
+
+<p>感谢来自武汉纺织大学的Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com)贡献了该功能。</p>
+
+<h2>7. VM状态的实时捕获</h2>
+
+<p>在该版本中，我们支持VM状态的实时捕获。如果用户绕过ZStack对VM进行了操作，其状态会实时的发送回管理节点进行更新。也就是说你可以在VM内部
+通过halt命令来关闭虚拟机，而不用通过ZStack UI。虽然不推荐，但如果你用virsh关闭或者启动了一个VM，其在ZStack中的状态也会被实时更新。</p>
+
+<h2>8. 安装</h2>
+
+<p>你可以通过下面方式安装：</p>
+
+<pre><code>    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -R aliyun
+</code></pre>
+
+<blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
+
+<h2>9. 升级</h2>
+
+<p>一如既往的，我们支持一键无缝升级：</p>
+
+<pre><code>    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -u
+</code></pre>
+
+<blockquote><p>如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。</p></blockquote>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>

@@ -130,14 +130,16 @@
 <h2>步骤一</h2>
 
 <p>首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-<img src="/images/blogs/spice/1.jpg" class="center-img img-responsive">
-    <config>
-         <category>kvm</category>
-         <name>consoleMode</name>
-       <description>You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]</description>
-         <type>java.lang.String</type>
-         <defaultValue>vnc</defaultValue>
-    </config></p>
+<img src="/images/blogs/spice/1.jpg" class="center-img img-responsive"></p>
+
+<pre><code>&lt;config&gt;
+     &lt;category&gt;kvm&lt;/category&gt;
+     &lt;name&gt;consoleMode&lt;/name&gt;
+   &lt;description&gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&lt;/description&gt;
+     &lt;type&gt;java.lang.String&lt;/type&gt;
+     &lt;defaultValue&gt;vnc&lt;/defaultValue&gt;
+&lt;/config&gt;
+</code></pre>
 
 <p>在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
 <img src="/images/blogs/spice/2.jpg" class="center-img img-responsive"></p>

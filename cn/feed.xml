@@ -5,9 +5,322 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 18 Jan 2016 16:00:38 +0800</pubDate>
-    <lastBuildDate>Mon, 18 Jan 2016 16:00:38 +0800</lastBuildDate>
+    <pubDate>Tue, 26 Jan 2016 00:55:12 +0800</pubDate>
+    <lastBuildDate>Tue, 26 Jan 2016 00:55:12 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.0 RC1 发布</title>
+        <description>&lt;p&gt;ZStack 1.0 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们加入了以下新功能。&lt;/p&gt;
+
+&lt;h2&gt;1. Flat Network Provider&lt;/h2&gt;
+
+&lt;p&gt;Flat Network Provider是一种新的网络服务提供模式，它提供DHCP和Userdata服务。相对于已有的Virtual Router Provider，Flat Network Provider最大的优势在于不需要启动一个Virtual Router虚拟机就可以为VM提供DHCP服务，这大大简化了部署一个扁平网络的复杂度。此外，由于采用了分布式DHCP系统，Flat Network Provider不存在传统DHCP系统的单点失败情况，因为每个物理机上都会有一个DHCP服务器服务运行在该物理机上的VM。在高并发创建或启动VM的时候，DHCP的负载会被分发到不同物理机上去，大大提供了系统整体的并发性。下图是分布式DHCP系统的一个总体架构图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.0/1.PNG&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3&gt;1.1 使用Flat Network Provider&lt;/h3&gt;
+
+&lt;p&gt;当你在创建一个L3网络的时候，在最后一步选择网络服务时做如下操作：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.0/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;选择“Flat Network Service Provider&quot;做为网络服务提供商&lt;/li&gt;
+&lt;li&gt;选择DHCP服务&lt;/li&gt;
+&lt;li&gt;点击“添加”按钮&lt;/li&gt;
+&lt;li&gt;重复步骤2和3添加user data服务&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
+&lt;h4&gt;你可以将Flat Network Provider和Virtual Router Provider混合使用&lt;/h4&gt;
+尽管Flat Network Provider的主要目的是为扁平网络情况提供DHCP服务器，你也可以讲它跟已有的Virtual Router Provider混合使用。
+例如使用Flat Network Provider提供DHCP，用Virtual Router Provider提供DNS/SNAT等其他服务。
+&lt;/div&gt;
+
+
+&lt;h2&gt;2. User Data&lt;/h2&gt;
+
+&lt;p&gt;标准的&lt;a href=&quot;https://cloudinit.readthedocs.org/en/latest/&quot;&gt;Cloud-init&lt;/a&gt;在该版本中得到支持。要使用user data，你需要在VM的操作系统中安装cloud-init包。User data使用了ZStack的系统标签（System Tags）机制实现，其格式为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    userdata::{the content}
+    例如：
+    userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &amp;lt;ssh pub key 1&amp;gt;\n      - &amp;lt;ssh pub key 2&amp;gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;你应该已经注意到了上面的user data中包含了一个非常长的字符串，它其实是cloud-init的YAML配置文件minify后的结果。因为ZStack的CLI工具只能接受单行字符串，在传递cloud-init YAML配置的时候你需要先把它变成一个单行的字符串。你可以使用下面脚本：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    sed &#39;:a;N;$!ba;s/\n/\\n/g&#39; YAML文件路径
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;输出的长字符串会打印到屏幕，你可以复制黏贴。&lt;/p&gt;
+
+&lt;h3&gt;2.1 使用User Data&lt;/h3&gt;
+
+&lt;p&gt;当你在VM的操作系统中安装完cloud-init包后，我们强烈建议你把它保存成一个模板，这样从该模板新建的VM都会有cloud-init的包。使用下面步骤安装cloud-init包：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;yum install cloud-init 或 apt-get install cloud-init&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;在/etc/cloud/cloud.cfg文件中添加如下内容：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; datasource_list:
+   - CloudStack
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;cloud-init支持AWS，CloudStack，OpenStack多种获取user data的方式，ZStack使用的是CloudStack方式，即用DHCP服务器提供user data。&lt;/p&gt;
+
+&lt;h4&gt;2.1.1 添加User Data&lt;/h4&gt;
+
+&lt;p&gt;你可以在新建VM的时候指定user data：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags=&#39;userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &amp;lt;ssh pub key 1&amp;gt;\n      - &amp;lt;ssh pub key 2&amp;gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;或者对一个已经创建的VM指定user data：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    CreateSystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b resourceType=VmInstanceVO tag=&#39;userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &amp;lt;ssh pub key 1&amp;gt;\n      - &amp;lt;ssh pub key 2&amp;gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;resourceUuid&lt;/code&gt;是VM的UUID。&lt;/p&gt;
+
+&lt;h4&gt;2.1.2 获得user data&lt;/h4&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;QuerySystemTag&lt;/code&gt;获取一个VM的user data，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=userdata%
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;resourceUuid&lt;/code&gt;是VM的UUID。&lt;/p&gt;
+
+&lt;h4&gt;2.1.3 删除user data&lt;/h4&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;DeleteTag&lt;/code&gt;从一个VM上删除user data，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。&lt;/p&gt;
+
+&lt;h4&gt;2.1.4 更新user data&lt;/h4&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;UpdateSystemTag&lt;/code&gt;更新一个VM上已有的user data，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag=&#39;userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &amp;lt;ssh pub key 1&amp;gt;\n      - &amp;lt;ssh pub key 2&amp;gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的UUID是system tag的UUID，你可以用获取user data一节的方法拿到。&lt;/p&gt;
+
+&lt;h4&gt;2.2 注入SSH公钥&lt;/h4&gt;
+
+&lt;p&gt;SSH公钥是用户使用user data最常见的用法，为此我们特别提供了一个专门的system tag，格式为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    sshkey::{content}
+    例如：
+    sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;2.2.1 注入SSH公钥&lt;/h5&gt;
+
+&lt;p&gt;你可以在创建VM的时候指定公钥，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags=&#39;sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;也可以给一个已有的VM指定公钥，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    CreateSystemTag resourceType=VmInstanceVO resourceUuid=606d9a2fa723407c93438789eaf72cea tag=&quot;sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7NtheqzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNAMVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3&quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h5&gt;2.2.2 获得公钥&lt;/h5&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;QuerySystemTag&lt;/code&gt;获得一个VM的公钥，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=sshkey%
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;resourceUuid&lt;/code&gt;是VM的UUID&lt;/p&gt;
+
+&lt;h5&gt;2.2.3 删除公钥&lt;/h5&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;DeleteTag&lt;/code&gt;从VM上删除一个公钥：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    DeleteTag uuid=user_data_tag_uuid
+    例如：
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。&lt;/p&gt;
+
+&lt;h5&gt;2.2.4 更新公钥&lt;/h5&gt;
+
+&lt;p&gt;你可以使用&lt;code&gt;UpdateSystemTag&lt;/code&gt;更新一个VM的公钥，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag=&#39;sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7Nthe    qzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNA    MVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的UUID是system tag的UUID，你可以用获取公钥一节的方法拿到。&lt;/p&gt;
+
+&lt;div class=&quot;bs-callout bs-callout-warning&quot;&gt;
+&lt;h4&gt;你或许需要重启VM让公钥生效&lt;/h4&gt;
+
+如果你是给一个已有的VM创建公钥或者更新公钥，你需要做如下步骤：&lt;br&gt;
+1. 删除在VM中删除已有的cloud-init数据，rm -rf /var/lib/cloud&lt;br&gt;
+2. 重启VM&lt;br&gt;
+
+对于给新建的VM指定公钥，你无需做这些步骤。
+&lt;/div&gt;
+
+
+&lt;h2&gt;3. 本地存储的磁盘迁移&lt;/h2&gt;
+
+&lt;p&gt;在本版本中，你可以在本地存储的不同物理机间迁移虚拟机的磁盘(volume)，解决使用本地存储虚拟机不能迁移的的问题。&lt;/p&gt;
+
+&lt;h3&gt;3.1 迁移磁盘&lt;/h3&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;LocalStorageMigrateVolume&lt;/code&gt;迁移VM的root volume和data volume。例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    LocalStorageMigrateVolume volumeUuid=cdbda88fef1a42f386ff111b729159d9 destHostUuid=252d484d93e64fea946148097162b60f
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;3.2 迁移规则&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;如果迁移的是root volume，需要先关闭虚拟机&lt;/li&gt;
+&lt;li&gt;如果迁移的是data volume，需要先将data volume从虚拟机卸载（detach)&lt;/li&gt;
+&lt;li&gt;如果volume上有快照（snapshots），快照会被一并迁移&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3&gt;3.3 使用磁盘迁移迁移VM&lt;/h3&gt;
+
+&lt;p&gt;你可以使用磁盘迁移功能在不同物理机上冷迁移虚拟机：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;关闭虚拟机&lt;/li&gt;
+&lt;li&gt;将虚拟机的root volume迁移到目的物理机&lt;/li&gt;
+&lt;li&gt;启动虚拟机&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;blockquote&gt;&lt;p&gt;ZStack实际是支持本地存储的虚拟机热迁移的。但在我们的压力测试中，我们发现KVM的带存储热迁移不稳定。我们在一个虚拟机中做一次Linux内核编译，并在这个过程中做带存储热迁移，迁移完成后重启虚拟机，发现虚拟机磁盘损坏。为了保护用户数据，我们在API层面关闭了虚拟机带存储热迁移的功能。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;4. ISO API&lt;/h2&gt;
+
+&lt;p&gt;在该版本中，你可以使用API向一个VM加载或卸载一个ISO，并且改变VM的启动设备顺序。&lt;/p&gt;
+
+&lt;h3&gt;4.1 添加ISO&lt;/h3&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;AttachIsoToVmInstance&lt;/code&gt;向一个VM添加一个ISO，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    AttachIsoToVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c isoUuid=815dcd3d83dd429298ba2c9b1685c1ad
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;4.2 卸载ISO&lt;/h3&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;DetachIsoFromVmInstance&lt;/code&gt;从一个VM上卸载一个ISO，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    DetachIsoFromVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;uuid&lt;/code&gt;是VM的UUID。&lt;/p&gt;
+
+&lt;h3&gt;4.3 设置启动设备顺序&lt;/h3&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;SetVmBootOrder&lt;/code&gt;设置VM的启动设备顺序，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    SetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b bootOrder=HardDisk,CdRom
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;uuid&lt;/code&gt;是VM的UUID。&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;合法的启动顺序包括：HardDisk和CdRom&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3&gt;4.4 获得启动设备顺序&lt;/h3&gt;
+
+&lt;p&gt;你可以用&lt;code&gt;GetVmBootOrder&lt;/code&gt;获得VM的启动设备顺序，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    GetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;uuid&lt;/code&gt;是VM的UUID。&lt;/p&gt;
+
+&lt;h3&gt;4.5 设备启动顺序规则&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;如果使用ISO创建一个VM，则该VM的启动设备自动被设置为CdRom。当操作系统安装完成并重启后，启动顺序自动改成HardDisk&lt;/li&gt;
+&lt;li&gt;如果使用template创建一个VM，改VM的启动设备自动被设置为HardDisk&lt;/li&gt;
+&lt;li&gt;加载一个ISO到一个VM不改变其启动顺序。如果需要，你可以用&lt;code&gt;SetVmBootOrder&lt;/code&gt;更改&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;5. Spice支持&lt;/h2&gt;
+
+&lt;p&gt;在该版本中，我们支持Spice协议作为VM图形终端协议。你可以通过更改全局选项进行设置，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=kvm name=vm.consoleMode value=spice
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;合法的协议包括：vnc和spice&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;目前ZStack还没有针对spice的console proxy，你需要下载一个spice客户端直接连接VM在物理机上的spice端口。你可以用下面的API来获得物理机的IP和VM的spice端口号：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;GetVmConsoleAddress uuid=9cd68155905e47b5b0698ecba9126242
+    {
+        &quot;hostIp&quot;: &quot;192.168.199.136&quot;,
+        &quot;port&quot;: 5902,
+        &quot;protocol&quot;: &quot;spice&quot;,
+        &quot;success&quot;: true
+    }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;这里的&lt;code&gt;uuid&lt;/code&gt;是VM的UUID。感谢来至武汉纺织大学的Nan Su(fengcai_ji@163.com)同学贡献了这个功能。&lt;/p&gt;
+
+&lt;h2&gt;6. I18N支持&lt;/h2&gt;
+
+&lt;p&gt;在该版本中，我们支持多语言版本，目前支持英文和中文，你可以通过点击语言图标进行切换。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.0/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;感谢来自武汉纺织大学的Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com)贡献了该功能。&lt;/p&gt;
+
+&lt;h2&gt;7. VM状态的实时捕获&lt;/h2&gt;
+
+&lt;p&gt;在该版本中，我们支持VM状态的实时捕获。如果用户绕过ZStack对VM进行了操作，其状态会实时的发送回管理节点进行更新。也就是说你可以在VM内部
+通过halt命令来关闭虚拟机，而不用通过ZStack UI。虽然不推荐，但如果你用virsh关闭或者启动了一个VM，其在ZStack中的状态也会被实时更新。&lt;/p&gt;
+
+&lt;h2&gt;8. 安装&lt;/h2&gt;
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;9. 升级&lt;/h2&gt;
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc1.bin -O zstack-installer-1.0-rc1.bin
+    bash zstack-installer-1.0-rc1.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        <pubDate>Mon, 25 Jan 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.0-rc1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0-rc1.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>给ZStack添加SPice协议的支持（一）</title>
@@ -26,14 +339,16 @@
 &lt;h2&gt;步骤一&lt;/h2&gt;
 
 &lt;p&gt;首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-&lt;img src=&quot;/images/blogs/spice/1.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;
-    &lt;config&gt;
-         &lt;category&gt;kvm&lt;/category&gt;
-         &lt;name&gt;consoleMode&lt;/name&gt;
-       &lt;description&gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&lt;/description&gt;
-         &lt;type&gt;java.lang.String&lt;/type&gt;
-         &lt;defaultValue&gt;vnc&lt;/defaultValue&gt;
-    &lt;/config&gt;&lt;/p&gt;
+&lt;img src=&quot;/images/blogs/spice/1.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;config&amp;gt;
+     &amp;lt;category&amp;gt;kvm&amp;lt;/category&amp;gt;
+     &amp;lt;name&amp;gt;consoleMode&amp;lt;/name&amp;gt;
+   &amp;lt;description&amp;gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&amp;lt;/description&amp;gt;
+     &amp;lt;type&amp;gt;java.lang.String&amp;lt;/type&amp;gt;
+     &amp;lt;defaultValue&amp;gt;vnc&amp;lt;/defaultValue&amp;gt;
+&amp;lt;/config&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
 &lt;img src=&quot;/images/blogs/spice/2.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
@@ -685,112 +1000,6 @@ zstack-cli ReconnectHost uuid=$host_uuid
         <pubDate>Thu, 24 Sep 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/zstack-on-vmware-image.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-on-vmware-image.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack 虚拟路由器工作流程</title>
-        <description>&lt;p&gt;Virtual Router（VR，虚拟路由器）是ZStack中一个特别的网络组件。目前ZStack里大部分的网络服务都是由VR提供的。
-VR实际上是一个用于提供服务的特殊虚拟机，
-它只在用户虚拟机需要网络服务的时候，由ZStack自动创建和管理。今天我们介绍一下ZStack网络服务里VR的工作流程。
-当了解该工作流程后，用户可以更好的规划云环境里的网络服务。一旦出现VR创建失败的情况，也可以更快的定位和解决问题。&lt;/p&gt;
-
-&lt;p&gt;&lt;img  class=&quot;img-responsive&quot;  src=&quot;/images/blogs/misc/zstack-create-vm-process.png&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;首先来看一下上图，这个网络环境是ZStack教程里典型内外网分离的网络模型，可用于EIP，Port Forwarding，Security Group，Load Balancer等。
-在这个模型里，我们有两台物理机器，左边一台是计算节点，用于创建各种虚拟机；右边一台用于安装ZStack管控节点（Management Node）。
-计算节点有两块物理网卡eth0和eth1（如果用户只有一个网卡eth0，可以通过vlan创建一个eth0.x的网卡替代eth1）。
-计算节点的eth0和管控节点的网卡相连，这个网络在ZStack里面被称为管理网络（Management-l2）。该网络可以直接连接到公网（Internet或者公司内网）。
-在该模型中，公有网络（Public-l2）和Management-l2公用一个eth0。当然为了更好的网络隔离，用户也可以再增加一个独立等网卡eth2，
-用于Public-l2（由于管控节点控制计算节点不需要走公有网络，通过网络分离，也可以保护管控节点的安全）。
-在我们的例子中，我们需要确保ZStack管控节点可以正确的连接计算节点的eth0（图中的10.0.0.1/24网段，我们需要给网卡配置上正确的IP地址）。
-这样在添加计算节点的时候，ZStack就可以通过计算节点eth0上的IP地址部署对应的Agent。
-由于Public-l2和Management-l2共享了一个L2，所以在配置网络环境的时候，我们只需要添加Public-l2和Public-l3。
-随后在创建VR的时候，管控节点会和VR上的eth0进行通讯，VR的eth0的IP地址将会从用户设置的Public-l3中的IP Range取出一个。
-在本例子里面，Publice-l3的IP Range一定是在10.0.0.1/24中的某一段。用户在设置Public-l3的IP Range的时候必须确保设置的IP地址段
-不和已有网络中的网络设备冲突，Gateway和NetMask也需要设置正确。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;注意：当用户只使用了单台物理机做ZStack部署，并且单台物理机的eth0是从DHCP拿到的IP地址的时候，
-如果把eth0作为Public-l2的网卡设备，需要特别关注ZStack给VR分配的IP地址不能和网络中的其他IP冲突。
-如果使用没有连接任何网络的ethX作为单节点的Public-l2的网络设备，那么需要在添加L2 Network之前，给ethX设置上相应的IP地址，否则之后无法连通VR的eth0。&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;在我们的模型里，计算节点上还有一个eth1用于用户VM的私有网络。该eth1可以通过交换机和同一个Cluster内的其他计算节点的eth1相连。
-当ZStack添加计算节点的时候，会通过Ansible把KVM Agent安装到计算节点上。当ZStack添加Publice-L2和Private-L2的时候，
-会在计算节点上给eth0和eth1创建对应的网桥br_eth0和br_eth1。根据网桥工作原理，ZStack还会把eth0和eth1上的IP地址转移到br_eth0和br_eth1上。&lt;/p&gt;
-
-&lt;p&gt;添加完成所有的资源，用户在创建第一个VM的时候，如果用户VM使用了VR的任何一种网络服务（DHCP、DNS、SNAT、Port Forwarding、EIP、Load Balancer），
-ZStack会自动创建一个VR VM。这也是创建第一个VM的时候速度比较慢的原因之一。&lt;/p&gt;
-
-&lt;p&gt;ZStack创建VR VM的过程如下：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;ZStack 根据 VR 模版创建一个VR VM，该VM有两个网卡，一个连接到br_eth0负责连接管控节点和公网（如果有独立的Public-l2，会多创建一个网卡），另一个连接到br_eth1负责连接用户VM。&lt;/li&gt;
-&lt;li&gt;ZStack 给VR指定两个特定的IP地址并注入VR VM中。&lt;/li&gt;
-&lt;li&gt;VR 启动的最后会调用一个初始化的脚本把注入的IP地址设置到eth0和eth1上面&lt;/li&gt;
-&lt;li&gt;ZStack管控程序在创建VR之后就会轮询的用ssh尝试连接VR&lt;/li&gt;
-&lt;li&gt;如果ssh连接成功，ZStack管控程序就会通过Ansible 安装和部署VR的管控程序&lt;/li&gt;
-&lt;li&gt;VR Agent启动后，ZStack管控程序就会通过HTTP post命令给VR，例如设置即将启动的用户VM的IP地址，DNS之类。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;VR启动成功后，ZStack就会创建用户VM。用户VM的eth0通过br_eth1的网桥连接到VR的eth1上，并且可以和未来的用户VM通讯。
-用户VM访问公网的时候，通过VR的SNAT服务中转。用户VM需要EIP、Port Forwarding还有Load Balancer等服务的时候，也都是在VR上进行对应的配置。&lt;/p&gt;
-
-&lt;p&gt;用户在使用ZStack的时候，有时候会遇到VR创建失败的情况。经过分析，其中大多数失败原因都是因为网络配置导致的。具体来看，VR启动失败的故障可能有：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;创建VR VM失败：找不到合适的Host。可能是没有处于Connected状态的Host，或者Host上的空闲资源（CPU，内存）不足以启动VR。&lt;/li&gt;
-&lt;li&gt;VR 操作系统启动失败：虚拟化软件错误或者硬盘连接错误（NFS网络不稳定）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt; ZStack ssh VR 失败：ZStack管控节点无法连接VR。通常原因有：IP地址配置不对；交换机没有允许对应的IP连接；使用了特别的vlan，但是交换机没有设置Truck模式。&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;ZStack Ansible部署VR Agent失败：部署VR的时候可能会连接Internet下载VR需要的系统库，但是这步在0.9之后就不需要从互联网上下载系统库了，所以通常不会出错。&lt;/li&gt;
-&lt;li&gt;VR Agent 启动失败：可能是使用了不匹配的VR Image。例如ZStack 0.9 需要使用 VR 0.9版本的Image，如果用户没有更新VR Image的话，会导致HTTP 404的错误。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;上述错误中，最常见的错误是3。大家可以对照解决。&lt;/p&gt;
-
-&lt;p&gt;在VR启动后，用户再启动同一Private L3上的VM的时候ZStack通常不会再次创建VR（除非是使用了独立的负载均衡功能）。
-如果在用户VM运行的过程中，发生了VR连接错误，它的影响会是什么？我们该如何恢复呢？下表例举了在多计算节点和不同存储类型的情况下如何恢复失联VR的方法。&lt;/p&gt;
-
-&lt;table class=&quot;table table-striped table-bordered&quot;&gt;
-  &lt;tr&gt;
-    &lt;td&gt;&lt;b&gt;VR失效原因&lt;/b&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;b&gt;VR失效影响&lt;/b&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;b&gt;恢复VR方法&lt;/b&gt;&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td&gt;VR VM网络失联，但是virsh list还可以看到VR 是running状态&lt;/td&gt;
-    &lt;td&gt;扁平网络：外网通讯中断、无法创建新VM、内网连接不影响；扁平网络：无法创建新VM，网络连接不影响&lt;/td&gt;
-    &lt;td&gt;从ZStack UI中的Virtual Router中delete VR VM， 再去Instance的界面重新创建一个用户VM&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td&gt;VR VM 所在Host挂掉，之后手动重启Host&lt;/td&gt;
-    &lt;td&gt;非扁平网络：外网通讯中断、无法创建新VM；扁平网络：无法创建新VM，网络不影响&lt;/td&gt;
-    &lt;td&gt;从ZStack UI中的Virtual Router中再次Start VR VM&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td&gt;VR VM 所在Host挂掉，之后Host无法重启，使用网络共享主存储&lt;/td&gt;
-    &lt;td&gt;非扁平网络：外网通讯中断、无法创建新VM、内网不影响；扁平网络：无法创建新VM，网络连接不影响&lt;/td&gt;
-    &lt;td&gt;使用zstack-cli UpdateVmInstance 把VR VM的状态改成 Stopped，再从ZStack UI中的Virtual Router中再次Start VR VM&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td&gt;VR VM 所在Host挂掉，之后Host无法重启，使用本地主存储&lt;/td&gt;
-    &lt;td&gt;非扁平网络：外网通讯中断、无法创建新VM；扁平网络：无法创建新VM，网络连接不影响&lt;/td&gt;
-    &lt;td&gt;使用zstack-cli UpdateVmInstance 把VR VM的状态改成 Stopped，从ZStack UI中的Virtual Router中delete VR VM，然后再去Instance的界面创建一个新的用户VM&lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/table&gt;
-
-
-&lt;p&gt;未来ZStack的VR还会提供HA的功能，当一个VR失效的时候，会自动启动一个VR接管之前VR的网络服务。
-通常虚拟路由已经可以满足大多数用户正常的网络要求，但是如果用户对网络性能有更高的要求，ZStack也可以集成商业虚拟机交换机，甚至是物理交换机的网络服务。
-用户可以在创建L3网络的时候，选择不同网络服务的提供方。&lt;/p&gt;
-</description>
-        <pubDate>Mon, 14 Sep 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/virtualrouter-introduction.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/virtualrouter-introduction.html</guid>
         
         
         <category>cn_blog</category>
