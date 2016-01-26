@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 26 Jan 2016 11:08:55 +0800</pubDate>
-    <lastBuildDate>Tue, 26 Jan 2016 11:08:55 +0800</lastBuildDate>
+    <pubDate>Tue, 26 Jan 2016 23:25:54 +0800</pubDate>
+    <lastBuildDate>Tue, 26 Jan 2016 23:25:54 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -35,7 +35,7 @@
 
 &lt;div class=&quot;bs-callout bs-callout-info&quot;&gt;
 &lt;h4&gt;你可以将Flat Network Provider和Virtual Router Provider混合使用&lt;/h4&gt;
-尽管Flat Network Provider的主要目的是为扁平网络情况提供DHCP服务器，你也可以将它跟已有的Virtual Router Provider混合使用。
+尽管Flat Network Provider的主要目的是为扁平网络情况提供DHCP服务器，你也可以讲它跟已有的Virtual Router Provider混合使用。
 例如使用Flat Network Provider提供DHCP，用Virtual Router Provider提供DNS/SNAT等其他服务。
 &lt;/div&gt;
 
@@ -293,7 +293,101 @@
 &lt;p&gt;在该版本中，我们支持VM状态的实时捕获。如果用户绕过ZStack对VM进行了操作，其状态会实时的发送回管理节点进行更新。也就是说你可以在VM内部
 通过halt命令来关闭虚拟机，而不用通过ZStack UI。虽然不推荐，但如果你用virsh关闭或者启动了一个VM，其在ZStack中的状态也会被实时更新。&lt;/p&gt;
 
-&lt;h2&gt;8. 安装&lt;/h2&gt;
+&lt;h2&gt;8. 资源删除策略控制&lt;/h2&gt;
+
+&lt;p&gt;从该版本开始，我们对一些关键资源实现了删除策略控制，用户可以控制资源的删除方式，以防误删除。目前支持删除策略控制的资源包括：虚拟机、磁盘(volume)、镜像（image）。目前支持的删除策略包括：&lt;strong&gt;Direct（直接删除）&lt;/strong&gt;, &lt;strong&gt;Delay（延时删除）&lt;/strong&gt;, &lt;strong&gt;Never（从不删除）&lt;/strong&gt;三种。默认的策略是Delay。&lt;/p&gt;
+
+&lt;h3&gt;8.1 策略规则&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Direct: 资源会直接被物理删除，并在数据库中删除，无法恢复。&lt;/li&gt;
+&lt;li&gt;Delay：资源会首先在数据库中被标记成删除，但不会物理删除。在一定的时间内，用户可以使用API对资源进行恢复，在此期间资源仍然物理存在，所以它还会占用物理空间（例如磁盘空间）。在超过一定时间后，资源会被物理删除，无法再恢复。&lt;/li&gt;
+&lt;li&gt;Never：资源数据库中标记成删除，永远不会被物理删除，一直占用物理空间。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;8.2 虚拟机删除策略&lt;/h3&gt;
+
+&lt;p&gt;你可以更改虚拟机的删除策略，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=vm name=deletionPolicy value=Direct
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果删除策略是Delay，你可以指定延时删除的时间，例如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=vm name=expungePeriod value=3600
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;单位为秒。在上面的例子中，虚拟机在被标记成删除后的1个小时后被测地删除。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;如果删除策略是Delay，ZStack会周期性的去检查资源是否应该被物理删除，你可以控制周期性轮询的时间：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=vm name=expungeInterval value=3600
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;单位为秒&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;你也可以恢复一个处于删除状态的虚拟机：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    RecoverVmInstance vmInstanceUuid=8c4c4c0bbac7441fb056d0d6e2168996
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;8.3 镜像删除策略&lt;/h3&gt;
+
+&lt;p&gt;跟虚拟机一样，你可以改变相应的设置：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=image name=deletionPolicy value=Direct
+    UpdateGlobalConfig category=image name=expungePeriod value=3600
+    UpdateGlobalConfig category=image name=expungeInterval value=3600
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;也可以恢复一个处于删除状态的镜像：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果镜像存在于多个备份存储，你只想恢复在某些备份存储上的镜像，可以通过额外参数指定：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996 backupStorageUuids=36c27e8ff05c4780bf6d2fa65700f22e
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;8.4 磁盘删除策略&lt;/h3&gt;
+
+&lt;p&gt;跟虚拟机一样，你可以通过改变相应的设置：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=volume name=deletionPolicy value=Direct
+    UpdateGlobalConfig category=volume name=expungePeriod value=3600
+    UpdateGlobalConfig category=volume name=expungeInterval value=3600
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;你也可以恢复一个处于删除状态数据磁盘(data volume)：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    RecoverDataVolume uuid=36c27e8ff05c4780bf6d2fa65700f22e
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;根磁盘(root volume)的恢复是在恢复虚拟机的时候自动恢复。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;9. CPU型号Paasthrough(支持嵌套虚拟化)&lt;/h2&gt;
+
+&lt;p&gt;你可以通过改变全局配置让虚拟机获得跟物理机CPU相同的型号：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    UpdateGlobalConfig category=kvm name=vm.cpuMode value=host-model
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;支持三种模式：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;none: CPU型号为QEMU模拟器&lt;/li&gt;
+&lt;li&gt;host-model：CPU类型为物理机CPU类型&lt;/li&gt;
+&lt;li&gt;host-passthrough：CPU型号跟物理机CPU完全一样&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;当模式为&lt;code&gt;host-model&lt;/code&gt;和&lt;code&gt;host-passthrough&lt;/code&gt;时，虚拟机可以获得嵌套虚拟化功能。&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;使用该功能可能会影响虚拟机热迁移。因为热迁移时会检查虚拟机CPU型号，如果两台物理机的CPU型号不同，会导致虚拟机热迁移失败。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2&gt;10. 安装&lt;/h2&gt;
 
 &lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
 
@@ -303,7 +397,7 @@
 
 &lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;9. 升级&lt;/h2&gt;
+&lt;h2&gt;11. 升级&lt;/h2&gt;
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
 
