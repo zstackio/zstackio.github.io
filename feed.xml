@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 30 Jan 2016 16:58:41 +0800</pubDate>
-    <lastBuildDate>Sat, 30 Jan 2016 16:58:41 +0800</lastBuildDate>
+    <pubDate>Sat, 30 Jan 2016 17:00:47 +0800</pubDate>
+    <lastBuildDate>Sat, 30 Jan 2016 17:00:47 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -393,8 +393,8 @@
 
 &lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc3.bin -O zstack-installer-1.0-rc3.bin
-    bash zstack-installer-1.0-rc3.bin -R aliyun
+&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc4.bin -O zstack-installer-1.0-rc4.bin
+    bash zstack-installer-1.0-rc4.bin -R aliyun
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
@@ -403,8 +403,8 @@
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc3.bin -O zstack-installer-1.0-rc3.bin
-    bash zstack-installer-1.0-rc3.bin -u
+&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc4.bin -O zstack-installer-1.0-rc4.bin
+    bash zstack-installer-1.0-rc4.bin -u
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;blockquote&gt;&lt;p&gt;如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。&lt;/p&gt;&lt;/blockquote&gt;
