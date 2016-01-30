@@ -41,7 +41,7 @@ layout: docPage.cn
 
 <h3><i class="fa fa-user">&nbsp; 用户手册</i></h3>
 
-[用户手册](http://zstackdoc.readthedocs.org/en/latest/) 完整的介绍了ZStack各个功能和模块、
+[API中文用户手册](http://zstack-cn.readthedocs.org/zh/latest/index.html) 完整的介绍了ZStack各个功能和模块、
 ZStack工具的使用方法、全局配置、系统标签、以及详尽的API功能和参数。如果想要进行二次开放集成，用户手册将是你的红宝书。
 
 如何调用ZStack命令行命令，请访问[zstack-cli](http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html).
