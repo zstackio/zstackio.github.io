@@ -518,94 +518,102 @@
 <p>如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：</p>
 
 <ol>
-<li>获得当前L3网络的网络提供商UUID
-     >>>QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
-     {
-         "inventories": [
+<li><p>获得当前L3网络的网络提供商UUID</p>
+
+<pre><code> &gt;&gt;&gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
+ {
+     "inventories": [
+         {
+             "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+             "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+             "networkServiceType": "DNS"
+         },
+         {
+             "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+             "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+             "networkServiceType": "DHCP"
+         }
+     ],
+     "success": true
+ }
+</code></pre></li>
+<li><p>从L3网络上卸载Virtual Router Provider</p>
+
+<pre><code> &gt;&gt;&gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"5d21ea0f39c04d6fb68cfaf5a37db4ad":["DHCP","DNS"]}'
+ {
+     "inventory": {
+         "createDate": "Jan 30, 2016 3:01:03 PM",
+         "dns": [
+             "8.8.8.8"
+         ],
+         "ipRanges": [
              {
+                 "createDate": "Jan 30, 2016 3:01:04 PM",
+                 "endIp": "192.168.201.199",
+                 "gateway": "192.168.200.1",
                  "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                 "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
-                 "networkServiceType": "DNS"
-             },
-             {
-                 "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                 "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
-                 "networkServiceType": "DHCP"
+                 "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                 "name": "ipr-dk7p",
+                 "netmask": "255.255.252.0",
+                 "startIp": "192.168.201.180",
+                 "uuid": "ec5fd87dd80243fdabeeace847c04427"
              }
          ],
-         "success": true
-     }</li>
-<li>从L3网络上卸载Virtual Router Provider
-     >>>DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"5d21ea0f39c04d6fb68cfaf5a37db4ad":["DHCP","DNS"]}'
-     {
-         "inventory": {
-             "createDate": "Jan 30, 2016 3:01:03 PM",
-             "dns": [
-                 "8.8.8.8"
-             ],
-             "ipRanges": [
-                 {
-                     "createDate": "Jan 30, 2016 3:01:04 PM",
-                     "endIp": "192.168.201.199",
-                     "gateway": "192.168.200.1",
-                     "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                     "lastOpDate": "Jan 30, 2016 3:01:04 PM",
-                     "name": "ipr-dk7p",
-                     "netmask": "255.255.252.0",
-                     "startIp": "192.168.201.180",
-                     "uuid": "ec5fd87dd80243fdabeeace847c04427"
-                 }
-             ],
-             "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
-             "lastOpDate": "Jan 30, 2016 3:01:03 PM",
-             "name": "l3-etpz",
-             "networkServices": [],
-             "state": "Enabled",
-             "system": false,
-             "type": "L3BasicNetwork",
-             "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-             "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
-         },
-         "success": true
-     }</li>
+         "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+         "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+         "name": "l3-etpz",
+         "networkServices": [],
+         "state": "Enabled",
+         "system": false,
+         "type": "L3BasicNetwork",
+         "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+         "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+     },
+     "success": true
+ }
+</code></pre></li>
 </ol>
 
 
 <blockquote><p>注意这里的参数networkServices是一个map， key是第一步里返回的networkServiceProviderUuid，value是第一步里返回的networkServiceType</p></blockquote>
 
 <ol>
-<li><p>获得Flat Network Provider的UUID
-     >>>QueryNetworkServiceProvider type=Flat
-     {
-         "inventories": [
-             {
-                 "attachedL2NetworkUuids": [
-                     "9ec8cad681d1424fa7eda2447edae142"
-                 ],
-                 "createDate": "Jan 30, 2016 11:56:32 AM",
-                 "description": "Flat Network Service Provider",
-                 "lastOpDate": "Jan 30, 2016 11:56:32 AM",
-                 "name": "Flat Network Service Provider",
-                 "networkServiceTypes": [
-                     "DHCP",
-                     "Userdata"
-                 ],
-                 "type": "Flat",
-                 "uuid": "17864f985e584a9ba4cd81de215212ce"
-             }
-         ],
-         "success": true
-     }</p></li>
-<li><p>获得承载L3网络的L2网络的UUID
-     >>>QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
-     {
-         "inventories": [
-             {
-                 "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142"
-             }
-         ],
-         "success": true
-     }</p></li>
+<li><p>获得Flat Network Provider的UUID</p>
+
+<pre><code> &gt;&gt;&gt;QueryNetworkServiceProvider type=Flat
+ {
+     "inventories": [
+         {
+             "attachedL2NetworkUuids": [
+                 "9ec8cad681d1424fa7eda2447edae142"
+             ],
+             "createDate": "Jan 30, 2016 11:56:32 AM",
+             "description": "Flat Network Service Provider",
+             "lastOpDate": "Jan 30, 2016 11:56:32 AM",
+             "name": "Flat Network Service Provider",
+             "networkServiceTypes": [
+                 "DHCP",
+                 "Userdata"
+             ],
+             "type": "Flat",
+             "uuid": "17864f985e584a9ba4cd81de215212ce"
+         }
+     ],
+     "success": true
+ }
+</code></pre></li>
+<li><p>获得承载L3网络的L2网络的UUID</p>
+
+<pre><code> &gt;&gt;&gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
+ {
+     "inventories": [
+         {
+             "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142"
+         }
+     ],
+     "success": true
+ }
+</code></pre></li>
 <li><p>加载Flat Network Provider到L2网络</p>
 
 <pre><code> &gt;&gt;&gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
@@ -628,119 +636,122 @@
      "success": true
  }
 </code></pre></li>
-<li><p>加载Flat Network Provider的服务到三层网络
-     >>>AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"17864f985e584a9ba4cd81de215212ce":["DHCP","Userdata"]}'
-     {
-         "inventory": {
-             "createDate": "Jan 30, 2016 3:01:03 PM",
-             "dns": [
-                 "8.8.8.8"
-             ],
-             "ipRanges": [
-                 {
-                     "createDate": "Jan 30, 2016 3:01:04 PM",
-                     "endIp": "192.168.201.199",
-                     "gateway": "192.168.200.1",
-                     "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                     "lastOpDate": "Jan 30, 2016 3:01:04 PM",
-                     "name": "ipr-dk7p",
-                     "netmask": "255.255.252.0",
-                     "startIp": "192.168.201.180",
-                     "uuid": "ec5fd87dd80243fdabeeace847c04427"
-                 }
-             ],
-             "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
-             "lastOpDate": "Jan 30, 2016 3:01:03 PM",
-             "name": "l3-etpz",
-             "networkServices": [
-                 {
-                     "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                     "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
-                     "networkServiceType": "DHCP"
-                 },
-                 {
-                     "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                     "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
-                     "networkServiceType": "Userdata"
-                 }
-             ],
-             "state": "Enabled",
-             "system": false,
-             "type": "L3BasicNetwork",
-             "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-             "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
-         },
-         "success": true
-     }</p></li>
-<li><p>删除virtualrouter ,删除virtual router offering
-     >>>QueryVirtualRouterVm
-     {
-         "inventories": [
+<li><p>加载Flat Network Provider的服务到三层网络</p>
+
+<pre><code> &gt;&gt;&gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"17864f985e584a9ba4cd81de215212ce":["DHCP","Userdata"]}'
+ {
+     "inventory": {
+         "createDate": "Jan 30, 2016 3:01:03 PM",
+         "dns": [
+             "8.8.8.8"
+         ],
+         "ipRanges": [
              {
-                 "allVolumes": [
-                     {
-                         "createDate": "Jan 30, 2016 3:06:50 PM",
-                         "description": "Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]",
-                         "deviceId": 0,
-                         "format": "qcow2",
-                         "installPath": "/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2",
-                         "lastOpDate": "Jan 30, 2016 3:06:59 PM",
-                         "name": "ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
-                         "primaryStorageUuid": "4bff4e2d266f480ead596752d14ff3b5",
-                         "rootImageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
-                         "size": 467206656,
-                         "state": "Enabled",
-                         "status": "Ready",
-                         "type": "Root",
-                         "uuid": "8eeaa9cb4c1045a2825f8815fed69d72",
-                         "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
-                     }
-                 ],
-                 "allocatorStrategy": "LeastVmPreferredHostAllocatorStrategy",
-                 "applianceVmType": "VirtualRouter",
-                 "clusterUuid": "10409d3e33b249c19746022930a541c7",
-                 "cpuNum": 1,
-                 "cpuSpeed": 2,
-                 "createDate": "Jan 30, 2016 3:06:50 PM",
-                 "defaultRouteL3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                 "hostUuid": "415fa093b34e4a3d873368104b127115",
-                 "hypervisorType": "KVM",
-                 "imageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
-                 "instanceOfferingUuid": "9cec7bd6324445a184351ffb7d32f970",
-                 "lastHostUuid": "415fa093b34e4a3d873368104b127115",
-                 "lastOpDate": "Jan 30, 2016 3:07:20 PM",
-                 "managementNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                 "memorySize": 536870912,
-                 "name": "virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
-                 "platform": "Linux",
-                 "publicNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                 "rootVolumeUuid": "8eeaa9cb4c1045a2825f8815fed69d72",
-                 "state": "Running",
-                 "status": "Connected",
-                 "type": "ApplianceVm",
-                 "uuid": "c5a966cb87d644649952daf683f89e26",
-                 "vmNics": [
-                     {
-                         "createDate": "Jan 30, 2016 3:06:50 PM",
-                         "deviceId": 0,
-                         "gateway": "192.168.200.1",
-                         "ip": "192.168.201.195",
-                         "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
-                         "lastOpDate": "Jan 30, 2016 3:06:50 PM",
-                         "mac": "fa:4c:01:68:77:00",
-                         "metaData": "7",
-                         "netmask": "255.255.252.0",
-                         "uuid": "c44e856aa88a42bc85ec30ce8c334c6c",
-                         "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
-                     }
-                 ],
-                 "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 "createDate": "Jan 30, 2016 3:01:04 PM",
+                 "endIp": "192.168.201.199",
+                 "gateway": "192.168.200.1",
+                 "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                 "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                 "name": "ipr-dk7p",
+                 "netmask": "255.255.252.0",
+                 "startIp": "192.168.201.180",
+                 "uuid": "ec5fd87dd80243fdabeeace847c04427"
              }
          ],
-         "success": true
-     }</p>
+         "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+         "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+         "name": "l3-etpz",
+         "networkServices": [
+             {
+                 "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                 "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                 "networkServiceType": "DHCP"
+             },
+             {
+                 "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                 "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                 "networkServiceType": "Userdata"
+             }
+         ],
+         "state": "Enabled",
+         "system": false,
+         "type": "L3BasicNetwork",
+         "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+         "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+     },
+     "success": true
+ }
+</code></pre></li>
+<li><p>删除virtualrouter ,删除virtual router offering</p>
 
-<pre><code> &gt;&gt;&gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
+<pre><code> &gt;&gt;&gt;QueryVirtualRouterVm
+ {
+     "inventories": [
+         {
+             "allVolumes": [
+                 {
+                     "createDate": "Jan 30, 2016 3:06:50 PM",
+                     "description": "Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]",
+                     "deviceId": 0,
+                     "format": "qcow2",
+                     "installPath": "/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2",
+                     "lastOpDate": "Jan 30, 2016 3:06:59 PM",
+                     "name": "ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+                     "primaryStorageUuid": "4bff4e2d266f480ead596752d14ff3b5",
+                     "rootImageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+                     "size": 467206656,
+                     "state": "Enabled",
+                     "status": "Ready",
+                     "type": "Root",
+                     "uuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+                     "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                 }
+             ],
+             "allocatorStrategy": "LeastVmPreferredHostAllocatorStrategy",
+             "applianceVmType": "VirtualRouter",
+             "clusterUuid": "10409d3e33b249c19746022930a541c7",
+             "cpuNum": 1,
+             "cpuSpeed": 2,
+             "createDate": "Jan 30, 2016 3:06:50 PM",
+             "defaultRouteL3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+             "hostUuid": "415fa093b34e4a3d873368104b127115",
+             "hypervisorType": "KVM",
+             "imageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+             "instanceOfferingUuid": "9cec7bd6324445a184351ffb7d32f970",
+             "lastHostUuid": "415fa093b34e4a3d873368104b127115",
+             "lastOpDate": "Jan 30, 2016 3:07:20 PM",
+             "managementNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+             "memorySize": 536870912,
+             "name": "virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+             "platform": "Linux",
+             "publicNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+             "rootVolumeUuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+             "state": "Running",
+             "status": "Connected",
+             "type": "ApplianceVm",
+             "uuid": "c5a966cb87d644649952daf683f89e26",
+             "vmNics": [
+                 {
+                     "createDate": "Jan 30, 2016 3:06:50 PM",
+                     "deviceId": 0,
+                     "gateway": "192.168.200.1",
+                     "ip": "192.168.201.195",
+                     "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "lastOpDate": "Jan 30, 2016 3:06:50 PM",
+                     "mac": "fa:4c:01:68:77:00",
+                     "metaData": "7",
+                     "netmask": "255.255.252.0",
+                     "uuid": "c44e856aa88a42bc85ec30ce8c334c6c",
+                     "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                 }
+             ],
+             "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+         }
+     ],
+     "success": true
+ }
+
+ &gt;&gt;&gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
  {
      "success": true
  }
