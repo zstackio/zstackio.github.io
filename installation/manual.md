@@ -105,7 +105,7 @@ sudo bash zstack-installer.bin -i -R aliyun</code></pre>
     
 #### Use *wget*:
 
-    wget -O zstack-installer.bin {{site.all_in_one_ch}}
+    wget -O zstack-installer.bin {{site.all_in_one_en}}
     sudo bash zstack-installer.bin -i
 
 The md5sum of ztack-installer.bin is:
