@@ -62,20 +62,38 @@ layout: installationPage.cn
 
 <div class="bs-callout bs-callout-warning">
 <h4>注意配置YUM或者APT的镜像</h4>
-在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
-先设置好镜像repo可以大大加快安装速度。
+在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
+如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
+如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
 </div>
 
-国内用户在访问我们美国服务器时速度较慢，请使用以下链接：
-      
 <h4 style="margin-bottom:15px; margin-top:15px">使用<i>curl</i>:</h4>
-<pre><code>curl -L {{site.install_script_en}} -o install-zstack.sh
-sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
-      
+<pre><code>curl -L {{site.all_in_one_en}} -o zstack-installer.bin
+sudo bash zstack-installer.bin -i -R aliyun</code></pre>
+
 <h4 style="margin-bottom:15px">使用<i>wget</i>:</h4>
-<pre><code>wget -O install-zstack.sh {{site.install_script_en}}
-sudo bash install-zstack.sh -i -f {{site.all_in_one_ch}}</code></pre>
+<pre><code>wget -O zstack-installer.bin {{site.all_in_one_en}}
+sudo bash zstack-installer.bin -i -R aliyun</code></pre>
+
+ztack-installer.bin 的md5sum为: 
+
+{{site.all_in_one_md5}}
+
+<div class="bs-callout bs-callout-success">
+  <h4 class="hand" data-toggle="collapse" data-target="#china">Fast link for users of Mainland China (国内用户请点击展开)</h4>
+  <div id="china" class="collapse">
+      国内用户在访问我们美国服务器速度较慢，还可以使用以下链接：
       
+      <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
+      <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
+sudo bash zstack-installer.bin -a -R aliyun</code></pre>
+      
+      <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
+      <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
+sudo bash zstack-installer.bin -a -R aliyun</code></pre>
+  </div>
+</div>
+
 <div class="bs-callout bs-callout-danger">
   <h4>注意DNS劫持</h4>
         

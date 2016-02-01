@@ -280,7 +280,7 @@ passwd root</code></pre>
 3. 选择格式'qcow2'
 4. 选择媒体类型为'RootVolumeTemplate'
 5. 选择平台'Linux'
-6. 输入下载地址 http://7xi3lj.com1.z0.glb.clouddn.com/templates/ttylinux.qcow2
+6. 输入下载地址 {{site.zstack_image}}
 7. 点击'Add' （不能选择'System'）
 
 该镜像文件将会用于用户云主机的模板。

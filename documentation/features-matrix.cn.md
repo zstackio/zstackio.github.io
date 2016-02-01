@@ -27,9 +27,12 @@ layout: docPage.cn
     </tr>
     <tr>
       <td>主机</td>
-      <td>目前仅支持KVM</td>
+      <td>目前仅支持KVM。</td>
     </tr>
-    
+    <tr>
+      <td>云主机</td>
+      <td>支持Windows，Windows带VirtIO驱动、Linux等云主机。另外支持云主机的迁移，从ISO安装，调整启动顺序，嵌套虚拟化，VNC/Spice等。</td>
+    </tr>
     <tr>
       <td rowspan=5>存储</td>
       <td>主存储</td>
@@ -45,7 +48,7 @@ layout: docPage.cn
     </tr>
     <tr>
       <td>磁盘卷</td>
-      <td>虚拟机磁盘卷</td>
+      <td>虚拟机磁盘卷。支持给云主机添加多个数据云盘。</td>
     </tr>
     <tr>
       <td>磁盘卷快照</td>

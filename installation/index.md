@@ -40,15 +40,16 @@ you can build your first cloud with only one machine. Because of this, we recomm
       国内用户在访问我们美国服务器速度较慢，请使用以下链接：
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L {{site.install_script_en}} -o install-zstack.sh
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+      <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
+sudo bash zstack-installer.bin -a -R aliyun</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
-      <pre><code>wget -O install-zstack.sh {{site.install_script_en}}
-sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
+      <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
+sudo bash zstack-installer.bin -a -R aliyun</code></pre>
       
-      在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。国内访问例如CentOS/RedHat/Ubuntu的repo通常会比较慢，如果你有常用的镜像repo，在执行脚本前
-      先设置好镜像repo可以大大加快安装速度。
+      在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
+      如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
+      如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
       
       
       <div class="bs-callout bs-callout-danger">
@@ -68,21 +69,23 @@ sudo bash install-zstack.sh -a -f {{site.all_in_one_ch}}</code></pre>
 
 #### Use *curl*:
 
-    curl -L {{site.install_script_en}} -o install-zstack.sh
-    sudo bash install-zstack.sh -a
+    curl -L {{site.all_in_one_en}} -o zstack-installer.bin
+    sudo bash zstack-installer.bin -a
     
 #### Use *wget*:
 
-    wget -O install-zstack.sh {{site.install_script_en}}
-    sudo bash install-zstack.sh -a
-
+    wget -O zstack-installer.bin {{site.all_in_one_ch}}
+    sudo bash zstack-installer.bin -a
     
+The md5sum of ztack-installer.bin is:
+
+{{site.all_in_one_md5}}
+
 <div class="bs-callout bs-callout-warning">
   <h4>Please be patient, the installation will install all software needed</h4>
   The installation script will install and configure your system no matter it's a minimal or a regular Linux distribution.
   Depending on the completeness of the distribution and the networking speed, the process may take 5 ~ 15 minutes. 
 </div>
-
 
     
 The script will install the machine with:
@@ -91,10 +94,19 @@ The script will install the machine with:
 * ZStack web UI
 * ZStack command line tool (zstack-cli)
 * ZStack control tool (zstack-ctl)
-* MySQL
+* MySQL(will set MySQL root password, if it is empty.)
 * RabbitMQ server
 * NFS server
 * Apache HTTP server
+
+<div class="bs-callout bs-callout-warning">
+  <h4>MySQL is installed and root password is set</h4>
+  User could install MySQL before installing ZStack. If MySQL root user password is set, please send the password
+to zstack-installer by parameter: '-P MYSQL_ROOT_PASSWORD', e.g.:
+
+    `sudo bash zstack-installer.bin -a -P MYSQL_ROOT_PASSWORD`
+
+</div>
 
 <div class="bs-callout bs-callout-info">
   <h4>Default Credential</h4>

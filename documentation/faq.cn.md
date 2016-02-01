@@ -43,6 +43,14 @@ sections:
 
 3, 进入UI界面 找到VirtualRouter 点击 action->start
 
+从ZStack 1.0开始，用户也可直接使用如下一条命令，自动启动管理节点和Web管理界面（ZStack会根据系统当前安装的环境来启动对应的服务）：
+
+    `zstack-ctl start`
+
+用户可以将这条命令添加到系统的/etc/rc.local 文件中，并给该文件添加可执行权限：
+
+    `chmod a+x /etc/rc.local`
+    
 ---
 
 <h2 id='q2'> Q2.管理节点IP地址变化了该怎么办? </h2>
@@ -54,11 +62,15 @@ sections:
 
 ｀ zstack-ctl stop_node; zstack-ctl start_node｀
 
+从ZStack 1.0开始，用户也可直接使用如下一条命令:
+
+` zstack-ctl stop; zstack-ctl start`
+
 ---
 
 <h2 id='q3'>Q3.如何更改UI的Admin密码? </h2>
 
-在管理节点上运行如下命令(如果password已經更改，請用改過的密碼替換password):
+在管理节点上运行如下命令(如果password已经更改，请用改过的密码替換password):
 
 ｀zstack-cli LogInByAccount accountName=admin password=password｀
 

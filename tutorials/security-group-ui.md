@@ -295,18 +295,10 @@ click button 'New Image' to open the dialog:
 3. choose format 'qcow2'
 4. choose media type 'RootVolumeTemplate'
 5. choose platform 'Linux'
-6. input URL http://download.zstack.org/templates/ttylinux.qcow2
+6. input URL {{site.zstack_image}}
 7. click button 'Add'
 
 this image will be used as user VM image.
-
-<div class="bs-callout bs-callout-success">
-  <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
-  
-  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/ttylinux.qcow2</code></pre>
-</div>
-
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 

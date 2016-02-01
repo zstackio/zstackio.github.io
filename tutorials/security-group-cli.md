@@ -252,7 +252,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 
 <h4 id="addImage">9. Add Image</h4>
 
-add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/ttylinux.qcow2') to backup storage ('BACKUP-STORAGE1'):
+add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
@@ -260,14 +260,7 @@ add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' pl
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
 
-<div class="bs-callout bs-callout-success">
-  <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
-  
-  <pre><code>http://7xi3lj.com1.z0.glb.clouddn.com/templates/ttylinux.qcow2</code></pre>
-</div>
-
-	>>> AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/ttylinux.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+	>>> AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url={{site.zstack_image}} backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png">
 
