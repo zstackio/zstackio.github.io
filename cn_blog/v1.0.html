@@ -537,7 +537,7 @@
 <h3 id="zstackimage"> 10. 超小试用镜像 </h3>
 
 
-<p>在1.0我们为ZStack专门构建了一个只有22M的测试镜像，支持网络、SSHD，用户可以用它来做一些基本测试。相比于之前的ttylinux，该镜像支持了ACPID，支持优雅挂机。下载链接：</p>
+<p>在1.0我们为ZStack专门构建了一个只有22M的测试镜像，支持网络、SSHD，用户可以用它来做一些基本测试。相比于之前的ttylinux，该镜像支持了ACPID，支持优雅关机。下载链接：</p>
 
 <pre><code>     http://download.zstack.org/templates/zstack-image-0.0.7.qcow2
 </code></pre>
@@ -568,8 +568,6 @@
 <pre><code>    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
     bash zstack-installer-1.0.0-0201.bin -u
 </code></pre>
-
-<blockquote><p>如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。</p></blockquote>
 
 <h3 id="upgradenetwork"> 14. 用Flat Network Provider替换Virtual Router Provider </h3>
 
