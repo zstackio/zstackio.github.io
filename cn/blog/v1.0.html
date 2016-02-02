@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shorcut icon" href="/image/zstack_text_icon_32x32.png">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack v1.0 release</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack v1.0 release</h2>
+    <p class="post-meta"> by Frank Zhang on Feb 1, 2016</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.0 is released.</p>
+
+<h1>New Features</h1>
+
+<ul>
+<li><a href="#flatnetworkprovider">Flat Network Provider, providing distributed DHCP</a></li>
+<li><a href="#userdata">User Data, supporting cloud-init</a></li>
+<li><a href="#localstoragemigration">Volume Migration on Local Storage</a></li>
+<li><a href="#isoapi">ISO APIs, supporting attach/detach ISO and change VM boot order</a></li>
+<li><a href="#spice">Spice</a></li>
+<li><a href="#i18n">i18n, English/Chinese PRC/Chinese Taiwan</a></li>
+<li><a href="#vmstate">VM State Realtime Syncing</a></li>
+<li><a href="#deletionpolicy">Resource Deletion Policy</a></li>
+<li><a href="#cpumodel">CPU model pass-through, supporting nested-virtualization</a></li>
+<li><a href="#zstackimage">22M Tiny Image</a></li>
+</ul>
+
+
+<h1>Installation And Upgrade</h1>
+
+<ul>
+<li><a href="#install">Installation</a></li>
+<li><a href="#upgrade">Upgrade</a></li>
+<li><a href="#upgradevr">Upgrade Virtual Router Provider To Flat Network Provider</a></li>
+</ul>
+
+
+<h2 id="flatnetworkprovider"> 1. Flat Network Provider </h2>
+
+
+<p>A new network provider, flat network provider, which provides DHCP, Userdata
+services is available for users only using flat networks. Compared to the
+virtual router provider, the main advantage of the new provider is you don't
+need a virtual router VM for DHCP server anymore, which simplifies the effort of
+deploying a flat network significantly.</p>
+
+<p><img src="/images/1.0/1.PNG" class="center-img img-responsive"></p>
+
+<p>The flat network provider contains a distributed DHCP system that runs a
+DHCP server serving DHCP requests from VMs on the local KVM host. Compared to the
+traditional DHCP system that has only one DHCP server, the
+distributed DHCP system has no single failure point, and a DHCP server down only
+effects VMs on one host. Large DHCP requests originated from concurrent VMs
+creation/starting are balanced to different DHCP servers, which improves the overall
+concurrency.</p>
+
+<h3>1.1 Use Flat Network Provider</h3>
+
+<p>When you create a L3 network, do following steps when selecting network
+services:</p>
+
+<p><img src="/images/1.0/2.png" class="center-img img-responsive"></p>
+
+<ol>
+<li>select provider as “Flat Network Service Provider”</li>
+<li>select service DHCP</li>
+<li>click button “Add”</li>
+<li>repeat step 2, 3 to add service Userdata</li>
+</ol>
+
+
+<div class="bs-callout bs-callout-info">
+
+<h4>You can combine flat network provider and virtual router provider</h4>
+
+The flat network provider is mainly for flat networks which only require DHCP
+service. However, you can combine it with the virtual router provider for a
+mixed setup. For example, use the flat network provider for DHCP service and use
+the virtual router provider for SNAT and EIP services.
+
+</div>
+
+
+
+
+<h2 id="userdata"> User Data </h2>
+
+
+<p>User data, complying the standard of
+<a href="https://cloudinit.readthedocs.org/en/latest/">cloud-init</a>, is enabled by the
+userdata service of the flat network provider.</p>
+
+<div class="bs-callout bs-callout-info">
+
+<h4>Your template must install cloud-init package</h4>
+To use the user data, you must install cloud-init package in the VM’s operating
+system.
+</div>
+
+
+<p>The userdata is implemented by ZStack’s system tag mechanism; you can use system
+tag APIs to add/update/remove userdata to VMs.</p>
+
+<p>The format of userdata system is like:</p>
+
+<pre><code>    userdata::{the content}
+
+    Example:
+
+    userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true
+</code></pre>
+
+<div class="bs-callout bs-callout-info">
+<h4>Minify the cloud-init YAML configuration</h4>
+cloud-init uses a YAML file as user data. As a ZStack system tag is a string, you need
+to minify the YAML file before passing to ZStack's API. Here is simple script to do
+that:
+
+<code>sed ':a;N;$!ba;s/\n/\\n/g' the_yaml_file</code>
+
+<br>
+The output will be printed on the screen.
+</div>
+
+
+<h3>2.1 Use user data</h3>
+
+<h4>2.1.1 Configure cloud-init in VM</h4>
+
+<p>To use use data, you need to first configure cloud-init in your VM. We suggest
+you doing this once then saving the VM as a template so VMs derived from the
+template will have cloud-init installed by default.</p>
+
+<ol>
+<li>yum install cloud-init or apt-get install cloud-init</li>
+<li><p>add following content to /etc/cloud/cloud.cfg</p>
+
+<pre><code>datasource_list:
+  - CloudStack
+</code></pre></li>
+</ol>
+
+
+<h4>2.2.2 Add user data</h4>
+
+<p>You can specify user data when creating a new VM, for example:</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>To set the user data to an existing VM, use CreateSystemTag, for example:</p>
+
+<pre><code>    CreateSystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b resourceType=VmInstanceVO tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>The <code>resourceUuid</code> here is the VM's uuid.</p>
+
+<h4>2.2.3 Get user data</h4>
+
+<p>You can use QuerySystemTag to get user data, for example:</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=userdata%
+</code></pre>
+
+<p>The <code>resourceUuid</code> here is the VM's uuid.
+ </p>
+
+<h4>2.2.4 Remove user data</h4>
+
+<p>You can use DeleteTag to remove user data from a VM:</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    For example:
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>See above section for retrieving UUID of user data tag.</p>
+
+<h4>2.2.5 Update user data</h4>
+
+<p>You can use UpdateSystemTag to update existing user data of a VM, for example:</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+</code></pre>
+
+<p>The <code>uuid</code> here is the system tag's UUID. See above section for retrieving UUID of user data tag.</p>
+
+<h4>2.2.6 Inject SSH public key into a VM</h4>
+
+<p>As public SSH key injection is a widely used feature for user data, ZStack provides a shortcut system tag for this. The system tag is in format of:</p>
+
+<pre><code>    sshkey::{content}
+    Example:
+    sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy
+</code></pre>
+
+<h5>2.2.7 Add public SSH key</h5>
+
+<p>You can do this when you creating a VM, for example:</p>
+
+<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy'
+</code></pre>
+
+<p>or add the SSH key to an existing VM, for example:</p>
+
+<pre><code>    CreateSystemTag resourceType=VmInstanceVO resourceUuid=606d9a2fa723407c93438789eaf72cea tag="sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7NtheqzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNAMVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3"
+</code></pre>
+
+<h4>2.2.8 Get public SSH key</h4>
+
+<p>You can use QuerySystemTag to get SSH key, for example:</p>
+
+<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=sshkey%
+</code></pre>
+
+<p>The <code>resourceUuid</code> here is the VM's uuid.</p>
+
+<h4>2.2.9 Remove public SSH key</h4>
+
+<p>You can use DeleteTag to remove SSH key from a VM:</p>
+
+<pre><code>    DeleteTag uuid=user_data_tag_uuid
+    For example:
+    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+</code></pre>
+
+<p>See above section for retrieving UUID of SSH key tag.</p>
+
+<h4>2.2.10 Update public SSH key</h4>
+
+<p>You can use UpdateSystemTag to update the existing SSH key of a VM, for example:</p>
+
+<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7Nthe    qzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNA    MVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3'
+</code></pre>
+
+<p>The <code>uuid</code> here is the system tag's UUID. See above section for retrieving UUID of SSH key tag.</p>
+
+<div class="bs-callout bs-callout-warning">
+<h4>You may need to reboot the VM to enable the SSH key</h4>
+
+If you add/update a SSH key to an existing VM, you need to do following steps:<br>
+1. clean up existing cloud-init data by 'rm -rf /var/lib/cloud' in the VM's operating system<br>
+2. reboot the VM<br>
+
+<br>
+For creating new VM, you don't need to do this.
+</div>
+
+
+
+
+<h2 id="localstoragemigration"> 3. Volume Migration For Local Storage </h2>
+
+
+<p>In this version, you can migrate volumes between different hosts on local primary storage. This mainly solves the problem that VMs cannot be migrated when using local primary storage.</p>
+
+<h3>3.1 Migrate Volumes</h3>
+
+<p>You can use <code>LocalStorageMigrateVolume</code> to migrate both root volumes and data volumes, for example:</p>
+
+<pre><code>    LocalStorageMigrateVolume volumeUuid=cdbda88fef1a42f386ff111b729159d9 destHostUuid=252d484d93e64fea946148097162b60f
+</code></pre>
+
+<h3>3.2 Migration Rules</h3>
+
+<ul>
+<li>If the volume is a root volume, the VM of the root volume must be stopped</li>
+<li>If the volume is a data volume, it must be detached</li>
+<li>If there are snapshots of the volume, snapshots are migrated as well</li>
+</ul>
+
+
+<div class="bs-callout bs-callout-info">
+<h4>Migrating a VM by migrating its root volume</h4>
+If you want to migrate a VM to another host when using local primary storage. You can do following steps:<br>
+1. stop the VM<br>
+2. migrate the VM's root volume to the destination host<br>
+3. start the VM<br>
+</div>
+
+
+
+
+<h2 id="isoapi"> 4. ISO API </h2>
+
+
+<p>In this version, you can use APIs to attach/detach ISO to/from a VM, and can use APIs to set/get VM's boot device order</p>
+
+<h3>4.1 Attach ISO</h3>
+
+<p>You can use <code>AttachIsoToVmInstance</code> to attach an ISO to a VM, for example:</p>
+
+<pre><code>    AttachIsoToVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c isoUuid=815dcd3d83dd429298ba2c9b1685c1ad
+</code></pre>
+
+<h3>4.2 Detach ISO</h3>
+
+<p>You can use <code>DetachIsoFromVmInstance</code> to detach the ISO from a VM, for example:</p>
+
+<pre><code>    DetachIsoFromVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c
+</code></pre>
+
+<h3>4.3 Get VM's boot device order</h3>
+
+<p>You can use <code>GetVmBootOrder</code> to get the boot device order of a VM, for example:</p>
+
+<pre><code>    GetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b
+</code></pre>
+
+<p>The <code>uuid</code> here is the VM's UUID.</p>
+
+<h3>4.4 Set VM's boot device order</h3>
+
+<p>You can use <code>SetVmBootOrder</code> to set the boot device order of a VM, for example:</p>
+
+<pre><code>    SetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b bootOrder=HardDisk,CdRom
+</code></pre>
+
+<p>The <code>uuid</code> here is the VM's UUID.</p>
+
+<blockquote><p>Note: the valid boot devices are: HardDisk and CdRom</p></blockquote>
+
+<h3>4.5 Boot Device Order Rules</h3>
+
+<ul>
+<li>For VMs created from an ISO, the default boot device is set to CdRom. Once you finish installing the operating system and reboot the VM, the boot device is changed to HardDisk</li>
+<li>For VMs created from a template, the default boot device is HardDisk</li>
+<li>Attaching an ISO to an existing VM won't change its boot device order, you need to use <code>SetVmBootOrder</code> to change it explicitly if you want</li>
+</ul>
+
+
+<h2 id="spice">5. Spice Support</h2>
+
+
+<p>You can use Spice protocol to access a VM console in this version. To enable the spice protocol, do following:</p>
+
+<pre><code>     UpdateGlobalConfig category=kvm name=vm.consoleMode value=spice
+</code></pre>
+
+<blockquote><p>valid values: vnc and spice</p></blockquote>
+
+<p>ZStack doesn't have a spice console proxy for now. To access a VM's console, you need to use a Spice client to connect to VM's spice port on the host. The port and the host's IP
+can be obtained by the API <code>GetVmConsoleAddress</code>:</p>
+
+<pre><code>    &gt;&gt;&gt;GetVmConsoleAddress uuid=9cd68155905e47b5b0698ecba9126242
+    {
+        "hostIp": "192.168.199.136",
+        "port": 5902,
+        "protocol": "spice",
+        "success": true
+    }
+</code></pre>
+
+<p>Here the parameter <code>uuid</code> is the UUID of the VM you want to access. Thanks Nan Su(fengcai_ji@163.com) from Wuhan Textile University for contributing this feature!</p>
+
+<h2 id="i18n"> I18n Support </h2>
+
+
+<p>The i18n is supported in the new UI. You can switch between languages of English/Chinese PRC/Chinese Taiwan by clicking the language button.</p>
+
+<p><img src="/images/1.0/3.png" class="center-img img-responsive"></p>
+
+<p>Thanks Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com) from Wuhan Textile University
+for contributing this feature!</p>
+
+<p>Thanks <a href="http://www.baiyuan.com.tw/">BaiYun Tech</a> Taiwan for contributing the language of Chinese Taiwan support!</p>
+
+<h2 id="vmstate">7. Realtime VM State Syncing</h2>
+
+
+<p>In this version, ZStack will sync VMs' state realtime; that is to say, you can use virsh command(even not recommended) to control VMs' life cycle or shutdown a VM by typing <code>halt</code>
+command in the guest operating system; ZStack will detect the state change and sync it to the database realtime.</p>
+
+<h2 id="deletionpolicy">8. Resource Deletion Policy</h2>
+
+
+<p>Beginning at this version, you can set deletion policies on core resources including VMs, images, and volumes, to avoid accidental deletion. There are three polices: <code>Direct</code>, <code>Delay</code>, and <code>Never</code>, and the default one is <code>Delay</code></p>
+
+<h3>8.1 The rule</h3>
+
+<ul>
+<li>Direct: resources are deleted directly from the physical devices, no way to recover</li>
+<li>Delay: resources are marked as <code>Deleted</code> in the database and will be physically expunged after a configurable period. Before being expunged, you can recover the resource anytime</li>
+<li>Never: resources are marked as <code>Deleted</code> only and will never be expunged</li>
+</ul>
+
+
+<h3>8.2 VM deletion policy</h3>
+
+<p>You can change the deletion policy of VMs by doing:</p>
+
+<pre><code>    UpdateGlobalConfig category=vm name=deletionPolicy value=Direct
+</code></pre>
+
+<p>If the policy is <code>Delay</code>, you can specify the delay period by doing:</p>
+
+<pre><code>    UpdateGlobalConfig category=vm name=expungePeriod value=3600
+</code></pre>
+
+<blockquote><p>the value is in seconds. The default delay is 24 hours</p></blockquote>
+
+<p>You can also configure the interval that ZStack checks expunging candidates, do:</p>
+
+<pre><code>    UpdateGlobalConfig category=vm name=expungeInterval value=3600
+</code></pre>
+
+<blockquote><p>the value is in seconds</p></blockquote>
+
+<p>You can recover a deleted VM by:</p>
+
+<pre><code>     RecoverVmInstance vmInstanceUuid=8c4c4c0bbac7441fb056d0d6e2168996
+</code></pre>
+
+<h3>8.3 Image deletion policy</h3>
+
+<p>You can change image deletion policies too:</p>
+
+<pre><code>     UpdateGlobalConfig category=image name=deletionPolicy value=Direct
+     UpdateGlobalConfig category=image name=expungePeriod value=3600
+     UpdateGlobalConfig category=image name=expungeInterval value=3600
+</code></pre>
+
+<p>and recover a deleted image:</p>
+
+<pre><code>    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996
+</code></pre>
+
+<p>You can recover an image on specified backup storage:</p>
+
+<pre><code>    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996 backupStorageUuids=36c27e8ff05c4780bf6d2fa65700f22e
+</code></pre>
+
+<h3>8.4 Volume deleted policy</h3>
+
+<p>You can change data volume deletion policies:</p>
+
+<pre><code>    UpdateGlobalConfig category=volume name=deletionPolicy value=Direct
+    UpdateGlobalConfig category=volume name=expungePeriod value=3600
+    UpdateGlobalConfig category=volume name=expungeInterval value=3600
+</code></pre>
+
+<p>You can recover a deleted data volume:</p>
+
+<pre><code>     RecoverDataVolume uuid=36c27e8ff05c4780bf6d2fa65700f22e
+</code></pre>
+
+<blockquote><p>root volumes are recovered when you recover VMs</p></blockquote>
+
+<h2 id="cpumodel">9. Host CPU model pass-through ( Nested Virtualization Support)</h2>
+
+
+<p>You can change a global configuration to let VMs get hosts' CPU model. For example:</p>
+
+<pre><code>    UpdateGlobalConfig category=kvm name=vm.cpuMode value=host-model
+</code></pre>
+
+<blockquote><p>Valid values are: none, host-model, host-passthrough. The default value is <code>none</code></p></blockquote>
+
+<p>Set this configuration to <code>host-model</code> or <code>host-passthrough</code> can enable nested virtualization in the VM.</p>
+
+<div class="bs-callout bs-callout-warning">
+<h4>This may break live migration</h4>
+
+Because live migration will check the CPU model, setting this value to <code>host-model</code> or <code>host-passthrough</code> may
+break live migration if CPU models are different on two hosts.
+</div>
+
+
+
+
+<h2 id="zstackimage">10. 22M Tiny Image</h2>
+
+
+<p>We build a tiny image that supports SSHD and ACPID, which can do graceful stop when you stop the VM through ZStack UI. The image locates at</p>
+
+<pre><code>    http://download.zstack.org/templates/zstack-image-0.0.7.qcow2
+</code></pre>
+
+<p>You can download it for quick test. Thanks Robert Yang(@linuxer) for contributing this feature!</p>
+
+<h2 id="install">11. Installation</h2>
+
+
+<p>You can install the RC1 release by:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
+    bash zstack-installer-1.0.0-0201.bin -R aliyun
+</code></pre>
+
+<h2 id="upgrade">12. Upgrade</h2>
+
+
+<p>To upgrade your ZStack to 1.0, do:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
+    bash zstack-installer-1.0.0-0201.bin -u
+</code></pre>
+
+<h2 id="upgradevr">13. Upgrade Virtual Router Provider To Flat Network Provider</h2>
+
+
+<p>If you are currently using a flat network with a previous ZStack version, you can upgrade the L3 network using the flat network provider so
+you won't need the virtual router VM anymore. Assume the UUID of your L3 network is 1a82c2691978476fa6cefa36bb9d4bfd, please follow
+the below steps:</p>
+
+<h4>1. Obtain the UUID of the virtual rotuer provider</h4>
+
+<pre><code>    &gt;&gt;&gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
+    {
+        "inventories": [
+            {
+                "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+                "networkServiceType": "DNS"
+            },
+            {
+                "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+                "networkServiceType": "DHCP"
+            }
+        ],
+        "success": true
+    }
+</code></pre>
+
+<h4>2. Detach the virtual router provider from the L3 network</h4>
+
+<pre><code>        &gt;&gt;&gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"5d21ea0f39c04d6fb68cfaf5a37db4ad":["DHCP","DNS"]}'
+         {
+             "inventory": {
+                 "createDate": "Jan 30, 2016 3:01:03 PM",
+                 "dns": [
+                     "8.8.8.8"
+                 ],
+                 "ipRanges": [
+                     {
+                         "createDate": "Jan 30, 2016 3:01:04 PM",
+                         "endIp": "192.168.201.199",
+                         "gateway": "192.168.200.1",
+                         "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                         "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                         "name": "ipr-dk7p",
+                         "netmask": "255.255.252.0",
+                         "startIp": "192.168.201.180",
+                         "uuid": "ec5fd87dd80243fdabeeace847c04427"
+                     }
+                 ],
+                 "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+                 "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+                 "name": "l3-etpz",
+                 "networkServices": [],
+                 "state": "Enabled",
+                 "system": false,
+                 "type": "L3BasicNetwork",
+                 "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                 "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+             },
+             "success": true
+         }
+</code></pre>
+
+<blockquote><p>the parameter <code>networkServices</code> is a map where the key is a <code>networkServiceProviderUuid</code> and the value is a list of <code>networkServiceType</code>, which you obtain in the step 1</p></blockquote>
+
+<h4>3. Get the flat network provider UUID</h4>
+
+<pre><code>        &gt;&gt;&gt;QueryNetworkServiceProvider type=Flat
+        {
+            "inventories": [
+                {
+                    "attachedL2NetworkUuids": [
+                        "9ec8cad681d1424fa7eda2447edae142"
+                    ],
+                    "createDate": "Jan 30, 2016 11:56:32 AM",
+                    "description": "Flat Network Service Provider",
+                    "lastOpDate": "Jan 30, 2016 11:56:32 AM",
+                    "name": "Flat Network Service Provider",
+                    "networkServiceTypes": [
+                        "DHCP",
+                        "Userdata"
+                    ],
+                    "type": "Flat",
+                    "uuid": "17864f985e584a9ba4cd81de215212ce"
+                }
+            ],
+            "success": true
+        }
+</code></pre>
+
+<h4>4. Get L2 UUID for the L3 network</h4>
+
+<pre><code>        &gt;&gt;&gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
+        {
+            "inventories": [
+                {
+                    "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142"
+                }
+            ],
+            "success": true
+        }
+</code></pre>
+
+<h4>5. Attach the flat network provider to the L2 network</h4>
+
+<pre><code>       &gt;&gt;&gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
+       {
+           "inventory": {
+               "attachedL2NetworkUuids": [
+                   "9ec8cad681d1424fa7eda2447edae142"
+               ],
+               "createDate": "Jan 30, 2016 11:56:32 AM",
+               "description": "Flat Network Service Provider",
+               "lastOpDate": "Jan 30, 2016 11:56:32 AM",
+               "name": "Flat Network Service Provider",
+               "networkServiceTypes": [
+                   "DHCP",
+                   "Userdata"
+               ],
+               "type": "Flat",
+               "uuid": "17864f985e584a9ba4cd81de215212ce"
+           },
+           "success": true
+       }
+</code></pre>
+
+<h4>6. Attach the flat network provider to the L3 network</h4>
+
+<pre><code>     &gt;&gt;&gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"17864f985e584a9ba4cd81de215212ce":["DHCP","Userdata"]}'
+      {
+          "inventory": {
+              "createDate": "Jan 30, 2016 3:01:03 PM",
+              "dns": [
+                  "8.8.8.8"
+              ],
+              "ipRanges": [
+                  {
+                      "createDate": "Jan 30, 2016 3:01:04 PM",
+                      "endIp": "192.168.201.199",
+                      "gateway": "192.168.200.1",
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                      "name": "ipr-dk7p",
+                      "netmask": "255.255.252.0",
+                      "startIp": "192.168.201.180",
+                      "uuid": "ec5fd87dd80243fdabeeace847c04427"
+                  }
+              ],
+              "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+              "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+              "name": "l3-etpz",
+              "networkServices": [
+                  {
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                      "networkServiceType": "DHCP"
+                  },
+                  {
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                      "networkServiceType": "Userdata"
+                  }
+              ],
+              "state": "Enabled",
+              "system": false,
+              "type": "L3BasicNetwork",
+              "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+              "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+          },
+          "success": true
+      }
+</code></pre>
+
+<h4>7. Delete the virtual router VM</h4>
+
+<pre><code>        &gt;&gt;QueryVirtualRouterVm
+         {
+             "inventories": [
+                 {
+                     "allVolumes": [
+                         {
+                             "createDate": "Jan 30, 2016 3:06:50 PM",
+                             "description": "Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]",
+                             "deviceId": 0,
+                             "format": "qcow2",
+                             "installPath": "/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2",
+                             "lastOpDate": "Jan 30, 2016 3:06:59 PM",
+                             "name": "ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+                             "primaryStorageUuid": "4bff4e2d266f480ead596752d14ff3b5",
+                             "rootImageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+                             "size": 467206656,
+                             "state": "Enabled",
+                             "status": "Ready",
+                             "type": "Root",
+                             "uuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+                             "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                         }
+                     ],
+                     "allocatorStrategy": "LeastVmPreferredHostAllocatorStrategy",
+                     "applianceVmType": "VirtualRouter",
+                     "clusterUuid": "10409d3e33b249c19746022930a541c7",
+                     "cpuNum": 1,
+                     "cpuSpeed": 2,
+                     "createDate": "Jan 30, 2016 3:06:50 PM",
+                     "defaultRouteL3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "hostUuid": "415fa093b34e4a3d873368104b127115",
+                     "hypervisorType": "KVM",
+                     "imageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+                     "instanceOfferingUuid": "9cec7bd6324445a184351ffb7d32f970",
+                     "lastHostUuid": "415fa093b34e4a3d873368104b127115",
+                     "lastOpDate": "Jan 30, 2016 3:07:20 PM",
+                     "managementNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "memorySize": 536870912,
+                     "name": "virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+                     "platform": "Linux",
+                     "publicNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "rootVolumeUuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+                     "state": "Running",
+                     "status": "Connected",
+                     "type": "ApplianceVm",
+                     "uuid": "c5a966cb87d644649952daf683f89e26",
+                     "vmNics": [
+                         {
+                             "createDate": "Jan 30, 2016 3:06:50 PM",
+                             "deviceId": 0,
+                             "gateway": "192.168.200.1",
+                             "ip": "192.168.201.195",
+                             "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                             "lastOpDate": "Jan 30, 2016 3:06:50 PM",
+                             "mac": "fa:4c:01:68:77:00",
+                             "metaData": "7",
+                             "netmask": "255.255.252.0",
+                             "uuid": "c44e856aa88a42bc85ec30ce8c334c6c",
+                             "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                         }
+                     ],
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 }
+             ],
+             "success": true
+         }
+
+         &gt;&gt;&gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
+         {
+             "success": true
+         }
+</code></pre>
+
+<h4>8. Reconnect all hosts</h4>
+
+<pre><code>         &gt;&gt;&gt;QueryHost
+         {
+             "inventories": [
+                 {
+                     "availableCpuCapacity": 7180,
+                     "availableMemoryCapacity": 1997570048,
+                     "clusterUuid": "4282fb61aa55458ea160de138e130298",
+                     "createDate": "Jan 30, 2016 2:51:13 PM",
+                     "hypervisorType": "KVM",
+                     "lastOpDate": "Jan 30, 2016 3:03:20 PM",
+                     "managementIp": "192.168.200.187",
+                     "name": "host1",
+                     "state": "Enabled",
+                     "status": "Connected",
+                     "totalCpuCapacity": 7182,
+                     "totalMemoryCapacity": 2098233344,
+                     "username": "root",
+                     "uuid": "402f8304a50c410486e023512492316b",
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 },
+                 {
+                     "availableCpuCapacity": 14363,
+                     "availableMemoryCapacity": 8321593344,
+                     "clusterUuid": "10409d3e33b249c19746022930a541c7",
+                     "createDate": "Jan 30, 2016 3:03:14 PM",
+                     "hypervisorType": "KVM",
+                     "lastOpDate": "Jan 30, 2016 3:03:52 PM",
+                     "managementIp": "192.168.200.150",
+                     "name": "host2",
+                     "state": "Enabled",
+                     "status": "Connected",
+                     "totalCpuCapacity": 14364,
+                     "totalMemoryCapacity": 8371924992,
+                     "username": "root",
+                     "uuid": "415fa093b34e4a3d873368104b127115",
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 }
+             ],
+             "success": true
+         }
+
+         &gt;&gt;&gt;ReconnectHost uuid=402f8304a50c410486e023512492316b
+         {
+             "success": true
+         }
+
+         &gt;&gt;&gt;ReconnectHost uuid=415fa093b34e4a3d873368104b127115
+         {
+             "success": true
+         }
+</code></pre>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
