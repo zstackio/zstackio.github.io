@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 02 Feb 2016 11:15:24 +0800</pubDate>
-    <lastBuildDate>Tue, 02 Feb 2016 11:15:24 +0800</lastBuildDate>
+    <pubDate>Tue, 02 Feb 2016 11:20:52 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Feb 2016 11:20:52 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -432,7 +432,7 @@
 &lt;h3 id=&quot;zstackimage&quot;&gt; 10. 超小试用镜像 &lt;/h3&gt;
 
 
-&lt;p&gt;在1.0我们为ZStack专门构建了一个只有22M的测试镜像，用户在部署了ZStack后可以下载用于基本测试目的。先比于之前ZStack使用的ttylinux，新镜像支持ACPID，通过ZStack关机的时候能够响应ACPID命令。下载链接：&lt;/p&gt;
+&lt;p&gt;在1.0我们为ZStack专门构建了一个只有22M的测试镜像，支持网络、SSHD，用户可以用它来做一些基本测试。相比于之前的ttylinux，该镜像支持了ACPID，支持优雅挂机。下载链接：&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;     http://download.zstack.org/templates/zstack-image-0.0.7.qcow2
 &lt;/code&gt;&lt;/pre&gt;
