@@ -5,17 +5,43 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 02 Feb 2016 00:56:44 +0800</pubDate>
-    <lastBuildDate>Tue, 02 Feb 2016 00:56:44 +0800</lastBuildDate>
+    <pubDate>Tue, 02 Feb 2016 11:02:58 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Feb 2016 11:02:58 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
-        <title>ZStack v1.0 RC1 发布</title>
-        <description>&lt;h2&gt;ZStack 1.0 RC1 版本今天发布&lt;/h2&gt;
+        <title>ZStack v1.0发布</title>
+        <description>&lt;h2&gt;ZStack 1.0 版本今天发布&lt;/h2&gt;
 
-&lt;p&gt;ZStack 1.0 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们加入了以下新功能。&lt;/p&gt;
+&lt;p&gt;ZStack 1.0版本今天发布，欢迎大家下载试用。在该版本中，我们加入了以下新功能。&lt;/p&gt;
 
-&lt;h2&gt;1. Flat Network Provider&lt;/h2&gt;
+&lt;h2&gt;新增功能&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#flatnetworkprovider&quot;&gt;Flat Network Provider，分布式DHCP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#userdata&quot;&gt;User Data，支持cloud-init&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#localstoragemigration&quot;&gt;本地存储的磁盘迁移&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#isoapi&quot;&gt;ISO API，支持加载/卸载ISO，调整VM启动顺序&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#spice&quot;&gt;Spice支持&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#i18n&quot;&gt;i18n，支持中文、繁体中文、英文&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#vmstate&quot;&gt;VM状态实时捕获&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#deletionpolicy&quot;&gt;资源删除策略控制&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cpumodel&quot;&gt;CPU型号Passthrough，支持嵌套虚拟化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#zstackimage&quot;&gt;22M超小试用镜像&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;安装升级&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;升级&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgradenetwork&quot;&gt;Virtual Router Provider升级到Flat Network Porvider&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;flatnetworkprovider&quot;&gt;1. Flat Network Provider&lt;/h3&gt;
+
 
 &lt;p&gt;Flat Network Provider是一种新的网络服务提供模式，它提供DHCP和Userdata服务。相对于已有的Virtual Router Provider，Flat Network Provider最大的优势在于不需要启动一个Virtual Router虚拟机就可以为VM提供DHCP服务，这大大简化了部署一个扁平网络的复杂度。此外，由于采用了分布式DHCP系统，Flat Network Provider不存在传统DHCP系统的单点失败情况，因为每个物理机上都会有一个DHCP服务器服务运行在该物理机上的VM。在高并发创建或启动VM的时候，DHCP的负载会被分发到不同物理机上去，大大提供了系统整体的并发性。下图是分布式DHCP系统的一个总体架构图：&lt;/p&gt;
 
@@ -42,7 +68,10 @@
 &lt;/div&gt;
 
 
-&lt;h2&gt;2. User Data&lt;/h2&gt;
+
+
+&lt;h3 id=&quot;userdata&quot;&gt; 2. User Data &lt;/h3&gt;
+
 
 &lt;p&gt;标准的&lt;a href=&quot;https://cloudinit.readthedocs.org/en/latest/&quot;&gt;Cloud-init&lt;/a&gt;在该版本中得到支持。要使用user data，你需要在VM的操作系统中安装cloud-init包。User data使用了ZStack的系统标签（System Tags）机制实现，其格式为：&lt;/p&gt;
 
@@ -178,7 +207,10 @@
 &lt;/div&gt;
 
 
-&lt;h2&gt;3. 本地存储的磁盘迁移&lt;/h2&gt;
+
+
+&lt;h3 id=&quot;localstoragemigration&quot;&gt; 3. 本地存储的磁盘迁移 &lt;/h3&gt;
+
 
 &lt;p&gt;在本版本中，你可以在本地存储的不同物理机间迁移虚拟机的磁盘(volume)，解决使用本地存储虚拟机不能迁移的的问题。&lt;/p&gt;
 
@@ -211,7 +243,8 @@
 
 &lt;blockquote&gt;&lt;p&gt;ZStack实际是支持本地存储的虚拟机热迁移的。但在我们的压力测试中，我们发现KVM的带存储热迁移不稳定。我们在一个虚拟机中做一次Linux内核编译，并在这个过程中做带存储热迁移，迁移完成后重启虚拟机，发现虚拟机磁盘损坏。为了保护用户数据，我们在API层面关闭了虚拟机带存储热迁移的功能。&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;4. ISO API&lt;/h2&gt;
+&lt;h3 id=&quot;isoapi&quot;&gt; 4. ISO API &lt;/h3&gt;
+
 
 &lt;p&gt;在该版本中，你可以使用API向一个VM加载或卸载一个ISO，并且改变VM的启动设备顺序。&lt;/p&gt;
 
@@ -260,7 +293,8 @@
 &lt;/ul&gt;
 
 
-&lt;h2&gt;5. Spice支持&lt;/h2&gt;
+&lt;h3 id=&quot;spice&quot;&gt; 5. Spice支持 &lt;/h3&gt;
+
 
 &lt;p&gt;在该版本中，我们支持Spice协议作为VM图形终端协议。你可以通过更改全局选项进行设置，例如：&lt;/p&gt;
 
@@ -282,20 +316,25 @@
 
 &lt;p&gt;这里的&lt;code&gt;uuid&lt;/code&gt;是VM的UUID。感谢来至武汉纺织大学的Nan Su(fengcai_ji@163.com)同学贡献了这个功能。&lt;/p&gt;
 
-&lt;h2&gt;6. I18N支持&lt;/h2&gt;
+&lt;h3 id=&quot;i18n&quot;&gt; 6. I18N支持 &lt;/h3&gt;
+
 
 &lt;p&gt;在该版本中，我们支持多语言版本，目前支持英文和中文，你可以通过点击语言图标进行切换。&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/1.0/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
 
-&lt;p&gt;感谢来自武汉纺织大学的Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com)贡献了该功能。&lt;/p&gt;
+&lt;p&gt;感谢来自武汉纺织大学的Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com)贡献了该功能！&lt;/p&gt;
 
-&lt;h2&gt;7. VM状态的实时捕获&lt;/h2&gt;
+&lt;p&gt;感谢台湾&lt;a href=&quot;http://www.baiyuan.com.tw/&quot;&gt;百原科技&lt;/a&gt;提供繁体版UI翻译！&lt;/p&gt;
+
+&lt;h3 id=&quot;vmstate&quot;&gt; 7. VM状态的实时捕获 &lt;/h3&gt;
+
 
 &lt;p&gt;在该版本中，我们支持VM状态的实时捕获。如果用户绕过ZStack对VM进行了操作，其状态会实时的发送回管理节点进行更新。也就是说你可以在VM内部
 通过halt命令来关闭虚拟机，而不用通过ZStack UI。虽然不推荐，但如果你用virsh关闭或者启动了一个VM，其在ZStack中的状态也会被实时更新。&lt;/p&gt;
 
-&lt;h2&gt;8. 资源删除策略控制&lt;/h2&gt;
+&lt;h3 id=&quot;deletionpolicy&quot;&gt; 8. 资源删除策略控制 &lt;/h3&gt;
+
 
 &lt;p&gt;从该版本开始，我们对一些关键资源实现了删除策略控制，用户可以控制资源的删除方式，以防误删除。目前支持删除策略控制的资源包括：虚拟机、磁盘(volume)、镜像（image）。目前支持的删除策略包括：&lt;strong&gt;Direct（直接删除）&lt;/strong&gt;, &lt;strong&gt;Delay（延时删除）&lt;/strong&gt;, &lt;strong&gt;Never（从不删除）&lt;/strong&gt;三种。默认的策略是Delay。&lt;/p&gt;
 
@@ -369,7 +408,8 @@
 
 &lt;blockquote&gt;&lt;p&gt;根磁盘(root volume)的恢复是在恢复虚拟机的时候自动恢复。&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;9. CPU型号Paasthrough(支持嵌套虚拟化)&lt;/h2&gt;
+&lt;h3 id=&quot;cpumodel&quot;&gt; 9. CPU型号Paasthrough(支持嵌套虚拟化) &lt;/h3&gt;
+
 
 &lt;p&gt;你可以通过改变全局配置让虚拟机获得跟物理机CPU相同的型号：&lt;/p&gt;
 
@@ -389,27 +429,38 @@
 
 &lt;blockquote&gt;&lt;p&gt;使用该功能可能会影响虚拟机热迁移。因为热迁移时会检查虚拟机CPU型号，如果两台物理机的CPU型号不同，会导致虚拟机热迁移失败。&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;10. 安装&lt;/h2&gt;
+&lt;h3 id=&quot;zstackimage&quot;&gt; 10. 超小试用镜像 &lt;/h3&gt;
+
+
+&lt;p&gt;在1.0我们为ZStack专门构建了一个只有22M的测试镜像，用户在部署了ZStack后可以下载用于基本测试目的。先比于之前ZStack使用的ttylinux，新镜像支持ACPID，通过ZStack关机的时候能够响应ACPID命令。下载链接：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;     http://download.zstack.org/templates/zstack-image-0.0.7.qcow2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;install&quot;&gt; 11. 安装 &lt;/h3&gt;
+
 
 &lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc4.bin -O zstack-installer-1.0-rc4.bin
-    bash zstack-installer-1.0-rc4.bin -R aliyun
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
+    bash zstack-installer-1.0.0-0201.bin -R aliyun
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;11. 升级&lt;/h2&gt;
+&lt;h3 id=&quot;upgrade&quot;&gt; 12. 升级 &lt;/h3&gt;
+
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://7xi3lj.com1.z0.glb.clouddn.com/releases%2F1.0%2F1.0.0%2Fzstack-installer-1.0-rc4.bin -O zstack-installer-1.0-rc4.bin
-    bash zstack-installer-1.0-rc4.bin -u
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
+    bash zstack-installer-1.0.0-0201.bin -u
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;blockquote&gt;&lt;p&gt;如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h2&gt;12. 用Flat Network Provider替换Virtual Router Provider&lt;/h2&gt;
+&lt;h3 id=&quot;upgradenetwork&quot;&gt; 13. 用Flat Network Provider替换Virtual Router Provider &lt;/h3&gt;
+
 
 &lt;p&gt;如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：&lt;/p&gt;
 
