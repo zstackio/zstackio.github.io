@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 02 Feb 2016 11:35:43 +0800</pubDate>
-    <lastBuildDate>Tue, 02 Feb 2016 11:35:43 +0800</lastBuildDate>
+    <pubDate>Tue, 02 Feb 2016 11:59:51 +0800</pubDate>
+    <lastBuildDate>Tue, 02 Feb 2016 11:59:51 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -28,6 +28,7 @@
 &lt;li&gt;&lt;a href=&quot;#deletionpolicy&quot;&gt;资源删除策略控制&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;#cpumodel&quot;&gt;CPU型号Passthrough，支持嵌套虚拟化&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;#zstackimage&quot;&gt;22M超小试用镜像&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#chineseusermanual&quot;&gt;中文用户手册&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -439,7 +440,12 @@
 
 &lt;p&gt;感谢Rober Yang(@linuxer)提供该镜像!&lt;/p&gt;
 
-&lt;h3 id=&quot;install&quot;&gt; 11. 安装 &lt;/h3&gt;
+&lt;h3 id=&quot;chineseusermanual&quot;&gt;11. 中文用户手册&lt;/h3&gt;
+
+
+&lt;p&gt;用户手册已经完全汉化，可以访问&lt;a href=&quot;http://zstack-cn.readthedocs.org/zh/latest/&quot;&gt;ZStack中文用户手册&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;install&quot;&gt; 12. 安装 &lt;/h3&gt;
 
 
 &lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
@@ -450,7 +456,7 @@
 
 &lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h3 id=&quot;upgrade&quot;&gt; 12. 升级 &lt;/h3&gt;
+&lt;h3 id=&quot;upgrade&quot;&gt; 13. 升级 &lt;/h3&gt;
 
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
@@ -461,7 +467,7 @@
 
 &lt;blockquote&gt;&lt;p&gt;如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h3 id=&quot;upgradenetwork&quot;&gt; 13. 用Flat Network Provider替换Virtual Router Provider &lt;/h3&gt;
+&lt;h3 id=&quot;upgradenetwork&quot;&gt; 14. 用Flat Network Provider替换Virtual Router Provider &lt;/h3&gt;
 
 
 &lt;p&gt;如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：&lt;/p&gt;

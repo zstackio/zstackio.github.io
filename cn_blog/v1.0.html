@@ -132,6 +132,7 @@
 <li><a href="#deletionpolicy">资源删除策略控制</a></li>
 <li><a href="#cpumodel">CPU型号Passthrough，支持嵌套虚拟化</a></li>
 <li><a href="#zstackimage">22M超小试用镜像</a></li>
+<li><a href="#chineseusermanual">中文用户手册</a></li>
 </ul>
 
 
@@ -543,7 +544,12 @@
 
 <p>感谢Rober Yang(@linuxer)提供该镜像!</p>
 
-<h3 id="install"> 11. 安装 </h3>
+<h3 id="chineseusermanual">11. 中文用户手册</h3>
+
+
+<p>用户手册已经完全汉化，可以访问<a href="http://zstack-cn.readthedocs.org/zh/latest/">ZStack中文用户手册</a></p>
+
+<h3 id="install"> 12. 安装 </h3>
 
 
 <p>你可以通过下面方式安装：</p>
@@ -554,7 +560,7 @@
 
 <blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
 
-<h3 id="upgrade"> 12. 升级 </h3>
+<h3 id="upgrade"> 13. 升级 </h3>
 
 
 <p>一如既往的，我们支持一键无缝升级：</p>
@@ -565,7 +571,7 @@
 
 <blockquote><p>如果你安装了多个管理节点，请等待最终GA版本的升级步骤。这里的升级步骤只适合all-in-one安装的ZStack。</p></blockquote>
 
-<h3 id="upgradenetwork"> 13. 用Flat Network Provider替换Virtual Router Provider </h3>
+<h3 id="upgradenetwork"> 14. 用Flat Network Provider替换Virtual Router Provider </h3>
 
 
 <p>如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：</p>
