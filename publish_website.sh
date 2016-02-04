@@ -18,6 +18,14 @@ if [ -z "$branch" ] || [ "$branch" != "master" ]; then
     branch='master'
 fi
 
+git checkout $branch
+if [ $? -ne 0 ]; then
+    echo "checkout $branch failed. Maybe you forget to commit local changes in source branch."
+    exit 1
+fi
+git pull
+git checkout source
+
 exe_cmd "jekyll build"
 if [ ! -d '_site' ];then
     echo "not content to be published"
