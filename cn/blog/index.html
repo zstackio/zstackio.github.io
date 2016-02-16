@@ -116,6 +116,498 @@
       
         
     <div>
+      <a href="/cn_blog/http-api.html"><h3>ZStack HTTP API使用</h3></a>
+      <p class="post-meta"> by Frank Zhang on Feb 16, 2016</p>
+      <h2>1. 介绍</h2>
+
+<p>ZStack的API原语是JSON格式的消息，可以在各种消息总线上调用，目前ZStack使用的默认消息总线是RabbitMQ。由于这个特性，ZStack的API可以被封装成各种格式。为了方便大家使用，ZStack自带一个HTTP server，用户可以通过HTTP POST发送API JSON文本，该HTTP Server会自动将其转换成API消息实现调用。</p>
+
+<blockquote><p>我们未来会将ZStack API封装成Restful格式，但当前HTTP POST发送API JSON原语的方式将一直保留。</p></blockquote>
+
+<p>ZStack的命令行工具(zstack-cli)是完全使用HTTP POST方法调用API的，为了方便用户阅读，我们用户手册对所有API的解释都是以zstack-cli为示例，每个cli命令都对应一个API。用户可以在<a href="http://zstack-cn.readthedocs.org/zh/latest/userManual/introduction.html">中文用户手册</a>获得每个API的详细解释。</p>
+
+<p>通过zstack-cli的log，用户可以查看所有API调用和返回的具体格式（即HTTP POST的BODY）。</p>
+
+<blockquote><p>Log路径： /var/log/zstack/zstack-cli</p></blockquote>
+
+<p>我们建议用户通过<code>tail -f /var/log/zstack/zstack-cli</code>实时查看log，这样你可以在zstack-cli中执行API时实时观测到具体调用和输出。例如：</p>
+
+<pre><code>    &gt;&gt;LogInByAccount accountName=admin password=password
+</code></pre>
+
+<p>执行了登录操作后，你会看到LOG中输出类似如下内容：</p>
+
+<pre><code>    2016-02-16 16:29:48,664 DEBUG [apibinding.api] async call[url: http://localhost:8080/zstack/api/, request: {"org.zstack.header.identity.APILogInByAccountMsg": {"password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86", "session": {}, "accountName": "admin"}}]
+    2016-02-16 16:29:48,741 DEBUG [apibinding.api] async call[url: http://localhost:8080/zstack/api/, response: {"org.zstack.header.identity.APILogInReply":{"inventory":{"uuid":"083f3518d1bd469fa0ff789fc1a25382","accountUuid":"36c27e8ff05c4780bf6d2fa65700f22e","userUuid":"36c27e8ff05c4780bf6d2fa65700f22e","expiredDate":"Feb 17, 2016 12:29:48 PM","createDate":"Feb 16, 2016 4:29:48 PM"},"success":true}}]
+</code></pre>
+
+<p>这里<code>http://localhost:8080/zstack/api/</code>是HTTP调用的URL，request后的内容是API调用时HTTP POST的BODY，例如这里LogInByAccount这个API的HTTP POST BODY就是：</p>
+
+<pre><code>    {
+        "org.zstack.header.identity.APILogInByAccountMsg": {
+        "password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86",
+        "session": {},
+        "accountName": "admin"
+        }
+    }
+</code></pre>
+
+<p>response后的内容是API返回的HTTP response的BODY，例如这里LogInByAccount的返回是：</p>
+
+<pre><code>    {
+        "org.zstack.header.identity.APILogInReply": {
+            "inventory": {
+                "uuid": "083f3518d1bd469fa0ff789fc1a25382",
+                "accountUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+                "userUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+                "expiredDate": "Feb 17, 2016 12:29:48 PM",
+                "createDate": "Feb 16, 2016 4:29:48 PM"
+            },
+            "success": true
+        }
+    }
+</code></pre>
+
+<h2>2. API的格式</h2>
+
+<p>ZStack API的调用和返回都是以JSON原语描述的，格式统一为：<code>只有一个entry的JSON map，该entry的key是API描述符，value是承载具体内容的一个map</code>。API描述符用来唯一标示一个API调用或返回，用户可以把它看做API的名称。在上一节的例子中，API调用的描述符是<code>org.zstack.header.identity.APILogInByAccountMsg</code>，API返回的描述符是<code>org.zstack.header.identity.APILogInReply</code>。</p>
+
+<h2>3. HTTP返回码</h2>
+
+<table class="table table-striped table-bordered black-table">
+<tr>
+<th>
+返回码
+</th>
+<th>
+描述
+</th>
+</tr>
+
+<tr>
+<td>
+200
+</td>
+<td>
+HTTP调用成功。但并不代表API执行成功，API的执行结果由API返回中的success字段决定，true表示成功；false表示失败
+</td>
+</tr>
+
+<tr>
+<td>
+其他
+</td>
+<td>
+含义跟标准的HTTP返回码相同，例如500代表Internal Server Error；404代表No such page
+</td>
+</tr>
+</table>
+
+
+<h2>4. HTTP Response Body</h2>
+
+<p>API的HTTP response返回的是一个Job结构，调用者需要用该Job的uuid去轮询查询API是否已经完成。API Job的格式如下：</p>
+
+<table class="table table-striped table-bordered black-table">
+<tr>
+<th>
+字段
+</th>
+<th>
+类型
+</th>
+<th>
+描述
+</th>
+</tr>
+
+<tr>
+<td>
+uuid
+</td>
+<td>
+字符串
+</td>
+<td>
+ JOB UUID，用户可以用该UUID去查询一个API JOB当前的执行状态。当state == Done时，该字段可能为NULL。
+</td>
+</tr>
+
+<tr>
+<td>
+state
+</td>
+<td>
+字符串
+</td>
+<td>
+JOB状态。包括两种状态：Processing，该JOB还在执行；Done，JOB已经完成
+</td>
+</tr>
+
+<tr>
+<td>
+result
+</td>
+<td>
+字符串
+</td>
+<td>
+API结果，JSON字符串。当state = Processing时，该字段为NULL
+</td>
+</tr>
+
+<tr>
+<td>
+createdDate
+</td>
+<td>
+字符串
+</td>
+<td>
+JOB创建时间
+</td>
+</tr>
+
+<tr>
+<td>
+finishedDate
+</td>
+<td>
+字符串
+</td>
+<td>
+JOB完成时间
+</td>
+</tr>
+</table>
+
+
+<h4>state == Processing的Job例子：</h4>
+
+<pre><code>    {
+        "uuid": "fee83ed8529340cd8528b3b408dc16b0",
+        "state": "Processing",
+        "createdDate": "Feb 16, 2016 5:01:11 PM"
+    }
+</code></pre>
+
+<h4>state == Done的Job例子：</h4>
+
+<pre><code>    {
+        "uuid": "fee83ed8529340cd8528b3b408dc16b0",
+        "state": "Done",
+        "createdDate": "Feb 16, 2016 5:01:11 PM",
+        "finishedDate": "Feb 16, 2016 5:01:12 PM",
+        "result": "{\"org.zstack.header.zone.APICreateZoneEvent\":{\"inventory\":{\"uuid\":\"f1ed8f95163c4b6c88a8c0673b7913b7\",\"name\":\"xx\",\"state\":\"Enabled\",\"type\":\"zstack\",\"createDate\":\"Feb 16, 2016 5:01:12 PM\",\"lastOpDate\":\"Feb 16, 2016 5:01:12 PM\"},\"success\":true}}"
+    }
+</code></pre>
+
+<h3>4.1 查询API JOB的状态</h3>
+
+<p>当调用一个API后，HTTP response返回一个Job结构，其中包含有该Job的uuid，用户需要通过该uuid去查询该Job的状态。查询的方法是向<code>http://locahost:8080/api/result/{job uuid}</code>发送一个HTTP Get请求，例如：</p>
+
+<pre><code>    curl  http://localhost:8080/zstack/api/result/fee83ed8529340cd8528b3b408dc16b0
+</code></pre>
+
+<p>其HTTP response返回一个Job结构，用户可以通过判断Job的state字段来判断Job是否完成，从而决定是否需要继续轮询Job的状态。</p>
+
+<h2>5. API的调用流程</h2>
+
+<p>ZStack API的调用的标准流程是：</p>
+
+<ol>
+<li>调用LogInByAccount，获得一个Session UUID，作为后续API调用的token</li>
+<li>调用API 1</li>
+<li>调用API 2</li>
+<li>... ...</li>
+<li>调用API N</li>
+<li>调用LogOut</li>
+</ol>
+
+
+<h3>5.1 登录</h3>
+
+<p>在调用其他API前，用户需要首先调用LogInByAccount以获得一个session UUID，以此作为后续API调用的token。该API的描述符为：<code>org.zstack.header.identity.APILogInByAccountMsg</code>，包含以下字段：</p>
+
+<table class="table table-striped table-bordered black-table">
+<tr>
+<th>
+字段
+</th>
+<th>
+描述
+</th>
+</tr>
+
+<tr>
+<td>
+accountName
+</td>
+<td>
+用户名。例如admin|
+</td>
+</tr>
+
+<tr>
+<td>
+password
+</td>
+<td>
+密码。zstack不对密码进行任何处理，只是单纯将其与数据库中存储的密码数据进行字符串比对。我们建议在调用CreateAccount这样的API时，密码使用sha512加密。
+</td>
+</tr>
+</table>
+
+
+<blockquote><p>默认用户名密码：ZStack默认的用户名是admin，其密码明文为password，sha512哈希后的结果为b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86</p></blockquote>
+
+<p>所以该API的JSON描述类似于：</p>
+
+<pre><code>    {
+        "org.zstack.header.identity.APILogInByAccountMsg": {
+            "password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86",
+            "accountName": "admin"
+        }
+    }
+</code></pre>
+
+<p>用curl调用该API：</p>
+
+<pre><code>    curl -H "Content-Type: application/json" -d '{"org.zstack.header.identity.APILogInByAccountMsg": {"password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86", "accountName": "admin"}}' http://localhost:8080/zstack/api
+</code></pre>
+
+<p>返回的Job结构为：</p>
+
+<pre><code>    {
+        "state": "Done",
+        "createdDate": "Feb 16, 2016 7:15:01 PM",
+        "finishedDate": "Feb 16, 2016 7:15:01 PM",
+        "result": "{\"org.zstack.header.identity.APILogInReply\":{\"inventory\":{\"uuid\":\"9eba9754f8c2470cbb377088e61c4da2\",\"accountUuid\":\"36c27e8ff05c4780bf6d2fa65700f22e\",\"userUuid\":\"36c27e8ff05c4780bf6d2fa65700f22e\",\"expiredDate\":\"Feb 17, 2016 3:15:01 PM\",\"createDate\":\"Feb 16, 2016 7:15:01 PM\"},\"success\":true}}"
+    }
+</code></pre>
+
+<p>其result字段包含的是API的结果，JSON表达为：</p>
+
+<pre><code>    {
+        "org.zstack.header.identity.APILogInReply": {
+            "inventory": {
+                "uuid": "9eba9754f8c2470cbb377088e61c4da2",
+                "accountUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+                "userUuid": "36c27e8ff05c4780bf6d2fa65700f22e",
+                "expiredDate": "Feb 17, 2016 3:15:01 PM",
+                "createDate": "Feb 16, 2016 7:15:01 PM"
+            },
+            "success": true
+        }
+    }
+</code></pre>
+
+<p>其中<code>uuid</code>字段即是我们需要的Session UUID。</p>
+
+<h3>5.2 普通API调用</h3>
+
+<p>除登录(LogInByAccount)、登出(LogOut)等少数API外，剩下的都是普通API，在调用时需要传入LogIn拿到的Session UUID，其JSON原语为：</p>
+
+<pre><code>    {
+        "API描述符": {
+           "session": {
+                "uuid": "LogIn时拿到的session UUID"
+           }，
+           "API字段名1"： ...，
+           "API字段名2”： ...
+        }
+    }
+</code></pre>
+
+<blockquote><p>再次提醒：你可以通过查看/var/log/zstack/zstack-cli得到你在zstack-cli执行的每个API的描述符、request和response。</p></blockquote>
+
+<h3>5.3 登出</h3>
+
+<p>当你执行完需要的API后，应该调用LogOut API退出当前session。该API的描述符是<code>org.zstack.header.identity.APILogOutMsg</code>，其JSON原语是：</p>
+
+<pre><code>    {
+        "org.zstack.header.identity.APILogOutMsg": {
+            "sessionUuid": "你要LogOut的Session UUID"
+        }
+    }
+</code></pre>
+
+<p>用curl调用：</p>
+
+<pre><code>    curl -H "Content-Type: application/json" -d '{"org.zstack.header.identity.APILogOutMsg": {"sessionUuid": "083f3518d1bd469fa0ff789fc1a25382"}}' http://localhost:8080/zstack/api
+</code></pre>
+
+<h2>6. 创建一个Zone的Curl示例</h2>
+
+<p>这里我们将用创建Zone这个例子，展示如何用Curl手动调用ZStack的API。</p>
+
+<h4>6.1 登录</h4>
+
+<p>调用：</p>
+
+<pre><code>        curl -H "Content-Type: application/json" -d '{"org.zstack.header.identity.APILogInByAccountMsg": {"password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86", "accountName": "admin"}}' http://localhost:8080/zstack/api
+</code></pre>
+
+<p>返回：</p>
+
+<pre><code>        {"state":"Done","createdDate":"Feb 16, 2016 7:53:14 PM","finishedDate":"Feb 16, 2016 7:53:14 PM","result":"{\"org.zstack.header.identity.APILogInReply\":{\"inventory\":{\"uuid\":\"2f68cf0a5783400694bd8efdd536a2a8\",\"accountUuid\":\"36c27e8ff05c4780bf6d2fa65700f22e\",\"userUuid\":\"36c27e8ff05c4780bf6d2fa65700f22e\",\"expiredDate\":\"Feb 17, 2016 3:53:14 PM\",\"createDate\":\"Feb 16, 2016 7:53:14 PM\"},\"success\":true}}"}
+</code></pre>
+
+<p>从返回结果中我们得到Session UUID为<code>2f68cf0a5783400694bd8efdd536a2a8</code>。</p>
+
+<h4>6.2 创建一个Zone</h4>
+
+<p>调用:</p>
+
+<pre><code>    curl -H "Content-Type: application/json" -d '{"org.zstack.header.zone.APICreateZoneMsg": {"session": {"uuid": "2f68cf0a5783400694bd8efdd536a2a8"}, "name": "zone1"}}' http://localhost:8080/zstack/api
+</code></pre>
+
+<p>返回：</p>
+
+<pre><code>    {"uuid":"2252332b14fb42599558577cb24fa168","state":"Processing","createdDate":"Feb 16, 2016 7:55:34 PM"}
+</code></pre>
+
+<p>这里我们得到了一个Job UUID <code>2252332b14fb42599558577cb24fa168</code>，通过它我们可以轮询创建Zone这个API的结果。</p>
+
+<p>轮询结果：</p>
+
+<pre><code>curl  http://localhost:8080/zstack/api/result/2252332b14fb42599558577cb24fa168
+</code></pre>
+
+<p>返回：</p>
+
+<pre><code>    {"uuid":"2252332b14fb42599558577cb24fa168","state":"Done","createdDate":"Feb 16, 2016 7:55:34 PM","finishedDate":"Feb 16, 2016 7:55:34 PM","result":"{\"org.zstack.header.zone.APICreateZoneEvent\":{\"inventory\":{\"uuid\":\"dd625f8fb2074f4fa1c0870ef76bb24a\",\"name\":\"zone1\",\"state\":\"Enabled\",\"type\":\"zstack\",\"createDate\":\"Feb 16, 2016 7:55:34 PM\",\"lastOpDate\":\"Feb 16, 2016 7:55:34 PM\"},\"success\":true}}"}
+</code></pre>
+
+<p>这里我们看到该API已经完成了，state == Done。API的结果以一个JSON字符串的形式保存在<code>result</code>字段中。可以看到该API调用成功，因为<code>success</code>字段为<code>true</code>。</p>
+
+<h4>6.3 登出</h4>
+
+<p>调用：</p>
+
+<pre><code>    curl -H "Content-Type: application/json" -d '{"org.zstack.header.identity.APILogOutMsg": {"sessionUuid": "2252332b14fb42599558577cb24fa168"}}' http://localhost:8080/zstack/api
+</code></pre>
+
+<p>返回：</p>
+
+<pre><code>    {"state":"Done","createdDate":"Feb 16, 2016 8:04:36 PM","finishedDate":"Feb 16, 2016 8:04:37 PM","result":"{\"org.zstack.header.identity.APILogOutReply\":{\"success\":true}}"}
+</code></pre>
+
+<h2>7. 创建一个Zone的Python示例</h2>
+
+<p>你可以<a href="https://github.com/zstackorg/zstack-utility/blob/master/apibinding/examples/example.py">点击这里</a>获得完整代码。</p>
+
+<pre><code>import httplib
+import json
+import time
+
+# return a dict containing API return value
+def api_call(session_uuid, api_id, api_content):
+    conn = httplib.HTTPConnection("localhost", 8080)
+    headers = {"Content-Type": "application/json"}
+
+    if session_uuid:
+        api_content["session"] = {"uuid": session_uuid}
+
+    api_body = {api_id: api_content}
+
+    conn.request("POST", "/zstack/api", json.dumps(api_body))
+    response = conn.getresponse()
+
+    if response.status != 200:
+        raise Exception("failed to make an API call, %s, %s" % (response.status, response.reason))
+
+    rsp_body = response.read()
+
+    rsp = json.loads(rsp_body)
+
+    if rsp["state"] == "Done":
+        return json.loads(rsp["result"])
+
+    job_uuid = rsp["uuid"]
+    def query_until_done():
+        conn.request("GET", "/zstack/api/result/%s" % job_uuid)
+        response = conn.getresponse()
+        if response.status != 200:
+            raise Exception("failed to query API result, %s, %s" % (response.status, response.reason))
+
+        rsp_body = response.read()
+        rsp = json.loads(rsp_body)
+        if rsp["state"] == "Done":
+            return json.loads(rsp["result"])
+
+        time.sleep(1)
+        print "Job[uuid:%s] is still in processing" % job_uuid
+        return query_until_done()
+
+    return query_until_done()
+
+
+
+def error_if_fail(rsp):
+    success = rsp.values()[0]["success"]
+    if not success:    
+        error = rsp.values()[0]["error"]
+        raise Exception("failed to login, %s" % json.dumps(error))
+
+def login():
+    content = {
+            "accountName": "admin",
+            "password": "b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86"
+    }
+    rsp = api_call(None, "org.zstack.header.identity.APILogInByAccountMsg", content)
+    error_if_fail(rsp)
+
+    session_uuid = rsp.values()[0]["inventory"]["uuid"]
+
+    print "successfully login, session uuid is: %s" % session_uuid
+    return session_uuid
+
+
+def create_zone(session_uuid):
+    content = {"name": "zone1"}
+
+    rsp = api_call(session_uuid, "org.zstack.header.zone.APICreateZoneMsg", content)
+    error_if_fail(rsp)
+
+    print "successfully created zone1"
+
+
+def logout(session_uuid):
+    content = {"sessionUuid": session_uuid}
+    rsp = api_call(None, "org.zstack.header.identity.APILogOutMsg", content)
+    error_if_fail(rsp)
+
+    print "successfully logout"
+
+
+session_uuid = login()
+create_zone(session_uuid)
+logout(session_uuid)
+</code></pre>
+
+      <a href="/cn_blog/http-api.html">Read more >></a>
+      <div style="margin-top: 15px">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn_blog/http-api.html" data-a2a-title="ZStack HTTP API使用">
+          <a class="a2a_button_facebook" ></a>
+          <a class="a2a_button_twitter"></a>
+          <a class="a2a_button_google_plus"></a>
+          <a class="a2a_button_linkedin"></a>
+          <a class="a2a_button_reddit"></a>
+          <a class="a2a_button_hacker_news"></a>
+          <a class="a2a_button_sina_weibo"></a>
+          <span class="a2a_divider"></span>
+          <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+        </div>
+      </div>
+    </div>
+    <hr>
+      
+    
+      
+        
+    <div>
       <a href="/cn_blog/zstack-cloud-network-model.html"><h3>云计算实战：浅谈私有云环境该如何进行网络规划</h3></a>
       <p class="post-meta"> by Yongkang You on Feb 4, 2016</p>
       <h2>前言</h2>
@@ -949,14 +1441,14 @@ ZStack用户账号系统设计与经典的亚马逊AWS相似，都定义了Accou
       
         
     <div>
-      <a href="/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
+      <a href="/cn/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
       <p class="post-meta"> by Frank Zhang on Jul 26, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is in the release cycle.
 Today we release 0.8 RC2 for you test. In this release, ZStack introduces four new features:</p>
 
-      <a href="/blog/v0.8-rc2.html">Read more >></a>
+      <a href="/cn/blog/v0.8-rc2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1004,14 +1496,14 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
       
         
     <div>
-      <a href="/blog/v0.7.1.html"><h3>Announcing ZStack v0.7.1</h3></a>
+      <a href="/cn/blog/v0.7.1.html"><h3>Announcing ZStack v0.7.1</h3></a>
       <p class="post-meta"> by Frank Zhang on Jul 8, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0.1 is released. This release contains two bugs fixes. Both
 for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.</p>
 
-      <a href="/blog/v0.7.1.html">Read more >></a>
+      <a href="/cn/blog/v0.7.1.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.7.1.html" data-a2a-title="Announcing ZStack v0.7.1">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.7.1.html" data-a2a-title="Announcing ZStack v0.7.1">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1112,16 +1604,16 @@ Today we release 0.7.0 RC2 for you test.</p>
       
         
     <div>
-      <a href="/blog/intel.html"><h3>Intel is ZStack's partner now</h3></a>
+      <a href="/cn/blog/intel.html"><h3>Intel is ZStack's partner now</h3></a>
       <p class="post-meta"> by Frank Zhang on Jun 14, 2015</p>
       <p>Today we are glad to announce that Intel, the world's largest and highest valued semiconductor chip maker, becomes ZStack's partner!
 Intel has been investigating many resources in the cloud computing, including help open source technology to create enterprise-ready
 IaaS infrastructure. ZStack, as its leading IaaS technology brings a lot of potential for future enterprise cloud, gets much attention
 from Intel and finally becomes Intel's partner in IaaS area.</p>
 
-      <a href="/blog/intel.html">Read more >></a>
+      <a href="/cn/blog/intel.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/intel.html" data-a2a-title="Intel is ZStack's partner now">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/intel.html" data-a2a-title="Intel is ZStack's partner now">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1142,15 +1634,15 @@ from Intel and finally becomes Intel's partner in IaaS area.</p>
       
         
     <div>
-      <a href="/blog/roadmap.html"><h3>ZStack Roadmap</h3></a>
+      <a href="/cn/blog/roadmap.html"><h3>ZStack Roadmap</h3></a>
       <p class="post-meta"> by Frank Zhang on Jun 9, 2015</p>
       <p>Since the first release 0.6, we received a lot of feedback from our users and customers. Many people want us to post a
 roadmap so they can plan their production environment in line with our feature development process. Here I would like to
 share an initial version. Feedback is welcome(please post them in the comments).</p>
 
-      <a href="/blog/roadmap.html">Read more >></a>
+      <a href="/cn/blog/roadmap.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/roadmap.html" data-a2a-title="ZStack Roadmap">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/roadmap.html" data-a2a-title="ZStack Roadmap">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1362,7 +1854,7 @@ and has built an architecture that tackles issues mentioned before.</p>
       
         
     <div>
-      <a href="/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
+      <a href="/cn/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 5, 2015</p>
       <p>Three years ago, when I was working on another IaaS software, my friend joked: "you guys are making a product
 killing IT administrators' job." I did think so then. In my opinion, enterprises could
@@ -1375,9 +1867,9 @@ infrastructure, but also a dev team or a consultant company to maintain the IaaS
 engineers, as people with such skills are easier to get good pay (searching OpenStack on online hiring websites
 will prove this), but sad for developers like me who are supposed to create something to relieve life.</p>
 
-      <a href="/blog/why-zstack.html">Read more >></a>
+      <a href="/cn/blog/why-zstack.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1455,7 +1947,7 @@ which makes deploying and managing services extremely simple.</em></p>
       
         
     <div>
-      <a href="/blog/lock-free.html"><h3>ZStack's Scalability Secrets Part 3: Lock-free Architecture</h3></a>
+      <a href="/cn/blog/lock-free.html"><h3>ZStack's Scalability Secrets Part 3: Lock-free Architecture</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Lots of tasks in IaaS software need to execute in sequence; for example, when a task of starting a virtual machine is running,
 a stopping task of the same virtual machine must wait for the previous starting task to finish. On the other side,
@@ -1464,9 +1956,9 @@ Synchronization and fine-grained parallelization in a distributed system are not
 Rising to the challenge, ZStack offers a lock-free architecture built on queues, allowing tasks to control their parallelism
 level easily from 1(synchronized) to N(parallel).</em></p>
 
-      <a href="/blog/lock-free.html">Read more >></a>
+      <a href="/cn/blog/lock-free.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/lock-free.html" data-a2a-title="ZStack's Scalability Secrets Part 3: Lock-free Architecture">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/lock-free.html" data-a2a-title="ZStack's Scalability Secrets Part 3: Lock-free Architecture">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1639,16 +2131,16 @@ the cascade framework by implementing a simple extension point, which decouples 
       
         
     <div>
-      <a href="/blog/query.html"><h3>The Query API</h3></a>
+      <a href="/cn/blog/query.html"><h3>The Query API</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>A common challenge for users of IaaS software is how to find a wanted resource quickly and precisely; for example,
 finding the VM that has EIP(16.16.16.16) from 10,000 VMs. Most IaaS software solves this problem by ad-hoc query logic in APIs.
 ZStack, instead of ad-hoc, equips with a framework that can automatically generate queries for every field of every resource,
 and join queries that span multiple resources, helping users to manage enormous resources in the cloud.</em></p>
 
-      <a href="/blog/query.html">Read more >></a>
+      <a href="/cn/blog/query.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/query.html" data-a2a-title="The Query API">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/query.html" data-a2a-title="The Query API">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1701,16 +2193,16 @@ and upgraded by Ansible; users may not even notice their existences.</em></p>
       
         
     <div>
-      <a href="/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
+      <a href="/cn/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack abstracts the networking model into L2 and L3 networks. An L2 network provides a type of L2 isolation method, while an L3 network
 basically represents a subnet associated with OSI layer 4 ~ layer 7 network services. The idea is to use terms and
 concepts with which administrators have been familiar to describe ZStack's networking model, allowing administrators to
 create networking topologies easily and precisely.</em></p>
 
-      <a href="/blog/network-l2.html">Read more >></a>
+      <a href="/cn/blog/network-l2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1731,7 +2223,7 @@ create networking topologies easily and precisely.</em></p>
       
         
     <div>
-      <a href="/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
+      <a href="/cn/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>In ZStack's networking model, OSI layer 4 ~ 7 network services are implemented as small plugins from different service providers.
 The default provider, called virtual router provider, uses a customized Linux VM as a virtual appliance to provide
@@ -1739,9 +2231,9 @@ network services including DHCP, DNS, SNAT, EIP, and Port Forwarding for every L
 of no single failure point, and no special requirements for physical infrastructure so that users can realize various network services
 on commodity hardware without purchasing expensive equipments.</em></p>
 
-      <a href="/blog/virtual-router.html">Read more >></a>
+      <a href="/cn/blog/virtual-router.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1792,16 +2284,16 @@ vendors can easily plug in their products by implementing corresponding storage 
       
         
     <div>
-      <a href="/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
+      <a href="/cn/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack
 is fully automated. The automation testing system consists of three parts: integration testing, system testing, and model-based
 testing. The integration testing system is built based on JUnit using simulators. With various utilities the integration testing
 system supplies, developers can quickly write test cases to validate a new feature or a bug fix.</em></p>
 
-      <a href="/blog/integration-testing.html">Read more >></a>
+      <a href="/cn/blog/integration-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1822,16 +2314,16 @@ system supplies, developers can quickly write test cases to validate a new featu
       
         
     <div>
-      <a href="/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
+      <a href="/cn/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack's <a href="http://en.wikipedia.org/wiki/System_testing">system testing</a>
 system runs test cases in real hardware environment; like integration testing,
 the system testing is full automated and covers aspects of functional tests,
 stress tests, and performance tests.</em></p>
 
-      <a href="/blog/system-testing.html">Read more >></a>
+      <a href="/cn/blog/system-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1852,7 +2344,7 @@ stress tests, and performance tests.</em></p>
       
         
     <div>
-      <a href="/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
+      <a href="/cn/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>The <a href="http://en.wikipedia.org/wiki/Model-based_testing">model-based testing</a> system
 is a sub-project in zstack-woodpecker. With finite-state machines and
@@ -1861,9 +2353,9 @@ unless a defect is found, or pre-defined exit conditions are met. ZStack relies 
 corner cases that hardly happen in real world, which compensates integration testing and
 system testing in terms of test coverage.</em></p>
 
-      <a href="/blog/model-based-testing.html">Read more >></a>
+      <a href="/cn/blog/model-based-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1886,6 +2378,11 @@ system testing in terms of test coverage.</em></p>
     <ul class="nav nav-pills nav-stacked left-slider">
       <ol>
         
+        
+          
+            
+        <li style="padding: 10px"><a href="/cn_blog/http-api.html">ZStack HTTP API使用</a></li>
+          
         
           
             
@@ -2047,7 +2544,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
           
         
           
@@ -2059,7 +2556,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/v0.7.1.html">Announcing ZStack v0.7.1</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.7.1.html">Announcing ZStack v0.7.1</a></li>
           
         
           
@@ -2085,14 +2582,14 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/intel.html">Intel is ZStack's partner now</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/intel.html">Intel is ZStack's partner now</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/roadmap.html">ZStack Roadmap</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/roadmap.html">ZStack Roadmap</a></li>
           
         
           
@@ -2140,7 +2637,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
           
         
           
@@ -2161,7 +2658,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/lock-free.html">ZStack's Scalability Secrets Part 3: Lock-free Architecture</a></li>
           
         
           
@@ -2203,7 +2700,7 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/query.html">The Query API</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/query.html">The Query API</a></li>
           
         
           
@@ -2217,14 +2714,14 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
           
         
           
@@ -2238,21 +2735,21 @@ system testing in terms of test coverage.</em></p>
         
           
             
-        <li style="padding: 10px"><a href="/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
           
         
           
         
           
             
-        <li style="padding: 10px"><a href="/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
           
         
           
