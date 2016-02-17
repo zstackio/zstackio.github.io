@@ -40,11 +40,12 @@ layout: installationPage.cn
   <tr>
     <td><b>操作系统</b></td>
     <td>
-      <p>CentOS6.x/CentOS7/Ubuntu14.04</p>
+      <p>CentOS 6.6+/CentOS 7.2+/Ubuntu 14.04</p>
       <div class="bs-callout bs-callout-info">
         <h4>这是我们测试过的系统</h4>
         虽然我们测试了这三个操作系统，但是从理论上来说其他支持KVM的Linux操作系统也应该可以工作。
         另外为了避免不必要的软件冲突，我们推荐您在一个全新安装的系统中安装ZStack。
+        由于CentOS 6.4 系统还不支持 namespace,无法使用ZStack 1.0 之后的无Virtual Router的Flat Network 模式,所以还在使用CentOS6系列的产品,请升级到最新的版本.
       </div>
     </td>
   </tr>

@@ -43,7 +43,7 @@ For machine to install ZStack management node, we recommend below hardware speci
   <tr>
     <td><b>OS</b></td>
     <td>
-      <p>CentOS6.x/CentOS7/Ubuntu14.04</p>
+      <p>CentOS 6.6+/CentOS 7.2+/Ubuntu 14.04</p>
       <div class="bs-callout bs-callout-info">
         <h4>We have tested those OS</h4>
         Those OS have been tested while other Linux OS should work as well.
