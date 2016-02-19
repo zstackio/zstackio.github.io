@@ -30,7 +30,10 @@ sections:
     title: Q13. 计算节点是内网IP，如何通过管理节点上的公网IP连接虚拟机的console 
   - id: q14
     title: Q14. 修改 zstack-dashboard 默认使用的5000端口
-
+  - id: q15
+    title: Q15. 管理节点上有多个IP地址，如何让ZStck启动在某个非default路由的IP地址上？
+  - id: q16
+    title: Q16. 增加ZStack UI用户和zstack-cli的session过期时间
 ---
 
 <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
@@ -208,3 +211,12 @@ app.run(host="0.0.0.0", port="5888", threaded=True)
 `zstack-ctl stop_node; zstack-ctl start_node`
 
 ---
+<h2 id='q16'> Q16. 增加ZStack UI用户和zstack-cli的session过期时间</h2>
+
+在zstack-dashboard界面Global Configure下找到 session 对应的timeout设置,双击设置可以更高过期时间
+
+也可以通过zstack-cli的命令修改,例如下例会把zstack account登陆的过期时间改成200个小时:
+
+zstack-cli LogInByAccount accountName=admin password=password
+zstack-cli UpdateGlobalConfig name=session.timeout category=identity value=720000
+
