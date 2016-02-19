@@ -105,6 +105,10 @@
           
           <li><a href="#q14">Q14. 修改 zstack-dashboard 默认使用的5000端口</a></li>
           
+          <li><a href="#q15">Q15. 管理节点上有多个IP地址，如何让ZStck启动在某个非default路由的IP地址上？</a></li>
+          
+          <li><a href="#q16">Q16. 增加ZStack UI用户和zstack-cli的session过期时间</a></li>
+          
         </ol>
       </ul>
     </div>
@@ -301,6 +305,16 @@ app.run(host="0.0.0.0", port="5888", threaded=True)</p>
 <code>zstack-ctl stop_node; zstack-ctl start_node</code></p>
 
 <hr />
+
+<h2 id='q16'> Q16. 增加ZStack UI用户和zstack-cli的session过期时间</h2>
+
+
+<p>在zstack-dashboard界面Global Configure下找到 session 对应的timeout设置,双击设置可以更高过期时间</p>
+
+<p>也可以通过zstack-cli的命令修改,例如下例会把zstack account登陆的过期时间改成200个小时:</p>
+
+<p>zstack-cli LogInByAccount accountName=admin password=password
+zstack-cli UpdateGlobalConfig name=session.timeout category=identity value=720000</p>
 
     </div>
   </div>
