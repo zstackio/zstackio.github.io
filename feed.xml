@@ -5,9 +5,61 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 19 Feb 2016 16:21:59 +0800</pubDate>
-    <lastBuildDate>Fri, 19 Feb 2016 16:21:59 +0800</lastBuildDate>
+    <pubDate>Wed, 24 Feb 2016 15:53:04 +0800</pubDate>
+    <lastBuildDate>Wed, 24 Feb 2016 15:53:04 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.0.1发布</title>
+        <description>&lt;h2&gt;ZStack 1.0.1 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.0.1 版本今天发布，欢迎大家下载试用。该版本主要是修复了ZStack v1.0上一些小问题:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Flat Mode Provider 模式下,如果不提供云主机Hostname,Linux云主机的DHCP Hostname将会为云主机的IP地址(用户手动设置过hostname的除外)&lt;/li&gt;
+&lt;li&gt;Flat Mode Provider 模式下,如果之前安装过ZStack,在重装前没有通过ZStack 删除云主机,可能会导致新的云主机IP地址与老的云主机分配冲突.&lt;/li&gt;
+&lt;li&gt;v1.0 引入的UI汉化库没有集成到dashboard中,导致内网用户可能会大不开dashboard的UI界面.&lt;/li&gt;
+&lt;li&gt;来自用户tolbkni@gmail.com 修复的两个dashboard显示的问题.&lt;/li&gt;
+&lt;li&gt;当计算节点重启后,mangement-l2的网卡获得IP地址,但是public-l2网卡没有获得IP地址,ZStack重联Host会导致一些异常问题&lt;/li&gt;
+&lt;li&gt;使用安装参数&#39;-i&#39;,单独安装zstack节点的时候,不需要检查mysql root用户的登陆密码.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin -O zstack-installer-1.0.1.bin
+    bash zstack-installer-1.0.1.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin -O zstack-installer-1.0.1.bin
+    bash zstack-installer-1.0.1.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在http://download.zstack.org/releases/1.0/1.0.1/zstack.war&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Wed, 24 Feb 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.0.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.1.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack HTTP API使用</title>
@@ -3976,84 +4028,6 @@ http://ZStack.org/cn_blog/build-ZStack.html&lt;/p&gt;
         <pubDate>Tue, 22 Dec 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack 助力PaaS／SaaS 高效集成IaaS －－ ZStack云环境的快速备份和还原</title>
-        <description>&lt;p&gt;ZStack的快速安装能力解决了传统基础架构即服务软件部署过程过于繁琐的问题。不过安装IaaS软件本身只是第一步。
-安装ZStack之后，用户还需要在ZStack上添加计算、存储、网络等相关资源，才能创建云主机。如果用户需要反复的测试部署云环境的过程，例如：&lt;/p&gt;
-
-&lt;p&gt;1，给不同的客户演示ZStack的环境的使用过程
-2，PaaS和SaaS产品，需要集成ZStack作为IaaS管控层。在搭建PaaS／SaaS私有云的过程中，快速搭建ZStack云环境。&lt;/p&gt;
-
-&lt;p&gt;ZStack已经充分的考虑了PaaS／SaaS用户的快速集成，以及需要经常的搭建演示相同的ZStack环境的需求。
-对此，ZStack提供了备份和还原云的能力。用户只需要把当前搭建好的云环境备份到一个xml文件中，
-之后就可以在一个新装的ZStack环境里使用该xml文件快速还原云环境。&#39;&#39;&#39;这一切都要归功于ZStack的全API交付能力&#39;&#39;&#39;。
-所谓IaaS API的全交付能力，就是指通过API便可以创建IaaS所需要的全部资源。&lt;/p&gt;
-
-&lt;p&gt;下面我们就来看一看ZStack的备份和还原云是怎么操作的。&lt;/p&gt;
-
-&lt;p&gt;假设我们已经搭建了ZStack，并且配置了一个可以创建虚拟机的云环境。那么备份当前云环境的命令非常简单：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;首先你需要用zstack-cli登录zstack环境（如果没有更改过密码，密码就是password）：&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;zstack-cli LogInByAccount accountName=admin password=password&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;如果IaaS已经部署（或者部署了一部分，例如你可以只部署到下载完Image Template和添加完主存储和备份存储的相关操作。
-那么下次还原的时候，也可以是恢复一个IaaS云环境的中间状态），就可以用下面的命令来备份云环境到一个xml文件中去，
-备份的参数是 &#39;-D&#39; （切勿和还原的小 &#39;-d&#39; 搞混淆，每次执行命令前也可以使用&#39;-h&#39;查看）：&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;zstack-cli -D /tmp/ec2-cloud.xml&lt;/p&gt;
-
-&lt;p&gt;dump好的xml文件的内容是这样的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/blogs/dump-zstack/dump-xml.png&quot;&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;p&gt;需要注意的是zstack-cli在备份云环境的时候，调用的是Query相关的API。由于Query API无法取到两个重要信息的：
-&#39;&#39;&#39;Host的用户名和密码，SftpBackupStorage的用户名和密码&#39;&#39;&#39;，所以这两个信息需要用户手动添加，不过手动编辑一下还是非常简单的：&lt;/p&gt;
-
-&lt;p&gt;&lt;img class=&quot;img-responsive&quot; src=&quot;/images/blogs/dump-zstack/dump-xml2.png&quot;&gt;&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;ol&gt;
-&lt;li&gt;还原IaaS环境前，为了保证一个干净的环境，请务必停止ZStack server，重新初始化数据库，和再重启ZStack server
-(如果是全新安装的ZStack，可以跳过这步。)：&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;code&gt;zstack-ctl stop_node&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;zstack-ctl deploydb --host=YOUR_DB_IP_ADDRESS --drop&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;zstack-ctl start_node&lt;/code&gt;&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;使用下面这条命令来还原IaaS环境：&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;zstack-cli -d /tmp/ec2-cloud.xml&lt;/p&gt;
-
-&lt;p&gt;如果用户的image是放在本地的，整个还原过程会非常快速（例如小于1分钟）。&lt;/p&gt;
-
-&lt;p&gt;有了云环境的快速备份和还原，ZStack是不是非常适合我们的PaaS和SaaS软件集成呢？ZStack欢迎和各种PaaS和SaaS的应用服务公司合作。&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Nov 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/zstack-dump-and-redeploy-cloud.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/zstack-dump-and-redeploy-cloud.html</guid>
         
         
         <category>cn_blog</category>
