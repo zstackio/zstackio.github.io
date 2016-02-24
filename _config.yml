@@ -29,17 +29,17 @@ fill_default_content: true
 
 install_script_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-install.sh"
 vr_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
-all_in_one_en: "http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
-war_en: "http://download.zstack.org/releases/1.0/1.0.1/zstack.war"
-tgz: "zstack-installer-1.0.0-0201.bin"
+all_in_one_en: "http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1-0224.bin"
+war_en: "http://download.zstack.org/releases/1.0/1.0.1/0224/zstack.war"
+tgz: "zstack-installer-1.0.1-0224.bin"
 
 install_script_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.0/zstack-install.sh"
 vr_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
-all_in_one_ch: "http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
+all_in_one_ch: "http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1-0224.bin"
 #all_in_one_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
 #war_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack.war"
-war_ch: "http://download.zstack.org/releases/1.0/1.0.1/zstack.war"
-all_in_one_md5: "b5a6338360ebdeb5311200e3dac851c0"
+war_ch: "http://download.zstack.org/releases/1.0/1.0.1/0224/zstack.war"
+all_in_one_md5: "d1e5c1efb20525dc4df7f7226028d224"
 
 zstack_image: "http://download.zstack.org/templates/zstack-image-0.0.7.qcow2"
 zstack_image_md5: "6bdfb1fa6d21f650497448126e180b23"
