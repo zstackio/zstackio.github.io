@@ -34,6 +34,10 @@ sections:
     title: Q15. 管理节点上有多个IP地址，如何让ZStck启动在某个非default路由的IP地址上？
   - id: q16
     title: Q16. 增加ZStack UI用户和zstack-cli的session过期时间
+  - id: q17
+    title: Q17. 从IP Range中保留一个IP地址,不让ZStack分配给云主机
+  - id: q18
+    title: Q18. 如何批量修改一批云主机的计算规格
 ---
 
 <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
@@ -219,4 +223,35 @@ app.run(host="0.0.0.0", port="5888", threaded=True)
 
 zstack-cli LogInByAccount accountName=admin password=password
 zstack-cli UpdateGlobalConfig name=session.timeout category=identity value=720000
+zstack-cli LogOut
 
+---
+<h2 id='q17'> Q17. 从IP Range中保留一个IP地址,不让ZStack分配给云主机</h2>
+
+目前ZStack还没有提供 ReserverIpRange的API,如果我们希望ZStack从已经设置的IP Range中保留几个特定的
+IP地址,我们可以用CreateVip这个API.
+
+例如下面的命令将会把a.b.c.d的IP地址从指定的L3 网络上用创建VIP的方法保留住.
+zstack-cli LogInByAccount accountName=admin password=password
+zstack-cli CreateVip l3NetworkUuid=YOU_L3_NETWORK_UUID name=for_reserver requiredIp=a.b.c.d
+zstack-cli LogOut
+
+---
+<h2 id='q18'> Q18. 如何批量修改一批云主机的计算规格</h2>
+在本例里,我们将会使用shell脚本配合zstack-cli命令来把一批名字里包含Win7的云主机的计算规格全部修改为
+名字是Win7-Instance-Offering的计算规格.
+
+which jq || (echo "you need to install jq" && exit 1)
+
+zstack-cli LogInByAccount accountName=admin password=password
+instance_offering_uuid=`zstack-cli QueryInstanceOffering name=Win7-Instance-Offering |jq '.["inventories"][0].uuid'`
+target_vms=`zstack-cli zstack-cli QueryVmInstance name~=Win7|jq '.["inventories"][].uuid'`
+for vm in $target_vms; do
+    zstack-cli ChangeInstanceOffering instanceOfferingUuid=$instance_offering_uuid vmInstanceUuid=$vm
+    echo "change vm: $vm instance offering to $instance_offering_uuid"
+    zstack-cli StopVmInstance uuid=$vm
+    zstack-cli StartVmInstance uuid=$vm
+done
+zstack-cli LogOut
+
+---
