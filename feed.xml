@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 24 Feb 2016 15:56:05 +0800</pubDate>
-    <lastBuildDate>Wed, 24 Feb 2016 15:56:05 +0800</lastBuildDate>
+    <pubDate>Wed, 24 Feb 2016 23:38:26 +0800</pubDate>
+    <lastBuildDate>Wed, 24 Feb 2016 23:38:26 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -30,7 +30,7 @@
 
 &lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin -O zstack-installer-1.0.1.bin
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1-0224.bin -O zstack-installer-1.0.1.bin
     bash zstack-installer-1.0.1.bin -R aliyun
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -41,11 +41,11 @@
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1.bin -O zstack-installer-1.0.1.bin
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/zstack-installer-1.0.1-0224.bin -O zstack-installer-1.0.1.bin
     bash zstack-installer-1.0.1.bin -u
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在http://download.zstack.org/releases/1.0/1.0.1/zstack.war&lt;/p&gt;
+&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在http://download.zstack.org/releases/1.0/1.0.1/0224/zstack.war&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
