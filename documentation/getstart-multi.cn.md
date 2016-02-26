@@ -61,8 +61,8 @@ zstack.properties 文件。您可以使用任意一个节点，只要您使用�
 相关的配置`CloudBus.serverIp.0`更新到了zstack.properties里面。
 如果您的RabbitMQ服务是装在非ZStack管理节点的机器上，您还需要配置RabbitMQ的用户名和密码：
 
-    zstack-ctl configure CloudBus.rabbitmqUsername = zstack
-    zstack-ctl configure CloudBus.rabbitmqPassword = zstack123
+    zstack-ctl configure CloudBus.rabbitmqUsername=zstack
+    zstack-ctl configure CloudBus.rabbitmqPassword=zstack123
 
 ### 2. 复制zstack.properties到其他管理节点
 

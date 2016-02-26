@@ -71,21 +71,6 @@ sudo bash zstack-installer.bin -a -R aliyun</code></pre>
 
 ztack-installer.bin 的md5sum为 {{site.all_in_one_md5}}
 
-<div class="bs-callout bs-callout-success">
-  <h4 class="hand" data-toggle="collapse" data-target="#china">Fast link for users of Mainland China (国内用户请点击展开)</h4>
-  <div id="china" class="collapse">
-      国内用户在访问我们美国服务器速度较慢，还可以使用以下链接：
-      
-      <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
-      <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
-      
-      <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
-      <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
-  </div>
-</div>
-
 <div class="bs-callout bs-callout-danger">
 <h4>注意DNS劫持</h4>
         
