@@ -10,7 +10,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack v1.0.1发布</title>
+    <title>ZStack - ZStack v1.0.2发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -77,8 +77,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack v1.0.1发布</h2>
-    <p class="post-meta"> by Yongkang You on Feb 24, 2016</p>
+    <h2 class="post-title">ZStack v1.0.2发布</h2>
+    <p class="post-meta"> by Yongkang You on Mar 1, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -115,17 +115,33 @@
 
 
   <article class="post-content">
-    <h2>ZStack 1.0.1 版本今天发布</h2>
+    <h2>ZStack 1.0.2 版本今天发布</h2>
 
-<p>ZStack 1.0.1 版本今天发布，欢迎大家下载试用。该版本主要是修复了ZStack v1.0上一些小问题:</p>
+<p>ZStack 1.0.2 版本今天发布，在该版本中我们修复了一个严重的bug，<strong>该bug可能导致在删除二层网络的时候，磁盘快照被删除，该bug在0.8版本后引入，我们建议所有ZStack用户升级你们的系统到1.0.2版本</strong>:</p>
+
+<h3>BUG描述</h3>
+
+<p>该Bug的引发过程如下：</p>
+
+<ol>
+<li>用户删除二层网络</li>
+<li>Cascade Framework下发该操作到子节点资源插件，其中虚拟机插件在接收到该操作时会执行卸载网卡的操作</li>
+<li>虚拟机插件在执行完卸载网卡操作后，<strong>本应该向子资源下发网卡卸载操作，但由于程序逻辑的误判，下发操作变成了删除操作</strong>。</li>
+<li>磁盘快照插件接收到删除操作后，删除虚拟机快照。</li>
+</ol>
+
+
+<p>由于二层网络删除跟磁盘快照在逻辑上不相关，我们的integration test和system test没有相关用例测试删除二层网络后虚拟机快照的情况，该bug是model based test(基于模型的测试）在长时间运行后的一次偶然情况下发现的。</p>
+
+<p>该bug修复后我们已经增加了对应的integration test case和system test case来保证将来不会产生regression。这个bug也暴露了我们当前测试系统的不足，model based test虽然可以根据预定义算法产生随机用例进行测试，但它依赖于算法的成功条件定义，发现bug的几率随机性比较大。为此，我们的QA团队已经在构建新型的测试系统 ———— <strong>基于Log分析的测试系统</strong>。由于ZStack里所有的操作都是message和HTTP request，当我们把log level设置成TRACE时，log可以记录所有操作。这样当执行某个操作时，我们可以通过分析log发现是否有不应该出现的message和HTTP request出现，从而判定系统是否有bug。例如，删除二层网络的操作永远不应该导致删除磁盘快照的message出现，一旦出现系统必有bug。</p>
+
+<p><strong>该BUG不会导致磁盘(volume)或安全组(security group)被删除</strong>。磁盘和安全组虽然逻辑上是虚拟机的子资源，但在操作逻辑中它们属于workflow engine而非cascade framework。顾不会受该bug影响。</p>
+
+<h3>其他Bug</h3>
 
 <ul>
-<li>Flat Mode Provider 模式下,如果不提供云主机Hostname,Linux云主机的DHCP Hostname将会为云主机的IP地址(用户手动设置过hostname的除外)</li>
-<li>Flat Mode Provider 模式下,如果之前安装过ZStack,在重装前没有通过ZStack 删除云主机,可能会导致新的云主机IP地址与老的云主机分配冲突.</li>
-<li>v1.0 引入的UI汉化库没有集成到dashboard中,导致内网用户可能会大不开dashboard的UI界面.</li>
-<li>来自用户tolbkni@gmail.com 修复的两个dashboard显示的问题.</li>
-<li>当计算节点重启后,mangement-l2的网卡获得IP地址,但是public-l2网卡没有获得IP地址,ZStack重联Host会导致一些异常问题</li>
-<li>使用安装参数'-i',单独安装zstack节点的时候,不需要检查mysql root用户的登陆密码.</li>
+<li>修复了在flat network provider模式下，删除IP range没有释放分布式DHCP IP的问题</li>
+<li>修复了删除L3网络后，重新加载L3网络时，虚拟机userdata添加不上的问题</li>
 </ul>
 
 
@@ -134,8 +150,8 @@
 
 <p>你可以通过下面方式安装：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.1/0225/zstack-installer-1.0.1-0225.bin -O zstack-installer-1.0.1.bin
-    bash zstack-installer-1.0.1.bin -R aliyun
+<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
+    bash zstack-installer-1.0.2.bin -R aliyun
 </code></pre>
 
 <blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
@@ -145,11 +161,11 @@
 
 <p>一如既往的，我们支持一键无缝升级：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.1/0225/zstack-installer-1.0.1-0225.bin -O zstack-installer-1.0.1.bin
-    bash zstack-installer-1.0.1.bin -u
+<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
+    bash zstack-installer-1.0.2.bin -u
 </code></pre>
 
-<p>升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.1/0225/zstack.war</p>
+<p>升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.2/zstack.war</p>
 
 <ul>
 <li>获取更多帮助,请添加ZStack QQ群:410185063</li>
