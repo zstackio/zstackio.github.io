@@ -5,9 +5,77 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 08 Mar 2016 16:59:09 +0800</pubDate>
-    <lastBuildDate>Tue, 08 Mar 2016 16:59:09 +0800</lastBuildDate>
+    <pubDate>Tue, 08 Mar 2016 19:00:42 +0800</pubDate>
+    <lastBuildDate>Tue, 08 Mar 2016 19:00:42 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.0.2发布</title>
+        <description>&lt;h2&gt;ZStack 1.0.2 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.0.2 版本今天发布，在该版本中我们修复了一个严重的bug，&lt;strong&gt;该bug可能导致在删除二层网络的时候，磁盘快照被删除，该bug在0.8版本后引入，我们建议所有ZStack用户升级你们的系统到1.0.2版本&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;h3&gt;BUG描述&lt;/h3&gt;
+
+&lt;p&gt;该Bug的引发过程如下：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;用户删除二层网络&lt;/li&gt;
+&lt;li&gt;Cascade Framework下发该操作到子节点资源插件，其中虚拟机插件在接收到该操作时会执行卸载网卡的操作&lt;/li&gt;
+&lt;li&gt;虚拟机插件在执行完卸载网卡操作后，&lt;strong&gt;本应该向子资源下发网卡卸载操作，但由于程序逻辑的误判，下发操作变成了删除操作&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;磁盘快照插件接收到删除操作后，删除虚拟机快照。&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;由于二层网络删除跟磁盘快照在逻辑上不相关，我们的integration test和system test没有相关用例测试删除二层网络后虚拟机快照的情况，该bug是model based test(基于模型的测试）在长时间运行后的一次偶然情况下发现的。&lt;/p&gt;
+
+&lt;p&gt;该bug修复后我们已经增加了对应的integration test case和system test case来保证将来不会产生regression。这个bug也暴露了我们当前测试系统的不足，model based test虽然可以根据预定义算法产生随机用例进行测试，但它依赖于算法的成功条件定义，发现bug的几率随机性比较大。为此，我们的QA团队已经在构建新型的测试系统 ———— &lt;strong&gt;基于Log分析的测试系统&lt;/strong&gt;。由于ZStack里所有的操作都是message和HTTP request，当我们把log level设置成TRACE时，log可以记录所有操作。这样当执行某个操作时，我们可以通过分析log发现是否有不应该出现的message和HTTP request出现，从而判定系统是否有bug。例如，删除二层网络的操作永远不应该导致删除磁盘快照的message出现，一旦出现系统必有bug。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;该BUG不会导致磁盘(volume)或安全组(security group)被删除&lt;/strong&gt;。磁盘和安全组虽然逻辑上是虚拟机的子资源，但在操作逻辑中它们属于workflow engine而非cascade framework。顾不会受该bug影响。&lt;/p&gt;
+
+&lt;h3&gt;其他Bug&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;修复了在flat network provider模式下，删除IP range没有释放分布式DHCP IP的问题&lt;/li&gt;
+&lt;li&gt;修复了删除L3网络后，重新加载L3网络时，虚拟机userdata添加不上的问题&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
+    bash zstack-installer-1.0.2.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
+    bash zstack-installer-1.0.2.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.2/zstack.war&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 01 Mar 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.0.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.2.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.0.1发布</title>
@@ -3897,137 +3965,6 @@ YOUR_L3_NETWORK_UUID替换为用于创建VM的L3网络的UUID。EIP模式下（�
         <pubDate>Thu, 31 Dec 2015 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/assign_vr_offering_for_different_l3.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/assign_vr_offering_for_different_l3.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack开发分享－－给Qemu增加Cache Mode</title>
-        <description>&lt;h2&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;笔者一直以来都持续关心着各种云相关的软件发展的情形和趋势, 但始终没有真正的去折腾它。
-直到今年五月份在 Ceph 群组里听到了一个名为 ZStack的 IaaS 开源软件, 于是在自己的好奇心驱使下加入了 ZStack中国社区QQ群组。
-在群里潜水了几个月后发现安装似乎很容易, 所以开始试著依照
-http://ZStack.org/cn/installation/ 上的一键安装来安装 ZStack, 果然是非常容易安装&lt;/p&gt;
-
-&lt;p&gt;接着按照&lt;a href=&quot;http://ZStack.org/cn/tutorials/flat-network-ui.html&quot;&gt;扁平网络的教程&lt;/a&gt;, 正准备继续折腾，却发生VM 无法启动的问题, 顿时觉得有点小失望。&lt;/p&gt;
-
-&lt;p&gt;详细的错误讯息请见
-https://github.com/ZStackorg/ZStack/issues/146&lt;/p&gt;
-
-&lt;p&gt;后来通过Google搜索发现原来是 Qemu 的 Cache Option 和文件系统兼容性所引起的问题。
-这个问题的起源是因为我的机器里用的文件系统是ZFS (操作系统是 Ubuntu 14.04), 但是ZFS 不支持 O_DIRECT 所造成的。
-因为 ZStack 0.9中在创建 VM 时都是使用 &#39;cache=none&#39;, 但是在 ZFS 作为 VM 主存储时 cache 必须为 writethrough 或者 writeback 才行。
-去群里向原开发者请教之后发现可以通过在 GlobalConfig中增加一个配置来实现Qemu cache 模式的切换，来解决这个问题。
-看起来这个方法实现起来也不会太困难, 于是开始着手解决这个问题。&lt;/p&gt;
-
-&lt;h2&gt;实际动手&lt;/h2&gt;
-
-&lt;p&gt;先参考一些官方的文件来了解 ZStack 源代码
-(以下些许内容取自 ZStack 官网 http://ZStack.org/cn )
-目前ZStack的源代码由三个软件仓库构成：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;ZStack使用Java编写，是ZStack的核心，负责IaaS各种资源管理调度和消息通讯；&lt;/li&gt;
-&lt;li&gt;ZStack-utility目前主要使用Python编写，包含ZStack的各种终端代理和其他工具。 这些终端代理负责接收来自ZStack核心的消息并执行对应的操作，例如和Libvirt通讯来管理VM的生命周期、各种存储（例如Ceph，iSCSI，SFTP）的管理、 虚拟路由器里管理VM的IP地址等等。除了终端代理工具外，这个软件仓库还包含了ZStack其他的工具，例如ZStack的编辑打包工具、 ZStack安装程序、ZStack命令行工具、ZStack管控工具等等。&lt;/li&gt;
-&lt;li&gt;ZStack-dashboard使用JavaScript编写，是ZStack的图形界面。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;(为免篇幅太长, 关于怎么从 Github 取出源码的部分在此省略了)&lt;/p&gt;
-
-&lt;p&gt;基本上修改的思路为三个步骤：
- 1. 新增一个全局的变量叫 CacheMode （Java编写）
- 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的)
- 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置&lt;/p&gt;
-
-&lt;h3&gt;步骤一&lt;/h3&gt;
-
-&lt;p&gt;首先修改 ZStack 的部分,
-在 conf/globalConfig/kvm.xml新增一个element&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;在 plugin/kvm/src/main/java/org/ZStack/kvm/KVMGlobalConfig.java 新增全局的变量&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;到此基本上已经在 Web UI 的 Global Configure 新增一个配置 vm.CacheMode (见下图)&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;步骤二&lt;/h3&gt;
-
-&lt;p&gt;修改 ZStack 的部分,
-在plugin/kvm/src/main/java/org/ZStack/kvm/KVMAgentCommands.java 中
-public static class VolumeTO 中新增私有的变量及公有的方法&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;接著修改 plugin/kvm/src/main/java/org/ZStack/kvm/KVMHost.java
-在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 ZStack-utility agent&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;到这边 ZStack 部分算是修改完成&lt;/p&gt;
-
-&lt;h3&gt;依照官方说明的方法来编译ZStack Java 源码&lt;/h3&gt;
-
-&lt;p&gt;http://ZStack.org/cn_blog/build-ZStack.html&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;cd ZStack&lt;/code&gt;
-&lt;code&gt;mvn -DskipTests clean install&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;如果过程顺利应该会看到如下的输出&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/7.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;步骤三&lt;/h3&gt;
-
-&lt;p&gt;最后我们还要修改 ZStack-utility agent在收到我们新增的全局配置后做出对应的修改
-kvmagent/kvmagent/plugins/vm_plugin.py&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/8.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/9.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;步骤四&lt;/h3&gt;
-
-&lt;p&gt;依照官方说明的方法来编译ZStack All In One 安装包
-http://ZStack.org/cn_blog/build-ZStack.html&lt;/p&gt;
-
-&lt;h3&gt;编译ZStack All In One安装包&lt;/h3&gt;
-
-&lt;p&gt;如果ZStack的Java源码已经编译通过，我们就可以开始尝试编译ZStack All In One安装包了：
-&lt;code&gt;cd ~/ZStack-repos/&lt;/code&gt;
-&lt;code&gt;wget -c http://archive.apache.org/dist/tomcat/tomcat-7/v7.0.35/bin/apache-tomcat-7.0.35.zip&lt;/code&gt;
-&lt;code&gt;cd ZStack-utility/ZStackbuild&lt;/code&gt;
-&lt;code&gt;ant -DZStack_build_root=/root/ZStack-repos all-in-one&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;因为default git 都会去 checkout master 分支来编译  ZStack All In One包,下面是我使用的方式&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;ant    -DZStack.build_version=0.9fix
--DZStackutility.build_version=0.9fix
--DZStackdashboard.build_version=0.9
--Dbuild_name=qa
--DZStack_build_root=/home/matt/ZStack-github all-in-one&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;(关于 –D 相关的选项, 可以看 ZStack-utility/ZStackbuild/build.properties)
-如果过程顺利应该会看到如下的输出&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/blogs/cache_mode/10.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h3&gt;后话&lt;/h3&gt;
-
-&lt;p&gt;对于新增全局配置的修改大致上就是这样, 唯一要特别注意的地方是, 修改 ZStack Java代码的部分, 关于新增全局配置的变量和方法该摆放在哪一个类, 为了以后代码的维护以及可读性, 最好还是可以跟原始开发者讨论讨论, 本范例会修改在 VolumeTO 类 里, 不代表著所有新增的全局配置都需要修改在那边（意思是有经过些许判断的）, 主要还是得依照新增的配置去找出比较相关的类去修改会比较适当, 以上为个人一点小小的心得。&lt;/p&gt;
-</description>
-        <pubDate>Tue, 22 Dec 2015 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html</guid>
         
         
         <category>cn_blog</category>
