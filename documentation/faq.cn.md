@@ -38,6 +38,8 @@ sections:
     title: Q17. 从IP Range中保留一个IP地址,不让ZStack分配给云主机
   - id: q18
     title: Q18. 如何批量修改一批云主机的计算规格
+  - id: q19
+    title: Q19. 如何解决qemu版本不匹配问题
 ---
 
 <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
@@ -253,5 +255,16 @@ for vm in $target_vms; do
     zstack-cli StartVmInstance uuid=$vm
 done
 zstack-cli LogOut
+
+---
+<h2 id='q19'> Q19. 如何解决qemu版本不匹配问题</h2>
+
+在使用过程中，启动虚拟机时，可能遇到类似的错误信息uses a qcow2 feature which is not supported by this qemu version: QCOW version 3
+
+主要原因：QCOW 版本不一致，原始的qcow2创建版本使用的qemu-img为较新版本，现在创建时使用的为较旧版本，旧版本的不支持新版本的。
+
+解决办法：在拥有较新版本的qemu-img里面进行兼容性转换，例如执行以下命令进行转换，转换完毕后，再重新添加镜像
+
+qemu-img  convert -o compat=0.10 -f qcow2 -O qcow2 centos6-cloud-init.qcow2  centos-st-ssh-key.qcow2
 
 ---
