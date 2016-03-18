@@ -5,9 +5,67 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sun, 13 Mar 2016 00:19:21 +0800</pubDate>
-    <lastBuildDate>Sun, 13 Mar 2016 00:19:21 +0800</lastBuildDate>
+    <pubDate>Fri, 18 Mar 2016 11:14:43 +0800</pubDate>
+    <lastBuildDate>Fri, 18 Mar 2016 11:14:43 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.0.4发布</title>
+        <description>&lt;h2&gt;ZStack 1.0.4 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.0.4 版本今天发布，在该版本中我们修复了一个潜在的严重bug，&lt;strong&gt;该bug可能导致在删除云主机(还未执行彻底删除)的时候，该云主机的磁盘快照被删除，该bug在1.0版本后引入，我们建议所有ZStack用户升级你们的系统到1.0.4版本&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;此外我们还修复了zstack-dashboard上模糊查询不工作的bug.&lt;/p&gt;
+
+&lt;h3&gt;BUG描述&lt;/h3&gt;
+
+&lt;p&gt;该Bug并不会影响通常情况的云主机使用,但是在尝试恢复一个已经被删除的,并且创建过根云盘快照的云主机的时候会发生错误.
+该Bug的具体现象如下：&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;用户创建云主机&lt;/li&gt;
+&lt;li&gt;用户给云主机的根云盘创建了快照&lt;/li&gt;
+&lt;li&gt;用户删除云主机&lt;/li&gt;
+&lt;li&gt;用户恢复云主机&lt;/li&gt;
+&lt;li&gt;用户启动该云主机,会发生启动失败,原因是云盘快照已经被删除.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin -O zstack-installer-1.0.4.bin
+    bash zstack-installer-1.0.4.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin -O zstack-installer-1.0.4.bin
+    bash zstack-installer-1.0.4.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级. 1.0.4版本的zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.4/zstack.war&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Thu, 17 Mar 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.0.4.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.4.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.0.3发布</title>
@@ -3864,100 +3922,6 @@ the below steps:&lt;/p&gt;
         <pubDate>Mon, 25 Jan 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v1.0-rc1.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0-rc1.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>给ZStack添加SPice协议的支持（一）</title>
-        <description>&lt;h2&gt;前言&lt;/h2&gt;
-
-&lt;p&gt;读研时方向选定云计算虚拟化，之前一直在摸索学习各种IaaS软件，因老板项目需要找一款合适的开源软件做私有云，无奈实力所限OpenStack这样重量级的实在玩不动。在CloudStack群里有大牛推荐用ZStack简单好用，遂依照 http://ZStack.org/cn/installation/上的一键安装来安装 ZStack, 我这样的小白用all in one和扁平网络的方式，一个小时居然能跑起了VM，兴奋不已。&lt;/p&gt;
-
-&lt;p&gt;后来老板要做VDI，了解相关信息之后发现可用的开源协议只有SPICE了，于是很自然的将Zstack和SPCIE结合起来。有朋友可能会问zs自身的conslo就有VNC啊，也可以接虚拟机图像。但是VNC主要用于linux的服务器的管理，由于无声音和usb传输，不满足于虚拟桌面的使用。而SPICE几乎全面超过VNC，尤其在图像质量和重定向这两部分，几乎是开源的不二选择。&lt;/p&gt;
-
-&lt;h1&gt;实践操作&lt;/h1&gt;
-
-&lt;p&gt;桌面虚拟化与服务器虚拟化的本质区别就是在协议优化，当然这里只讲怎么连上去。Zstack本身拥有VNC协议的Console，SPICE-client连接到VM的方式与VNC相同——都是通过套接字识别VM。在询问群主意见后，决定加一个开关ConsoleMode让其能在SPICE和VNC间自由切换。那么问题来了，具体怎么做呢？&lt;/p&gt;
-
-&lt;p&gt;正好看到ZStack开发分享http://zstack.org/cn_blog/add-qemu-mode-to-zstack.html，作为一只小白，照葫芦画瓢的事情当然最好不过了。思路立马清晰了：1. 新增一个全局的变量叫 ConsoleMode（Java编写） 2. 将此新的全局变量传给 ZStack-utility 里的 agent (Python 编写的) 3. 在 Python编写的 agent 里, 依照此全局变量的值做出对应的设置（哈哈，写到这里我自己都笑了）。&lt;/p&gt;
-
-&lt;h2&gt;步骤一&lt;/h2&gt;
-
-&lt;p&gt;首先修改 ZStack 的部分, 在 conf/globalConfig/kvm.xml新增一个element
-&lt;img src=&quot;/images/blogs/spice/1.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;config&amp;gt;
-     &amp;lt;category&amp;gt;kvm&amp;lt;/category&amp;gt;
-     &amp;lt;name&amp;gt;consoleMode&amp;lt;/name&amp;gt;
-   &amp;lt;description&amp;gt;You can choose a transport protocol for consolemode,when set to spice, enable the spice protocol connection virtual machine.options:[vnc,spice]&amp;lt;/description&amp;gt;
-     &amp;lt;type&amp;gt;java.lang.String&amp;lt;/type&amp;gt;
-     &amp;lt;defaultValue&amp;gt;vnc&amp;lt;/defaultValue&amp;gt;
-&amp;lt;/config&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;在 plugin/kvm/src/main/java/org/zstack/kvm/KVMGlobalConfig.java 新增全局的变量
-&lt;img src=&quot;/images/blogs/spice/2.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;@GlobalConfigValidation(validValues = {&quot;vnc&quot;,&quot;spice&quot;})
-public static GlobalConfig VM_CONSOLE_MODE = new GlobalConfi(CATEGORY, &quot;consoleMode&quot;);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt; 到此基本上已经在 Web UI 的 Global Configure 新增一个配置 ConsoleMode (见下图)，等到我们修改完成后，将该值从vnc修改为spice即可（默认为vnc）。注意：如果已经running的VM需要重启，才会生效。
-&lt;img src=&quot;/images/blogs/spice/3.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h2&gt;步骤二&lt;/h2&gt;
-
-&lt;p&gt;修改 ZStack 的部分, 在plugin/kvm/src/main/java/org/zstack/kvm/KVMAgentCommands.java 中 public static class StartVmCmd 中新增私有的变量及公有的方法
-&lt;img src=&quot;/images/blogs/spice/4.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;private String consoleMode;
-
-public String getConsoleMode() {
-         return consoleMode;
-     }
-     public void setConsoleMode(String consoleMode) {
-         this.consoleMode = consoleMode;
-     }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;接著修改 plugin/kvm/src/main/java/org/zstack/kvm/KVMHost.java 在 startVm 方法里透过 VolumeTO 类新增的方法将新增的 Global Config 配置传给 zstack-utility agent
-&lt;img src=&quot;/images/blogs/spice/6.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;h2&gt;步骤三&lt;/h2&gt;
-
-&lt;p&gt;最后我们还要修改 zstack-utility agent在收到我们新增的全局配置后做出对应的修改 kvmagent/kvmagent/plugins/vm_plugin.py
-&lt;img src=&quot;/images/blogs/spice/5.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;def get_console_port(self)
-if (g.type_ ==&#39;vnc&#39;)or(g.type_==&#39;spice&#39;):
-
-def make_console():
-if cmd.consoleMode == &#39;spice&#39;:
-            make_spice()
-        else:
-            make_vnc()
-
-def make_spice():
-        devices = elements[&#39;devices&#39;]
-        spice = e(devices, &#39;graphics&#39;, None, {&#39;type&#39;:&#39;spice&#39;, &#39;port&#39;:&#39;5900&#39;, &#39;autoport&#39;:&#39;yes&#39;})
-        e(spice, &quot;listen&quot;, None, {&#39;type&#39;:&#39;address&#39;, &#39;address&#39;:&#39;0.0.0.0&#39;})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;步骤四&lt;/h2&gt;
-
-&lt;p&gt;依照官方说明的方法来编译ZStack All In One 安装包http://zstack.org/cn_blog/build-zstack.html&lt;/p&gt;
-
-&lt;h1&gt;总结&lt;/h1&gt;
-
-&lt;p&gt;限于本人能力所限，只是加了个切换协议开关，如果想在web上直接显示SPICE链接的远程桌面，还需要添加web-spice-client的代码。所以想体验的同学暂时还需要使用官方的virt-viewer软件才能连接哦，附效果图一张~最后严重感谢惯C哥的帮助^_^
-&lt;img src=&quot;/images/blogs/spice/7.jpg&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-</description>
-        <pubDate>Sun, 10 Jan 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/create_spice_for_console.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/create_spice_for_console.html</guid>
         
         
         <category>cn_blog</category>
