@@ -20,10 +20,6 @@ sections:
     title: 添加备份存储
   - id: addImage
     title: 添加云主机磁盘镜像
-  - id: createL2Network
-    title: 创建二层网络
-  - id: createL3Network
-    title: 创建三层网络
   - id: createPublicL2Network
     title: 创建公有二层网络
   - id: createPublicL3Network
