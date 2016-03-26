@@ -28,13 +28,13 @@ language_default:   'en'
 fill_default_content: true
 
 install_script_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-install.sh"
-vr_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
+vr_en: "http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2"
 all_in_one_en: "http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin"
 war_en: "http://download.zstack.org/releases/1.0/1.0.4/zstack.war"
 tgz: "zstack-installer-1.0.4.bin"
 
 install_script_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.0/zstack-install.sh"
-vr_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/0.9/0.9.0/zstack-virtualrouter-0.9.0.qcow2"
+vr_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-1.1.0.qcow2"
 all_in_one_ch: "http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin"
 #all_in_one_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
 #war_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack.war"

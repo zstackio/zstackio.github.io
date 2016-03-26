@@ -40,6 +40,8 @@ sections:
     title: Q18. 如何批量修改一批云主机的计算规格
   - id: q19
     title: Q19. 如何解决qemu版本不匹配问题
+  - id: q20
+    title: Q20. 如何释放Flat Network Service Provider DHCP占用的IP
 ---
 
 <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
@@ -266,5 +268,18 @@ zstack-cli LogOut
 解决办法：在拥有较新版本的qemu-img里面进行兼容性转换，例如执行以下命令进行转换，转换完毕后，再重新添加镜像
 
 qemu-img  convert -o compat=0.10 -f qcow2 -O qcow2 centos6-cloud-init.qcow2  centos-st-ssh-key.qcow2
+
+---
+<h2 id='q20'> Q20. 如何释放Flat Network Service Provider 占用的IP</h2>
+
+Flat Network Service Provider 因为提供DHCP服务,所以会占用一个IP地址.
+当用户不想使用该服务的时候,可以删除对应L3 network.
+但是该provider所占用的IP地址并不会被主动释放.用户可以用下面的方法回收该IP地址,并消除对应的影响.
+
+在所有的物理节点上执行:
+1. ip netns
+2. 然后对所有输出的namespace 执行 ip netns delete xxxx, xxxx是步骤一输出的对应的namespace
+3. 执行 ebtables -F
+4. pkill dnsmasq, 把所有DHCP server 杀死
 
 ---
