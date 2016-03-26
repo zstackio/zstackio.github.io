@@ -112,6 +112,10 @@
           
           <li><a href="#q18">Q18. 如何批量修改一批云主机的计算规格</a></li>
           
+          <li><a href="#q19">Q19. 如何解决qemu版本不匹配问题</a></li>
+          
+          <li><a href="#q20">Q20. 如何释放Flat Network Service Provider DHCP占用的IP</a></li>
+          
         </ol>
       </ul>
     </div>
@@ -353,6 +357,34 @@ for vm in $target_vms; do
     zstack-cli StartVmInstance uuid=$vm
 done
 zstack-cli LogOut</p>
+
+<hr />
+
+<h2 id='q19'> Q19. 如何解决qemu版本不匹配问题</h2>
+
+
+<p>在使用过程中，启动虚拟机时，可能遇到类似的错误信息uses a qcow2 feature which is not supported by this qemu version: QCOW version 3</p>
+
+<p>主要原因：QCOW 版本不一致，原始的qcow2创建版本使用的qemu-img为较新版本，现在创建时使用的为较旧版本，旧版本的不支持新版本的。</p>
+
+<p>解决办法：在拥有较新版本的qemu-img里面进行兼容性转换，例如执行以下命令进行转换，转换完毕后，再重新添加镜像</p>
+
+<p>qemu-img  convert -o compat=0.10 -f qcow2 -O qcow2 centos6-cloud-init.qcow2  centos-st-ssh-key.qcow2</p>
+
+<hr />
+
+<h2 id='q20'> Q20. 如何释放Flat Network Service Provider 占用的IP</h2>
+
+
+<p>Flat Network Service Provider 因为提供DHCP服务,所以会占用一个IP地址.
+当用户不想使用该服务的时候,可以删除对应L3 network.
+但是该provider所占用的IP地址并不会被主动释放.用户可以用下面的方法回收该IP地址,并消除对应的影响.</p>
+
+<p>在所有的物理节点上执行:
+1. ip netns
+2. 然后对所有输出的namespace 执行 ip netns delete xxxx, xxxx是步骤一输出的对应的namespace
+3. 执行 ebtables -F
+4. pkill dnsmasq, 把所有DHCP server 杀死</p>
 
 <hr />
 
