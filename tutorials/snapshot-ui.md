@@ -101,7 +101,7 @@ Based on those requirements, we assume below setup information:
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
     Though we don't show the example of stopping VM, you may find stopping a VM takes more than 60s. That's 
-    because the 15M ttylinux we use in the tutorial doesn't support ACPID that receives KVM's shutdown event, ZStack has to
+    because the VM image doesn't support ACPID that receives KVM's shutdown event, ZStack has to
     wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
 </div>
 
@@ -289,7 +289,7 @@ click button 'New Image' to open the dialog:
 <hr>
 
 1. select backup storage(BACKUP-STORAGE1)
-2. name the image as 'ttylinux'
+2. name the image as 'zs-sample-image'
 3. choose format 'qcow2'
 4. choose media type 'RootVolumeTemplate'
 5. choose platform 'Linux'
@@ -482,7 +482,7 @@ click button 'New VmInstance' to open the dialog:
 <hr>
 
 1. choose instance offering '512M-512HZ'
-2. choose image 'ttylinux'
+2. choose image 'zs-sample-image'
 3. choose L3 network 'FLAT-L3'
 4. input name as 'VM1'
 5. input host name as 'vm1'
@@ -574,8 +574,8 @@ to revert the root volume to a prior snapshot, we need to stop the VM1 first; go
 3. select item 'Stop'
 
 <div class="bs-callout bs-callout-warning">
-  <h4>Again it's slow only because the ttylinux doesn't support ACPID</h4>
-   Because the image ttylinux doesn't support ACPID, the VM cannot be gracefully stopped.
+  <h4>Again it's slow only because the zs-sample-image doesn't support ACPID</h4>
+   Because the image zs-sample-image doesn't support ACPID, the VM cannot be gracefully stopped.
    ZStack has to wait 60s stopping timeout then kill it, you won't encounter this problem in regular Linux
    distributions.
 </div>

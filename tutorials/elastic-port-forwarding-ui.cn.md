@@ -95,7 +95,7 @@ passwd root</code></pre>
 <div class="bs-callout bs-callout-warning">
   <h4>停止云主机可能会等1分钟，如果云主机镜像里没有配置ACPID:</h4>
     尽管我们的教程里不会演示停止云主机的功能，但是您可能自己在尝试的时候会发现启动一个云主机只需要1秒钟，
-    但是停止一个云主机可能会需要1分钟时间。这是因为我们特殊裁剪过的ttylinux的云主机模板中没有ACPID相关的服务。
+    但是停止一个云主机可能会需要1分钟时间。这是因为您的云主机模板中没有ACPID相关的服务。
     ZStack发出Stop指令后，云主机的操作系统并不会接收这样的指令。ZStack在等待1分钟后会强行的停止这个云主机。
     如果用户自己的云主机模板也存在类似的问题，那么最好求助于操作系统提供商解决相关的问题。
 </div>
@@ -278,7 +278,7 @@ passwd root</code></pre>
 <hr>
 
 1. 选择备份存储(BACKUP-STORAGE1)
-2. 给磁盘镜像取名为'ttylinux'
+2. 给磁盘镜像取名为'zs-sample-image'
 3. 选择格式'qcow2'
 4. 选择媒体类型为'RootVolumeTemplate'
 5. 选择平台'Linux'
@@ -482,7 +482,7 @@ passwd root</code></pre>
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png">
 
-如果使用ttylinux的磁盘镜像来创建虚拟机，该虚拟机的最低内存需求量仅需要24MB。用户可以只创建一个24MB的模板。
+如果使用zs-sample-image的磁盘镜像来创建虚拟机，该虚拟机的最低内存需求量仅需要64MB。用户可以只创建一个64MB的模板。
 
 <hr>
 
@@ -530,7 +530,7 @@ passwd root</code></pre>
 <hr>
 
 1. 选择模板'512M-512HZ'
-2. 选择磁盘镜像'ttylinux'
+2. 选择磁盘镜像'zs-sample-image'
 3. 选择三层网络'PRIVATE-L3'，**并且点击'Add'**
 4. 输入云主机的名字'VM1'
 5. 输入云主机的网络名字： 'vm1'

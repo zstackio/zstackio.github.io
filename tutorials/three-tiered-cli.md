@@ -115,7 +115,7 @@ Based on those requirements, we assume below setup information:
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
     Though we don't show the example of stopping VM, you may find stopping a VM takes more than 60s. That's 
-    because the 15M ttylinux we use in the tutorial doesn't support ACPID that receives KVM's shutdown event, ZStack has to
+    because the VM image doesn't support ACPID that receives KVM's shutdown event, ZStack has to
     wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
 </div>
     
@@ -250,7 +250,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 
 <h4 id="addImage">9. Add Image</h4>
 
-add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
+add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
@@ -258,7 +258,7 @@ add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' pl
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
 
-	>>> AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url={{site.zstack_image}} backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+	>>> AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url={{site.zstack_image}} backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png">
 
@@ -613,7 +613,7 @@ create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 51
 create a new WEB VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'ttylinux'
+2. image 'zs-sample-image'
 3. L3 network 'PUBLIC-MANAGEMENT-L3'(default L3) and 'APPLICATION-L3'
 4. name 'WEB-VM1'
 5. hostname 'web'
@@ -623,7 +623,7 @@ create a new WEB VM instance with configuration:
 
 <div id="18_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,APPLICATION-L3</code></pre>
 </div>
 
@@ -644,7 +644,7 @@ create a new WEB VM instance with configuration:
 create a new Application VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'ttylinux'
+2. image 'zs-sample-image'
 3. L3 network 'APPLICATION-L3'(default L3) and 'DATABASE-L3'
 4. name 'APPLICATION-VM1'
 5. hostname 'application'
@@ -654,7 +654,7 @@ create a new Application VM instance with configuration:
 
 <div id="19_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name?=APPLICATION-L3,DATABASE-L3</code></pre>
 </div>
 
@@ -675,7 +675,7 @@ create a new Application VM instance with configuration:
 create a new Application VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'ttylinux'
+2. image 'zs-sample-image'
 3. L3 network 'DATABASE-L3'
 4. input name as 'DATABASE-VM'
 5. input host name as 'database'
@@ -685,7 +685,7 @@ create a new Application VM instance with configuration:
 
 <div id="20_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name=DATABASE-L3</code></pre>
 </div>
 
