@@ -42,6 +42,8 @@ sections:
     title: Q19. 如何解决qemu版本不匹配问题
   - id: q20
     title: Q20. 如何释放Flat Network Service Provider DHCP占用的IP
+  - id: q21
+    title: Q21. 如何快速修改管理节点,数据库,消息总线IP地址
 ---
 
 <h2 id='q1'> Q1. 管理节点重启后，如何重新启动ZStack Management Node </h2>
@@ -283,3 +285,27 @@ Flat Network Service Provider 因为提供DHCP服务,所以会占用一个IP地�
 4. pkill dnsmasq, 把所有DHCP server 杀死
 
 ---
+<h2 id='q21'> Q21. 如何快速修改管理节点,数据库,消息总线IP地址 </h2>
+
+当用户使用All In One的方式把ZStack的管理节点,数据库,Rabbitmq都安装在一台机器后,
+由于某种原因修改了IP地址.我们修改更新ZStack的配置文件.之前我们可以手动的修改 zstack.properties .
+ZStack 1.1 之后,用户可以使用zstack-ctl命令来修改IP地址:
+
+zstack-ctl change_ip --ip MY.NEW.IP.ADDRESS
+
+用户也可以用上述单独替换mysql服务器的IP地址和Rabbitmq的IP地址.具体的参数请使用如下命令查看:
+zstack-ctl change_ip -h
+
+用户需要把MY.NEW.IP.ADDRESS替换成需要修改的IP地址.
+
+如果主机的IP地址发生了变化,可用下面的命令更新(调用前需要先用zstack-cli登陆管理员权限):
+zstack-cli LogInByAccount accountName=admin password=password
+zstack-cli UpdateKvmHost uuid=HOST_UUID managementIp=NEW.HOST.IP.ADDRESS
+zstack-cli LogOut
+
+如果备份存储的IP地址发生了变化,可用下面的命令更新(调用前需要先用zstack-cli login):
+zstack-cli LogInByAccount accountName=admin password=password
+zstack-cli UpdateSftpBackupStorage uuid=BACKUP_STORAGE_UUID hostname=NEW.HOST.IP.ADDRESS
+zstack-cli LogOut
+---
+
