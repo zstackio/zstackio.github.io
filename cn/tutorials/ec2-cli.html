@@ -198,7 +198,7 @@ passwd root</code></pre>
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
     Though we don't show the example of stopping VM, you may find stopping a VM takes more than 60s. That's 
-    because the 15M ttylinux we use in the tutorial doesn't support ACPID that receives KVM's shutdown event, ZStack has to
+    because the VM image doesn't support ACPID that receives KVM's shutdown event, ZStack has to
     wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
 </div>
 
@@ -388,7 +388,7 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-image-1.2.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
+<p>add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-image-1.2.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button></p>
 
@@ -397,7 +397,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-image-1.2.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+<pre><code>&gt;&gt;&gt; AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-image-1.2.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png"></p>
@@ -704,7 +704,7 @@ passwd root</code></pre>
 
 <ol>
 <li>instance offering 'small-instance'</li>
-<li>image 'ttylinux'</li>
+<li>image 'zs-sample-image'</li>
 <li>L3 network 'PRIVATE-L3'</li>
 <li>name 'VM1'</li>
 </ol>
@@ -717,7 +717,7 @@ passwd root</code></pre>
 
 <div id="14" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
@@ -817,7 +817,7 @@ L3 network:</p>
 
 <div id="17" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 

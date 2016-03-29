@@ -206,7 +206,7 @@ passwd root</code></pre>
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
     Though we don't show the example of stopping VM, you may find stopping a VM takes more than 60s. That's 
-    because the 15M ttylinux we use in the tutorial doesn't support ACPID that receives KVM's shutdown event, ZStack has to
+    because the VM image doesn't support ACPID that receives KVM's shutdown event, ZStack has to
     wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
 </div>
 
@@ -396,7 +396,7 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>add Image('ttylinux') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-image-1.2.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
+<p>add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://download.zstack.org/templates/zstack-image-1.2.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button></p>
 
@@ -405,7 +405,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=ttylinux format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-image-1.2.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+<pre><code>&gt;&gt;&gt; AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://download.zstack.org/templates/zstack-image-1.2.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png"></p>
@@ -863,7 +863,7 @@ passwd root</code></pre>
 
 <ol>
 <li>instance offering 'small-instance'</li>
-<li>image 'ttylinux'</li>
+<li>image 'zs-sample-image'</li>
 <li>L3 network 'PUBLIC-MANAGEMENT-L3'(default L3) and 'APPLICATION-L3'</li>
 <li>name 'WEB-VM1'</li>
 <li>hostname 'web'</li>
@@ -877,7 +877,7 @@ passwd root</code></pre>
 
 <div id="18_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,APPLICATION-L3</code></pre>
 </div>
 
@@ -908,7 +908,7 @@ passwd root</code></pre>
 
 <ol>
 <li>instance offering 'small-instance'</li>
-<li>image 'ttylinux'</li>
+<li>image 'zs-sample-image'</li>
 <li>L3 network 'APPLICATION-L3'(default L3) and 'DATABASE-L3'</li>
 <li>name 'APPLICATION-VM1'</li>
 <li>hostname 'application'</li>
@@ -922,7 +922,7 @@ passwd root</code></pre>
 
 <div id="19_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name?=APPLICATION-L3,DATABASE-L3</code></pre>
 </div>
 
@@ -953,7 +953,7 @@ passwd root</code></pre>
 
 <ol>
 <li>instance offering 'small-instance'</li>
-<li>image 'ttylinux'</li>
+<li>image 'zs-sample-image'</li>
 <li>L3 network 'DATABASE-L3'</li>
 <li>input name as 'DATABASE-VM'</li>
 <li>input host name as 'database'</li>
@@ -967,7 +967,7 @@ passwd root</code></pre>
 
 <div id="20_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=ttylinux</code></pre>
+<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
 <pre><code>QueryL3Network fields=uuid,name, name=DATABASE-L3</code></pre>
 </div>
 
