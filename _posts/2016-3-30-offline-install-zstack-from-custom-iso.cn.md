@@ -46,6 +46,7 @@ http://pan.baidu.com/s/1i4IccN7
 点击“启动”按钮，选择“写入硬盘镜像”，如图2所示。
 
 <img src="../images/blogs/offline_install/click-write-to-diskimage.png" >
+
 *图2 点击写入硬盘镜像*
  
 ##### 4.	将ISO写入硬盘镜像
@@ -53,15 +54,18 @@ http://pan.baidu.com/s/1i4IccN7
 其他选项，按照默认设置，无须额外配置。点击“写入”按钮，如图3所示。在新界面中点击“是”按钮进行确认，UltraISO将会把此ISO刻录到U盘。
  
 <img src="../images/blogs/offline_install/choose-u-disk-to-write.png" >
+
 *图3 选择U盘，点击写入按钮* 
 
 <img src="../images/blogs/offline_install/choose-u-disk-to-write.png" >
+
 *图4 确认写入*
 
 ##### 5.	刻录检查
 刻录成功的界面如图5所示，表示ZStack的定制版CentOS 7.2 可引导U盘已刻录成功。 
 
 <img src="../images/blogs/offline_install/burn-check.png" >
+
 *图5 刻录检查*
 
 ##### 6.	使用U盘引导CentOS7.2
@@ -69,23 +73,27 @@ http://pan.baidu.com/s/1i4IccN7
 在BIOS启动选项列表，选择此U盘为第一启动设备，启动后，引导安装界面如图6所示：
 
 <img src="../images/blogs/offline_install/boot-from-U-disk.png" >
+
 *图6 可引导U盘启动界面*
 
 ##### 7.	硬盘分区
 安装过程中，只需进行分区，即可一键安装CentOS7.2操作系统，如图7所示的分区为根分区48G，swap分区为2G。也可根据存储及需求，提前设置好大容量分区。
 
 <img src="../images/blogs/offline_install/partition.png" >
+
 *图7 安装分区界面*
 
 ##### 8.	安装系统
 分区完毕后，点击“Begin Installation”按钮，开始安装。如图8所示。
 
 <img src="../images/blogs/offline_install/click-begin-installation.png" >
+
 *图8 点击Begin Installation按钮*
  
 所有的安装包安装完毕后，点击“reboot”按钮，如图9所示，即可启动进入CentOS7.2系统。
 
 <img src="../images/blogs/offline_install/prepare-reboot.png" >
+
 *图9 点击reboot按钮*
  
 
@@ -97,5 +105,6 @@ http://pan.baidu.com/s/1i4IccN7
 3.	安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。
 4.	安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
 <img src="../images/blogs/offline_install/offline-install-zstack.png" >
+
 *图10 离线安装ZStack*
 
