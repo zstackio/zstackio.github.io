@@ -7,7 +7,8 @@ layout: installationPage.cn
 
 对于新用户来说，ZStack提供的一键安装可以把IaaS云环境快速部署到一个Linux主机上。
 
-我们推荐您的硬件环境最好能有如下配置(虽然可以在一个打开了 nested virtualization 的虚拟机中来安装ZStack，但是特殊的nested virtualization配置以及受限的虚拟机资源会降低你的试用体验过程)：
+我们推荐您的硬件环境最好能有如下配置(虽然可以在一个打开了 nested virtualization 的虚拟机中来安装ZStack，
+但是特殊的nested virtualization配置方法以及受限的虚拟机资源会降低你的试用体验过程)：
 
 <table class="table table-striped table-bordered">
   <tr>
@@ -25,7 +26,7 @@ layout: installationPage.cn
   <tr>
     <td><b>操作系统</b></td>
     <td>
-      <p>CentOS 6.6+/CentOS 7.1+/Ubuntu 14.04</p>
+      <p>CentOS 6.7+/CentOS 7.2+/Ubuntu 14.04</p>
       <div class="bs-callout bs-callout-info">
         <h4>这是我们测试过的系统</h4>
         虽然我们测试了这三个操作系统，但是从理论上来说其他支持KVM的Linux操作系统也应该可以工作。
@@ -90,7 +91,6 @@ ztack-installer.bin 的md5sum为 {{site.all_in_one_md5}}
   取决与当前系统中已安装包的数量和网络连接速度，通常一次自动化安装过程会需要5～15分钟的时间。您可以在这段时间放松一下。
 </div>
 
-
 ZStack的安装程序会在您的系统中安装如下软件：    
 
 * Apache Tomcat 7 以及 zstack.war
@@ -117,3 +117,6 @@ ZStack的安装程序会在您的系统中安装如下软件：
 </div>
 
 现在你的第一个ZStack已经安装成功。请访问[快速使用ZStack](../documentation/getstart-quick.html) 来获取后续的ZStack图形界面和命令行的使用方法。
+
+对于无法通过互联网安装ZStack的内网用户.从ZStack 1.1 开始, ZStack提供了更为便捷的离线安装方式.
+请阅读[ZStack离线安装教程](/cn_blog/offline-install-zstack-from-custom-iso.html)
