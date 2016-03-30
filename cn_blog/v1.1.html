@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack v1.1 RC1 发布</title>
+    <title>ZStack - ZStack v1.1 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack v1.1 RC1 发布</h2>
-    <p class="post-meta"> by Yongkang You on Mar 26, 2016</p>
+    <h2 class="post-title">ZStack v1.1 发布</h2>
+    <p class="post-meta"> by Yongkang You on Mar 30, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -114,11 +114,11 @@
 
 
   <article class="post-content">
-    <h2>ZStack 1.1 RC1 版本今天发布</h2>
+    <h2>ZStack 1.1 版本今天发布</h2>
 
-<p>ZStack 1.1 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们主要针对1.0 版本做了性能和稳定性相关的工作。
+<p>ZStack 1.1 版本今天发布，欢迎大家下载试用。在该版本中，我们主要针对1.0 版本做了性能和稳定性相关的工作。
 某些性能指标提升超过10倍,例如consoleproxy在管理节点重启后会立刻安装完毕.
-在ZStack 1.1 正式版发布的时候我们还会提供一个离线版的CentOS7.2的安装ISO和ZStack 1.1的离线安装方法。</p>
+ZStack 1.1 提供了离线安装方式.通过安装CentOS7.2 ZStack社区版ISO,用户可以在内网环境快速安装部署ZStack .</p>
 
 <h2>新增功能</h2>
 
@@ -130,6 +130,7 @@
 <li><a href="#zstackimage">15M超小试用镜像--支持动态添加删除云盘和网络</a></li>
 <li><a href="#virtualrouter">更新虚拟路由（VirtualRouter）镜像</a></li>
 <li><a href="#migration">修改CentOS7.2 无法热迁移VM的Bug</a></li>
+<li><a href="#offline">内网离线安装ZStack</a></li>
 </ul>
 
 
@@ -137,6 +138,7 @@
 
 <ul>
 <li><a href="#install">安装</a></li>
+<li><a href="#offline-install">离线安装</a></li>
 <li><a href="#upgrade">升级</a></li>
 <li><a href="#upgradenetwork">Virtual Router Provider升级到Flat Network Porvider</a></li>
 </ul>
@@ -243,27 +245,45 @@
 <p>CentOS7.2 修改了热迁移VM的libvirt的相关代码，导致如果用户没有显示的设置物理机Hostname的情况下，云主机无法热迁移。ZStack以及给RedHat报告了问题。
 不过在ZStack 1.1中，我们做了特别的改动来避免CentOS7.2 的这个bug。</p>
 
-<h3 id="install"> 8. 安装 </h3>
+<h3 id="offline"> 8. 内网环境离线安装ZStack </h3>
+
+
+<p>ZStack社区提供了定制过的CentOS 7.2 ISO.通过安装该ISO,ZStack需要的系统库会被复制到安装机器的本地.
+在安装ZStack的时候,通过离线安装模式,就可以快速完成ZStack的安装.详细的离线安装方式请参考<a href="./offline-install-zstack-from-custom-iso.html">离线安装手册</a>.</p>
+
+<h3 id="install"> 9. 安装 </h3>
 
 
 <p>你可以通过下面方式安装：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/rc1/zstack-installer-1.1.0-rc1.bin -O zstack-installer-1.1.0-rc1.bin
-    bash zstack-installer-1.1.0-rc1.bin -R aliyun
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin 
 </code></pre>
 
 <blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
 
-<h3 id="upgrade"> 9. 升级 </h3>
+<h3 id="offline-install"> 10. 离线安装 </h3>
+
+
+<p>手动下载第9步中的zstack安装包,并通过下面方式进行安装：</p>
+
+<pre><code>    bash zstack-installer-1.1.0.bin -o
+</code></pre>
+
+<p>详细的离线安装方式请参考<a href="./offline-install-zstack-from-custom-iso.html">离线安装手册</a>.</p>
+
+<h3 id="upgrade"> 11. 升级 </h3>
 
 
 <p>一如既往的，我们支持一键无缝升级：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/rc1/zstack-installer-1.1.0-rc1.bin -O zstack-installer-1.1.0-rc1.bin
-    bash zstack-installer-1.1.0-rc1.bin -u
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin -u
 </code></pre>
 
-<h3 id="upgradenetwork"> 10. 用Flat Network Provider替换Virtual Router Provider </h3>
+<p>多节点升级步骤中需要的zstack.war 可以从这里下载: http://download.zstack.org/releases/1.1/1.1.0/zstack.war</p>
+
+<h3 id="upgradenetwork"> 12. 用Flat Network Provider替换Virtual Router Provider </h3>
 
 
 <p>如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：</p>
