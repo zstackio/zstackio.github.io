@@ -26,7 +26,7 @@ author: Songtao Liu
 ### CentOS 7.2 ZStack 社区定制版系统安装教程：
 
 #### 1.	下载ZStack社区定制版CentOS7.2 ISO
-文件名称：ZStack-Cummunity-x86_64-DVD-1.0.0.iso 
+文件名称：ZStack-Cummunity-x86_64-DVD-1.0.0.iso (1.1G)
 
 MD5校验码：55641ea8ba4e0a10eb7429d8dd46e33b 
 
@@ -103,7 +103,7 @@ http://pan.baidu.com/s/1i4IccN7
 ### 离线安装ZStack：
 安装系统后，可通过以下方法离线安装ZStack。
 
-1.	下载ZStack离线安装包到任意目录(假定文件名为zstack-installer.bin)；
+1.	下载ZStack离线安装包(e.g. http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin)到任意目录(假定文件名为zstack-installer.bin)；
 2.	在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。
 3.	安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。
 4.	安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
