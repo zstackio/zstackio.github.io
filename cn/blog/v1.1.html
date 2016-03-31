@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack v1.0 release</title>
+    <title>ZStack - ZStack v1.1 release</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack v1.0 release</h2>
-    <p class="post-meta"> by Frank Zhang on Feb 1, 2016</p>
+    <h2 class="post-title">ZStack v1.1 release</h2>
+    <p class="post-meta"> by Frank Zhang on Mar 30, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -115,21 +115,17 @@
 
   <article class="post-content">
     <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
-announce that ZStack v1.0 is released.</p>
+announce that ZStack v1.1 is released.</p>
 
-<h1>New Features</h1>
+<h1>New Features And Enhancements</h1>
 
 <ul>
-<li><a href="#flatnetworkprovider">Flat Network Provider, providing distributed DHCP</a></li>
-<li><a href="#userdata">User Data, supporting cloud-init</a></li>
-<li><a href="#localstoragemigration">Volume Migration on Local Storage</a></li>
-<li><a href="#isoapi">ISO APIs, supporting attach/detach ISO and change VM boot order</a></li>
-<li><a href="#spice">Spice</a></li>
-<li><a href="#i18n">i18n, English/Chinese PRC/Chinese Taiwan</a></li>
-<li><a href="#vmstate">VM State Realtime Syncing</a></li>
-<li><a href="#deletionpolicy">Resource Deletion Policy</a></li>
-<li><a href="#cpumodel">CPU model pass-through, supporting nested-virtualization</a></li>
-<li><a href="#zstackimage">22M Tiny Image</a></li>
+<li><a href="#ansible">Ansible Optimization</a></li>
+<li><a href="#consoleproxy">Console Proxy APIs</a></li>
+<li><a href="#apitimeout">API Timeout Management</a></li>
+<li><a href="#gc">Garbage Collector</a></li>
+<li><a href="#image">15 Tiny Tryout Image</a></li>
+<li><a href="#vr">Virtual Router Image Upgrade</a></li>
 </ul>
 
 
@@ -142,468 +138,78 @@ announce that ZStack v1.0 is released.</p>
 </ul>
 
 
-<h2 id="flatnetworkprovider"> 1. Flat Network Provider </h2>
+<h2 id="ansible"> 1. Ansible Optimization </h2>
 
 
-<p>A new network provider, flat network provider, which provides DHCP, Userdata
-services is available for users only using flat networks. Compared to the
-virtual router provider, the main advantage of the new provider is you don't
-need a virtual router VM for DHCP server anymore, which simplifies the effort of
-deploying a flat network significantly.</p>
+<p>In this version, we create customized deployers for all ZStack agents(i.e. kvmagent, backup storage agent) directly using Ansible SDK, instead of regular Ansible playbook YAML files. As the result, the speed of agent deployment gets significantly improved, because the deployer that is a Python application will try best to avoid unnecessary time-costing steps such as accessing YUM repo; the logging also gets better, each task will post messages to a logging URL before and after execution, and the error message will clearly state the error instead of flooding out all tasks status, which regular Ansible playbook YAML files normally do.</p>
 
-<p><img src="/images/1.0/1.PNG" class="center-img img-responsive"></p>
-
-<p>The flat network provider contains a distributed DHCP system that runs a
-DHCP server serving DHCP requests from VMs on the local KVM host. Compared to the
-traditional DHCP system that has only one DHCP server, the
-distributed DHCP system has no single failure point, and a DHCP server down only
-effects VMs on one host. Large DHCP requests originated from concurrent VMs
-creation/starting are balanced to different DHCP servers, which improves the overall
-concurrency.</p>
-
-<h3>1.1 Use Flat Network Provider</h3>
-
-<p>When you create a L3 network, do following steps when selecting network
-services:</p>
-
-<p><img src="/images/1.0/2.png" class="center-img img-responsive"></p>
-
-<ol>
-<li>select provider as “Flat Network Service Provider”</li>
-<li>select service DHCP</li>
-<li>click button “Add”</li>
-<li>repeat step 2, 3 to add service Userdata</li>
-</ol>
+<h2 id="consoleproxy">2. Console Proxy APIs </h2>
 
 
-<div class="bs-callout bs-callout-info">
+<p>Two new APIs are added for console proxy, <code>ReconnectConsoleProxyAgent</code> and <code>QueryConsoleProxyAgent</code>.</p>
 
-<h4>You can combine flat network provider and virtual router provider</h4>
+<p>Users can use <code>ReconnectConsoleProxyAgent</code> to redeploy console proxy agents:</p>
 
-The flat network provider is mainly for flat networks which only require DHCP
-service. However, you can combine it with the virtual router provider for a
-mixed setup. For example, use the flat network provider for DHCP service and use
-the virtual router provider for SNAT and EIP services.
-
-</div>
-
-
-
-
-<h2 id="userdata"> User Data </h2>
-
-
-<p>User data, complying the standard of
-<a href="https://cloudinit.readthedocs.org/en/latest/">cloud-init</a>, is enabled by the
-userdata service of the flat network provider.</p>
-
-<div class="bs-callout bs-callout-info">
-
-<h4>Your template must install cloud-init package</h4>
-To use the user data, you must install cloud-init package in the VM’s operating
-system.
-</div>
-
-
-<p>The userdata is implemented by ZStack’s system tag mechanism; you can use system
-tag APIs to add/update/remove userdata to VMs.</p>
-
-<p>The format of userdata system is like:</p>
-
-<pre><code>    userdata::{the content}
-
-    Example:
-
-    userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true
+<pre><code>        &gt;&gt;&gt;ReconnectConsoleProxyAgent 
 </code></pre>
 
-<div class="bs-callout bs-callout-info">
-<h4>Minify the cloud-init YAML configuration</h4>
-cloud-init uses a YAML file as user data. As a ZStack system tag is a string, you need
-to minify the YAML file before passing to ZStack's API. Here is simple script to do
-that:
+<p>or use <code>QueryConsoleProxyAgent</code> to query agents' status:</p>
 
-<code>sed ':a;N;$!ba;s/\n/\\n/g' the_yaml_file</code>
-
-<br>
-The output will be printed on the screen.
-</div>
-
-
-<h3>2.1 Use user data</h3>
-
-<h4>2.1.1 Configure cloud-init in VM</h4>
-
-<p>To use use data, you need to first configure cloud-init in your VM. We suggest
-you doing this once then saving the VM as a template so VMs derived from the
-template will have cloud-init installed by default.</p>
-
-<ol>
-<li>yum install cloud-init or apt-get install cloud-init</li>
-<li><p>add following content to /etc/cloud/cloud.cfg</p>
-
-<pre><code>datasource_list:
-  - CloudStack
-</code></pre></li>
-</ol>
-
-
-<h4>2.2.2 Add user data</h4>
-
-<p>You can specify user data when creating a new VM, for example:</p>
-
-<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+<pre><code>       &gt;&gt;&gt;QueryConsoleProxyAgent 
 </code></pre>
 
-<p>To set the user data to an existing VM, use CreateSystemTag, for example:</p>
+<h2 id="apitimeout">3. API Timeout Management</h2>
 
-<pre><code>    CreateSystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b resourceType=VmInstanceVO tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+
+<p>As ZStack consists of a lot of microservices which communicate with each other through async-messages, it's very hard to control API timeout because the API has no idea about internal messages entailed by itself. In this version, we add a central API timeout management framework that can connect an API to all entailed internal messages and HTTP requests, and that can propagate the API's timeout to the descendants. All APIs have default configurations, users can change a configuration by editing the <code>zstack.properties</code> file, for example:</p>
+
+<pre><code>    ApiTimeout.org.zstack.header.image.APIAddImageMsg= org.zstack.header.storage.backup.DownloadImageMsg, org.zstack.storage.backup.sftp.SftpBackupStorageCommands$DownloadCmd, org.zstack.storage.ceph.backup.CephBackupStorageBase$DownloadCmd; 6h
 </code></pre>
 
-<p>The <code>resourceUuid</code> here is the VM's uuid.</p>
+<p>This example changes the timeout of API <code>org.zstack.header.image.APIAddImageMsg</code> to six hours. However, this way is discouraged. In 1.2 version, we will allow users to configure APIs' timeout through a new API.</p>
 
-<h4>2.2.3 Get user data</h4>
+<h2 id="gc">4. Garbage Collector</h2>
 
-<p>You can use QuerySystemTag to get user data, for example:</p>
 
-<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=userdata%
+<p>In this version, the VM related garbage collectors are enabled. Users can destroy a VM anytime no matter the connection status of the host. For example, you can delete a VM even the network connection to the host where the VM is running is lost. The garbage collector will save user operations which cannot be completed in current situation and re-execute them once the host's network connection recovers. The garbage collector can be triggered by time-based poll and events, for example, a host reconnect event and host delete event can both trigger a VM deleting garbage collector.</p>
+
+<h2 id="image">5. 15M Tiny Tryout Image</h2>
+
+
+<p>A new 15 tiny image is ready for quickly try out creating VMs. The image supports runtime attaching/detaching volumes and networks. The ACPID daemon is also included so you can gracefully shutdown a VM. You can download the image from:</p>
+
+<pre><code>    http://download.zstack.org/templates/zstack-image-1.2.qcow2
 </code></pre>
 
-<p>The <code>resourceUuid</code> here is the VM's uuid.
- </p>
+<h2 id="vr">6. New Virtual Router Image</h2>
 
-<h4>2.2.4 Remove user data</h4>
 
-<p>You can use DeleteTag to remove user data from a VM:</p>
+<p>The virtual router image is upgraded to 1.1 version, you can download it from:</p>
 
-<pre><code>    DeleteTag uuid=user_data_tag_uuid
-    For example:
-    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
+<pre><code>    http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2
 </code></pre>
 
-<p>See above section for retrieving UUID of user data tag.</p>
+<blockquote><p>NOTE: Users still using the old 0.9 version are not necessary to upgrade. However, we suggest all new users using the new version.</p></blockquote>
 
-<h4>2.2.5 Update user data</h4>
+<h2 id="install">7. Installation</h2>
 
-<p>You can use UpdateSystemTag to update existing user data of a VM, for example:</p>
 
-<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='userdata::groups:\n  - ubuntu: [foo,bar]\n  - cloud-users\n\n# Add users to the system. Users are added after groups are added.\nusers:\n  - default\n  - name: foobar\n    gecos: Foo B. Bar\n    primary-group: foobar\n    groups: users\n    selinux-user: staff_u\n    expiredate: 2012-09-01\n    ssh-import-id: foobar\n    lock-passwd: false\n  - name: barfoo\n    gecos: Bar B. Foo\n    sudo: ALL=(ALL) NOPASSWD:ALL\n    groups: users, admin\n    ssh-import-id: None\n    lock-passwd: true\n    ssh-authorized-keys:\n      - &lt;ssh pub key 1&gt;\n      - &lt;ssh pub key 2&gt;\n  - name: cloudy\n    gecos: Magic Cloud App Daemon User\n    inactive: true\n    system: true'
+<p>You can install the 1.1 release by:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin
 </code></pre>
 
-<p>The <code>uuid</code> here is the system tag's UUID. See above section for retrieving UUID of user data tag.</p>
+<h2 id="upgrade">8. Upgrade</h2>
 
-<h4>2.2.6 Inject SSH public key into a VM</h4>
 
-<p>As public SSH key injection is a widely used feature for user data, ZStack provides a shortcut system tag for this. The system tag is in format of:</p>
+<p>To upgrade your ZStack to 1.1, do:</p>
 
-<pre><code>    sshkey::{content}
-    Example:
-    sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin -u
 </code></pre>
 
-<h5>2.2.7 Add public SSH key</h5>
-
-<p>You can do this when you creating a VM, for example:</p>
-
-<pre><code>    CreateVmInstance name=vm imageUuid=d720ff0c60ee48d3a2e6263dd3e12c33 instanceOfferingUuid=76789b62aeb542a5b4b8b8488fbaced2 l3NetworkUuids=37d3c4a1e2f14a1c8316a23531e62988,05266285f96245f096f3b7dce671991d defaultL3NetworkUuid=05266285f96245f096f3b7dce671991d systemTags='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5x3AoWuiZawxXoBxEcOhhdVAST4kJA/cQ2zGnh3yZ/KBU+VILQHTkbNWAaRw3q0UtfpLfVj/KoPFr43qjGF+ud8B/rD7stsAvbNVdms81aBDAFZyiN7dhlwTK+XvCMhl4RxHUItm7+Y7gzb8jTHPoqlPzAw4r8enqhNf9ABG+kaXIDa0FPhVaMPoLzHWjTe34ONIBlxsY/y1Zle49vPVYS7oAHQTc7ly7bnGXffNJ18uF5M7HPUgsIDum8KICa2LmnXJeB2M9XZtXtJUdR1ZKXeQpRtikAm3G3CwFkDxWnx31dGr0lLa2aZ88LQ2iP8nb2NK58aKb4I9Aq19k44Rl root@yyy'
-</code></pre>
-
-<p>or add the SSH key to an existing VM, for example:</p>
-
-<pre><code>    CreateSystemTag resourceType=VmInstanceVO resourceUuid=606d9a2fa723407c93438789eaf72cea tag="sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7NtheqzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNAMVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3"
-</code></pre>
-
-<h4>2.2.8 Get public SSH key</h4>
-
-<p>You can use QuerySystemTag to get SSH key, for example:</p>
-
-<pre><code>    QuerySystemTag resourceUuid=303bf80af28c4e23b9b8c20d4267356b tag~=sshkey%
-</code></pre>
-
-<p>The <code>resourceUuid</code> here is the VM's uuid.</p>
-
-<h4>2.2.9 Remove public SSH key</h4>
-
-<p>You can use DeleteTag to remove SSH key from a VM:</p>
-
-<pre><code>    DeleteTag uuid=user_data_tag_uuid
-    For example:
-    DeleteTag uuid=7813d03bb85840c489789f8df3a5915b
-</code></pre>
-
-<p>See above section for retrieving UUID of SSH key tag.</p>
-
-<h4>2.2.10 Update public SSH key</h4>
-
-<p>You can use UpdateSystemTag to update the existing SSH key of a VM, for example:</p>
-
-<pre><code>    UpdateSystemTag uuid=762c3047e05f471ea3fce13f808a50be tag='sshkey::ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDdlfgEu4SmgAXaEhLtNljm4cqowdFSyOH7Nthe    qzZROaRNRJOYKCABUZLmsLv1pl3Av+m1vUUILPWNymxdCnhuaxl/vFtvyWrLChKR8s2Cpl24uFpvHaWO6JLd/RnSwj8LCsCreJ3Twq77T9MCwDVl15WNjn3WKuPfFKxmW7gQTDyDK1XX35n7RYSadurdVNmJTAsQWmszmGeBDVO6U7spRtH7nNrNA    MVjaOHrPp5NbMRBVCyHfj1UY71bnIdVCa2mY/RtjIkcj4JNBaQ0JPnP1jw4Ig8WVkjn74T7U4chUHmu8jzwhv+++F7EGLSNdb85RKmY5IdHDd+dRuK3Rx67 root@bji-bm-node3'
-</code></pre>
-
-<p>The <code>uuid</code> here is the system tag's UUID. See above section for retrieving UUID of SSH key tag.</p>
-
-<div class="bs-callout bs-callout-warning">
-<h4>You may need to reboot the VM to enable the SSH key</h4>
-
-If you add/update a SSH key to an existing VM, you need to do following steps:<br>
-1. clean up existing cloud-init data by 'rm -rf /var/lib/cloud' in the VM's operating system<br>
-2. reboot the VM<br>
-
-<br>
-For creating new VM, you don't need to do this.
-</div>
-
-
-
-
-<h2 id="localstoragemigration"> 3. Volume Migration For Local Storage </h2>
-
-
-<p>In this version, you can migrate volumes between different hosts on local primary storage. This mainly solves the problem that VMs cannot be migrated when using local primary storage.</p>
-
-<h3>3.1 Migrate Volumes</h3>
-
-<p>You can use <code>LocalStorageMigrateVolume</code> to migrate both root volumes and data volumes, for example:</p>
-
-<pre><code>    LocalStorageMigrateVolume volumeUuid=cdbda88fef1a42f386ff111b729159d9 destHostUuid=252d484d93e64fea946148097162b60f
-</code></pre>
-
-<h3>3.2 Migration Rules</h3>
-
-<ul>
-<li>If the volume is a root volume, the VM of the root volume must be stopped</li>
-<li>If the volume is a data volume, it must be detached</li>
-<li>If there are snapshots of the volume, snapshots are migrated as well</li>
-</ul>
-
-
-<div class="bs-callout bs-callout-info">
-<h4>Migrating a VM by migrating its root volume</h4>
-If you want to migrate a VM to another host when using local primary storage. You can do following steps:<br>
-1. stop the VM<br>
-2. migrate the VM's root volume to the destination host<br>
-3. start the VM<br>
-</div>
-
-
-
-
-<h2 id="isoapi"> 4. ISO API </h2>
-
-
-<p>In this version, you can use APIs to attach/detach ISO to/from a VM, and can use APIs to set/get VM's boot device order</p>
-
-<h3>4.1 Attach ISO</h3>
-
-<p>You can use <code>AttachIsoToVmInstance</code> to attach an ISO to a VM, for example:</p>
-
-<pre><code>    AttachIsoToVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c isoUuid=815dcd3d83dd429298ba2c9b1685c1ad
-</code></pre>
-
-<h3>4.2 Detach ISO</h3>
-
-<p>You can use <code>DetachIsoFromVmInstance</code> to detach the ISO from a VM, for example:</p>
-
-<pre><code>    DetachIsoFromVmInstance vmInstanceUuid=d4a83b0394b44482bbcb964b4dbe991c
-</code></pre>
-
-<h3>4.3 Get VM's boot device order</h3>
-
-<p>You can use <code>GetVmBootOrder</code> to get the boot device order of a VM, for example:</p>
-
-<pre><code>    GetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b
-</code></pre>
-
-<p>The <code>uuid</code> here is the VM's UUID.</p>
-
-<h3>4.4 Set VM's boot device order</h3>
-
-<p>You can use <code>SetVmBootOrder</code> to set the boot device order of a VM, for example:</p>
-
-<pre><code>    SetVmBootOrder uuid=303bf80af28c4e23b9b8c20d4267356b bootOrder=HardDisk,CdRom
-</code></pre>
-
-<p>The <code>uuid</code> here is the VM's UUID.</p>
-
-<blockquote><p>Note: the valid boot devices are: HardDisk and CdRom</p></blockquote>
-
-<h3>4.5 Boot Device Order Rules</h3>
-
-<ul>
-<li>For VMs created from an ISO, the default boot device is set to CdRom. Once you finish installing the operating system and reboot the VM, the boot device is changed to HardDisk</li>
-<li>For VMs created from a template, the default boot device is HardDisk</li>
-<li>Attaching an ISO to an existing VM won't change its boot device order, you need to use <code>SetVmBootOrder</code> to change it explicitly if you want</li>
-</ul>
-
-
-<h2 id="spice">5. Spice Support</h2>
-
-
-<p>You can use Spice protocol to access a VM console in this version. To enable the spice protocol, do following:</p>
-
-<pre><code>     UpdateGlobalConfig category=kvm name=vm.consoleMode value=spice
-</code></pre>
-
-<blockquote><p>valid values: vnc and spice</p></blockquote>
-
-<p>ZStack doesn't have a spice console proxy for now. To access a VM's console, you need to use a Spice client to connect to VM's spice port on the host. The port and the host's IP
-can be obtained by the API <code>GetVmConsoleAddress</code>:</p>
-
-<pre><code>    &gt;&gt;&gt;GetVmConsoleAddress uuid=9cd68155905e47b5b0698ecba9126242
-    {
-        "hostIp": "192.168.199.136",
-        "port": 5902,
-        "protocol": "spice",
-        "success": true
-    }
-</code></pre>
-
-<p>Here the parameter <code>uuid</code> is the UUID of the VM you want to access. Thanks Nan Su(fengcai_ji@163.com) from Wuhan Textile University for contributing this feature!</p>
-
-<h2 id="i18n"> I18n Support </h2>
-
-
-<p>The i18n is supported in the new UI. You can switch between languages of English/Chinese PRC/Chinese Taiwan by clicking the language button.</p>
-
-<p><img src="/images/1.0/3.png" class="center-img img-responsive"></p>
-
-<p>Thanks Nan Su(fengcai_ji@163.com), Zhiqiang Hu(1063751150@qq.com)u Qi Wei(804470533@qq.com), Yu Chen(ppak@sohu.com), Wanling Xue(1962670706@qq.com) from Wuhan Textile University
-for contributing this feature!</p>
-
-<p>Thanks <a href="http://www.baiyuan.com.tw/">BaiYun Tech</a> Taiwan for contributing the language of Chinese Taiwan support!</p>
-
-<h2 id="vmstate">7. Realtime VM State Syncing</h2>
-
-
-<p>In this version, ZStack will sync VMs' state realtime; that is to say, you can use virsh command(even not recommended) to control VMs' life cycle or shutdown a VM by typing <code>halt</code>
-command in the guest operating system; ZStack will detect the state change and sync it to the database realtime.</p>
-
-<h2 id="deletionpolicy">8. Resource Deletion Policy</h2>
-
-
-<p>Beginning at this version, you can set deletion policies on core resources including VMs, images, and volumes, to avoid accidental deletion. There are three polices: <code>Direct</code>, <code>Delay</code>, and <code>Never</code>, and the default one is <code>Delay</code></p>
-
-<h3>8.1 The rule</h3>
-
-<ul>
-<li>Direct: resources are deleted directly from the physical devices, no way to recover</li>
-<li>Delay: resources are marked as <code>Deleted</code> in the database and will be physically expunged after a configurable period. Before being expunged, you can recover the resource anytime</li>
-<li>Never: resources are marked as <code>Deleted</code> only and will never be expunged</li>
-</ul>
-
-
-<h3>8.2 VM deletion policy</h3>
-
-<p>You can change the deletion policy of VMs by doing:</p>
-
-<pre><code>    UpdateGlobalConfig category=vm name=deletionPolicy value=Direct
-</code></pre>
-
-<p>If the policy is <code>Delay</code>, you can specify the delay period by doing:</p>
-
-<pre><code>    UpdateGlobalConfig category=vm name=expungePeriod value=3600
-</code></pre>
-
-<blockquote><p>the value is in seconds. The default delay is 24 hours</p></blockquote>
-
-<p>You can also configure the interval that ZStack checks expunging candidates, do:</p>
-
-<pre><code>    UpdateGlobalConfig category=vm name=expungeInterval value=3600
-</code></pre>
-
-<blockquote><p>the value is in seconds</p></blockquote>
-
-<p>You can recover a deleted VM by:</p>
-
-<pre><code>     RecoverVmInstance vmInstanceUuid=8c4c4c0bbac7441fb056d0d6e2168996
-</code></pre>
-
-<h3>8.3 Image deletion policy</h3>
-
-<p>You can change image deletion policies too:</p>
-
-<pre><code>     UpdateGlobalConfig category=image name=deletionPolicy value=Direct
-     UpdateGlobalConfig category=image name=expungePeriod value=3600
-     UpdateGlobalConfig category=image name=expungeInterval value=3600
-</code></pre>
-
-<p>and recover a deleted image:</p>
-
-<pre><code>    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996
-</code></pre>
-
-<p>You can recover an image on specified backup storage:</p>
-
-<pre><code>    RecoverImage imageUuid=8c4c4c0bbac7441fb056d0d6e2168996 backupStorageUuids=36c27e8ff05c4780bf6d2fa65700f22e
-</code></pre>
-
-<h3>8.4 Volume deleted policy</h3>
-
-<p>You can change data volume deletion policies:</p>
-
-<pre><code>    UpdateGlobalConfig category=volume name=deletionPolicy value=Direct
-    UpdateGlobalConfig category=volume name=expungePeriod value=3600
-    UpdateGlobalConfig category=volume name=expungeInterval value=3600
-</code></pre>
-
-<p>You can recover a deleted data volume:</p>
-
-<pre><code>     RecoverDataVolume uuid=36c27e8ff05c4780bf6d2fa65700f22e
-</code></pre>
-
-<blockquote><p>root volumes are recovered when you recover VMs</p></blockquote>
-
-<h2 id="cpumodel">9. Host CPU model pass-through ( Nested Virtualization Support)</h2>
-
-
-<p>You can change a global configuration to let VMs get hosts' CPU model. For example:</p>
-
-<pre><code>    UpdateGlobalConfig category=kvm name=vm.cpuMode value=host-model
-</code></pre>
-
-<blockquote><p>Valid values are: none, host-model, host-passthrough. The default value is <code>none</code></p></blockquote>
-
-<p>Set this configuration to <code>host-model</code> or <code>host-passthrough</code> can enable nested virtualization in the VM.</p>
-
-<div class="bs-callout bs-callout-warning">
-<h4>This may break live migration</h4>
-
-Because live migration will check the CPU model, setting this value to <code>host-model</code> or <code>host-passthrough</code> may
-break live migration if CPU models are different on two hosts.
-</div>
-
-
-
-
-<h2 id="zstackimage">10. 22M Tiny Image</h2>
-
-
-<p>We build a tiny image that supports SSHD and ACPID, which can do graceful stop when you stop the VM through ZStack UI. The image locates at</p>
-
-<pre><code>    http://download.zstack.org/templates/zstack-image-0.0.7.qcow2
-</code></pre>
-
-<p>You can download it for quick test. Thanks Robert Yang(@linuxer) for contributing this feature!</p>
-
-<h2 id="install">11. Installation</h2>
-
-
-<p>You can install the RC1 release by:</p>
-
-<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
-    bash zstack-installer-1.0.0-0201.bin -R aliyun
-</code></pre>
-
-<h2 id="upgrade">12. Upgrade</h2>
-
-
-<p>To upgrade your ZStack to 1.0, do:</p>
-
-<pre><code>    wget http://download.zstack.org/releases/1.0/1.0.0/zstack-installer-1.0.0-0201.bin -O zstack-installer-1.0.0-0201.bin
-    bash zstack-installer-1.0.0-0201.bin -u
-</code></pre>
-
-<h2 id="upgradevr">13. Upgrade Virtual Router Provider To Flat Network Provider</h2>
+<h2 id="upgradevr">9. Upgrade Virtual Router Provider To Flat Network Provider</h2>
 
 
 <p>If you are currently using a flat network with a previous ZStack version, you can upgrade the L3 network using the flat network provider so
