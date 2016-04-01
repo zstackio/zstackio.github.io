@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 01 Apr 2016 13:59:01 +0800</pubDate>
-    <lastBuildDate>Fri, 01 Apr 2016 13:59:01 +0800</lastBuildDate>
+    <pubDate>Fri, 01 Apr 2016 18:52:56 +0800</pubDate>
+    <lastBuildDate>Fri, 01 Apr 2016 18:52:56 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -93,7 +93,7 @@ optional arguments:
 
 &lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
 
-&lt;h3 id=&quot;install&quot;&gt; 4. 离线安装 ZStack &lt;/h3&gt;
+&lt;h3 id=&quot;install&quot;&gt; 5. 离线安装 ZStack &lt;/h3&gt;
 
 
 &lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.1 提供了离线安装方式.
@@ -106,7 +106,7 @@ optional arguments:
 
 &lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
 
-&lt;h3 id=&quot;upgrade&quot;&gt; 10. 升级 &lt;/h3&gt;
+&lt;h3 id=&quot;upgrade&quot;&gt; 6. 升级 &lt;/h3&gt;
 
 
 &lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
