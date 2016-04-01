@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack 一键安装</title>
+    <title>ZStack - ZStack v1.1.1 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -72,153 +72,173 @@
 
 <div class="container big-font">
   <div class="row">
-      <h1 id="quickInstallation">一键安装</h1>
+    <div class="col-xs-12">
+    <div class="post">
 
-
-<p>对于新用户来说，ZStack提供的一键安装可以把IaaS云环境快速部署到一个Linux主机上。</p>
-
-<p>我们推荐您的硬件环境最好能有如下配置(虽然可以在一个打开了 nested virtualization 的虚拟机中来安装ZStack，
-但是特殊的nested virtualization配置方法以及受限的虚拟机资源会降低你的试用体验过程)：</p>
-
-<table class="table table-striped table-bordered">
-  <tr>
-    <td><b>CPU</b></td>
-    <td>>= 4 核支持VT-x或者SVM的 Intel/AMD CPUs</td>
-  </tr>
-  <tr>
-    <td><b>物理内存</b></td>
-    <td>>= 8G</td>
-  </tr>
-  <tr>
-    <td><b>磁盘剩余空间</b></td>
-    <td>>= 250G</td>
-  </tr>
-  <tr>
-    <td><b>操作系统</b></td>
-    <td>
-      <p>CentOS 6.7+/CentOS 7.2+/Ubuntu 14.04</p>
-      <div class="bs-callout bs-callout-info">
-        <h4>这是我们测试过的系统</h4>
-        虽然我们测试了这三个操作系统，但是从理论上来说其他支持KVM的Linux操作系统也应该可以工作。
-        另外为了避免不必要的软件冲突，我们推荐您在一个全新安装的系统中安装ZStack。
-        由于CentOS 6.4 系统还不支持 namespace,无法使用ZStack 1.0 之后的无Virtual Router的Flat Network 模式,所以还在使用CentOS6系列的产品,请升级到最新的版本.
-      </div>
-    </td>
-  </tr>
-</table>
-
-
-
-
-<div class="bs-callout bs-callout-info">
-  <h4>配置root用户的ssh登录能力</h4>
-  管理节点需要root用户的SSH权限来调用Ansible安装系统包和consoleproxy。您需要提前配置root用户的SSH访问能力。
-  
-  <h5>CentOS:</h5>
-  <pre><code>sudo su
-passwd root</code></pre>
-
-  <h5>Ubuntu:</h5>
-  您需要修改SSHD的配置文件：
-  <pre><code>1. sudo su
-2. passwd root
-3. 编辑/etc/ssh/sshd_config
-4. 注释掉 'PermitRootLogin without-password'
-5. 添加'PermitRootLogin yes'
-6. 重启 SSHD: 'service ssh restart'</code></pre>
+  <header class="post-header">
+    <h2 class="post-title">ZStack v1.1.1 发布</h2>
+    <p class="post-meta"> by Yongkang You on Apr 1, 2016</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
 </div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
 
-
-
-
-<div class="bs-callout bs-callout-warning">
-<h4>注意配置YUM或者APT的镜像</h4>
-在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
-如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
-如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
 </div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
 
 
+  <article class="post-content">
+    <h2>ZStack 1.1.1 版本今天发布</h2>
 
+<p>ZStack v1.1.1 修复了 v1.1.0里两个缺陷: 默认超时过短和添加Ceph存储出错. 建议用户升级.</p>
 
-<h4 style="margin-bottom:15px; margin-top:15px">使用<i>curl</i>:</h4>
-
-
-<pre><code>curl -L http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -o zstack-installer.bin
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
-
-
-
-
-<h4 style="margin-bottom:15px">使用<i>wget</i>:</h4>
-
-
-<pre><code>wget -O zstack-installer.bin http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
-
-
-<p>ztack-installer.bin 的md5sum为 e5e6fe83f87a1c5ffb364ee8c82fb695</p>
-
-<div class="bs-callout bs-callout-danger">
-<h4>注意DNS劫持</h4>
-        
-        由于国内所有不能解析的域名都会被送到某DNS解析，造成在安装系统时随意设置的hostname也会被解析成IP，但该IP并不代表你本机。这会造成RabbitMQ在启动时出错，
-        并可能导致登录MySQL时出错。我们的安装脚本会在安装时检测DNS劫持，如果发现错误解析的hostname会报错并停止安装。我们建议国内用户在安装前先检查你的hostname:
-        
-        <pre><code>ping `hostname`</code></pre>
-        
-        如果可以解析，但看到的IP不是127.x.x.x或者不是本机IP，则可能是DNS劫持，可以执行以下命令将hostname映射至本机：
-        
-        <pre><code>sudo echo "127.0.1.1 `hostname`" >> /etc/hosts</code></pre>
-      </div>
-
-
-
-
-<div class="bs-callout bs-callout-warning">
-  <h4>请您耐心等待一会，安装程序会帮您安装所需要的所有软件</h4> 
-  不论您之前的操作系统采用的是最小安装还是完整安装，安装程序都会正确安装并配置你系统所需要的全部资源。
-  取决与当前系统中已安装包的数量和网络连接速度，通常一次自动化安装过程会需要5～15分钟的时间。您可以在这段时间放松一下。
-</div>
-
-
-<p>ZStack的安装程序会在您的系统中安装如下软件：</p>
+<h2>修复缺陷</h2>
 
 <ul>
-<li>Apache Tomcat 7 以及 zstack.war</li>
-<li>ZStack web图形界面</li>
-<li>ZStack 命令行工具 zstack-cli</li>
-<li>ZStack 管控工具 zstack-ctl</li>
-<li>MySQL 数据库（Installer会设置MySQL root用户密码，如果用户没有预先设置）</li>
-<li>RabbitMQ server 消息总线</li>
-<li>NFS 服务器 （作为之后演示使用）</li>
-<li>Apache HTTP 服务器 （作为之后演示使用）</li>
+<li><a href="#timeout">默认超时过短</a></li>
+<li><a href="#ceph">添加Ceph存储出错</a></li>
 </ul>
 
 
-<div class="bs-callout bs-callout-info">
-  <h4>预先设置的MySQL root用户密码</h4>
-  如果用户预先安装了MySQL并且设置了MySQL root用户密码，需要给安装程序传递一个参数:"-P MYSQL_ROOT_PASSWORD"，例如:
+<h2>功能提升</h2>
 
-    `sudo bash zstack-installer.bin -a -P MYSQL_ROOT_PASSWORD`
+<ul>
+<li><a href="#zstackctl">使用zstack-ctl修改管理节点IP地址</a></li>
+</ul>
+
+
+<h3 id="timeout">1. 默认超时过短 </h3>
+
+
+<p>1.1.0 版本中默认超时存在一个缺陷,导致API的默认超时仅为300秒. 1.1.1版本已经把耗时API超时时间加长到了默认3个小时,例如下载Image的API,创建Image的API.</p>
+
+<h3 id="ceph">2. 添加Ceph存储出错 </h3>
+
+
+<p>1.1.0 版本中的资源添加优化程序存在一个缺陷,导致ceph存储添加可能出现错误. 1.1.1版本已经修复了该错误.</p>
+
+<h3 id="zstackctl">3. 使用zstack-ctl修改管理节点IP地址</h3>
+
+
+<p>在之前的版本中,如果管理节点IP变更,我们需要用户手动修改 zstack.properties的文件.
+从1.1 版本开始,我们提供了全新的<code>zstack-ctl change_ip</code>来帮助用户修改管理节点,
+数据库,消息总线的IP地址. 例如:</p>
+
+<pre><code>[root@172-20-11-73 ~]# zstack-ctl change_ip --ip 172.20.11.73
+Update cloudbus server ip 172.20.11.73 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+Update mysql new url jdbc:mysql://172.20.11.73:3306 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+</code></pre>
+
+<p>如果数据库,消息总线使用了不同的IP地址,我们也可以使用该命令进行修改.具体的参数细节,请添加-h 参数获取:</p>
+
+<pre><code>[root@172-20-11-73 ~]# zstack-ctl change_ip -h
+usage: zstackctl change_ip [-h] --ip IP [--kairosdb_ip KAIROSDB_IP]
+                           [--cassandra_rpc_address CASSANDRA_RPC_ADDRESS]
+                           [--cassandra_listen_address CASSANDRA_LISTEN_ADDRESS]
+                           [--cloudbus_server_ip CLOUDBUS_SERVER_IP]
+                           [--mysql_ip MYSQL_IP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --ip IP               The new IP address of management node.This operation
+                        will update the new ip address to zstack, kairosdb and
+                        cassandra config file
+  --kairosdb_ip KAIROSDB_IP
+                        The new IP address of kairosdb, default will use value
+                        from --ip
+  --cassandra_rpc_address CASSANDRA_RPC_ADDRESS
+                        The new IP address of cassandra_rpc_address, default
+                        will use value from --ip
+  --cassandra_listen_address CASSANDRA_LISTEN_ADDRESS
+                        The new IP address of cassandra_listen_address,
+                        default will use value from --ip
+  --cloudbus_server_ip CLOUDBUS_SERVER_IP
+                        The new IP address of CloudBus.serverIp.0, default
+                        will use value from --ip
+  --mysql_ip MYSQL_IP   The new IP address of DB.url, default will use value
+                        from --ip
+</code></pre>
+
+<h3 id="install"> 4. 安装 </h3>
+
+
+<p>你可以通过下面方式安装：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer-1.1.1.bin
+    bash zstack-installer-1.1.1.bin -R aliyun
+</code></pre>
+
+<blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
+
+<h3 id="install"> 4. 离线安装 ZStack </h3>
+
+
+<p>针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.1 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.</p>
+
+<p>然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：</p>
+
+<pre><code>    bash zstack-installer-1.1.1.bin -o
+</code></pre>
+
+<p>具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: <a href="./offline-install-zstack-from-custom-iso.html">ZStack离线安装教程</a></p>
+
+<h3 id="upgrade"> 10. 升级 </h3>
+
+
+<p>一如既往的，我们支持一键无缝升级：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer-1.1.1.bin
+    bash zstack-installer-1.1.1.bin -u
+</code></pre>
+
+<p>多节点升级中的zstack.war 可以从如下链接获取: http://download.zstack.org/releases/1.1/1.1.1/zstack.war</p>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 
 </div>
 
-
-
-
-<div class="bs-callout bs-callout-info">
-  <h4>默认的用户名和密码</h4>
-  
-  ZStack图形用户界面默认的用户名和密码是： admin/password.
-</div>
-
-
-<p>现在你的第一个ZStack已经安装成功。请访问<a href="../documentation/getstart-quick.html">快速使用ZStack</a> 来获取后续的ZStack图形界面和命令行的使用方法。</p>
-
-<p>对于无法通过互联网安装ZStack的内网用户.从ZStack 1.1 开始, ZStack提供了更为便捷的离线安装方式.
-请阅读<a href="/cn_blog/offline-install-zstack-from-custom-iso.html">ZStack离线安装教程</a></p>
-
+    </div>
   </div>
 </div>
 
@@ -306,5 +326,7 @@ sudo bash zstack-installer.bin -a -R aliyun</code></pre>
 </div>
 
 </body>
+
+
 
 </html>

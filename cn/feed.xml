@@ -5,9 +5,126 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 31 Mar 2016 17:49:51 +0800</pubDate>
-    <lastBuildDate>Thu, 31 Mar 2016 17:49:51 +0800</lastBuildDate>
+    <pubDate>Fri, 01 Apr 2016 13:59:01 +0800</pubDate>
+    <lastBuildDate>Fri, 01 Apr 2016 13:59:01 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.1.1 发布</title>
+        <description>&lt;h2&gt;ZStack 1.1.1 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack v1.1.1 修复了 v1.1.0里两个缺陷: 默认超时过短和添加Ceph存储出错. 建议用户升级.&lt;/p&gt;
+
+&lt;h2&gt;修复缺陷&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#timeout&quot;&gt;默认超时过短&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#ceph&quot;&gt;添加Ceph存储出错&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;功能提升&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#zstackctl&quot;&gt;使用zstack-ctl修改管理节点IP地址&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;timeout&quot;&gt;1. 默认超时过短 &lt;/h3&gt;
+
+
+&lt;p&gt;1.1.0 版本中默认超时存在一个缺陷,导致API的默认超时仅为300秒. 1.1.1版本已经把耗时API超时时间加长到了默认3个小时,例如下载Image的API,创建Image的API.&lt;/p&gt;
+
+&lt;h3 id=&quot;ceph&quot;&gt;2. 添加Ceph存储出错 &lt;/h3&gt;
+
+
+&lt;p&gt;1.1.0 版本中的资源添加优化程序存在一个缺陷,导致ceph存储添加可能出现错误. 1.1.1版本已经修复了该错误.&lt;/p&gt;
+
+&lt;h3 id=&quot;zstackctl&quot;&gt;3. 使用zstack-ctl修改管理节点IP地址&lt;/h3&gt;
+
+
+&lt;p&gt;在之前的版本中,如果管理节点IP变更,我们需要用户手动修改 zstack.properties的文件.
+从1.1 版本开始,我们提供了全新的&lt;code&gt;zstack-ctl change_ip&lt;/code&gt;来帮助用户修改管理节点,
+数据库,消息总线的IP地址. 例如:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-20-11-73 ~]# zstack-ctl change_ip --ip 172.20.11.73
+Update cloudbus server ip 172.20.11.73 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+Update mysql new url jdbc:mysql://172.20.11.73:3306 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果数据库,消息总线使用了不同的IP地址,我们也可以使用该命令进行修改.具体的参数细节,请添加-h 参数获取:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-20-11-73 ~]# zstack-ctl change_ip -h
+usage: zstackctl change_ip [-h] --ip IP [--kairosdb_ip KAIROSDB_IP]
+                           [--cassandra_rpc_address CASSANDRA_RPC_ADDRESS]
+                           [--cassandra_listen_address CASSANDRA_LISTEN_ADDRESS]
+                           [--cloudbus_server_ip CLOUDBUS_SERVER_IP]
+                           [--mysql_ip MYSQL_IP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --ip IP               The new IP address of management node.This operation
+                        will update the new ip address to zstack, kairosdb and
+                        cassandra config file
+  --kairosdb_ip KAIROSDB_IP
+                        The new IP address of kairosdb, default will use value
+                        from --ip
+  --cassandra_rpc_address CASSANDRA_RPC_ADDRESS
+                        The new IP address of cassandra_rpc_address, default
+                        will use value from --ip
+  --cassandra_listen_address CASSANDRA_LISTEN_ADDRESS
+                        The new IP address of cassandra_listen_address,
+                        default will use value from --ip
+  --cloudbus_server_ip CLOUDBUS_SERVER_IP
+                        The new IP address of CloudBus.serverIp.0, default
+                        will use value from --ip
+  --mysql_ip MYSQL_IP   The new IP address of DB.url, default will use value
+                        from --ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;install&quot;&gt; 4. 安装 &lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer-1.1.1.bin
+    bash zstack-installer-1.1.1.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;install&quot;&gt; 4. 离线安装 ZStack &lt;/h3&gt;
+
+
+&lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.1 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.&lt;/p&gt;
+
+&lt;p&gt;然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    bash zstack-installer-1.1.1.bin -o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt; 10. 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer-1.1.1.bin
+    bash zstack-installer-1.1.1.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多节点升级中的zstack.war 可以从如下链接获取: http://download.zstack.org/releases/1.1/1.1.1/zstack.war&lt;/p&gt;
+</description>
+        <pubDate>Fri, 01 Apr 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.1.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.1.1.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.1 发布</title>
@@ -1413,7 +1530,7 @@ http://pan.baidu.com/s/1i4IccN7&lt;/p&gt;
 &lt;p&gt;安装系统后，可通过以下方法离线安装ZStack。&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;下载ZStack离线安装包(e.g. http://download.zstack.org/releases/1.1/1.1.0/zstack-installer-1.1.0.bin -O zstack-installer-1.1.0.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
+&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
 &lt;li&gt;在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。&lt;/li&gt;
 &lt;li&gt;安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。&lt;/li&gt;
 &lt;li&gt;安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
@@ -2133,486 +2250,6 @@ gpgcheck=0
         <pubDate>Wed, 24 Feb 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v1.0.1.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.1.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack HTTP API使用</title>
-        <description>&lt;h2&gt;1. 介绍&lt;/h2&gt;
-
-&lt;p&gt;ZStack的API原语是JSON格式的消息，可以在各种消息总线上调用，目前ZStack使用的默认消息总线是RabbitMQ。由于这个特性，ZStack的API可以被封装成各种格式。为了方便大家使用，ZStack自带一个HTTP server，用户可以通过HTTP POST发送API JSON文本，该HTTP Server会自动将其转换成API消息实现调用。&lt;/p&gt;
-
-&lt;blockquote&gt;&lt;p&gt;我们未来会将ZStack API封装成Restful格式，但当前HTTP POST发送API JSON原语的方式将一直保留。&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;ZStack的命令行工具(zstack-cli)是完全使用HTTP POST方法调用API的，为了方便用户阅读，我们用户手册对所有API的解释都是以zstack-cli为示例，每个cli命令都对应一个API。用户可以在&lt;a href=&quot;http://zstack-cn.readthedocs.org/zh/latest/userManual/introduction.html&quot;&gt;中文用户手册&lt;/a&gt;获得每个API的详细解释。&lt;/p&gt;
-
-&lt;p&gt;通过zstack-cli的log，用户可以查看所有API调用和返回的具体格式（即HTTP POST的BODY）。&lt;/p&gt;
-
-&lt;blockquote&gt;&lt;p&gt;Log路径： /var/log/zstack/zstack-cli&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;我们建议用户通过&lt;code&gt;tail -f /var/log/zstack/zstack-cli&lt;/code&gt;实时查看log，这样你可以在zstack-cli中执行API时实时观测到具体调用和输出。例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;LogInByAccount accountName=admin password=password
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;执行了登录操作后，你会看到LOG中输出类似如下内容：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    2016-02-16 16:29:48,664 DEBUG [apibinding.api] async call[url: http://localhost:8080/zstack/api/, request: {&quot;org.zstack.header.identity.APILogInByAccountMsg&quot;: {&quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;, &quot;session&quot;: {}, &quot;accountName&quot;: &quot;admin&quot;}}]
-    2016-02-16 16:29:48,741 DEBUG [apibinding.api] async call[url: http://localhost:8080/zstack/api/, response: {&quot;org.zstack.header.identity.APILogInReply&quot;:{&quot;inventory&quot;:{&quot;uuid&quot;:&quot;083f3518d1bd469fa0ff789fc1a25382&quot;,&quot;accountUuid&quot;:&quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,&quot;userUuid&quot;:&quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,&quot;expiredDate&quot;:&quot;Feb 17, 2016 12:29:48 PM&quot;,&quot;createDate&quot;:&quot;Feb 16, 2016 4:29:48 PM&quot;},&quot;success&quot;:true}}]
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里&lt;code&gt;http://localhost:8080/zstack/api/&lt;/code&gt;是HTTP调用的URL，request后的内容是API调用时HTTP POST的BODY，例如这里LogInByAccount这个API的HTTP POST BODY就是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;org.zstack.header.identity.APILogInByAccountMsg&quot;: {
-        &quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;,
-        &quot;session&quot;: {},
-        &quot;accountName&quot;: &quot;admin&quot;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;response后的内容是API返回的HTTP response的BODY，例如这里LogInByAccount的返回是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;org.zstack.header.identity.APILogInReply&quot;: {
-            &quot;inventory&quot;: {
-                &quot;uuid&quot;: &quot;083f3518d1bd469fa0ff789fc1a25382&quot;,
-                &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-                &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-                &quot;expiredDate&quot;: &quot;Feb 17, 2016 12:29:48 PM&quot;,
-                &quot;createDate&quot;: &quot;Feb 16, 2016 4:29:48 PM&quot;
-            },
-            &quot;success&quot;: true
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;2. API的格式&lt;/h2&gt;
-
-&lt;p&gt;ZStack API的调用和返回都是以JSON原语描述的，格式统一为：&lt;code&gt;只有一个entry的JSON map，该entry的key是API描述符，value是承载具体内容的一个map&lt;/code&gt;。API描述符用来唯一标示一个API调用或返回，用户可以把它看做API的名称。在上一节的例子中，API调用的描述符是&lt;code&gt;org.zstack.header.identity.APILogInByAccountMsg&lt;/code&gt;，API返回的描述符是&lt;code&gt;org.zstack.header.identity.APILogInReply&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h2&gt;3. HTTP返回码&lt;/h2&gt;
-
-&lt;table class=&quot;table table-striped table-bordered black-table&quot;&gt;
-&lt;tr&gt;
-&lt;th&gt;
-返回码
-&lt;/th&gt;
-&lt;th&gt;
-描述
-&lt;/th&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-200
-&lt;/td&gt;
-&lt;td&gt;
-HTTP调用成功。但并不代表API执行成功，API的执行结果由API返回中的success字段决定，true表示成功；false表示失败
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-其他
-&lt;/td&gt;
-&lt;td&gt;
-含义跟标准的HTTP返回码相同，例如500代表Internal Server Error；404代表No such page
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-
-
-&lt;h2&gt;4. HTTP Response Body&lt;/h2&gt;
-
-&lt;p&gt;API的HTTP response返回的是一个Job结构，调用者需要用该Job的uuid去轮询查询API是否已经完成。API Job的格式如下：&lt;/p&gt;
-
-&lt;table class=&quot;table table-striped table-bordered black-table&quot;&gt;
-&lt;tr&gt;
-&lt;th&gt;
-字段
-&lt;/th&gt;
-&lt;th&gt;
-类型
-&lt;/th&gt;
-&lt;th&gt;
-描述
-&lt;/th&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-uuid
-&lt;/td&gt;
-&lt;td&gt;
-字符串
-&lt;/td&gt;
-&lt;td&gt;
- JOB UUID，用户可以用该UUID去查询一个API JOB当前的执行状态。当state == Done时，该字段可能为NULL。
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-state
-&lt;/td&gt;
-&lt;td&gt;
-字符串
-&lt;/td&gt;
-&lt;td&gt;
-JOB状态。包括两种状态：Processing，该JOB还在执行；Done，JOB已经完成
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-result
-&lt;/td&gt;
-&lt;td&gt;
-字符串
-&lt;/td&gt;
-&lt;td&gt;
-API结果，JSON字符串。当state = Processing时，该字段为NULL
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-createdDate
-&lt;/td&gt;
-&lt;td&gt;
-字符串
-&lt;/td&gt;
-&lt;td&gt;
-JOB创建时间
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-finishedDate
-&lt;/td&gt;
-&lt;td&gt;
-字符串
-&lt;/td&gt;
-&lt;td&gt;
-JOB完成时间
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-
-
-&lt;h4&gt;state == Processing的Job例子：&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;uuid&quot;: &quot;fee83ed8529340cd8528b3b408dc16b0&quot;,
-        &quot;state&quot;: &quot;Processing&quot;,
-        &quot;createdDate&quot;: &quot;Feb 16, 2016 5:01:11 PM&quot;
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;state == Done的Job例子：&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;uuid&quot;: &quot;fee83ed8529340cd8528b3b408dc16b0&quot;,
-        &quot;state&quot;: &quot;Done&quot;,
-        &quot;createdDate&quot;: &quot;Feb 16, 2016 5:01:11 PM&quot;,
-        &quot;finishedDate&quot;: &quot;Feb 16, 2016 5:01:12 PM&quot;,
-        &quot;result&quot;: &quot;{\&quot;org.zstack.header.zone.APICreateZoneEvent\&quot;:{\&quot;inventory\&quot;:{\&quot;uuid\&quot;:\&quot;f1ed8f95163c4b6c88a8c0673b7913b7\&quot;,\&quot;name\&quot;:\&quot;xx\&quot;,\&quot;state\&quot;:\&quot;Enabled\&quot;,\&quot;type\&quot;:\&quot;zstack\&quot;,\&quot;createDate\&quot;:\&quot;Feb 16, 2016 5:01:12 PM\&quot;,\&quot;lastOpDate\&quot;:\&quot;Feb 16, 2016 5:01:12 PM\&quot;},\&quot;success\&quot;:true}}&quot;
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;4.1 查询API JOB的状态&lt;/h3&gt;
-
-&lt;p&gt;当调用一个API后，HTTP response返回一个Job结构，其中包含有该Job的uuid，用户需要通过该uuid去查询该Job的状态。查询的方法是向&lt;code&gt;http://locahost:8080/api/result/{job uuid}&lt;/code&gt;发送一个HTTP Get请求，例如：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    curl  http://localhost:8080/zstack/api/result/fee83ed8529340cd8528b3b408dc16b0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其HTTP response返回一个Job结构，用户可以通过判断Job的state字段来判断Job是否完成，从而决定是否需要继续轮询Job的状态。&lt;/p&gt;
-
-&lt;h2&gt;5. API的调用流程&lt;/h2&gt;
-
-&lt;p&gt;ZStack API的调用的标准流程是：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;调用LogInByAccount，获得一个Session UUID，作为后续API调用的token&lt;/li&gt;
-&lt;li&gt;调用API 1&lt;/li&gt;
-&lt;li&gt;调用API 2&lt;/li&gt;
-&lt;li&gt;... ...&lt;/li&gt;
-&lt;li&gt;调用API N&lt;/li&gt;
-&lt;li&gt;调用LogOut&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3&gt;5.1 登录&lt;/h3&gt;
-
-&lt;p&gt;在调用其他API前，用户需要首先调用LogInByAccount以获得一个session UUID，以此作为后续API调用的token。该API的描述符为：&lt;code&gt;org.zstack.header.identity.APILogInByAccountMsg&lt;/code&gt;，包含以下字段：&lt;/p&gt;
-
-&lt;table class=&quot;table table-striped table-bordered black-table&quot;&gt;
-&lt;tr&gt;
-&lt;th&gt;
-字段
-&lt;/th&gt;
-&lt;th&gt;
-描述
-&lt;/th&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-accountName
-&lt;/td&gt;
-&lt;td&gt;
-用户名。例如admin|
-&lt;/td&gt;
-&lt;/tr&gt;
-
-&lt;tr&gt;
-&lt;td&gt;
-password
-&lt;/td&gt;
-&lt;td&gt;
-密码。zstack不对密码进行任何处理，只是单纯将其与数据库中存储的密码数据进行字符串比对。我们建议在调用CreateAccount这样的API时，密码使用sha512加密。
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/table&gt;
-
-
-&lt;blockquote&gt;&lt;p&gt;默认用户名密码：ZStack默认的用户名是admin，其密码明文为password，sha512哈希后的结果为b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;p&gt;所以该API的JSON描述类似于：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;org.zstack.header.identity.APILogInByAccountMsg&quot;: {
-            &quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;,
-            &quot;accountName&quot;: &quot;admin&quot;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;用curl调用该API：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    curl -H &quot;Content-Type: application/json&quot; -d &#39;{&quot;org.zstack.header.identity.APILogInByAccountMsg&quot;: {&quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;, &quot;accountName&quot;: &quot;admin&quot;}}&#39; http://localhost:8080/zstack/api
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;返回的Job结构为：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;state&quot;: &quot;Done&quot;,
-        &quot;createdDate&quot;: &quot;Feb 16, 2016 7:15:01 PM&quot;,
-        &quot;finishedDate&quot;: &quot;Feb 16, 2016 7:15:01 PM&quot;,
-        &quot;result&quot;: &quot;{\&quot;org.zstack.header.identity.APILogInReply\&quot;:{\&quot;inventory\&quot;:{\&quot;uuid\&quot;:\&quot;9eba9754f8c2470cbb377088e61c4da2\&quot;,\&quot;accountUuid\&quot;:\&quot;36c27e8ff05c4780bf6d2fa65700f22e\&quot;,\&quot;userUuid\&quot;:\&quot;36c27e8ff05c4780bf6d2fa65700f22e\&quot;,\&quot;expiredDate\&quot;:\&quot;Feb 17, 2016 3:15:01 PM\&quot;,\&quot;createDate\&quot;:\&quot;Feb 16, 2016 7:15:01 PM\&quot;},\&quot;success\&quot;:true}}&quot;
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其result字段包含的是API的结果，JSON表达为：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;org.zstack.header.identity.APILogInReply&quot;: {
-            &quot;inventory&quot;: {
-                &quot;uuid&quot;: &quot;9eba9754f8c2470cbb377088e61c4da2&quot;,
-                &quot;accountUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-                &quot;userUuid&quot;: &quot;36c27e8ff05c4780bf6d2fa65700f22e&quot;,
-                &quot;expiredDate&quot;: &quot;Feb 17, 2016 3:15:01 PM&quot;,
-                &quot;createDate&quot;: &quot;Feb 16, 2016 7:15:01 PM&quot;
-            },
-            &quot;success&quot;: true
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;其中&lt;code&gt;uuid&lt;/code&gt;字段即是我们需要的Session UUID。&lt;/p&gt;
-
-&lt;h3&gt;5.2 普通API调用&lt;/h3&gt;
-
-&lt;p&gt;除登录(LogInByAccount)、登出(LogOut)等少数API外，剩下的都是普通API，在调用时需要传入LogIn拿到的Session UUID，其JSON原语为：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;API描述符&quot;: {
-           &quot;session&quot;: {
-                &quot;uuid&quot;: &quot;LogIn时拿到的session UUID&quot;
-           }，
-           &quot;API字段名1&quot;： ...，
-           &quot;API字段名2”： ...
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;再次提醒：你可以通过查看/var/log/zstack/zstack-cli得到你在zstack-cli执行的每个API的描述符、request和response。&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3&gt;5.3 登出&lt;/h3&gt;
-
-&lt;p&gt;当你执行完需要的API后，应该调用LogOut API退出当前session。该API的描述符是&lt;code&gt;org.zstack.header.identity.APILogOutMsg&lt;/code&gt;，其JSON原语是：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {
-        &quot;org.zstack.header.identity.APILogOutMsg&quot;: {
-            &quot;sessionUuid&quot;: &quot;你要LogOut的Session UUID&quot;
-        }
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;用curl调用：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    curl -H &quot;Content-Type: application/json&quot; -d &#39;{&quot;org.zstack.header.identity.APILogOutMsg&quot;: {&quot;sessionUuid&quot;: &quot;083f3518d1bd469fa0ff789fc1a25382&quot;}}&#39; http://localhost:8080/zstack/api
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;6. 创建一个Zone的Curl示例&lt;/h2&gt;
-
-&lt;p&gt;这里我们将用创建Zone这个例子，展示如何用Curl手动调用ZStack的API。&lt;/p&gt;
-
-&lt;h4&gt;6.1 登录&lt;/h4&gt;
-
-&lt;p&gt;调用：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;        curl -H &quot;Content-Type: application/json&quot; -d &#39;{&quot;org.zstack.header.identity.APILogInByAccountMsg&quot;: {&quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;, &quot;accountName&quot;: &quot;admin&quot;}}&#39; http://localhost:8080/zstack/api
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;返回：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;        {&quot;state&quot;:&quot;Done&quot;,&quot;createdDate&quot;:&quot;Feb 16, 2016 7:53:14 PM&quot;,&quot;finishedDate&quot;:&quot;Feb 16, 2016 7:53:14 PM&quot;,&quot;result&quot;:&quot;{\&quot;org.zstack.header.identity.APILogInReply\&quot;:{\&quot;inventory\&quot;:{\&quot;uuid\&quot;:\&quot;2f68cf0a5783400694bd8efdd536a2a8\&quot;,\&quot;accountUuid\&quot;:\&quot;36c27e8ff05c4780bf6d2fa65700f22e\&quot;,\&quot;userUuid\&quot;:\&quot;36c27e8ff05c4780bf6d2fa65700f22e\&quot;,\&quot;expiredDate\&quot;:\&quot;Feb 17, 2016 3:53:14 PM\&quot;,\&quot;createDate\&quot;:\&quot;Feb 16, 2016 7:53:14 PM\&quot;},\&quot;success\&quot;:true}}&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;从返回结果中我们得到Session UUID为&lt;code&gt;2f68cf0a5783400694bd8efdd536a2a8&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h4&gt;6.2 创建一个Zone&lt;/h4&gt;
-
-&lt;p&gt;调用:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    curl -H &quot;Content-Type: application/json&quot; -d &#39;{&quot;org.zstack.header.zone.APICreateZoneMsg&quot;: {&quot;session&quot;: {&quot;uuid&quot;: &quot;2f68cf0a5783400694bd8efdd536a2a8&quot;}, &quot;name&quot;: &quot;zone1&quot;}}&#39; http://localhost:8080/zstack/api
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;返回：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {&quot;uuid&quot;:&quot;2252332b14fb42599558577cb24fa168&quot;,&quot;state&quot;:&quot;Processing&quot;,&quot;createdDate&quot;:&quot;Feb 16, 2016 7:55:34 PM&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里我们得到了一个Job UUID &lt;code&gt;2252332b14fb42599558577cb24fa168&lt;/code&gt;，通过它我们可以轮询创建Zone这个API的结果。&lt;/p&gt;
-
-&lt;p&gt;轮询结果：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;curl  http://localhost:8080/zstack/api/result/2252332b14fb42599558577cb24fa168
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;返回：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {&quot;uuid&quot;:&quot;2252332b14fb42599558577cb24fa168&quot;,&quot;state&quot;:&quot;Done&quot;,&quot;createdDate&quot;:&quot;Feb 16, 2016 7:55:34 PM&quot;,&quot;finishedDate&quot;:&quot;Feb 16, 2016 7:55:34 PM&quot;,&quot;result&quot;:&quot;{\&quot;org.zstack.header.zone.APICreateZoneEvent\&quot;:{\&quot;inventory\&quot;:{\&quot;uuid\&quot;:\&quot;dd625f8fb2074f4fa1c0870ef76bb24a\&quot;,\&quot;name\&quot;:\&quot;zone1\&quot;,\&quot;state\&quot;:\&quot;Enabled\&quot;,\&quot;type\&quot;:\&quot;zstack\&quot;,\&quot;createDate\&quot;:\&quot;Feb 16, 2016 7:55:34 PM\&quot;,\&quot;lastOpDate\&quot;:\&quot;Feb 16, 2016 7:55:34 PM\&quot;},\&quot;success\&quot;:true}}&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;这里我们看到该API已经完成了，state == Done。API的结果以一个JSON字符串的形式保存在&lt;code&gt;result&lt;/code&gt;字段中。可以看到该API调用成功，因为&lt;code&gt;success&lt;/code&gt;字段为&lt;code&gt;true&lt;/code&gt;。&lt;/p&gt;
-
-&lt;h4&gt;6.3 登出&lt;/h4&gt;
-
-&lt;p&gt;调用：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    curl -H &quot;Content-Type: application/json&quot; -d &#39;{&quot;org.zstack.header.identity.APILogOutMsg&quot;: {&quot;sessionUuid&quot;: &quot;2252332b14fb42599558577cb24fa168&quot;}}&#39; http://localhost:8080/zstack/api
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;返回：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    {&quot;state&quot;:&quot;Done&quot;,&quot;createdDate&quot;:&quot;Feb 16, 2016 8:04:36 PM&quot;,&quot;finishedDate&quot;:&quot;Feb 16, 2016 8:04:37 PM&quot;,&quot;result&quot;:&quot;{\&quot;org.zstack.header.identity.APILogOutReply\&quot;:{\&quot;success\&quot;:true}}&quot;}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2&gt;7. 创建一个Zone的Python示例&lt;/h2&gt;
-
-&lt;p&gt;你可以&lt;a href=&quot;https://github.com/zstackorg/zstack-utility/blob/master/apibinding/examples/example.py&quot;&gt;点击这里&lt;/a&gt;获得完整代码。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;import httplib
-import json
-import time
-
-# return a dict containing API return value
-def api_call(session_uuid, api_id, api_content):
-    conn = httplib.HTTPConnection(&quot;localhost&quot;, 8080)
-    headers = {&quot;Content-Type&quot;: &quot;application/json&quot;}
-
-    if session_uuid:
-        api_content[&quot;session&quot;] = {&quot;uuid&quot;: session_uuid}
-
-    api_body = {api_id: api_content}
-
-    conn.request(&quot;POST&quot;, &quot;/zstack/api&quot;, json.dumps(api_body))
-    response = conn.getresponse()
-
-    if response.status != 200:
-        raise Exception(&quot;failed to make an API call, %s, %s&quot; % (response.status, response.reason))
-
-    rsp_body = response.read()
-
-    rsp = json.loads(rsp_body)
-
-    if rsp[&quot;state&quot;] == &quot;Done&quot;:
-        return json.loads(rsp[&quot;result&quot;])
-
-    job_uuid = rsp[&quot;uuid&quot;]
-    def query_until_done():
-        conn.request(&quot;GET&quot;, &quot;/zstack/api/result/%s&quot; % job_uuid)
-        response = conn.getresponse()
-        if response.status != 200:
-            raise Exception(&quot;failed to query API result, %s, %s&quot; % (response.status, response.reason))
-
-        rsp_body = response.read()
-        rsp = json.loads(rsp_body)
-        if rsp[&quot;state&quot;] == &quot;Done&quot;:
-            return json.loads(rsp[&quot;result&quot;])
-
-        time.sleep(1)
-        print &quot;Job[uuid:%s] is still in processing&quot; % job_uuid
-        return query_until_done()
-
-    return query_until_done()
-
-
-
-def error_if_fail(rsp):
-    success = rsp.values()[0][&quot;success&quot;]
-    if not success:    
-        error = rsp.values()[0][&quot;error&quot;]
-        raise Exception(&quot;failed to login, %s&quot; % json.dumps(error))
-
-def login():
-    content = {
-            &quot;accountName&quot;: &quot;admin&quot;,
-            &quot;password&quot;: &quot;b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86&quot;
-    }
-    rsp = api_call(None, &quot;org.zstack.header.identity.APILogInByAccountMsg&quot;, content)
-    error_if_fail(rsp)
-
-    session_uuid = rsp.values()[0][&quot;inventory&quot;][&quot;uuid&quot;]
-
-    print &quot;successfully login, session uuid is: %s&quot; % session_uuid
-    return session_uuid
-
-
-def create_zone(session_uuid):
-    content = {&quot;name&quot;: &quot;zone1&quot;}
-
-    rsp = api_call(session_uuid, &quot;org.zstack.header.zone.APICreateZoneMsg&quot;, content)
-    error_if_fail(rsp)
-
-    print &quot;successfully created zone1&quot;
-
-
-def logout(session_uuid):
-    content = {&quot;sessionUuid&quot;: session_uuid}
-    rsp = api_call(None, &quot;org.zstack.header.identity.APILogOutMsg&quot;, content)
-    error_if_fail(rsp)
-
-    print &quot;successfully logout&quot;
-
-
-session_uuid = login()
-create_zone(session_uuid)
-logout(session_uuid)
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Tue, 16 Feb 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/http-api.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/http-api.html</guid>
         
         
         <category>cn_blog</category>
