@@ -34,7 +34,7 @@ war_en: "http://download.zstack.org/releases/1.1/1.1.1/zstack.war"
 tgz: "zstack-installer-1.1.1.bin"
 
 install_script_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.1/1.1.0/zstack-install.sh"
-vr_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/templates/zstack-virtualrouter-1.1.0.qcow2"
+vr_ch: "http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2"
 all_in_one_ch: "http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin"
 #all_in_one_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
 #war_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack.war"
