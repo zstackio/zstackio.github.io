@@ -5,9 +5,111 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 05 Apr 2016 13:02:59 +0800</pubDate>
-    <lastBuildDate>Tue, 05 Apr 2016 13:02:59 +0800</lastBuildDate>
+    <pubDate>Sat, 09 Apr 2016 10:44:24 +0800</pubDate>
+    <lastBuildDate>Sat, 09 Apr 2016 10:44:24 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.1.2 发布</title>
+        <description>&lt;h2&gt;ZStack 1.1.2 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack v1.1.2 修复了部分 zstack-ctl 的功能,以便搭建ZStack HA的集群.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#zstackctl&quot;&gt;使用zstack-ctl修改管理节点IP地址&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;一键安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#offlineinstall&quot;&gt;离线安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;无缝升级&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;功能提升&lt;/h2&gt;
+
+&lt;h3 id=&quot;zstackctl&quot;&gt;1. 使用zstack-ctl修改管理节点IP地址&lt;/h3&gt;
+
+
+&lt;p&gt;在之前的版本中,如果管理节点IP变更,我们需要用户手动修改 zstack.properties的文件.
+从1.1 版本开始,我们提供了全新的&lt;code&gt;zstack-ctl change_ip&lt;/code&gt;来帮助用户修改管理节点,
+数据库,消息总线的IP地址. 例如:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-20-11-73 ~]# zstack-ctl change_ip --ip 172.20.11.73
+Update cloudbus server ip 172.20.11.73 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+Update mysql new url jdbc:mysql://172.20.11.73:3306 in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果数据库,消息总线使用了不同的IP地址,我们也可以使用该命令进行修改.具体的参数细节,请添加-h 参数获取:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[root@172-20-11-73 ~]# zstack-ctl change_ip -h
+usage: zstackctl change_ip [-h] --ip IP [--kairosdb_ip KAIROSDB_IP]
+                           [--cassandra_rpc_address CASSANDRA_RPC_ADDRESS]
+                           [--cassandra_listen_address CASSANDRA_LISTEN_ADDRESS]
+                           [--cloudbus_server_ip CLOUDBUS_SERVER_IP]
+                           [--mysql_ip MYSQL_IP]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --ip IP               The new IP address of management node.This operation
+                        will update the new ip address to zstack, kairosdb and
+                        cassandra config file
+  --kairosdb_ip KAIROSDB_IP
+                        The new IP address of kairosdb, default will use value
+                        from --ip
+  --cassandra_rpc_address CASSANDRA_RPC_ADDRESS
+                        The new IP address of cassandra_rpc_address, default
+                        will use value from --ip
+  --cassandra_listen_address CASSANDRA_LISTEN_ADDRESS
+                        The new IP address of cassandra_listen_address,
+                        default will use value from --ip
+  --cloudbus_server_ip CLOUDBUS_SERVER_IP
+                        The new IP address of CloudBus.serverIp.0, default
+                        will use value from --ip
+  --mysql_ip MYSQL_IP   The new IP address of DB.url, default will use value
+                        from --ip
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;install&quot;&gt; 2. 安装 &lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.2/zstack-installer-1.1.2.bin -O zstack-installer-1.1.2.bin
+    bash zstack-installer-1.1.2.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;offlineinstall&quot;&gt; 3. 离线安装 ZStack &lt;/h3&gt;
+
+
+&lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.1 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.&lt;/p&gt;
+
+&lt;p&gt;然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    bash zstack-installer-1.1.2.bin -o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt; 4. 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.2/zstack-installer-1.1.2.bin -O zstack-installer-1.1.2.bin
+    bash zstack-installer-1.1.2.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多节点升级中的zstack.war 可以从如下链接获取: http://download.zstack.org/releases/1.1/1.1.2/zstack.war&lt;/p&gt;
+</description>
+        <pubDate>Sat, 09 Apr 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.1.2.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.1.1 发布</title>
@@ -1530,7 +1632,7 @@ http://pan.baidu.com/s/1i4IccN7&lt;/p&gt;
 &lt;p&gt;安装系统后，可通过以下方法离线安装ZStack。&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.1/1.1.1/zstack-installer-1.1.1.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
+&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.1/1.1.2/zstack-installer-1.1.2.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
 &lt;li&gt;在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。&lt;/li&gt;
 &lt;li&gt;安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。&lt;/li&gt;
 &lt;li&gt;安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
@@ -2198,58 +2300,6 @@ gpgcheck=0
         <pubDate>Tue, 01 Mar 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v1.0.2.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.2.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.0.1发布</title>
-        <description>&lt;h2&gt;ZStack 1.0.1 版本今天发布&lt;/h2&gt;
-
-&lt;p&gt;ZStack 1.0.1 版本今天发布，欢迎大家下载试用。该版本主要是修复了ZStack v1.0上一些小问题:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Flat Mode Provider 模式下,如果不提供云主机Hostname,Linux云主机的DHCP Hostname将会为云主机的IP地址(用户手动设置过hostname的除外)&lt;/li&gt;
-&lt;li&gt;Flat Mode Provider 模式下,如果之前安装过ZStack,在重装前没有通过ZStack 删除云主机,可能会导致新的云主机IP地址与老的云主机分配冲突.&lt;/li&gt;
-&lt;li&gt;v1.0 引入的UI汉化库没有集成到dashboard中,导致内网用户可能会大不开dashboard的UI界面.&lt;/li&gt;
-&lt;li&gt;来自用户tolbkni@gmail.com 修复的两个dashboard显示的问题.&lt;/li&gt;
-&lt;li&gt;当计算节点重启后,mangement-l2的网卡获得IP地址,但是public-l2网卡没有获得IP地址,ZStack重联Host会导致一些异常问题&lt;/li&gt;
-&lt;li&gt;使用安装参数&#39;-i&#39;,单独安装zstack节点的时候,不需要检查mysql root用户的登陆密码.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
-
-
-&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/0225/zstack-installer-1.0.1-0225.bin -O zstack-installer-1.0.1.bin
-    bash zstack-installer-1.0.1.bin -R aliyun
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
-
-
-&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.1/0225/zstack-installer-1.0.1-0225.bin -O zstack-installer-1.0.1.bin
-    bash zstack-installer-1.0.1.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.1/0225/zstack.war&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Wed, 24 Feb 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v1.0.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.1.html</guid>
         
         
         <category>cn_blog</category>
