@@ -5,8 +5,8 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Sat, 09 Apr 2016 10:44:24 +0800</pubDate>
-    <lastBuildDate>Sat, 09 Apr 2016 10:44:24 +0800</lastBuildDate>
+    <pubDate>Tue, 19 Apr 2016 16:54:57 +0800</pubDate>
+    <lastBuildDate>Tue, 19 Apr 2016 16:54:57 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -1534,7 +1534,7 @@ the below steps:&lt;/p&gt;
 &lt;h4&gt;CentOS 7.2 ZStack社区版ISO特性：&lt;/h4&gt;
 
 &lt;ol&gt;
-&lt;li&gt;基于CentOS-7-x86_64-Minimal-1511.ISO深度定制；&lt;/li&gt;
+&lt;li&gt;基于CentOS-7-x86_64-1511.ISO深度定制；&lt;/li&gt;
 &lt;li&gt;包含ZStack需要的所有安装包，安装ZStack时，无须连接外网，也无须配置yum源，就可以实现ZStack的完全离线安装；&lt;/li&gt;
 &lt;li&gt;保留了CentOS7.2的官方yum源，支持官方yum更新；&lt;/li&gt;
 &lt;li&gt;默认设置了root密码为password，支持安装OS后修改密码；&lt;/li&gt;
@@ -1547,12 +1547,11 @@ the below steps:&lt;/p&gt;
 
 &lt;h4&gt;1. 下载ZStack社区定制版CentOS7.2 ISO&lt;/h4&gt;
 
-&lt;p&gt;文件名称：ZStack-Cummunity-x86_64-DVD-1.0.0.iso (1.1G)&lt;/p&gt;
+&lt;p&gt;文件名称：ZStack-Community-x86_64-DVD-1.0.0.iso (1.3G)&lt;/p&gt;
 
-&lt;p&gt;MD5校验码：55641ea8ba4e0a10eb7429d8dd46e33b&lt;/p&gt;
+&lt;p&gt;MD5校验码：&lt;/p&gt;
 
-&lt;p&gt;下载地址1：
-http://download.zstack.org/ISO/ZStack-Cummunity-x86_64-DVD-1.0.0.iso&lt;/p&gt;
+&lt;p&gt;下载地址1：&lt;/p&gt;
 
 &lt;p&gt;下载地址2：
 http://pan.baidu.com/s/1i4IccN7&lt;/p&gt;
