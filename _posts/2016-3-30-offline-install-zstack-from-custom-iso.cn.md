@@ -16,7 +16,7 @@ author: Songtao Liu
 以及如何离线安装ZStack系统的方法。
 
 #### CentOS 7.2 ZStack社区版ISO特性：
-1.	基于CentOS-7-x86_64-Minimal-1511.ISO深度定制；
+1.	基于CentOS-7-x86_64-1511.ISO深度定制；
 2.	包含ZStack需要的所有安装包，安装ZStack时，无须连接外网，也无须配置yum源，就可以实现ZStack的完全离线安装；
 3.	保留了CentOS7.2的官方yum源，支持官方yum更新；
 4.	默认设置了root密码为password，支持安装OS后修改密码；
@@ -26,12 +26,12 @@ author: Songtao Liu
 ### CentOS 7.2 ZStack 社区定制版系统安装教程：
 
 #### 1.	下载ZStack社区定制版CentOS7.2 ISO
-文件名称：ZStack-Cummunity-x86_64-DVD-1.0.0.iso (1.1G)
+文件名称：ZStack-Community-x86_64-DVD-1.0.0.iso (1.3G)
 
-MD5校验码：55641ea8ba4e0a10eb7429d8dd46e33b 
+MD5校验码：{{zstack_centos7_md5}}
 
 下载地址1：
-http://download.zstack.org/ISO/ZStack-Cummunity-x86_64-DVD-1.0.0.iso
+{{zstack_centos7_iso}}
 
 下载地址2：
 http://pan.baidu.com/s/1i4IccN7
