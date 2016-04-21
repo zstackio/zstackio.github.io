@@ -28,10 +28,10 @@ author: Songtao Liu
 #### 1.	下载ZStack社区定制版CentOS7.2 ISO
 文件名称：ZStack-Community-x86_64-DVD-1.0.0.iso (1.3G)
 
-MD5校验码：{{zstack_centos7_md5}}
+MD5校验码：{{site.zstack_centos7_md5}}
 
 下载地址1：
-{{zstack_centos7_iso}}
+{{site.zstack_centos7_iso}}
 
 下载地址2：
 http://pan.baidu.com/s/1i4IccN7
