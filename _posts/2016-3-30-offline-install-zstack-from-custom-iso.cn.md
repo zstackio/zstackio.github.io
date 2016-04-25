@@ -34,7 +34,7 @@ MD5校验码：{{site.zstack_centos7_md5}}
 {{site.zstack_centos7_iso}}
 
 下载地址2：
-http://pan.baidu.com/s/1i4IccN7
+{{site.zstack_centos7_iso_baidu}}
 
 #### 2. 制作U盘安装盘
 

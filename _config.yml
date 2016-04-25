@@ -46,3 +46,5 @@ zstack_image_md5: "a19e9804ac514579cdde9869e91378d4"
 
 zstack_centos7_iso: "http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.2.0.iso"
 zstack_centos7_md5: "17691a91c49a397430ef5fa6f9033a5b"
+
+zstack_centos7_iso_baidu: "http://pan.baidu.com/s/1dF4ozU5"
