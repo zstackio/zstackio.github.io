@@ -5,9 +5,166 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 25 Apr 2016 13:47:50 +0800</pubDate>
-    <lastBuildDate>Mon, 25 Apr 2016 13:47:50 +0800</lastBuildDate>
+    <pubDate>Fri, 29 Apr 2016 15:28:56 +0800</pubDate>
+    <lastBuildDate>Fri, 29 Apr 2016 15:28:56 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.2 发布</title>
+        <description>&lt;h2&gt;ZStack 1.2 版本今天正式发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.2 版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.1版本中发现的bug，并增加了分布EIP、shared mountpoint主存储支持、数据库自动备份、Systemd支持等新功能。用户不再需要使用Virtual Router就可以使用EIP网络模式，也可以无缝的使用GlusterFS、MooseFS、OCFS2等分布式文件系统作为主存储。具体细节参考以下章节。&lt;/p&gt;
+
+&lt;h2&gt;新增功能&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#eip&quot;&gt;分布式EIP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#smp&quot;&gt;Shared Mountpoint主存储&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#database&quot;&gt;数据库定时备份&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#systemd&quot;&gt;Systemd支持&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cachemode&quot;&gt;KVM缓存模式配置&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#userdata&quot;&gt;AWS EC2模式Userdata支持&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;安装升级&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#offlineinstall&quot;&gt;离线安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;升级&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;eip&quot;&gt;1. 分布式EIP &lt;/h3&gt;
+
+
+&lt;p&gt;在1.0版本中，我们增加了一个新的网络服务组件：FlatNetwork Provider，可以提供分布式DHCP支持。在1.2版本中，我们继续增强了该provider的功能，加入了分布式EIP支持。通过这种方式，用户无需再使用传统的virtual router方式就可以部署EIP网络模型，拥有独立的私有网络，并将公网IP地址映射到私有网络的中的云主机去。ZStack的分布式EIP通过Linux的network namespace实现，原理图如下：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eipoverview.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;要使用分布式EIP，用户只需在创建L3网络的时候，选择Flat Network Service Provider作为网络服务提供组件，并选择加载EIP服务即可。步骤如图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eip1.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.2/eip2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;要绑定EIP到私有网络的云主机，参考教程&lt;a href=&quot;http://zstack.org/cn/tutorials/ec2-ui.html&quot;&gt;经典Amazon EC2 EIP环境&lt;/a&gt;第15节即可。&lt;/p&gt;
+
+&lt;h3 id=&quot;smp&quot;&gt;2. Shared Mountpoint主存储&lt;/h3&gt;
+
+
+&lt;p&gt;在1.2版本中，我们新增了一种主存储(Primary Storage)类型：Shared Mountpoint Storage。通过该主存储，ZStack可以支持任何符合POSIX文件系统规范的分布式文件系统，例如大家熟悉的GlusterFS、MooseFS、OCFS2等。&lt;/p&gt;
+
+&lt;p&gt;在使用前，用户需要先部署好你所使用的分布式文件系统，并将它mount到所有host相同的目录上，例如将GlusterFS mount到所有host的/glusterfs_dir目录中。在添加主存储时，选择类型“SharedMountPoint”并输入对应目录绝对路径即可，如图：&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;我们建议用户把mount分布式文件系统的命令放到每个host的/etc/rc.local或/etc/fstab当中，以避免host重启后，分布式文件系统没有挂载的情况。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/smp.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;database&quot;&gt;3. 数据库定时备份&lt;/h3&gt;
+
+
+&lt;p&gt;在1.2版本中，我们提供了一个新的命令&lt;code&gt;zstack-ctl dump_mysql&lt;/code&gt;为用户备份ZStack的数据库：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    [root@172-20-12-46 ~]# zstack-ctl dump_mysql -h
+    usage: zstackctl dump_mysql [-h] [--file-name FILE_NAME]
+                                [--keep-amount KEEP_AMOUNT]
+
+    optional arguments:
+        -h, --help            show this help message and exit
+        --file-name FILE_NAME
+                              The filename you want to save the database, default is
+                              &#39;zstack-backup-db&#39;
+        --keep-amount KEEP_AMOUNT
+                              The amount of backup files you want to keep, older
+                              backup files will be deleted, default number is 60
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;在使用zstack all-in-one安装包安装后，我们会默认建立一个&lt;code&gt;crontab&lt;/code&gt;任务定时备份数据库，其设置为：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;30 0,12 * * * zstack-ctl dump_mysql --keep-amount 14
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;用户可以用&lt;code&gt;crontab -l&lt;/code&gt;的命令查看，或用&lt;code&gt;crontab -e&lt;/code&gt;修改。&lt;/p&gt;
+
+&lt;h3 id=&quot;cachemode&quot;&gt;5. KVM cache mode选项&lt;/h3&gt;
+
+
+&lt;p&gt;在1.2版本中，用户可以通过修改全局设置的来指定启动云主机时，KVM对云盘使用的缓存模式。支持三种模式：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;none:云主机不使用物理机的页面缓存，直接访问存储，不带cache。&lt;strong&gt;默认模式&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;writethrough:物理机的页面缓存工作在透写模式，数据完全写入云主机存储设备后，才返回成功。&lt;/li&gt;
+&lt;li&gt;writeback:云主机使用了物理机的页面缓存机制，数据写入物理机页面缓存即报告给云主机返回成功。&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;KVM cache mode的具体解释可以参考&lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatbpkvmguestcache.htm&quot;&gt;这篇文章&lt;/a&gt;。&lt;/p&gt;
+
+&lt;p&gt;要修改该选项，可以使用UI：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/cachemode.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;或命令行：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=kvm name=vm.cacheMode value=writethrough
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;userdata&quot;&gt;6. AWS EC2模式Userdata支持&lt;/h3&gt;
+
+
+&lt;p&gt;在1.0版本中，我们加入了对userdata的支持，使用的是CloudStack默认，用户需要修改cloud-init配置文件才能使用。在1.2版本中，我们将userdata的支持方式换成了AWS EC2模式，即云主机操作系统可以通过169.254.169.254这个IP地址获得userdata。该模式是cloud-init的默认模式，用户只需安装cloud-init包，无需修改任何配置就可以直接使用。此外，用户也可以从Ubuntu和Centos的官方网站上下载预装cloud-init的镜像直接使用。&lt;/p&gt;
+
+&lt;h3 id=&quot;systemd&quot;&gt;7. Systemd支持&lt;/h3&gt;
+
+
+&lt;p&gt;在1.2版本中，我们加入了对systemd的支持，用户可以通过&lt;code&gt;systemctl&lt;/code&gt;来控制zstack管理节点的生命周期。这同时修复了安装了zstack管理节点关机慢的问题。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/systemd.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;install&quot;&gt;8. 安装&lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;offlineinstall&quot;&gt;9. 离线安装&lt;/h3&gt;
+
+
+&lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.2 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.&lt;/p&gt;
+
+&lt;p&gt;然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    bash zstack-installer-1.2.0.bin -o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt;10. 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多节点升级中的zstack.war请等待正式版发布。&lt;/p&gt;
+</description>
+        <pubDate>Fri, 29 Apr 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.2.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.2 RC1 发布</title>
@@ -1313,7 +1470,7 @@ http://pan.baidu.com/s/1dF4ozU5&lt;/p&gt;
 &lt;p&gt;安装系统后，可通过以下方法离线安装ZStack。&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.1/1.1.2/zstack-installer-1.1.2.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
+&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
 &lt;li&gt;在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。&lt;/li&gt;
 &lt;li&gt;安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。&lt;/li&gt;
 &lt;li&gt;安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
@@ -1913,74 +2070,6 @@ gpgcheck=0
         <pubDate>Sat, 12 Mar 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v1.0.3.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.3.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.0.2发布</title>
-        <description>&lt;h2&gt;ZStack 1.0.2 版本今天发布&lt;/h2&gt;
-
-&lt;p&gt;ZStack 1.0.2 版本今天发布，在该版本中我们修复了一个严重的bug，&lt;strong&gt;该bug可能导致在删除二层网络的时候，磁盘快照被删除，该bug在0.8版本后引入，我们建议所有ZStack用户升级你们的系统到1.0.2版本&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;h3&gt;BUG描述&lt;/h3&gt;
-
-&lt;p&gt;该Bug的引发过程如下：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;用户删除二层网络&lt;/li&gt;
-&lt;li&gt;Cascade Framework下发该操作到子节点资源插件，其中虚拟机插件在接收到该操作时会执行卸载网卡的操作&lt;/li&gt;
-&lt;li&gt;虚拟机插件在执行完卸载网卡操作后，&lt;strong&gt;本应该向子资源下发网卡卸载操作，但由于程序逻辑的误判，下发操作变成了删除操作&lt;/strong&gt;。&lt;/li&gt;
-&lt;li&gt;磁盘快照插件接收到删除操作后，删除虚拟机快照。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;由于二层网络删除跟磁盘快照在逻辑上不相关，我们的integration test和system test没有相关用例测试删除二层网络后虚拟机快照的情况，该bug是model based test(基于模型的测试）在长时间运行后的一次偶然情况下发现的。&lt;/p&gt;
-
-&lt;p&gt;该bug修复后我们已经增加了对应的integration test case和system test case来保证将来不会产生regression。这个bug也暴露了我们当前测试系统的不足，model based test虽然可以根据预定义算法产生随机用例进行测试，但它依赖于算法的成功条件定义，发现bug的几率随机性比较大。为此，我们的QA团队已经在构建新型的测试系统 ———— &lt;strong&gt;基于Log分析的测试系统&lt;/strong&gt;。由于ZStack里所有的操作都是message和HTTP request，当我们把log level设置成TRACE时，log可以记录所有操作。这样当执行某个操作时，我们可以通过分析log发现是否有不应该出现的message和HTTP request出现，从而判定系统是否有bug。例如，删除二层网络的操作永远不应该导致删除磁盘快照的message出现，一旦出现系统必有bug。&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;该BUG不会导致磁盘(volume)或安全组(security group)被删除&lt;/strong&gt;。磁盘和安全组虽然逻辑上是虚拟机的子资源，但在操作逻辑中它们属于workflow engine而非cascade framework。顾不会受该bug影响。&lt;/p&gt;
-
-&lt;h3&gt;其他Bug&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;修复了在flat network provider模式下，删除IP range没有释放分布式DHCP IP的问题&lt;/li&gt;
-&lt;li&gt;修复了删除L3网络后，重新加载L3网络时，虚拟机userdata添加不上的问题&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
-
-
-&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
-    bash zstack-installer-1.0.2.bin -R aliyun
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
-
-
-&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.2/zstack-installer-1.0.2.bin -O zstack-installer-1.0.2.bin
-    bash zstack-installer-1.0.2.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.2/zstack.war&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Tue, 01 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v1.0.2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.2.html</guid>
         
         
         <category>cn_blog</category>

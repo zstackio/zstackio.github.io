@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack离线安装教程</title>
+    <title>ZStack - ZStack v1.2 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack离线安装教程</h2>
-    <p class="post-meta"> by Songtao Liu on Mar 29, 2016</p>
+    <h2 class="post-title">ZStack v1.2 发布</h2>
+    <p class="post-meta"> by Frank Zhang on Apr 29, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -114,142 +114,151 @@
 
 
   <article class="post-content">
-    <h2>ZStack离线安装教程</h2>
+    <h2>ZStack 1.2 版本今天正式发布</h2>
 
-<p>针对无法访问互联网以及访问互联网速度较慢的用户，ZStack 1.1版本特别提供了一个离线安装的方法。
-用户使用离线安装方法，首先需要在管理节点,镜像服务器和计算节点上安装CentOS 7.2的ZStack社区版，
-然后在安装ZStack的时候使用-o参数即可快速完成环境的搭建。</p>
+<p>ZStack 1.2 版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.1版本中发现的bug，并增加了分布EIP、shared mountpoint主存储支持、数据库自动备份、Systemd支持等新功能。用户不再需要使用Virtual Router就可以使用EIP网络模式，也可以无缝的使用GlusterFS、MooseFS、OCFS2等分布式文件系统作为主存储。具体细节参考以下章节。</p>
 
-<p>本文将会详细介绍如何把定制版ISO的刻录成U盘，如何使用U盘引导安装CentOS 7.2操作系统，
-以及如何离线安装ZStack系统的方法。</p>
+<h2>新增功能</h2>
 
-<h4>CentOS 7.2 ZStack社区版ISO特性：</h4>
-
-<ol>
-<li>基于CentOS-7-x86_64-1511.ISO深度定制；</li>
-<li>包含ZStack需要的所有安装包，安装ZStack时，无须连接外网，也无须配置yum源，就可以实现ZStack的完全离线安装；</li>
-<li>保留了CentOS7.2的官方yum源，支持官方yum更新；</li>
-<li>默认设置了root密码为password，支持安装OS后修改密码；</li>
-<li>网卡名称默认为ethX格式，例如eth0或eth1；</li>
-<li>默认选项：时区--亚洲东八区，语言--English，键盘--English(United States)。</li>
-</ol>
+<ul>
+<li><a href="#eip">分布式EIP</a></li>
+<li><a href="#smp">Shared Mountpoint主存储</a></li>
+<li><a href="#database">数据库定时备份</a></li>
+<li><a href="#systemd">Systemd支持</a></li>
+<li><a href="#cachemode">KVM缓存模式配置</a></li>
+<li><a href="#userdata">AWS EC2模式Userdata支持</a></li>
+</ul>
 
 
-<h3>CentOS 7.2 ZStack 社区定制版系统安装教程：</h3>
+<h2>安装升级</h2>
 
-<h4>1. 下载ZStack社区定制版CentOS7.2 ISO</h4>
-
-<p>文件名称：ZStack-Community-x86_64-DVD-1.2.0.iso (1.3G)</p>
-
-<p>MD5校验码：17691a91c49a397430ef5fa6f9033a5b</p>
-
-<p>下载地址1：
-http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.2.0.iso</p>
-
-<p>下载地址2：
-http://pan.baidu.com/s/1dF4ozU5</p>
-
-<h4>2. 制作U盘安装盘</h4>
-
-<h5>2.1   使用UltraISO打开ISO</h5>
-
-<p>使用UltraISO，点击“文件”按钮，选择打开已下载好的CentOS7.2 ISO文件，如图1所示。</p>
-
-<p><img src="../images/blogs/offline_install/use-UltraISO-open-custom-centos7.2-iso.png" ></p>
-
-<p><em>图1 选择UltraISO打开定制版CentOS7.2 ISO</em></p>
-
-<h5>2.2   写入硬盘镜像</h5>
-
-<p>点击“启动”按钮，选择“写入硬盘镜像”，如图2所示。</p>
-
-<p><img src="../images/blogs/offline_install/click-write-to-diskimage.png" ></p>
-
-<p><em>图2 点击写入硬盘镜像</em></p>
-
-<h5>2.3   将ISO写入硬盘镜像</h5>
-
-<p>在硬盘驱动器列表选择相应的U盘进行刻录，如果系统只插了一个U盘，则默认以此U盘进行刻录和写入，在刻录前，注意备份U盘之前的内容。
-其他选项，按照默认设置，无须额外配置。点击“写入”按钮，如图3所示。在新界面中点击“是”按钮进行确认，UltraISO将会把此ISO刻录到U盘。</p>
-
-<p><img src="../images/blogs/offline_install/choose-u-disk-to-write.png" ></p>
-
-<p><em>图3 选择U盘，点击写入按钮</em></p>
-
-<p><img src="../images/blogs/offline_install/choose-u-disk-to-write.png" ></p>
-
-<p><em>图4 确认写入</em></p>
-
-<h5>2.4   刻录检查</h5>
-
-<p>刻录成功的界面如图5所示，表示ZStack的定制版CentOS 7.2 可引导U盘已刻录成功。</p>
-
-<p><img src="../images/blogs/offline_install/burn-check.png" ></p>
-
-<p><em>图5 刻录检查</em></p>
-
-<h4>3. 使用U盘引导CentOS7.2</h4>
-
-<p>此ISO支持Legacy模式引导，也支持UEFI模式引导。可根据需求，自定义选择安装。下面以Legacy模式引导安装举例。
-在BIOS启动选项列表，选择此U盘为第一启动设备，启动后，引导安装界面如图6所示：</p>
-
-<p><img src="../images/blogs/offline_install/boot-from-U-disk.png" ></p>
-
-<p><em>图6 可引导U盘启动界面</em></p>
-
-<h4>4. 硬盘分区</h4>
-
-<p>安装过程中，只需进行分区，即可一键安装CentOS7.2操作系统，如图7所示的分区为根分区48G，swap分区为2G。也可根据存储及需求，提前设置好大容量分区。</p>
-
-<p><img src="../images/blogs/offline_install/partition.png" ></p>
-
-<p><em>图7 安装分区界面</em></p>
-
-<h4>5. 安装系统</h4>
-
-<p>分区完毕后，点击“Begin Installation”按钮，开始安装。如图8所示。</p>
-
-<p><img src="../images/blogs/offline_install/click-begin-installation.png" ></p>
-
-<p><em>图8 点击Begin Installation按钮</em></p>
-
-<p>所有的安装包安装完毕后，点击“reboot”按钮，如图9所示，即可启动进入CentOS7.2系统。</p>
-
-<p><img src="../images/blogs/offline_install/prepare-reboot.png" ></p>
-
-<p><em>图9 点击reboot按钮</em></p>
-
-<h3>离线安装ZStack：</h3>
-
-<p>安装系统后，可通过以下方法离线安装ZStack。</p>
-
-<ol>
-<li>下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；</li>
-<li>在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。</li>
-<li>安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。</li>
-<li>安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
-<img src="../images/blogs/offline_install/offline-install-zstack.png" ></li>
-</ol>
+<ul>
+<li><a href="#install">安装</a></li>
+<li><a href="#offlineinstall">离线安装</a></li>
+<li><a href="#upgrade">升级</a></li>
+</ul>
 
 
-<p><em>图10 离线安装ZStack</em></p>
+<h3 id="eip">1. 分布式EIP </h3>
 
-<h2>配置用户内网独立yum源：</h2>
 
-<p>如果用户自己在内部配置了统一的yum源,也可以不使用ZStack CentOS 7.2 社区版的ISO来安装系统。
-但是需要手动在每一台机器上(需要安装ZStack管理节点,镜像服务器以及计算节点的机器),编写如下的yum配置,把内部yum源配置到名为zstack-local的repository里:</p>
+<p>在1.0版本中，我们增加了一个新的网络服务组件：FlatNetwork Provider，可以提供分布式DHCP支持。在1.2版本中，我们继续增强了该provider的功能，加入了分布式EIP支持。通过这种方式，用户无需再使用传统的virtual router方式就可以部署EIP网络模型，拥有独立的私有网络，并将公网IP地址映射到私有网络的中的云主机去。ZStack的分布式EIP通过Linux的network namespace实现，原理图如下：</p>
 
-<pre><code>#echo /etc/yum.repos.d/zstack-local.repo
-[zstack-local]
-name=ZStack Local Yum Repo
-baseurl=http://内部YUM源URL
-enabled=0
-gpgcheck=0
+<p><img src="/images/1.2/eipoverview.png" class="center-img img-responsive"></p>
+
+<p>要使用分布式EIP，用户只需在创建L3网络的时候，选择Flat Network Service Provider作为网络服务提供组件，并选择加载EIP服务即可。步骤如图：</p>
+
+<p><img src="/images/1.2/eip1.png" class="center-img img-responsive">
+<img src="/images/1.2/eip2.png" class="center-img img-responsive"></p>
+
+<p>要绑定EIP到私有网络的云主机，参考教程<a href="http://zstack.org/cn/tutorials/ec2-ui.html">经典Amazon EC2 EIP环境</a>第15节即可。</p>
+
+<h3 id="smp">2. Shared Mountpoint主存储</h3>
+
+
+<p>在1.2版本中，我们新增了一种主存储(Primary Storage)类型：Shared Mountpoint Storage。通过该主存储，ZStack可以支持任何符合POSIX文件系统规范的分布式文件系统，例如大家熟悉的GlusterFS、MooseFS、OCFS2等。</p>
+
+<p>在使用前，用户需要先部署好你所使用的分布式文件系统，并将它mount到所有host相同的目录上，例如将GlusterFS mount到所有host的/glusterfs_dir目录中。在添加主存储时，选择类型“SharedMountPoint”并输入对应目录绝对路径即可，如图：</p>
+
+<blockquote><p>我们建议用户把mount分布式文件系统的命令放到每个host的/etc/rc.local或/etc/fstab当中，以避免host重启后，分布式文件系统没有挂载的情况。</p></blockquote>
+
+<p><img src="/images/1.2/smp.png" class="center-img img-responsive"></p>
+
+<h3 id="database">3. 数据库定时备份</h3>
+
+
+<p>在1.2版本中，我们提供了一个新的命令<code>zstack-ctl dump_mysql</code>为用户备份ZStack的数据库：</p>
+
+<pre><code>    [root@172-20-12-46 ~]# zstack-ctl dump_mysql -h
+    usage: zstackctl dump_mysql [-h] [--file-name FILE_NAME]
+                                [--keep-amount KEEP_AMOUNT]
+
+    optional arguments:
+        -h, --help            show this help message and exit
+        --file-name FILE_NAME
+                              The filename you want to save the database, default is
+                              'zstack-backup-db'
+        --keep-amount KEEP_AMOUNT
+                              The amount of backup files you want to keep, older
+                              backup files will be deleted, default number is 60
 </code></pre>
 
-<p>需要注意的是该内部源内需要包含系统需要以来的各种标准库,包括epel里的库.</p>
+<p>在使用zstack all-in-one安装包安装后，我们会默认建立一个<code>crontab</code>任务定时备份数据库，其设置为：</p>
 
-<p>配置之后,就可以使用-o参数来安装ZStack.添加各种ZStack资源的时候,也会使用每台服务器上的该配置文件.</p>
+<pre><code>30 0,12 * * * zstack-ctl dump_mysql --keep-amount 14
+</code></pre>
+
+<p>用户可以用<code>crontab -l</code>的命令查看，或用<code>crontab -e</code>修改。</p>
+
+<h3 id="cachemode">5. KVM cache mode选项</h3>
+
+
+<p>在1.2版本中，用户可以通过修改全局设置的来指定启动云主机时，KVM对云盘使用的缓存模式。支持三种模式：</p>
+
+<ul>
+<li>none:云主机不使用物理机的页面缓存，直接访问存储，不带cache。<strong>默认模式</strong></li>
+<li>writethrough:物理机的页面缓存工作在透写模式，数据完全写入云主机存储设备后，才返回成功。</li>
+<li>writeback:云主机使用了物理机的页面缓存机制，数据写入物理机页面缓存即报告给云主机返回成功。</li>
+</ul>
+
+
+<p>KVM cache mode的具体解释可以参考<a href="https://www.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatbpkvmguestcache.htm">这篇文章</a>。</p>
+
+<p>要修改该选项，可以使用UI：</p>
+
+<p><img src="/images/1.2/cachemode.png" class="center-img img-responsive"></p>
+
+<p>或命令行：</p>
+
+<pre><code>&gt;&gt;UpdateGlobalConfig category=kvm name=vm.cacheMode value=writethrough
+</code></pre>
+
+<h3 id="userdata">6. AWS EC2模式Userdata支持</h3>
+
+
+<p>在1.0版本中，我们加入了对userdata的支持，使用的是CloudStack默认，用户需要修改cloud-init配置文件才能使用。在1.2版本中，我们将userdata的支持方式换成了AWS EC2模式，即云主机操作系统可以通过169.254.169.254这个IP地址获得userdata。该模式是cloud-init的默认模式，用户只需安装cloud-init包，无需修改任何配置就可以直接使用。此外，用户也可以从Ubuntu和Centos的官方网站上下载预装cloud-init的镜像直接使用。</p>
+
+<h3 id="systemd">7. Systemd支持</h3>
+
+
+<p>在1.2版本中，我们加入了对systemd的支持，用户可以通过<code>systemctl</code>来控制zstack管理节点的生命周期。这同时修复了安装了zstack管理节点关机慢的问题。</p>
+
+<p><img src="/images/1.2/systemd.png" class="center-img img-responsive"></p>
+
+<h3 id="install">8. 安装</h3>
+
+
+<p>你可以通过下面方式安装：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -R aliyun
+</code></pre>
+
+<blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
+
+<h3 id="offlineinstall">9. 离线安装</h3>
+
+
+<p>针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.2 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.</p>
+
+<p>然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：</p>
+
+<pre><code>    bash zstack-installer-1.2.0.bin -o
+</code></pre>
+
+<p>具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: <a href="./offline-install-zstack-from-custom-iso.html">ZStack离线安装教程</a></p>
+
+<h3 id="upgrade">10. 升级 </h3>
+
+
+<p>一如既往的，我们支持一键无缝升级：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -u
+</code></pre>
+
+<p>多节点升级中的zstack.war请等待正式版发布。</p>
 
   </article>
 
