@@ -64,7 +64,7 @@ layout: tutorialPage.cn
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <img class="img-responsive" src="/images/flat-eip-network.png">
+        <img class="img-responsive" src="/images/eip.png">
       </div>
       <div class="col-sm-6" style="padding-top: 50px">
         <h3>经典公有云Amazon EC2 弹性IP（EIP）（扁平网络）</h3>
@@ -79,7 +79,7 @@ layout: tutorialPage.cn
   </div>
 </div>
 
-<div>
+<div  style="background: #f7f7f7">
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -100,7 +100,7 @@ layout: tutorialPage.cn
     </div>
   </div>
 </div>
-<div  style="background: #f7f7f7">
+<div>
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -122,7 +122,7 @@ layout: tutorialPage.cn
   </div>
 </div>
 
-<div>
+<div  style="background: #f7f7f7">
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -144,7 +144,7 @@ layout: tutorialPage.cn
   </div>
 </div>
 
-<div  style="background: #f7f7f7">
+<div>
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -166,7 +166,7 @@ layout: tutorialPage.cn
   </div>
 </div>
 
-<div>
+<div  style="background: #f7f7f7">
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
@@ -188,7 +188,7 @@ layout: tutorialPage.cn
   </div>
 </div>
 
-<div  style="background: #f7f7f7">
+<div>
   <div class="container">
     <div class="row">
       <h2>更多教程：</h2>
