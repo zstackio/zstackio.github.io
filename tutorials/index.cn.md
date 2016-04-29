@@ -64,11 +64,30 @@ layout: tutorialPage.cn
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
+        <img class="img-responsive" src="/images/flat-eip-network.png">
+      </div>
+      <div class="col-sm-6" style="padding-top: 50px">
+        <h3>经典公有云Amazon EC2 弹性IP（EIP）（扁平网络）</h3>
+        <p>扁平网络下实现的亚马逊经典的EC2环境，可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
+        <p>
+          <a href="flat-ec2-ui.cn.html" class="btn btn-primary" role="button">
+            图形界面版本
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
         <img class="img-responsive" src="/images/eip.png">
       </div>
       <div class="col-sm-6" style="padding-top: 50px">
-        <h3>经典公有云Amazon EC2 弹性IP（EIP）</h3>
-        <p>一个亚马逊经典的EC2环境可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
+        <h3>经典公有云Amazon EC2 弹性IP（EIP）（虚拟路由）</h3>
+        <p>虚拟路由方案下实现的亚马逊经典的EC2环境，可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
         <p>
           <a href="ec2-ui.html" class="btn btn-primary" role="button">
             图形界面版本
@@ -81,7 +100,6 @@ layout: tutorialPage.cn
     </div>
   </div>
 </div>
-
 <div  style="background: #f7f7f7">
   <div class="container">
     <div class="row">
@@ -200,4 +218,5 @@ layout: tutorialPage.cn
     </div>
   </div>
 </div>
+
 
