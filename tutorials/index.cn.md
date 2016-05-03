@@ -70,7 +70,7 @@ layout: tutorialPage.cn
         <h3>经典公有云Amazon EC2 弹性IP（EIP）（扁平网络）</h3>
         <p>扁平网络下实现的亚马逊经典的EC2环境，可以分配一个公网的弹性IP地址给私有网络中的云主机</p>
         <p>
-          <a href="flat-ec2-ui.cn.html" class="btn btn-primary" role="button">
+          <a href="flat-ec2-ui.html" class="btn btn-primary" role="button">
             图形界面版本
           </a>
         </p>
