@@ -2,3 +2,6 @@ _site/
 .sass-cache/
 *~
 .idea/*
+_posts/.Archive/
+_posts/.md_configs.data
+_posts/.me_configs.data
