@@ -114,6 +114,36 @@
     
       
         
+        
+    <div>
+      <a href="/cn/blog/v1.2.html"><h3>ZStack v1.2 release</h3></a>
+      <p class="post-meta"> by Frank Zhang on May 4, 2016</p>
+      <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.2 is released.</p>
+
+      <a href="/cn/blog/v1.2.html">Read more >></a>
+      <div style="margin-top: 15px">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v1.2.html" data-a2a-title="ZStack v1.2 release">
+          <a class="a2a_button_facebook" ></a>
+          <a class="a2a_button_twitter"></a>
+          <a class="a2a_button_google_plus"></a>
+          <a class="a2a_button_linkedin"></a>
+          <a class="a2a_button_reddit"></a>
+          <a class="a2a_button_hacker_news"></a>
+          <a class="a2a_button_sina_weibo"></a>
+          <span class="a2a_divider"></span>
+          <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+        </div>
+      </div>
+    </div>
+    <hr>
+        
+      
+    
+      
+    
+      
+        
       
     
       
@@ -136,6 +166,400 @@
       <p class="post-meta"> by Frank Zhang on Mar 30, 2016</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
 announce that ZStack v1.1 is released.</p>
+
+<h1>New Features And Enhancements</h1>
+
+<ul>
+<li><a href="#ansible">Ansible Optimization</a></li>
+<li><a href="#consoleproxy">Console Proxy APIs</a></li>
+<li><a href="#apitimeout">API Timeout Management</a></li>
+<li><a href="#gc">Garbage Collector</a></li>
+<li><a href="#image">15 Tiny Tryout Image</a></li>
+<li><a href="#vr">Virtual Router Image Upgrade</a></li>
+</ul>
+
+
+<h1>Installation And Upgrade</h1>
+
+<ul>
+<li><a href="#install">Installation</a></li>
+<li><a href="#upgrade">Upgrade</a></li>
+<li><a href="#upgradevr">Upgrade Virtual Router Provider To Flat Network Provider</a></li>
+</ul>
+
+
+<h2 id="ansible"> 1. Ansible Optimization </h2>
+
+
+<p>In this version, we create customized deployers for all ZStack agents(i.e. kvmagent, backup storage agent) directly using Ansible SDK, instead of regular Ansible playbook YAML files. As the result, the speed of agent deployment gets significantly improved, because the deployer that is a Python application will try best to avoid unnecessary time-costing steps such as accessing YUM repo; the logging also gets better, each task will post messages to a logging URL before and after execution, and the error message will clearly state the error instead of flooding out all tasks status, which regular Ansible playbook YAML files normally do.</p>
+
+<h2 id="consoleproxy">2. Console Proxy APIs </h2>
+
+
+<p>Two new APIs are added for console proxy, <code>ReconnectConsoleProxyAgent</code> and <code>QueryConsoleProxyAgent</code>.</p>
+
+<p>Users can use <code>ReconnectConsoleProxyAgent</code> to redeploy console proxy agents:</p>
+
+<pre><code>        &gt;&gt;&gt;ReconnectConsoleProxyAgent 
+</code></pre>
+
+<p>or use <code>QueryConsoleProxyAgent</code> to query agents' status:</p>
+
+<pre><code>       &gt;&gt;&gt;QueryConsoleProxyAgent 
+</code></pre>
+
+<h2 id="apitimeout">3. API Timeout Management</h2>
+
+
+<p>As ZStack consists of a lot of microservices which communicate with each other through async-messages, it's very hard to control API timeout because the API has no idea about internal messages entailed by itself. In this version, we add a central API timeout management framework that can connect an API to all entailed internal messages and HTTP requests, and that can propagate the API's timeout to the descendants. All APIs have default configurations, users can change a configuration by editing the <code>zstack.properties</code> file, for example:</p>
+
+<pre><code>    ApiTimeout.org.zstack.header.image.APIAddImageMsg= org.zstack.header.storage.backup.DownloadImageMsg, org.zstack.storage.backup.sftp.SftpBackupStorageCommands$DownloadCmd, org.zstack.storage.ceph.backup.CephBackupStorageBase$DownloadCmd; 6h
+</code></pre>
+
+<p>This example changes the timeout of API <code>org.zstack.header.image.APIAddImageMsg</code> to six hours. However, this way is discouraged. In 1.2 version, we will allow users to configure APIs' timeout through a new API.</p>
+
+<h2 id="gc">4. Garbage Collector</h2>
+
+
+<p>In this version, the VM related garbage collectors are enabled. Users can destroy a VM anytime no matter the connection status of the host. For example, you can delete a VM even the network connection to the host where the VM is running is lost. The garbage collector will save user operations which cannot be completed in current situation and re-execute them once the host's network connection recovers. The garbage collector can be triggered by time-based poll and events, for example, a host reconnect event and host delete event can both trigger a VM deleting garbage collector.</p>
+
+<h2 id="image">5. 15M Tiny Tryout Image</h2>
+
+
+<p>A new 15 tiny image is ready for quickly try out creating VMs. The image supports runtime attaching/detaching volumes and networks. The ACPID daemon is also included so you can gracefully shutdown a VM. You can download the image from:</p>
+
+<pre><code>    http://download.zstack.org/templates/zstack-image-1.2.qcow2
+</code></pre>
+
+<h2 id="vr">6. New Virtual Router Image</h2>
+
+
+<p>The virtual router image is upgraded to 1.1 version, you can download it from:</p>
+
+<pre><code>    http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2
+</code></pre>
+
+<blockquote><p>NOTE: Users still using the old 0.9 version are not necessary to upgrade. However, we suggest all new users using the new version.</p></blockquote>
+
+<h2 id="install">7. Installation</h2>
+
+
+<p>You can install the 1.1 release by:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin
+</code></pre>
+
+<h2 id="upgrade">8. Upgrade</h2>
+
+
+<p>To upgrade your ZStack to 1.1, do:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
+    bash zstack-installer-1.1.0.bin -u
+</code></pre>
+
+<h2 id="upgradevr">9. Upgrade Virtual Router Provider To Flat Network Provider</h2>
+
+
+<p>If you are currently using a flat network with a previous ZStack version, you can upgrade the L3 network using the flat network provider so
+you won't need the virtual router VM anymore. Assume the UUID of your L3 network is 1a82c2691978476fa6cefa36bb9d4bfd, please follow
+the below steps:</p>
+
+<h4>1. Obtain the UUID of the virtual rotuer provider</h4>
+
+<pre><code>    &gt;&gt;&gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
+    {
+        "inventories": [
+            {
+                "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+                "networkServiceType": "DNS"
+            },
+            {
+                "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                "networkServiceProviderUuid": "5d21ea0f39c04d6fb68cfaf5a37db4ad",
+                "networkServiceType": "DHCP"
+            }
+        ],
+        "success": true
+    }
+</code></pre>
+
+<h4>2. Detach the virtual router provider from the L3 network</h4>
+
+<pre><code>        &gt;&gt;&gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"5d21ea0f39c04d6fb68cfaf5a37db4ad":["DHCP","DNS"]}'
+         {
+             "inventory": {
+                 "createDate": "Jan 30, 2016 3:01:03 PM",
+                 "dns": [
+                     "8.8.8.8"
+                 ],
+                 "ipRanges": [
+                     {
+                         "createDate": "Jan 30, 2016 3:01:04 PM",
+                         "endIp": "192.168.201.199",
+                         "gateway": "192.168.200.1",
+                         "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                         "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                         "name": "ipr-dk7p",
+                         "netmask": "255.255.252.0",
+                         "startIp": "192.168.201.180",
+                         "uuid": "ec5fd87dd80243fdabeeace847c04427"
+                     }
+                 ],
+                 "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+                 "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+                 "name": "l3-etpz",
+                 "networkServices": [],
+                 "state": "Enabled",
+                 "system": false,
+                 "type": "L3BasicNetwork",
+                 "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                 "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+             },
+             "success": true
+         }
+</code></pre>
+
+<blockquote><p>the parameter <code>networkServices</code> is a map where the key is a <code>networkServiceProviderUuid</code> and the value is a list of <code>networkServiceType</code>, which you obtain in the step 1</p></blockquote>
+
+<h4>3. Get the flat network provider UUID</h4>
+
+<pre><code>        &gt;&gt;&gt;QueryNetworkServiceProvider type=Flat
+        {
+            "inventories": [
+                {
+                    "attachedL2NetworkUuids": [
+                        "9ec8cad681d1424fa7eda2447edae142"
+                    ],
+                    "createDate": "Jan 30, 2016 11:56:32 AM",
+                    "description": "Flat Network Service Provider",
+                    "lastOpDate": "Jan 30, 2016 11:56:32 AM",
+                    "name": "Flat Network Service Provider",
+                    "networkServiceTypes": [
+                        "DHCP",
+                        "Userdata"
+                    ],
+                    "type": "Flat",
+                    "uuid": "17864f985e584a9ba4cd81de215212ce"
+                }
+            ],
+            "success": true
+        }
+</code></pre>
+
+<h4>4. Get L2 UUID for the L3 network</h4>
+
+<pre><code>        &gt;&gt;&gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
+        {
+            "inventories": [
+                {
+                    "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142"
+                }
+            ],
+            "success": true
+        }
+</code></pre>
+
+<h4>5. Attach the flat network provider to the L2 network</h4>
+
+<pre><code>       &gt;&gt;&gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
+       {
+           "inventory": {
+               "attachedL2NetworkUuids": [
+                   "9ec8cad681d1424fa7eda2447edae142"
+               ],
+               "createDate": "Jan 30, 2016 11:56:32 AM",
+               "description": "Flat Network Service Provider",
+               "lastOpDate": "Jan 30, 2016 11:56:32 AM",
+               "name": "Flat Network Service Provider",
+               "networkServiceTypes": [
+                   "DHCP",
+                   "Userdata"
+               ],
+               "type": "Flat",
+               "uuid": "17864f985e584a9ba4cd81de215212ce"
+           },
+           "success": true
+       }
+</code></pre>
+
+<h4>6. Attach the flat network provider to the L3 network</h4>
+
+<pre><code>     &gt;&gt;&gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices='{"17864f985e584a9ba4cd81de215212ce":["DHCP","Userdata"]}'
+      {
+          "inventory": {
+              "createDate": "Jan 30, 2016 3:01:03 PM",
+              "dns": [
+                  "8.8.8.8"
+              ],
+              "ipRanges": [
+                  {
+                      "createDate": "Jan 30, 2016 3:01:04 PM",
+                      "endIp": "192.168.201.199",
+                      "gateway": "192.168.200.1",
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "lastOpDate": "Jan 30, 2016 3:01:04 PM",
+                      "name": "ipr-dk7p",
+                      "netmask": "255.255.252.0",
+                      "startIp": "192.168.201.180",
+                      "uuid": "ec5fd87dd80243fdabeeace847c04427"
+                  }
+              ],
+              "l2NetworkUuid": "9ec8cad681d1424fa7eda2447edae142",
+              "lastOpDate": "Jan 30, 2016 3:01:03 PM",
+              "name": "l3-etpz",
+              "networkServices": [
+                  {
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                      "networkServiceType": "DHCP"
+                  },
+                  {
+                      "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                      "networkServiceProviderUuid": "17864f985e584a9ba4cd81de215212ce",
+                      "networkServiceType": "Userdata"
+                  }
+              ],
+              "state": "Enabled",
+              "system": false,
+              "type": "L3BasicNetwork",
+              "uuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+              "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+          },
+          "success": true
+      }
+</code></pre>
+
+<h4>7. Delete the virtual router VM</h4>
+
+<pre><code>        &gt;&gt;QueryVirtualRouterVm
+         {
+             "inventories": [
+                 {
+                     "allVolumes": [
+                         {
+                             "createDate": "Jan 30, 2016 3:06:50 PM",
+                             "description": "Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]",
+                             "deviceId": 0,
+                             "format": "qcow2",
+                             "installPath": "/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2",
+                             "lastOpDate": "Jan 30, 2016 3:06:59 PM",
+                             "name": "ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+                             "primaryStorageUuid": "4bff4e2d266f480ead596752d14ff3b5",
+                             "rootImageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+                             "size": 467206656,
+                             "state": "Enabled",
+                             "status": "Ready",
+                             "type": "Root",
+                             "uuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+                             "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                         }
+                     ],
+                     "allocatorStrategy": "LeastVmPreferredHostAllocatorStrategy",
+                     "applianceVmType": "VirtualRouter",
+                     "clusterUuid": "10409d3e33b249c19746022930a541c7",
+                     "cpuNum": 1,
+                     "cpuSpeed": 2,
+                     "createDate": "Jan 30, 2016 3:06:50 PM",
+                     "defaultRouteL3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "hostUuid": "415fa093b34e4a3d873368104b127115",
+                     "hypervisorType": "KVM",
+                     "imageUuid": "7bed05aa8ace4e5e8d6c55b284b66fb5",
+                     "instanceOfferingUuid": "9cec7bd6324445a184351ffb7d32f970",
+                     "lastHostUuid": "415fa093b34e4a3d873368104b127115",
+                     "lastOpDate": "Jan 30, 2016 3:07:20 PM",
+                     "managementNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "memorySize": 536870912,
+                     "name": "virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd",
+                     "platform": "Linux",
+                     "publicNetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                     "rootVolumeUuid": "8eeaa9cb4c1045a2825f8815fed69d72",
+                     "state": "Running",
+                     "status": "Connected",
+                     "type": "ApplianceVm",
+                     "uuid": "c5a966cb87d644649952daf683f89e26",
+                     "vmNics": [
+                         {
+                             "createDate": "Jan 30, 2016 3:06:50 PM",
+                             "deviceId": 0,
+                             "gateway": "192.168.200.1",
+                             "ip": "192.168.201.195",
+                             "l3NetworkUuid": "1a82c2691978476fa6cefa36bb9d4bfd",
+                             "lastOpDate": "Jan 30, 2016 3:06:50 PM",
+                             "mac": "fa:4c:01:68:77:00",
+                             "metaData": "7",
+                             "netmask": "255.255.252.0",
+                             "uuid": "c44e856aa88a42bc85ec30ce8c334c6c",
+                             "vmInstanceUuid": "c5a966cb87d644649952daf683f89e26"
+                         }
+                     ],
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 }
+             ],
+             "success": true
+         }
+
+         &gt;&gt;&gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
+         {
+             "success": true
+         }
+</code></pre>
+
+<h4>8. Reconnect all hosts</h4>
+
+<pre><code>         &gt;&gt;&gt;QueryHost
+         {
+             "inventories": [
+                 {
+                     "availableCpuCapacity": 7180,
+                     "availableMemoryCapacity": 1997570048,
+                     "clusterUuid": "4282fb61aa55458ea160de138e130298",
+                     "createDate": "Jan 30, 2016 2:51:13 PM",
+                     "hypervisorType": "KVM",
+                     "lastOpDate": "Jan 30, 2016 3:03:20 PM",
+                     "managementIp": "192.168.200.187",
+                     "name": "host1",
+                     "state": "Enabled",
+                     "status": "Connected",
+                     "totalCpuCapacity": 7182,
+                     "totalMemoryCapacity": 2098233344,
+                     "username": "root",
+                     "uuid": "402f8304a50c410486e023512492316b",
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 },
+                 {
+                     "availableCpuCapacity": 14363,
+                     "availableMemoryCapacity": 8321593344,
+                     "clusterUuid": "10409d3e33b249c19746022930a541c7",
+                     "createDate": "Jan 30, 2016 3:03:14 PM",
+                     "hypervisorType": "KVM",
+                     "lastOpDate": "Jan 30, 2016 3:03:52 PM",
+                     "managementIp": "192.168.200.150",
+                     "name": "host2",
+                     "state": "Enabled",
+                     "status": "Connected",
+                     "totalCpuCapacity": 14364,
+                     "totalMemoryCapacity": 8371924992,
+                     "username": "root",
+                     "uuid": "415fa093b34e4a3d873368104b127115",
+                     "zoneUuid": "4a3a78b1b9f049948b79cf9e667f0af2"
+                 }
+             ],
+             "success": true
+         }
+
+         &gt;&gt;&gt;ReconnectHost uuid=402f8304a50c410486e023512492316b
+         {
+             "success": true
+         }
+
+         &gt;&gt;&gt;ReconnectHost uuid=415fa093b34e4a3d873368104b127115
+         {
+             "success": true
+         }
+</code></pre>
 
       <a href="/blog/v1.1.html">Read more >></a>
       <div style="margin-top: 15px">
@@ -252,13 +676,13 @@ announce that ZStack v1.0 is released.</p>
         
         
     <div>
-      <a href="/blog/zhaitech.html"><h3>ZStack Zhaitech Cooperation</h3></a>
+      <a href="/cn/blog/zhaitech.html"><h3>ZStack Zhaitech Cooperation</h3></a>
       <p class="post-meta"> by Frank Zhang on Oct 11, 2015</p>
       <h1>Cooperation with the machine learning startup -- Zhaitech</h1>
 
-      <a href="/blog/zhaitech.html">Read more >></a>
+      <a href="/cn/blog/zhaitech.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/zhaitech.html" data-a2a-title="ZStack Zhaitech Cooperation">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/zhaitech.html" data-a2a-title="ZStack Zhaitech Cooperation">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -460,14 +884,14 @@ In this release, ZStack introduces four new features:</p>
         
         
     <div>
-      <a href="/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
+      <a href="/cn/blog/v0.8-rc2.html"><h3>Announcing ZStack v0.8 RC2</h3></a>
       <p class="post-meta"> by Frank Zhang on Jul 26, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.8 is in the release cycle.
 Today we release 0.8 RC2 for you test. In this release, ZStack introduces four new features:</p>
 
-      <a href="/blog/v0.8-rc2.html">Read more >></a>
+      <a href="/cn/blog/v0.8-rc2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.8-rc2.html" data-a2a-title="Announcing ZStack v0.8 RC2">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -494,14 +918,14 @@ Today we release 0.8 RC2 for you test. In this release, ZStack introduces four n
         
         
     <div>
-      <a href="/blog/v0.7.1.html"><h3>Announcing ZStack v0.7.1</h3></a>
+      <a href="/cn/blog/v0.7.1.html"><h3>Announcing ZStack v0.7.1</h3></a>
       <p class="post-meta"> by Frank Zhang on Jul 8, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.7.0.1 is released. This release contains two bugs fixes. Both
 for zstack-ctl, which may affect remote node installation on Ubuntu and DB upgrade if the database has password enabled.</p>
 
-      <a href="/blog/v0.7.1.html">Read more >></a>
+      <a href="/cn/blog/v0.7.1.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.7.1.html" data-a2a-title="Announcing ZStack v0.7.1">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.7.1.html" data-a2a-title="Announcing ZStack v0.7.1">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -692,15 +1116,15 @@ In this version, we fixed a few bugs reported by users; a detailed bug list can 
         
         
     <div>
-      <a href="/blog/v0.6.1-announcement.html"><h3>Announcing ZStack v0.6.1 Release</h3></a>
+      <a href="/cn/blog/v0.6.1-announcement.html"><h3>Announcing ZStack v0.6.1 Release</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 16, 2015</p>
       <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to announce that ZStack v0.6.1 is released.
 In this version, we fixed a bug that may cause the failure of adding host in the certain circumstance. The installation
 script has been updated to the latest version.</p>
 
-      <a href="/blog/v0.6.1-announcement.html">Read more >></a>
+      <a href="/cn/blog/v0.6.1-announcement.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/v0.6.1-announcement.html" data-a2a-title="Announcing ZStack v0.6.1 Release">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/v0.6.1-announcement.html" data-a2a-title="Announcing ZStack v0.6.1 Release">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -759,7 +1183,7 @@ and has built an architecture that tackles issues mentioned before.</p>
         
         
     <div>
-      <a href="/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
+      <a href="/cn/blog/why-zstack.html"><h3>Why Do We Need New IaaS Software Other Than OpenStack</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 5, 2015</p>
       <p>Three years ago, when I was working on another IaaS software, my friend joked: "you guys are making a product
 killing IT administrators' job." I did think so then. In my opinion, enterprises could
@@ -772,9 +1196,9 @@ infrastructure, but also a dev team or a consultant company to maintain the IaaS
 engineers, as people with such skills are easier to get good pay (searching OpenStack on online hiring websites
 will prove this), but sad for developers like me who are supposed to create something to relieve life.</p>
 
-      <a href="/blog/why-zstack.html">Read more >></a>
+      <a href="/cn/blog/why-zstack.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/why-zstack.html" data-a2a-title="Why Do We Need New IaaS Software Other Than OpenStack">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -797,14 +1221,14 @@ will prove this), but sad for developers like me who are supposed to create some
         
         
     <div>
-      <a href="/blog/asynchronous-architecture.html"><h3>ZStack's Scalability Secrets Part 1: Asynchronous Architecture</h3></a>
+      <a href="/cn/blog/asynchronous-architecture.html"><h3>ZStack's Scalability Secrets Part 1: Asynchronous Architecture</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack offers an architecture that 99% tasks are executed asynchronously, which is a key design that a single management
 node can manage hundreds of thousands of physical servers, millions of virtual machines, and handle tens of thousands of concurrent tasks.</em></p>
 
-      <a href="/blog/asynchronous-architecture.html">Read more >></a>
+      <a href="/cn/blog/asynchronous-architecture.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/asynchronous-architecture.html" data-a2a-title="ZStack's Scalability Secrets Part 1: Asynchronous Architecture">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/asynchronous-architecture.html" data-a2a-title="ZStack's Scalability Secrets Part 1: Asynchronous Architecture">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -956,16 +1380,16 @@ which can not only extend ZStack's functionality, but also hook into business lo
         
         
     <div>
-      <a href="/blog/workflow.html"><h3>The Workflow Engine</h3></a>
+      <a href="/cn/blog/workflow.html"><h3>The Workflow Engine</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Tasks in IaaS software normally have long execution paths; an error may happen at any given step. In order to keep the integrity of the system,
 an IaaS software must provide a mechanism that can roll back prior executed steps. With a workflow engine, every step in ZStack
 wrapped in individual flow can be rolled back on error. Besides, key execution paths can be configured by assembling workflows
 in configuration files, which decouples the architecture further.</em></p>
 
-      <a href="/blog/workflow.html">Read more >></a>
+      <a href="/cn/blog/workflow.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/workflow.html" data-a2a-title="The Workflow Engine">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/workflow.html" data-a2a-title="The Workflow Engine">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -988,16 +1412,16 @@ in configuration files, which decouples the architecture further.</em></p>
         
         
     <div>
-      <a href="/blog/tag.html"><h3>The Tag System</h3></a>
+      <a href="/cn/blog/tag.html"><h3>The Tag System</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Tags in ZStack not only help users aggregate resources but also control behaviors of the software. ZStack has a
 complete specification defining category, form, and usage of tags. Besides users, plugins can create their tags too,
 in order to record metadata and extend properties of existing resources; by all these means, tags can help plugins to
 introduce new features without changing ZStack's database schema, diminishing the need for database migration in software upgrade.</em></p>
 
-      <a href="/blog/tag.html">Read more >></a>
+      <a href="/cn/blog/tag.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/tag.html" data-a2a-title="The Tag System">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/tag.html" data-a2a-title="The Tag System">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1054,16 +1478,16 @@ the cascade framework by implementing a simple extension point, which decouples 
         
         
     <div>
-      <a href="/blog/query.html"><h3>The Query API</h3></a>
+      <a href="/cn/blog/query.html"><h3>The Query API</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>A common challenge for users of IaaS software is how to find a wanted resource quickly and precisely; for example,
 finding the VM that has EIP(16.16.16.16) from 10,000 VMs. Most IaaS software solves this problem by ad-hoc query logic in APIs.
 ZStack, instead of ad-hoc, equips with a framework that can automatically generate queries for every field of every resource,
 and join queries that span multiple resources, helping users to manage enormous resources in the cloud.</em></p>
 
-      <a href="/blog/query.html">Read more >></a>
+      <a href="/cn/blog/query.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/query.html" data-a2a-title="The Query API">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/query.html" data-a2a-title="The Query API">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1120,16 +1544,16 @@ and upgraded by Ansible; users may not even notice their existences.</em></p>
         
         
     <div>
-      <a href="/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
+      <a href="/cn/blog/network-l2.html"><h3>Networking Model 1: L2 and L3 Network</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack abstracts the networking model into L2 and L3 networks. An L2 network provides a type of L2 isolation method, while an L3 network
 basically represents a subnet associated with OSI layer 4 ~ layer 7 network services. The idea is to use terms and
 concepts with which administrators have been familiar to describe ZStack's networking model, allowing administrators to
 create networking topologies easily and precisely.</em></p>
 
-      <a href="/blog/network-l2.html">Read more >></a>
+      <a href="/cn/blog/network-l2.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/network-l2.html" data-a2a-title="Networking Model 1: L2 and L3 Network">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1152,7 +1576,7 @@ create networking topologies easily and precisely.</em></p>
         
         
     <div>
-      <a href="/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
+      <a href="/cn/blog/virtual-router.html"><h3>Networking Model 2: Virtual Router Network Service Provider</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>In ZStack's networking model, OSI layer 4 ~ 7 network services are implemented as small plugins from different service providers.
 The default provider, called virtual router provider, uses a customized Linux VM as a virtual appliance to provide
@@ -1160,9 +1584,9 @@ network services including DHCP, DNS, SNAT, EIP, and Port Forwarding for every L
 of no single failure point, and no special requirements for physical infrastructure so that users can realize various network services
 on commodity hardware without purchasing expensive equipments.</em></p>
 
-      <a href="/blog/virtual-router.html">Read more >></a>
+      <a href="/cn/blog/virtual-router.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/virtual-router.html" data-a2a-title="Networking Model 2: Virtual Router Network Service Provider">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1217,16 +1641,16 @@ vendors can easily plug in their products by implementing corresponding storage 
         
         
     <div>
-      <a href="/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
+      <a href="/cn/blog/integration-testing.html"><h3>The Automation Testing System 1: Integration Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>Testing is an important factor contributing to reliability, maturity, and maintainability of an IaaS software. Testing in ZStack
 is fully automated. The automation testing system consists of three parts: integration testing, system testing, and model-based
 testing. The integration testing system is built based on JUnit using simulators. With various utilities the integration testing
 system supplies, developers can quickly write test cases to validate a new feature or a bug fix.</em></p>
 
-      <a href="/blog/integration-testing.html">Read more >></a>
+      <a href="/cn/blog/integration-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/integration-testing.html" data-a2a-title="The Automation Testing System 1: Integration Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1249,16 +1673,16 @@ system supplies, developers can quickly write test cases to validate a new featu
         
         
     <div>
-      <a href="/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
+      <a href="/cn/blog/system-testing.html"><h3>The Automation Testing System 2: System Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>ZStack's <a href="http://en.wikipedia.org/wiki/System_testing">system testing</a>
 system runs test cases in real hardware environment; like integration testing,
 the system testing is full automated and covers aspects of functional tests,
 stress tests, and performance tests.</em></p>
 
-      <a href="/blog/system-testing.html">Read more >></a>
+      <a href="/cn/blog/system-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/system-testing.html" data-a2a-title="The Automation Testing System 2: System Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1281,7 +1705,7 @@ stress tests, and performance tests.</em></p>
         
         
     <div>
-      <a href="/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
+      <a href="/cn/blog/model-based-testing.html"><h3>The Automation Testing System 3: Model-based Testing</h3></a>
       <p class="post-meta"> by Frank Zhang on Apr 4, 2015</p>
       <p><em>The <a href="http://en.wikipedia.org/wiki/Model-based_testing">model-based testing</a> system
 is a sub-project in zstack-woodpecker. With finite-state machines and
@@ -1290,9 +1714,9 @@ unless a defect is found, or pre-defined exit conditions are met. ZStack relies 
 corner cases that hardly happen in real world, which compensates integration testing and
 system testing in terms of test coverage.</em></p>
 
-      <a href="/blog/model-based-testing.html">Read more >></a>
+      <a href="/cn/blog/model-based-testing.html">Read more >></a>
       <div style="margin-top: 15px">
-        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
+        <div class="a2a_kit a2a_default_style" data-a2a-url="http://zstack.org/cn/blog/model-based-testing.html" data-a2a-title="The Automation Testing System 3: Model-based Testing">
           <a class="a2a_button_facebook" ></a>
           <a class="a2a_button_twitter"></a>
           <a class="a2a_button_google_plus"></a>
@@ -1316,6 +1740,15 @@ system testing in terms of test coverage.</em></p>
     <ul class="nav nav-pills nav-stacked left-slider">
       <ol>
         
+        
+          
+            
+              
+        <li style="padding: 10px"><a href="/cn/blog/v1.2.html">ZStack v1.2 release</a></li>
+              
+          
+        
+          
         
           
             
@@ -1433,7 +1866,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/zhaitech.html">ZStack Zhaitech Cooperation</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/zhaitech.html">ZStack Zhaitech Cooperation</a></li>
               
           
         
@@ -1554,7 +1987,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.8-rc2.html">Announcing ZStack v0.8 RC2</a></li>
               
           
         
@@ -1568,7 +2001,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/v0.7.1.html">Announcing ZStack v0.7.1</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.7.1.html">Announcing ZStack v0.7.1</a></li>
               
           
         
@@ -1642,7 +2075,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/v0.6.1-announcement.html">Announcing ZStack v0.6.1 Release</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/v0.6.1-announcement.html">Announcing ZStack v0.6.1 Release</a></li>
               
           
         
@@ -1665,7 +2098,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/why-zstack.html">Why Do We Need New IaaS Software Other Than OpenStack</a></li>
               
           
         
@@ -1674,7 +2107,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/asynchronous-architecture.html">ZStack's Scalability Secrets Part 1: Asynchronous Architecture</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/asynchronous-architecture.html">ZStack's Scalability Secrets Part 1: Asynchronous Architecture</a></li>
               
           
         
@@ -1719,7 +2152,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/workflow.html">The Workflow Engine</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/workflow.html">The Workflow Engine</a></li>
               
           
         
@@ -1728,7 +2161,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/tag.html">The Tag System</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/tag.html">The Tag System</a></li>
               
           
         
@@ -1746,7 +2179,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/query.html">The Query API</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/query.html">The Query API</a></li>
               
           
         
@@ -1764,7 +2197,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/network-l2.html">Networking Model 1: L2 and L3 Network</a></li>
               
           
         
@@ -1773,7 +2206,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/virtual-router.html">Networking Model 2: Virtual Router Network Service Provider</a></li>
               
           
         
@@ -1791,7 +2224,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/integration-testing.html">The Automation Testing System 1: Integration Testing</a></li>
               
           
         
@@ -1800,7 +2233,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/system-testing.html">The Automation Testing System 2: System Testing</a></li>
               
           
         
@@ -1809,7 +2242,7 @@ system testing in terms of test coverage.</em></p>
           
             
               
-        <li style="padding: 10px"><a href="/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
+        <li style="padding: 10px"><a href="/cn/blog/model-based-testing.html">The Automation Testing System 3: Model-based Testing</a></li>
               
           
         

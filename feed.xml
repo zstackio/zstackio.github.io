@@ -5,9 +5,285 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 03 May 2016 16:45:28 +0800</pubDate>
-    <lastBuildDate>Tue, 03 May 2016 16:45:28 +0800</lastBuildDate>
+    <pubDate>Wed, 04 May 2016 11:33:23 +0800</pubDate>
+    <lastBuildDate>Wed, 04 May 2016 11:33:23 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.2 release</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.2 is released.&lt;/p&gt;
+
+&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#eip&quot;&gt;Distributed EIP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#smp&quot;&gt;Shared Mount Point Primary Storage&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#db&quot;&gt;Database Periodical Backup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#systemd&quot;&gt;Systemd Support&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cachemode&quot;&gt;KVM Cache Mode&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#userdata&quot;&gt;AWS EC2 Like Userdata&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2 id=&quot;eip&quot;&gt; 1. Distributed EIP &lt;/h2&gt;
+
+
+&lt;p&gt;Distributed EIP is added as a new service type of flat network provider in this version. Users can apply an EIP(normally a public IP) to a VM on a private network dynamically without using a virtual router VM, since the EIP is created on the host where the VM is running. As the EIPs are scattered on different hosts we call it distributed EIP. Below is an overall architecutre showing that the distributed EIP is implemented through the Linux network namspace.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eipoverview.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;To enable the distributed EIP, users need to select the EIP service of the flat network service provider at the last step of creating a L3 network.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eip1.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.2/eip2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;For the usage of EIP, please refer the chapter 15 of the tutorial &lt;a href=&quot;http://zstack.org/tutorials/ec2-ui.html&quot;&gt;Amazon EC2 classic EIP zone&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;smp&quot;&gt;2. Shared Mount Point Primary Storage&lt;/h2&gt;
+
+
+&lt;p&gt;In order to support vast POSIX compatible distributed filesystems, we add a new type of primary storage called shared mount point storage in this version. The idea is that users can use any distributed filesystems(e.g. OCFS2, GlusterFS, MooseFS) as primary storage, as long as those filesystems are pre-mounted on the KVM hosts.&lt;/p&gt;
+
+&lt;p&gt;Below is an example of adding a shared mount point primary storage, the URL is the absolute path of the folder where the distributed filesystem is
+mounted.&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;we suggest users changing /etc/rc.local or /etc/fstab to make the distributed filesystem automatically mount during Linux booting, otherwise you
+will be unable to start a created VM or create a VM on your local storage.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/smp.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;db&quot;&gt;3. Database Periodical Backup&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a new command &lt;code&gt;zstack-ctl dump_mysql&lt;/code&gt; is added for users to backup ZStack database.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    [root@172-20-12-46 ~]# zstack-ctl dump_mysql -h
+    usage: zstackctl dump_mysql [-h] [--file-name FILE_NAME]
+                          [--keep-amount KEEP_AMOUNT]
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --file-name FILE_NAME
+                        The filename you want to save the database, default is
+                        &#39;zstack-backup-db&#39;
+    --keep-amount KEEP_AMOUNT
+                        The amount of backup files you want to keep, older
+                        backup files will be deleted, default number is 60
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once the all-in-one installation is done, a &lt;code&gt;crontab&lt;/code&gt; task is created as following to periodically backup your database:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  30 0,12 * * * zstack-ctl dump_mysql --keep-amount 14
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you can change the setting by &lt;code&gt;crontab -e&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;systemd&quot;&gt;4. Systemd Support&lt;/h2&gt;
+
+
+&lt;p&gt;Systemd is supported in this version. You can use &lt;code&gt;systemctl&lt;/code&gt; to control ZStack management nodes&#39; lifecycle and make them start during Linux booting.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/systemd.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;cachemode&quot;&gt;5. KVM Cache Mode&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can configure the &lt;code&gt;cache mode&lt;/code&gt; of volumes on the KVM hosts by a global configuration. There are three modes supported now:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;none&lt;/strong&gt;: With caching mode set to none, the host page cache is disabled, but the disk write cache is enabled for the guest. In this mode, the write performance in the guest is optimal because write operations bypass the host page cache and go directly to the disk write cache. If the disk write cache is battery-backed, or if the applications or storage stack in the guest transfer data properly (either through fsync operations or file system barriers), then data integrity can be ensured. However, because the host page cache is disabled, the read performance in the guest would not be as good as in the modes where the host page cache is enabled, such as writethrough mode.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;writeback&lt;/strong&gt;: With caching set to writeback mode, both the host page cache and the disk write cache are enabled for the guest. Because of this, the I/O performance for applications running in the guest is good, but the data is not protected in a power failure. As a result, this caching mode is recommended only for temporary data where potential data loss is not a concern.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;writethrough&lt;/strong&gt;: writethrough mode is the default caching mode. With caching set to writethrough mode, the host page cache is enabled, but the disk write cache is disabled for the guest. Consequently, this caching mode ensures data integrity even if the applications and storage stack in the guest do not transfer data to permanent storage properly (either through fsync operations or file system barriers). Because the host page cache is enabled in this mode, the read performance for applications running in the guest is generally better. However, the write performance might be reduced because the disk write cache is disabled.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;For details of KVM cache mode you can refer &lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatbpkvmguestcache.htm&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The global configuration can be changed through UI or command line:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/cachemode.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=kvm name=vm.cacheMode value=writethrough
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;userdata&quot;&gt;6. AWS EC2 Way To Access Userdata&lt;/h2&gt;
+
+
+&lt;p&gt;Beginning at the version 1.0, ZStack supports AWS EC2 userdata with cloud-init. However, the original way to access userdata is CloudStack like, which requires users to change the default configuration of cloud-init package and sometimes make people confused. In this version, ZStack starts using AWS EC2 way to distribute userdata, which means users can access userdata/metadata by a special IP address(169.254.169.254). It&#39;s also the default way that cloud-init fetches userdata, so users can directly use cloud-init built-in packages from CentOS and Ubuntu, without any modification.&lt;/p&gt;
+
+&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
+
+
+&lt;p&gt;You can install the 1.2 release by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
+
+
+&lt;p&gt;You can upgrade your previous ZStack to 1.2 by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.2.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack v1.2 release</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.2 is released.&lt;/p&gt;
+
+&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#eip&quot;&gt;Distributed EIP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#smp&quot;&gt;Shared Mount Point Primary Storage&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#db&quot;&gt;Database Periodical Backup&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#systemd&quot;&gt;Systemd Support&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cachemode&quot;&gt;KVM Cache Mode&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#userdata&quot;&gt;AWS EC2 Like Userdata&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2 id=&quot;eip&quot;&gt; 1. Distributed EIP &lt;/h2&gt;
+
+
+&lt;p&gt;Distributed EIP is added as a new service type of flat network provider in this version. Users can apply an EIP(normally a public IP) to a VM on a private network dynamically without using a virtual router VM, since the EIP is created on the host where the VM is running. As the EIPs are scattered on different hosts we call it distributed EIP. Below is an overall architecutre showing that the distributed EIP is implemented through the Linux network namspace.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eipoverview.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;To enable the distributed EIP, users need to select the EIP service of the flat network service provider at the last step of creating a L3 network.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/eip1.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.2/eip2.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;For the usage of EIP, please refer the chapter 15 of the tutorial &lt;a href=&quot;http://zstack.org/tutorials/ec2-ui.html&quot;&gt;Amazon EC2 classic EIP zone&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;smp&quot;&gt;2. Shared Mount Point Primary Storage&lt;/h2&gt;
+
+
+&lt;p&gt;In order to support vast POSIX compatible distributed filesystems, we add a new type of primary storage called shared mount point storage in this version. The idea is that users can use any distributed filesystems(e.g. OCFS2, GlusterFS, MooseFS) as primary storage, as long as those filesystems are pre-mounted on the KVM hosts.&lt;/p&gt;
+
+&lt;p&gt;Below is an example of adding a shared mount point primary storage, the URL is the absolute path of the folder where the distributed filesystem is
+mounted.&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;we suggest users changing /etc/rc.local or /etc/fstab to make the distributed filesystem automatically mount during Linux booting, otherwise you
+will be unable to start a created VM or create a VM on your local storage.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/smp.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;db&quot;&gt;3. Database Periodical Backup&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a new command &lt;code&gt;zstack-ctl dump_mysql&lt;/code&gt; is added for users to backup ZStack database.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    [root@172-20-12-46 ~]# zstack-ctl dump_mysql -h
+    usage: zstackctl dump_mysql [-h] [--file-name FILE_NAME]
+                          [--keep-amount KEEP_AMOUNT]
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    --file-name FILE_NAME
+                        The filename you want to save the database, default is
+                        &#39;zstack-backup-db&#39;
+    --keep-amount KEEP_AMOUNT
+                        The amount of backup files you want to keep, older
+                        backup files will be deleted, default number is 60
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Once the all-in-one installation is done, a &lt;code&gt;crontab&lt;/code&gt; task is created as following to periodically backup your database:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  30 0,12 * * * zstack-ctl dump_mysql --keep-amount 14
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;you can change the setting by &lt;code&gt;crontab -e&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;systemd&quot;&gt;4. Systemd Support&lt;/h2&gt;
+
+
+&lt;p&gt;Systemd is supported in this version. You can use &lt;code&gt;systemctl&lt;/code&gt; to control ZStack management nodes&#39; lifecycle and make them start during Linux booting.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/systemd.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;cachemode&quot;&gt;5. KVM Cache Mode&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can configure the &lt;code&gt;cache mode&lt;/code&gt; of volumes on the KVM hosts by a global configuration. There are three modes supported now:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;none&lt;/strong&gt;: With caching mode set to none, the host page cache is disabled, but the disk write cache is enabled for the guest. In this mode, the write performance in the guest is optimal because write operations bypass the host page cache and go directly to the disk write cache. If the disk write cache is battery-backed, or if the applications or storage stack in the guest transfer data properly (either through fsync operations or file system barriers), then data integrity can be ensured. However, because the host page cache is disabled, the read performance in the guest would not be as good as in the modes where the host page cache is enabled, such as writethrough mode.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;writeback&lt;/strong&gt;: With caching set to writeback mode, both the host page cache and the disk write cache are enabled for the guest. Because of this, the I/O performance for applications running in the guest is good, but the data is not protected in a power failure. As a result, this caching mode is recommended only for temporary data where potential data loss is not a concern.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;strong&gt;writethrough&lt;/strong&gt;: writethrough mode is the default caching mode. With caching set to writethrough mode, the host page cache is enabled, but the disk write cache is disabled for the guest. Consequently, this caching mode ensures data integrity even if the applications and storage stack in the guest do not transfer data to permanent storage properly (either through fsync operations or file system barriers). Because the host page cache is enabled in this mode, the read performance for applications running in the guest is generally better. However, the write performance might be reduced because the disk write cache is disabled.&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;For details of KVM cache mode you can refer &lt;a href=&quot;https://www.ibm.com/support/knowledgecenter/linuxonibm/liaat/liaatbpkvmguestcache.htm&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The global configuration can be changed through UI or command line:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.2/cachemode.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=kvm name=vm.cacheMode value=writethrough
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;userdata&quot;&gt;6. AWS EC2 Way To Access Userdata&lt;/h2&gt;
+
+
+&lt;p&gt;Beginning at the version 1.0, ZStack supports AWS EC2 userdata with cloud-init. However, the original way to access userdata is CloudStack like, which requires users to change the default configuration of cloud-init package and sometimes make people confused. In this version, ZStack starts using AWS EC2 way to distribute userdata, which means users can access userdata/metadata by a special IP address(169.254.169.254). It&#39;s also the default way that cloud-init fetches userdata, so users can directly use cloud-init built-in packages from CentOS and Ubuntu, without any modification.&lt;/p&gt;
+
+&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
+
+
+&lt;p&gt;You can install the 1.2 release by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
+
+
+&lt;p&gt;You can upgrade your previous ZStack to 1.2 by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin
+    bash zstack-installer-1.2.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v1.2.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.2 发布</title>
@@ -1960,116 +2236,6 @@ gpgcheck=0
         <pubDate>Sat, 26 Mar 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/v1.1-rc1.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/v1.1-rc1.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.0.4发布</title>
-        <description>&lt;h2&gt;ZStack 1.0.4 版本今天发布&lt;/h2&gt;
-
-&lt;p&gt;ZStack 1.0.4 版本今天发布，在该版本中我们修复了一个潜在的严重bug，&lt;strong&gt;该bug可能导致在删除云主机(还未执行彻底删除)的时候，该云主机的磁盘快照被删除，该bug在1.0版本后引入，我们建议所有ZStack用户升级你们的系统到1.0.4版本&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;此外我们还修复了zstack-dashboard上模糊查询不工作的bug.&lt;/p&gt;
-
-&lt;h3&gt;BUG描述&lt;/h3&gt;
-
-&lt;p&gt;该Bug并不会影响通常情况的云主机使用,但是在尝试恢复一个已经被删除的,并且创建过根云盘快照的云主机的时候会发生错误.
-该Bug的具体现象如下：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;用户创建云主机&lt;/li&gt;
-&lt;li&gt;用户给云主机的根云盘创建了快照&lt;/li&gt;
-&lt;li&gt;用户删除云主机&lt;/li&gt;
-&lt;li&gt;用户恢复云主机&lt;/li&gt;
-&lt;li&gt;用户启动该云主机,会发生启动失败,原因是云盘快照已经被删除.&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
-
-
-&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin -O zstack-installer-1.0.4.bin
-    bash zstack-installer-1.0.4.bin -R aliyun
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
-
-
-&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.4/zstack-installer-1.0.4.bin -O zstack-installer-1.0.4.bin
-    bash zstack-installer-1.0.4.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级. 1.0.4版本的zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.4/zstack.war&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Thu, 17 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v1.0.4.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.4.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.0.3发布</title>
-        <description>&lt;h2&gt;ZStack 1.0.3 版本今天发布&lt;/h2&gt;
-
-&lt;p&gt;ZStack 1.0.3 版本今天发布，在该版本中我们主要修复了无法通过&lt;code&gt;zstack-cli UpdateAccount&lt;/code&gt;正确的修改用户密码的Bug**:&lt;/p&gt;
-
-&lt;h3&gt;BUG描述&lt;/h3&gt;
-
-&lt;p&gt;该Bug的引发过程如下：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;用户使用zstack-cli 修改用户密码&lt;/li&gt;
-&lt;li&gt;zstack-cli UpdateAccount 没有正确的把用户密码设置到数据库.&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3 id=&quot;install&quot;&gt; 安装 &lt;/h3&gt;
-
-
-&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.3/0313/zstack-installer-1.0.3-0313.bin -O zstack-installer-1.0.3.bin
-    bash zstack-installer-1.0.3.bin -R aliyun
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;upgrade&quot;&gt; 升级 &lt;/h3&gt;
-
-
-&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.0/1.0.3/0313/zstack-installer-1.0.3-0313.bin -O zstack-installer-1.0.3.bin
-    bash zstack-installer-1.0.3.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;升级多节点的用户,可以参考zstack v0.9的release notes 来升级.zstack.war 文件放置在 http://download.zstack.org/releases/1.0/1.0.3/0313/zstack.war&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;获取更多帮助,请添加ZStack QQ群:410185063&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Sat, 12 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v1.0.3.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.0.3.html</guid>
         
         
         <category>cn_blog</category>
