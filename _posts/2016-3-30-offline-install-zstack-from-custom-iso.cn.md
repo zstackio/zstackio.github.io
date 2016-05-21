@@ -8,7 +8,7 @@ author: Songtao Liu
 ---
 
 ## ZStack离线安装教程
-针对无法访问互联网以及访问互联网速度较慢的用户，ZStack 1.1版本特别提供了一个离线安装的方法。
+针对无法访问互联网以及访问互联网速度较慢的用户，ZStack 提供了一个离线安装的方法。
 用户使用离线安装方法，首先需要在管理节点,镜像服务器和计算节点上安装CentOS 7.2的ZStack社区版，
 然后在安装ZStack的时候使用-o参数即可快速完成环境的搭建。
 
@@ -26,7 +26,7 @@ author: Songtao Liu
 ### CentOS 7.2 ZStack 社区定制版系统安装教程：
 
 #### 1.	下载ZStack社区定制版CentOS7.2 ISO
-文件名称：ZStack-Community-x86_64-DVD-1.2.0.iso (1.3G)
+文件名称：ZStack-Community-x86_64-DVD-1.3.0.iso (1.7G)
 
 MD5校验码：{{site.zstack_centos7_md5}}
 
