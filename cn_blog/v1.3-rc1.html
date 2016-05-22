@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack离线安装教程</title>
+    <title>ZStack - ZStack v1.3 RC 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack离线安装教程</h2>
-    <p class="post-meta"> by Songtao Liu on Mar 29, 2016</p>
+    <h2 class="post-title">ZStack v1.3 RC 发布</h2>
+    <p class="post-meta"> by Frank Zhang on May 23, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -114,142 +114,148 @@
 
 
   <article class="post-content">
-    <h2>ZStack离线安装教程</h2>
+    <h2>ZStack 1.3 RC 发布</h2>
 
-<p>针对无法访问互联网以及访问互联网速度较慢的用户，ZStack 1.1版本特别提供了一个离线安装的方法。
-用户使用离线安装方法，首先需要在管理节点,镜像服务器和计算节点上安装CentOS 7.2的ZStack社区版，
-然后在安装ZStack的时候使用-o参数即可快速完成环境的搭建。</p>
+<p>ZStack 1.3 RC 版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.2版本中发现的bug，新增了如下功能；image/volume的virtual size/actual size支持，CPU超分设置，启动VM的时候指定集群（cluster）或物理机，加载L3网络到虚拟机时指定IP等功能。此外，该版本包含了华云网际贡献的fusionstor插件，用户可以使用华云网际的商业存储fusionstor作为备份存储和主存储。具体细节参考以下章节。</p>
 
-<p>本文将会详细介绍如何把定制版ISO的刻录成U盘，如何使用U盘引导安装CentOS 7.2操作系统，
-以及如何离线安装ZStack系统的方法。</p>
+<h2>新增功能</h2>
 
-<h4>CentOS 7.2 ZStack社区版ISO特性：</h4>
-
-<ol>
-<li>基于CentOS-7-x86_64-1511.ISO深度定制；</li>
-<li>包含ZStack需要的所有安装包，安装ZStack时，无须连接外网，也无须配置yum源，就可以实现ZStack的完全离线安装；</li>
-<li>保留了CentOS7.2的官方yum源，支持官方yum更新；</li>
-<li>默认设置了root密码为password，支持安装OS后修改密码；</li>
-<li>网卡名称默认为ethX格式，例如eth0或eth1；</li>
-<li>默认选项：时区--亚洲东八区，语言--English，键盘--English(United States)。</li>
-</ol>
+<ul>
+<li><a href="#actualsize">Image/Volume的actual size/virtual size支持</a></li>
+<li><a href="#cpu">CPU超分</a></li>
+<li><a href="#startvm">启动VM指定集群或物理机</a></li>
+<li><a href="#l3">加载L3网络指定静态IP</a></li>
+<li><a href="#sshport">添加host、backup storage时指定ssh端口以及使用非root用户</a></li>
+<li><a href="#log">日志收集工具</a></li>
+<li><a href="#iso">社区版ISO安装升级到QEMU2.3版本</a></li>
+<li><a href="#fusionstor">华云网际fusionstor支持</a></li>
+</ul>
 
 
-<h3>CentOS 7.2 ZStack 社区定制版系统安装教程：</h3>
+<h2>安装升级</h2>
 
-<h4>1. 下载ZStack社区定制版CentOS7.2 ISO</h4>
-
-<p>文件名称：ZStack-Community-x86_64-DVD-1.2.0.iso (1.3G)</p>
-
-<p>MD5校验码：17691a91c49a397430ef5fa6f9033a5b</p>
-
-<p>下载地址1：
-http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.2.0.iso</p>
-
-<p>下载地址2：
-http://pan.baidu.com/s/1dF4ozU5</p>
-
-<h4>2. 制作U盘安装盘</h4>
-
-<h5>2.1   使用UltraISO打开ISO</h5>
-
-<p>使用UltraISO，点击“文件”按钮，选择打开已下载好的CentOS7.2 ISO文件，如图1所示。</p>
-
-<p><img src="../images/blogs/offline_install/use-UltraISO-open-custom-centos7.2-iso.png" ></p>
-
-<p><em>图1 选择UltraISO打开定制版CentOS7.2 ISO</em></p>
-
-<h5>2.2   写入硬盘镜像</h5>
-
-<p>点击“启动”按钮，选择“写入硬盘镜像”，如图2所示。</p>
-
-<p><img src="../images/blogs/offline_install/click-write-to-diskimage.png" ></p>
-
-<p><em>图2 点击写入硬盘镜像</em></p>
-
-<h5>2.3   将ISO写入硬盘镜像</h5>
-
-<p>在硬盘驱动器列表选择相应的U盘进行刻录，如果系统只插了一个U盘，则默认以此U盘进行刻录和写入，在刻录前，注意备份U盘之前的内容。
-其他选项，按照默认设置，无须额外配置。点击“写入”按钮，如图3所示。在新界面中点击“是”按钮进行确认，UltraISO将会把此ISO刻录到U盘。</p>
-
-<p><img src="../images/blogs/offline_install/choose-u-disk-to-write.png" ></p>
-
-<p><em>图3 选择U盘，点击写入按钮</em></p>
-
-<p><img src="../images/blogs/offline_install/choose-u-disk-to-write.png" ></p>
-
-<p><em>图4 确认写入</em></p>
-
-<h5>2.4   刻录检查</h5>
-
-<p>刻录成功的界面如图5所示，表示ZStack的定制版CentOS 7.2 可引导U盘已刻录成功。</p>
-
-<p><img src="../images/blogs/offline_install/burn-check.png" ></p>
-
-<p><em>图5 刻录检查</em></p>
-
-<h4>3. 使用U盘引导CentOS7.2</h4>
-
-<p>此ISO支持Legacy模式引导，也支持UEFI模式引导。可根据需求，自定义选择安装。下面以Legacy模式引导安装举例。
-在BIOS启动选项列表，选择此U盘为第一启动设备，启动后，引导安装界面如图6所示：</p>
-
-<p><img src="../images/blogs/offline_install/boot-from-U-disk.png" ></p>
-
-<p><em>图6 可引导U盘启动界面</em></p>
-
-<h4>4. 硬盘分区</h4>
-
-<p>安装过程中，只需进行分区，即可一键安装CentOS7.2操作系统，如图7所示的分区为根分区48G，swap分区为2G。也可根据存储及需求，提前设置好大容量分区。</p>
-
-<p><img src="../images/blogs/offline_install/partition.png" ></p>
-
-<p><em>图7 安装分区界面</em></p>
-
-<h4>5. 安装系统</h4>
-
-<p>分区完毕后，点击“Begin Installation”按钮，开始安装。如图8所示。</p>
-
-<p><img src="../images/blogs/offline_install/click-begin-installation.png" ></p>
-
-<p><em>图8 点击Begin Installation按钮</em></p>
-
-<p>所有的安装包安装完毕后，点击“reboot”按钮，如图9所示，即可启动进入CentOS7.2系统。</p>
-
-<p><img src="../images/blogs/offline_install/prepare-reboot.png" ></p>
-
-<p><em>图9 点击reboot按钮</em></p>
-
-<h3>离线安装ZStack：</h3>
-
-<p>安装系统后，可通过以下方法离线安装ZStack。</p>
-
-<ol>
-<li>下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；</li>
-<li>在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。</li>
-<li>安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。</li>
-<li>安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
-<img src="../images/blogs/offline_install/offline-install-zstack.png" ></li>
-</ol>
+<ul>
+<li><a href="#install">安装</a></li>
+<li><a href="#offlineinstall">离线安装</a></li>
+<li><a href="#upgrade">升级</a></li>
+</ul>
 
 
-<p><em>图10 离线安装ZStack</em></p>
+<h3 id="actualsize">1. Image/Volume实际容量 </h3>
 
-<h2>配置用户内网独立yum源：</h2>
 
-<p>如果用户自己在内部配置了统一的yum源,也可以不使用ZStack CentOS 7.2 社区版的ISO来安装系统。
-但是需要手动在每一台机器上(需要安装ZStack管理节点,镜像服务器以及计算节点的机器),编写如下的yum配置,把内部yum源配置到名为zstack-local的repository里:</p>
+<p>在使用thin-provisioning（又称thin-clone）技术的时候，一个qcow2文件有两个容量：表示物理大小的真实容量(actual size)和表示用户申请空间大小的容量（virtual size）。在之前的zstack版本中 ，对于image，用户只能看到actual size，对于volume，只能看到virtual size。从1.3版本开始，image和volume都同时支持actual size和virtual size，这样用户既能知道该image/volume目前的物理大小，也可以知道表示其容量上限的virtual size。</p>
 
-<pre><code>#echo /etc/yum.repos.d/zstack-local.repo
-[zstack-local]
-name=ZStack Local Yum Repo
-baseurl=http://内部YUM源URL
-enabled=0
-gpgcheck=0
+<p><img src="/images/1.3/1.png" class="center-img img-responsive"></p>
+
+<p>对于volume，由于其actual size会随用户对磁盘的使用不断增长，我们新加了一个API方便用户能实时获取volume当前的actual size:</p>
+
+<pre><code>    &gt;&gt;&gt;SyncVolumeSize uuid=e9fc82e23cd14d8aa33d1304cb1f5f87
 </code></pre>
 
-<p>需要注意的是该内部源内需要包含系统需要以来的各种标准库,包括epel里的库.</p>
+<h3 id="cpu">2. CPU超分设定</h3>
 
-<p>配置之后,就可以使用-o参数来安装ZStack.添加各种ZStack资源的时候,也会使用每台服务器上的该配置文件.</p>
+
+<p>在之前的zstack版本中，我们引入了一个对应VM CPU权重的概念cpu speed，给用户造成了很大困惑。在1.3版本中，我们已将其去掉。用户创建VM时只需要执行VCPU的数量即可。用户可以通过设置一个 全局配置来执行物理机CPU的超分比例：</p>
+
+<pre><code>    &gt;&gt;&gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
+</code></pre>
+
+<blockquote><p>默认CPU超分比例是10，即一个Linux操作系统可见的物理CPU可以分配10 VCPU供VM使用。例如一个4 CPU物理机，则可以虚出40个VCPU。</p></blockquote>
+
+<h3 id="startvm">3. 启动VM时指定cluster或host</h3>
+
+
+<p>在该版本中，用户可以在启动一个停止的VM时，指定该VM从启动的cluster或host：</p>
+
+<pre><code>    &gt;&gt;&gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 hostUuid=c2025197915944acaf0435c0c1a44f96
+</code></pre>
+
+<p>或</p>
+
+<pre><code>    &gt;&gt;&gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 clusterUuid==c2025197915944acaf0435c0c1a44f96
+</code></pre>
+
+<blockquote><p>该功能只对使用共享主存储（例如NFS）的VM有效，对于使用本地存储的VM，由于VM的根磁盘在物理机的硬盘上，无法跨物理机启动</p></blockquote>
+
+<h3 id="l3">5. 加载L3网络指定静态IP</h3>
+
+
+<p>在该版本中，用户可以在给一个VM加载L3网络的时候指定静态IP：</p>
+
+<pre><code>    &gt;&gt;&gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
+</code></pre>
+
+<h3 id="sshport">6. 添加host、backup storage时指定ssh端口以及使用非root用户</h3>
+
+
+<p>从该版本开始，在添加host、sftp backup storage、ceph primary storage、ceph backup storage时，可以指定ssh端口，以及使用非root的用户名。</p>
+
+<p><img src="/images/1.3/2.png" class="center-img img-responsive">
+<img src="/images/1.3/3.png" class="center-img img-responsive"></p>
+
+<h3 id="log">7. 日志收集工具</h3>
+
+
+<p>为了方便用户在调试zstack的时候收集日志，在1.3版本中我们新加了一个<code>zstack-ctl collect_log</code>命令用于自动收集并打包相关日志：</p>
+
+<p><img src="/images/1.3/4.png" class="center-img img-responsive"></p>
+
+<h3 id="iso">8. 社区版ISO安装升级到QEMU2.3版本</h3>
+
+
+<p>在最新的ZStack 1.3社区版ISO中，我们已经将QEMU升级到了2.3版本，该版本支持VM的在线快照功能，用户无需停止VM即可以生成快照。该ISO的下载链接在：</p>
+
+<pre><code>    http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.3.0.iso
+</code></pre>
+
+<p>百度云盘：</p>
+
+<pre><code>    http://pan.baidu.com/s/1hsqCEfa
+</code></pre>
+
+<h3 id="fusionstor">9. 华云网际fusionstor插件</h3>
+
+
+<p>在1.3版本中，华云网际公司贡献了其商业存储fusionstor的插件，用户可以直接在ZStack UI上添加fusionstor作为主存储和备份存储；</p>
+
+<p><img src="/images/1.3/5.png" class="center-img img-responsive">
+<img src="/images/1.3/6.png" class="center-img img-responsive"></p>
+
+<h3 id="install">9. 安装</h3>
+
+
+<p>你可以通过下面方式安装：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/rc2/zstack-installer-1.3.0-rc2.bin
+    bash zstack-installer-1.3.0-rc2.bin -R aliyun
+</code></pre>
+
+<blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
+
+<h3 id="offlineinstall">10. 离线安装</h3>
+
+
+<p>针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.3 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.</p>
+
+<p>然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：</p>
+
+<pre><code>    bash zstack-installer-1.3.0.bin -o
+</code></pre>
+
+<p>具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: <a href="./offline-install-zstack-from-custom-iso.html">ZStack离线安装教程</a></p>
+
+<h3 id="upgrade">11. 升级 </h3>
+
+
+<p>一如既往的，我们支持一键无缝升级：</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/rc2/zstack-installer-1.3.0-rc2.bin
+    bash zstack-installer-1.3.0-rc2.bin -u
+</code></pre>
+
+<p>多节点升级中的zstack.war请等待正式版发布。</p>
 
   </article>
 
