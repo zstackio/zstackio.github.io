@@ -109,7 +109,7 @@
 <div class="container doc big-font">
   <h2>Feature Matrix</h2>
 
-<p>In current version (0.9), the supported features are listed as follows:</p>
+<p>In current version (1.3), the supported features are listed as follows:</p>
 
 <table class="table black-table">
   <thead>
@@ -134,13 +134,13 @@
     </tr>
     
     <tr>
-      <td rowspan=5>Storage</td>
+      <td rowspan=6>Storage</td>
       <td>Primary Storage</td>
-      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder. Support NFS, Local Storage, iSCSI and Ceph. </td>
+      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder. Support NFS, Local Storage, iSCSI, Shared Mount Storage, Ceph and Fusionstor. </td>
     </tr>
     <tr>
       <td>Backup Storage</td>
-      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image. Support Sftp and Ceph.</td>
+      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image. Support Sftp, Ceph and Fusionstor.</td>
     </tr>
     <tr>
       <td>Image</td>
@@ -148,11 +148,15 @@
     </tr>
     <tr>
       <td>Volume</td>
-      <td>Virtual disks</td>
+      <td>Virtual disks. Supporting live attach/detach</td>
     </tr>
     <tr>
       <td>Volume Snapshot</td>
       <td>Snapshots of volumes</td>
+    </tr>
+    <tr>
+      <td>ISO</td>
+      <td>Live attach/detach ISO. Adjust VM boot order. </td>
     </tr>
     
     <tr>
@@ -162,11 +166,11 @@
     </tr>
     <tr>
       <td>L3 Network</td>
-      <td>Subnets with network services</td>
+      <td>Subnets with network services. Support live attach/detach L3 Network to VM.</td>
     </tr>
     
     <tr>
-      <td rowspan=7>Network Services</td>
+      <td rowspan=10>Network Services</td>
       <td>DHCP</td>
       <td></td>
     </tr>
@@ -194,6 +198,19 @@
       <td>Elastic Load Balancer</td>
       <td>Similar to Amazon EC2 Elastic Load Balancer</td>
     </tr>
+    <tr>
+      <td>Distributed EIP</td>
+      <td>Similar with EIP, but not using single Virtual Router</td>
+    </tr>
+    <tr>
+      <td>Distributed DHCP</td>
+      <td>Similar with DHCP, but not using single Virtual Router</td>
+    </tr>
+    <tr>
+      <td>User Data</td>
+      <td>Similar with Amazon Cloud-init</td>
+    </tr>
+    
     
     <tr>
       <td>Account & Identity</td>

@@ -114,7 +114,7 @@ MySQL, and RabbitMQ message broker on separate machines:</p>
   <tr>
     <td><b>OS</b></td>
     <td>
-      <p>CentOS 6.6+/CentOS 7.2+/Ubuntu 14.04</p>
+      <p>CentOS 7.2+/Ubuntu 14.04</p>
       <div class="bs-callout bs-callout-info">
         <h4>We have tested those OS</h4>
         Those OS have been tested while other Linux OS should work as well.
@@ -258,11 +258,6 @@ can follow below instructions.</p>
 
 <h4>2.1. Install MySQL:</h4>
 
-<p><em>CentOS6.x</em></p>
-
-<pre><code>sudo yum install mysql-server mysql
-</code></pre>
-
 <p><em>CentOS7</em></p>
 
 <pre><code>sudo yum install mariadb mariadb-server
@@ -275,16 +270,8 @@ can follow below instructions.</p>
 
 <h4>2.2 Install RabbitMQ:</h4>
 
-<p><em>CentOS6.6./7</em></p>
-
 <pre><code>sudo yum install rabbitmq-server
 </code></pre>
-
-<div class="bs-callout bs-callout-info">
-  <h4>You need to install EPEL repo</h4>
-  For CentOS 6.x, you need to install [EPEL repo](http://fedoraproject.org/wiki/EPEL) first.
-</div>
-
 
 <p><em>Ubuntu14.04</em></p>
 
@@ -293,7 +280,7 @@ can follow below instructions.</p>
 
 <h4>2.3. Install Ansible:</h4>
 
-<p><em>CentOS6.6./7</em></p>
+<p><em>CentOS 7</em></p>
 
 <pre><code>sudo yum install python-setuptools
 sudo easy_install pip
@@ -313,7 +300,7 @@ sudo pip install ansible==1.7.2
 
 <p>ZStack requires JRE7 or later version.</p>
 
-<p><em>CentOS6.6/7</em></p>
+<p><em>CentOS 7</em></p>
 
 <pre><code>sudo yum install java-1.7.0-openjdk
 </code></pre>
