@@ -5,7 +5,7 @@ layout: docPage
 
 ## Feature Matrix
 
-In current version (0.9), the supported features are listed as follows:
+In current version (1.3), the supported features are listed as follows:
 
 
 <table class="table black-table">
@@ -31,13 +31,13 @@ In current version (0.9), the supported features are listed as follows:
     </tr>
     
     <tr>
-      <td rowspan=5>Storage</td>
+      <td rowspan=6>Storage</td>
       <td>Primary Storage</td>
-      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder. Support NFS, Local Storage, iSCSI and Ceph. </td>
+      <td>Block storage for virtual machine volumes. Similar to OpenStack's Cinder. Support NFS, Local Storage, iSCSI, Shared Mount Storage, Ceph and Fusionstor. </td>
     </tr>
     <tr>
       <td>Backup Storage</td>
-      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image. Support Sftp and Ceph.</td>
+      <td>Storage for storing images. Similar to OpenStack's Glance in combination with Image. Support Sftp, Ceph and Fusionstor.</td>
     </tr>
     <tr>
       <td>Image</td>
@@ -45,11 +45,15 @@ In current version (0.9), the supported features are listed as follows:
     </tr>
     <tr>
       <td>Volume</td>
-      <td>Virtual disks</td>
+      <td>Virtual disks. Supporting live attach/detach</td>
     </tr>
     <tr>
       <td>Volume Snapshot</td>
       <td>Snapshots of volumes</td>
+    </tr>
+    <tr>
+      <td>ISO</td>
+      <td>Live attach/detach ISO. Adjust VM boot order. </td>
     </tr>
     
     <tr>
@@ -59,11 +63,11 @@ In current version (0.9), the supported features are listed as follows:
     </tr>
     <tr>
       <td>L3 Network</td>
-      <td>Subnets with network services</td>
+      <td>Subnets with network services. Support live attach/detach L3 Network to VM.</td>
     </tr>
     
     <tr>
-      <td rowspan=7>Network Services</td>
+      <td rowspan=10>Network Services</td>
       <td>DHCP</td>
       <td></td>
     </tr>
@@ -91,6 +95,19 @@ In current version (0.9), the supported features are listed as follows:
       <td>Elastic Load Balancer</td>
       <td>Similar to Amazon EC2 Elastic Load Balancer</td>
     </tr>
+    <tr>
+      <td>Distributed EIP</td>
+      <td>Similar with EIP, but not using single Virtual Router</td>
+    </tr>
+    <tr>
+      <td>Distributed DHCP</td>
+      <td>Similar with DHCP, but not using single Virtual Router</td>
+    </tr>
+    <tr>
+      <td>User Data</td>
+      <td>Similar with Amazon Cloud-init</td>
+    </tr>
+    
     
     <tr>
       <td>Account & Identity</td>

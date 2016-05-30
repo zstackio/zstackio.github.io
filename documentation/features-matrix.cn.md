@@ -5,7 +5,7 @@ layout: docPage.cn
 
 ## ZStack 功能列表
 
-在目前的版本中（0.9），ZStack支持如下功能：
+在目前的版本中（1.3），ZStack支持如下功能：
 
 
 <table class="table black-table">
@@ -34,13 +34,13 @@ layout: docPage.cn
       <td>支持Windows，Windows带VirtIO驱动、Linux等云主机。另外支持云主机的迁移，从ISO安装，调整启动顺序，嵌套虚拟化，VNC/Spice等。</td>
     </tr>
     <tr>
-      <td rowspan=5>存储</td>
+      <td rowspan=6>存储</td>
       <td>主存储</td>
-      <td>用于放置虚拟机磁盘卷的块存储设备。类似于 OpenStack的Cinder。 支持NFS, Local Storage, iSCSI 和 Ceph </td>
+      <td>用于放置虚拟机磁盘卷的块存储设备。类似于 OpenStack的Cinder。 支持NFS, Local Storage, iSCSI 共享挂载存储(GlusterFS,OCFS2,GFS2,MooseFS等), Ceph 和FusionStor</td>
     </tr>
     <tr>
       <td>备份存储</td>
-      <td>用于存放虚拟机镜像文件的存储。如果加上镜像文件，就相当于OpenStack的Glance。 支持Sftp 和 Ceph</td>
+      <td>用于存放虚拟机镜像文件的存储。如果加上镜像文件，就相当于OpenStack的Glance。 支持Sftp, Ceph和FusionStor</td>
     </tr>
     <tr>
       <td>镜像</td>
@@ -54,6 +54,10 @@ layout: docPage.cn
       <td>磁盘卷快照</td>
       <td>虚拟机的磁盘卷快照</td>
     </tr>
+    <tr>
+      <td>ISO</td>
+      <td>支持ISO动态的添加和删除,支持修改VM启动顺序</td>
+    </tr>
     
     <tr>
       <td rowspan=2>网络</td>
@@ -62,11 +66,11 @@ layout: docPage.cn
     </tr>
     <tr>
       <td>三层网络</td>
-      <td>子网以及各种网络服务</td>
+      <td>子网以及各种网络服务,支持动态添加删除网络,动态和静态IP地址</td>
     </tr>
     
     <tr>
-      <td rowspan=7>网络服务</td>
+      <td rowspan=10>网络服务</td>
       <td>DHCP</td>
       <td></td>
     </tr>
@@ -94,6 +98,18 @@ layout: docPage.cn
       <td>动态负载均衡</td>
       <td>类似于Amazon EC2 Elastic Load Balancer</td>
     </tr>
+    <tr>
+      <td>分布式EIP</td>
+      <td>无需单点虚拟路由的分布式EIP</td>
+    </tr>
+    <tr>
+      <td>分布式DHCP</td>
+      <td>无需单点虚拟路由的分布式DHCP</td>
+    </tr>
+    <tr>
+      <td>User Data</td>
+      <td>类似Amazon 的Cloud-init的支持</td>
+    </tr>
     
     <tr>
       <td>账号系统</td>
@@ -104,7 +120,7 @@ layout: docPage.cn
     <tr>
       <td rowspan=2>配置</td>
       <td>实例方案</td>
-      <td>虚拟机的资配置清单。类似于OpenStack flavor</td>
+      <td>虚拟机的资配置清单。类似于OpenStack flavor。支持CPU超分</td>
     </tr>
     <tr>
       <td>磁盘卷方案</td>
