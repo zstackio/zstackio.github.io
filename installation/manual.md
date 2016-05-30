@@ -45,7 +45,7 @@ For machine to install ZStack management node, we recommend below hardware speci
   <tr>
     <td><b>OS</b></td>
     <td>
-      <p>CentOS 6.6+/CentOS 7.2+/Ubuntu 14.04</p>
+      <p>CentOS 7.2+/Ubuntu 14.04</p>
       <div class="bs-callout bs-callout-info">
         <h4>We have tested those OS</h4>
         Those OS have been tested while other Linux OS should work as well.
@@ -175,10 +175,6 @@ can follow below instructions.
 
 #### 2.1. Install MySQL:
 
-*CentOS6.x*
-
-    sudo yum install mysql-server mysql
-    
 *CentOS7*
 
     sudo yum install mariadb mariadb-server
@@ -190,14 +186,7 @@ can follow below instructions.
    
 #### 2.2 Install RabbitMQ:
 
-*CentOS6.6./7*
-
     sudo yum install rabbitmq-server
-    
-<div class="bs-callout bs-callout-info">
-  <h4>You need to install EPEL repo</h4>
-  For CentOS 6.x, you need to install [EPEL repo](http://fedoraproject.org/wiki/EPEL) first.
-</div>
     
 *Ubuntu14.04*
 
@@ -205,7 +194,7 @@ can follow below instructions.
     
 #### 2.3. Install Ansible:
 
-*CentOS6.6./7*
+*CentOS 7*
 
     sudo yum install python-setuptools
     sudo easy_install pip
@@ -223,7 +212,7 @@ can follow below instructions.
 
 ZStack requires JRE7 or later version.
 
-*CentOS6.6/7*
+*CentOS 7*
 
     sudo yum install java-1.7.0-openjdk
     
