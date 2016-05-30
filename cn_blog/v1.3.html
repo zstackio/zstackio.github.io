@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack v1.3 RC 发布</title>
+    <title>ZStack - ZStack v1.3 发布</title>
     <script type="text/javascript" src="/js/google_analytics.js"></script>
     <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
@@ -76,8 +76,8 @@
     <div class="post">
 
   <header class="post-header">
-    <h2 class="post-title">ZStack v1.3 RC 发布</h2>
-    <p class="post-meta"> by Frank Zhang on May 23, 2016</p>
+    <h2 class="post-title">ZStack v1.3 发布</h2>
+    <p class="post-meta"> by Frank Zhang on May 30, 2016</p>
     <div style="margin-bottom: 15px">
       
 <!--
@@ -114,9 +114,9 @@
 
 
   <article class="post-content">
-    <h2>ZStack 1.3 RC 发布</h2>
+    <h2>ZStack 1.3 版本今天正式发布</h2>
 
-<p>ZStack 1.3 RC 版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.2版本中发现的bug，新增了如下功能；image/volume的virtual size/actual size支持，CPU超分设置，启动VM的时候指定集群（cluster）或物理机，加载L3网络到虚拟机时指定IP等功能。此外，该版本包含了华云网际贡献的fusionstor插件，用户可以使用华云网际的商业存储fusionstor作为备份存储和主存储。具体细节参考以下章节。</p>
+<p>ZStack 1.3版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.2版本中发现的bug，新增了如下功能；image/volume的virtual size/actual size支持，CPU超分设置，启动VM的时候指定集群（cluster）或物理机，加载L3网络到虚拟机时指定IP等功能。此外，该版本包含了华云网际贡献的fusionstor插件，用户可以使用华云网际的商业存储fusionstor作为备份存储和主存储。具体细节参考以下章节。</p>
 
 <h2>新增功能</h2>
 
@@ -124,10 +124,9 @@
 <li><a href="#actualsize">Image/Volume的actual size/virtual size支持</a></li>
 <li><a href="#cpu">CPU超分</a></li>
 <li><a href="#startvm">启动VM指定集群或物理机</a></li>
-<li><a href="#l3">加载L3网络指定静态IP</a></li>
-<li><a href="#sshport">添加host、backup storage时指定ssh端口以及使用非root用户</a></li>
+<li><a href="#staticip">加载L3网络指定静态IP</a></li>
 <li><a href="#log">日志收集工具</a></li>
-<li><a href="#iso">社区版ISO安装升级到QEMU2.3版本</a></li>
+<li><a href="#qemu">社区版ISO安装升级到QEMU2.3版本</a></li>
 <li><a href="#fusionstor">华云网际fusionstor支持</a></li>
 </ul>
 
@@ -156,7 +155,7 @@
 <h3 id="cpu">2. CPU超分设定</h3>
 
 
-<p>在之前的zstack版本中，我们引入了一个对应VM CPU权重的概念cpu speed，给用户造成了很大困惑。在1.3版本中，我们已将其去掉。用户创建VM时只需要执行VCPU的数量即可。用户可以通过设置一个 全局配置来执行物理机CPU的超分比例：</p>
+<p>在之前的zstack版本中，我们引入了一个对应VM CPU权重的概念cpu speed，给用户造成了很大困惑。在1.3版本中，我们已将其去掉。用户创建VM时只需要执行VCPU的数量即可。用户可以通过设置一个 全局配置来执行物理机CPU的超分比例:</p>
 
 <pre><code>    &gt;&gt;&gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
 </code></pre>
@@ -178,7 +177,7 @@
 
 <blockquote><p>该功能只对使用共享主存储（例如NFS）的VM有效，对于使用本地存储的VM，由于VM的根磁盘在物理机的硬盘上，无法跨物理机启动</p></blockquote>
 
-<h3 id="l3">5. 加载L3网络指定静态IP</h3>
+<h3 id="staticip">4. 加载L3网络指定静态IP</h3>
 
 
 <p>在该版本中，用户可以在给一个VM加载L3网络的时候指定静态IP：</p>
@@ -186,22 +185,24 @@
 <pre><code>    &gt;&gt;&gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
 </code></pre>
 
-<h3 id="sshport">6. 添加host、backup storage时指定ssh端口以及使用非root用户</h3>
+<h3 id="sshport">5. 添加host、backup storage时指定ssh端口以及使用非root用户</h3>
 
 
-<p>从该版本开始，在添加host、sftp backup storage、ceph primary storage、ceph backup storage时，可以指定ssh端口，以及使用非root的用户名。</p>
+<p>从该版本开始，在添加host、sftp backup storage、ceph primary storage、ceph backup storage时，可以指定ssh端口，以及使用非root的用户名:</p>
 
 <p><img src="/images/1.3/2.png" class="center-img img-responsive">
 <img src="/images/1.3/3.png" class="center-img img-responsive"></p>
 
-<h3 id="log">7. 日志收集工具</h3>
+<h3 id="log">6. 日志收集工具</h3>
 
 
-<p>为了方便用户在调试zstack的时候收集日志，在1.3版本中我们新加了一个<code>zstack-ctl collect_log</code>命令用于自动收集并打包相关日志：</p>
+<p>为了方便用户在调试zstack的时候收集日志，在1.3版本中我们新加了一个zstack-ctl collect_log命令用于自动收集并打包相关日志：</p>
 
 <p><img src="/images/1.3/4.png" class="center-img img-responsive"></p>
 
-<h3 id="iso">8. 社区版ISO安装升级到QEMU2.3版本</h3>
+<p>在1.2版本中，用户可以通过修改全局设置的来指定启动云主机时，KVM对云盘使用的缓存模式。支持三种模式：</p>
+
+<h3 id="qemu">7. 社区版ISO安装升级到QEMU2.3版本</h3>
 
 
 <p>在最新的ZStack 1.3社区版ISO中，我们已经将QEMU升级到了2.3版本，该版本支持VM的在线快照功能，用户无需停止VM即可以生成快照。该ISO的下载链接在：</p>
@@ -209,15 +210,15 @@
 <pre><code>    http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.3.0.iso
 </code></pre>
 
-<p>百度云盘：</p>
+<p>百度云盘:</p>
 
 <pre><code>    http://pan.baidu.com/s/1hsqCEfa
 </code></pre>
 
-<h3 id="fusionstor">9. 华云网际fusionstor插件</h3>
+<h3 id="fusionstor">8. 华云网际fusionstor插件</h3>
 
 
-<p>在1.3版本中，华云网际公司贡献了其商业存储fusionstor的插件，用户可以直接在ZStack UI上添加fusionstor作为主存储和备份存储；</p>
+<p>在1.3版本中，华云网际公司贡献了其商业存储fusionstor的插件，用户可以直接在ZStack UI上添加fusionstor作为主存储和备份存储</p>
 
 <p><img src="/images/1.3/5.png" class="center-img img-responsive">
 <img src="/images/1.3/6.png" class="center-img img-responsive"></p>
@@ -227,8 +228,8 @@
 
 <p>你可以通过下面方式安装：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/rc2/zstack-installer-1.3.0-rc2.bin
-    bash zstack-installer-1.3.0-rc2.bin -R aliyun
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -R aliyun
 </code></pre>
 
 <blockquote><p>这里<code>-R aliyun</code>参数指定使用阿里云的源进行安装，你也可以使用<code>-R 163</code>使用网易的源。我们推荐使用阿里云的源</p></blockquote>
@@ -251,11 +252,14 @@
 
 <p>一如既往的，我们支持一键无缝升级：</p>
 
-<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/rc2/zstack-installer-1.3.0-rc2.bin
-    bash zstack-installer-1.3.0-rc2.bin -u
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -u
 </code></pre>
 
-<p>多节点升级中的zstack.war请等待正式版发布。</p>
+<p>多节点升级中的zstack.war文件可以从下面的链接下载：</p>
+
+<pre><code>            wget http://download.zstack.org/releases/1.3/1.3.0/zstack.war
+</code></pre>
 
   </article>
 

@@ -5,9 +5,167 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 25 May 2016 10:34:39 +0800</pubDate>
-    <lastBuildDate>Wed, 25 May 2016 10:34:39 +0800</lastBuildDate>
+    <pubDate>Mon, 30 May 2016 13:55:21 +0800</pubDate>
+    <lastBuildDate>Mon, 30 May 2016 13:55:21 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.3 发布</title>
+        <description>&lt;h2&gt;ZStack 1.3 版本今天正式发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.3版本今天发布，欢迎大家下载试用。在该版中，我们修复了1.2版本中发现的bug，新增了如下功能；image/volume的virtual size/actual size支持，CPU超分设置，启动VM的时候指定集群（cluster）或物理机，加载L3网络到虚拟机时指定IP等功能。此外，该版本包含了华云网际贡献的fusionstor插件，用户可以使用华云网际的商业存储fusionstor作为备份存储和主存储。具体细节参考以下章节。&lt;/p&gt;
+
+&lt;h2&gt;新增功能&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#actualsize&quot;&gt;Image/Volume的actual size/virtual size支持&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cpu&quot;&gt;CPU超分&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#startvm&quot;&gt;启动VM指定集群或物理机&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#staticip&quot;&gt;加载L3网络指定静态IP&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#log&quot;&gt;日志收集工具&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#qemu&quot;&gt;社区版ISO安装升级到QEMU2.3版本&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#fusionstor&quot;&gt;华云网际fusionstor支持&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;安装升级&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#offlineinstall&quot;&gt;离线安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;升级&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;actualsize&quot;&gt;1. Image/Volume实际容量 &lt;/h3&gt;
+
+
+&lt;p&gt;在使用thin-provisioning（又称thin-clone）技术的时候，一个qcow2文件有两个容量：表示物理大小的真实容量(actual size)和表示用户申请空间大小的容量（virtual size）。在之前的zstack版本中 ，对于image，用户只能看到actual size，对于volume，只能看到virtual size。从1.3版本开始，image和volume都同时支持actual size和virtual size，这样用户既能知道该image/volume目前的物理大小，也可以知道表示其容量上限的virtual size。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;对于volume，由于其actual size会随用户对磁盘的使用不断增长，我们新加了一个API方便用户能实时获取volume当前的actual size:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;SyncVolumeSize uuid=e9fc82e23cd14d8aa33d1304cb1f5f87
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;cpu&quot;&gt;2. CPU超分设定&lt;/h3&gt;
+
+
+&lt;p&gt;在之前的zstack版本中，我们引入了一个对应VM CPU权重的概念cpu speed，给用户造成了很大困惑。在1.3版本中，我们已将其去掉。用户创建VM时只需要执行VCPU的数量即可。用户可以通过设置一个 全局配置来执行物理机CPU的超分比例:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;默认CPU超分比例是10，即一个Linux操作系统可见的物理CPU可以分配10 VCPU供VM使用。例如一个4 CPU物理机，则可以虚出40个VCPU。&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;startvm&quot;&gt;3. 启动VM时指定cluster或host&lt;/h3&gt;
+
+
+&lt;p&gt;在该版本中，用户可以在启动一个停止的VM时，指定该VM从启动的cluster或host：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 hostUuid=c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;或&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 clusterUuid==c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;该功能只对使用共享主存储（例如NFS）的VM有效，对于使用本地存储的VM，由于VM的根磁盘在物理机的硬盘上，无法跨物理机启动&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;staticip&quot;&gt;4. 加载L3网络指定静态IP&lt;/h3&gt;
+
+
+&lt;p&gt;在该版本中，用户可以在给一个VM加载L3网络的时候指定静态IP：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;sshport&quot;&gt;5. 添加host、backup storage时指定ssh端口以及使用非root用户&lt;/h3&gt;
+
+
+&lt;p&gt;从该版本开始，在添加host、sftp backup storage、ceph primary storage、ceph backup storage时，可以指定ssh端口，以及使用非root的用户名:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;log&quot;&gt;6. 日志收集工具&lt;/h3&gt;
+
+
+&lt;p&gt;为了方便用户在调试zstack的时候收集日志，在1.3版本中我们新加了一个zstack-ctl collect_log命令用于自动收集并打包相关日志：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;在1.2版本中，用户可以通过修改全局设置的来指定启动云主机时，KVM对云盘使用的缓存模式。支持三种模式：&lt;/p&gt;
+
+&lt;h3 id=&quot;qemu&quot;&gt;7. 社区版ISO安装升级到QEMU2.3版本&lt;/h3&gt;
+
+
+&lt;p&gt;在最新的ZStack 1.3社区版ISO中，我们已经将QEMU升级到了2.3版本，该版本支持VM的在线快照功能，用户无需停止VM即可以生成快照。该ISO的下载链接在：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.3.0.iso
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;百度云盘:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    http://pan.baidu.com/s/1hsqCEfa
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;fusionstor&quot;&gt;8. 华云网际fusionstor插件&lt;/h3&gt;
+
+
+&lt;p&gt;在1.3版本中，华云网际公司贡献了其商业存储fusionstor的插件，用户可以直接在ZStack UI上添加fusionstor作为主存储和备份存储&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;install&quot;&gt;9. 安装&lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;offlineinstall&quot;&gt;10. 离线安装&lt;/h3&gt;
+
+
+&lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.3 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.&lt;/p&gt;
+
+&lt;p&gt;然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    bash zstack-installer-1.3.0.bin -o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt;11. 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多节点升级中的zstack.war文件可以从下面的链接下载：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;            wget http://download.zstack.org/releases/1.3/1.3.0/zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Mon, 30 May 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.3.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.3.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.2 release</title>
@@ -139,8 +297,8 @@ will be unable to start a created VM or create a VM on your local storage.&lt;/p
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v1.2.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v1.2.html</guid>
+        <link>http://zstack.org/cn/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.2.html</guid>
         
         
         <category>blog</category>
@@ -277,8 +435,8 @@ will be unable to start a created VM or create a VM on your local storage.&lt;/p
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v1.2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.2.html</guid>
+        <link>http://zstack.org/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v1.2.html</guid>
         
         
         <category>blog</category>
@@ -1218,8 +1376,8 @@ the below steps:&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 30 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v1.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v1.1.html</guid>
+        <link>http://zstack.org/cn/blog/v1.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.1.html</guid>
         
         
         <category>blog</category>
@@ -1626,8 +1784,8 @@ the below steps:&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 30 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v1.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.1.html</guid>
+        <link>http://zstack.org/blog/v1.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v1.1.html</guid>
         
         
         <category>blog</category>
@@ -1746,7 +1904,7 @@ http://pan.baidu.com/s/1hsqCEfa&lt;/p&gt;
 &lt;p&gt;安装系统后，可通过以下方法离线安装ZStack。&lt;/p&gt;
 
 &lt;ol&gt;
-&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.2/1.2.0/zstack-installer-1.2.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
+&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
 &lt;li&gt;在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。&lt;/li&gt;
 &lt;li&gt;安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。&lt;/li&gt;
 &lt;li&gt;安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
@@ -1776,466 +1934,6 @@ gpgcheck=0
         <pubDate>Tue, 29 Mar 2016 00:00:00 +0800</pubDate>
         <link>http://zstack.org/cn_blog/offline-install-zstack-from-custom-iso.html</link>
         <guid isPermaLink="true">http://zstack.org/cn_blog/offline-install-zstack-from-custom-iso.html</guid>
-        
-        
-        <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.1 RC1 发布</title>
-        <description>&lt;h2&gt;ZStack 1.1 RC1 版本今天发布&lt;/h2&gt;
-
-&lt;p&gt;ZStack 1.1 RC1 版本今天发布，欢迎大家下载试用。在该版本中，我们主要针对1.0 版本做了性能和稳定性相关的工作。
-某些性能指标提升超过10倍,例如consoleproxy在管理节点重启后会立刻安装完毕.
-在ZStack 1.1 正式版发布的时候我们还会提供一个离线版的CentOS7.2的安装ISO和ZStack 1.1的离线安装方法。&lt;/p&gt;
-
-&lt;h2&gt;新增功能&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#ansible&quot;&gt;Ansible 优化&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#consoleproxy&quot;&gt;ConsoleProxy 重连API&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#timeout&quot;&gt;API超时管理框架&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#reclaim&quot;&gt;垃圾自动回收&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#zstackimage&quot;&gt;15M超小试用镜像--支持动态添加删除云盘和网络&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#virtualrouter&quot;&gt;更新虚拟路由（VirtualRouter）镜像&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#migration&quot;&gt;修改CentOS7.2 无法热迁移VM的Bug&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h2&gt;安装升级&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;安装&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;升级&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgradenetwork&quot;&gt;Virtual Router Provider升级到Flat Network Porvider&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h3 id=&quot;ansible&quot;&gt;1. Ansible优化 &lt;/h3&gt;
-
-
-&lt;p&gt;在1.1版本中，我们不再使用Ansible Playbook的方式去部署agent，而是直接使用了Ansible的原生SDK，为每个agent都定制了单独的部署程序，使得部署的稳定性和效率得到了极大的提高。&lt;/p&gt;
-
-&lt;p&gt;新的Ansible部署工具会自动检查系统依赖包的安装情况，只在有依赖包缺失的情况下才访问yum或apt源，避免了重启ZStack和升级ZStack过程中，由于访问外网抖动导致的物理机重连失败的问题，提高了系统的稳定性。新的部署工具也会检查Python依赖，解决了升级过程中consoleproxy依赖的websockify重复编译问题，升级consoleproxy的部署时间从原来的5分钟缩减到了4秒。&lt;/p&gt;
-
-&lt;h3 id=&quot;consoleproxy&quot;&gt;2. ConsoleProxy重连API &lt;/h3&gt;
-
-
-&lt;p&gt;在1.1版本中，我们加入了console proxy的重连和查询API，用户不再需要通过重启ZStack来重新部署console proxy。&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;QueryConsoleProxyAgent 
-    {
-        &quot;inventories&quot;: [
-            {
-                &quot;createDate&quot;: &quot;Mar 26, 2016 12:53:17 PM&quot;,
-                &quot;description&quot;: &quot;Console proxy agent running on the management node[uuid:ae80b109e9ca4f4c81191cd2ffe43000]&quot;,
-                &quot;lastOpDate&quot;: &quot;Mar 26, 2016 12:53:22 PM&quot;,
-                &quot;managementIp&quot;: &quot;172.20.12.46&quot;,
-                &quot;state&quot;: &quot;Enabled&quot;,
-                &quot;status&quot;: &quot;Connected&quot;,
-                &quot;type&quot;: &quot;ManagementServerConsoleProxy&quot;,
-                &quot;uuid&quot;: &quot;ae80b109e9ca4f4c81191cd2ffe43000&quot;
-            }
-        ],
-        &quot;success&quot;: true
-    }
-
-    &amp;gt;&amp;gt;&amp;gt;ReconnectConsoleProxyAgent 
-    {
-        &quot;inventory&quot;: {
-            &quot;ae80b109e9ca4f4c81191cd2ffe43000&quot;: true
-        },
-        &quot;success&quot;: true
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;timeout&quot;&gt;3. API超时管理框架&lt;/h3&gt;
-
-
-&lt;p&gt;ZStack所有功能由大量相互独立的微服务实现，服务之间使用异步消息通信，通常一个API会涉及到多个消息以及跟Agent端的HTTP调用，超时管理成为一个难题。在1.1版本中，我们加入了统一的API超时管理框架，用户无需关心底层细节。在当前版本中，用户如果需要改变默认的API超时，暂时还需要通过zstack.properties文件来改变，例如需要改变AddImage的API超时为6个小时，需要在zstack.properties添加如下配置：&lt;/p&gt;
-
-&lt;p&gt;ApiTimeout.org.zstack.header.image.APIAddImageMsg= org.zstack.header.storage.backup.DownloadImageMsg, org.zstack.storage.backup.sftp.SftpBackupStorageCommands$DownloadCmd, org.zstack.storage.ceph.backup.CephBackupStorageBase$DownloadCmd; 6h&lt;/p&gt;
-
-&lt;p&gt;NOTE：目前我们为所有耗时的API都设置了默认3小时的超时时间，用户在如无特殊需要，不建议通过配置的方式进行修改。我们在1.2版本会新加超时管理API，用户可以直接通过API来设定相应操作的超时时间。&lt;/p&gt;
-
-&lt;h3 id=&quot;reclaim&quot;&gt;4. 垃圾回收机制&lt;/h3&gt;
-
-
-&lt;p&gt;在1.1版本中，我们全面开启了跟虚拟机相关的垃圾回收器，可以自动回收由于网络故障、物理机故障导致的遗留资源，而不阻碍用户操作。&lt;/p&gt;
-
-&lt;p&gt; 场景：&lt;/p&gt;
-
-&lt;p&gt;物理机网络失联导致用户无法删除该物理机上运行的虚拟机。在早前的ZStack版本中，用户需要等待物理机网络恢复后再执行删除操作。有了垃圾回收器后，用户可以直接删除虚拟机，后台会记录该删除操作。垃圾回收器会在物理机网络恢复后自动触发，执行未完成的操作。&lt;/p&gt;
-
-&lt;p&gt;目前已经启动的垃圾回收器包括云主机、云盘、快照，更多的垃圾回收器会在未来版本中逐一开放。&lt;/p&gt;
-
-&lt;p&gt;ZStack的垃圾回收器非常智能，支持时间轮询和事件触发，其中事件触发支持多种关联事件。例如在前面的例子中，如果管理员在物理机网络恢复前又删除了该物理机，垃圾回收器也会被触发，清除之前提交的删除该物理机上虚拟机的任务。&lt;/p&gt;
-
-&lt;h3 id=&quot;virtualrouter&quot;&gt;5. 新虚拟路由（Virtual Router）镜像&lt;/h3&gt;
-
-
-&lt;p&gt;VirtualRouter image 更新到了 zstack-virtualrouter-1.1.0.qcow2 .我们除了更新了VirtualRouter 对应的services外，还提高了VirtualRouter的安全访问方式：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;修改了virtual router 默认的密码，原先的默认密码是 password。以后用户无法用密码登录Virtual Router&lt;/li&gt;
-&lt;li&gt;使用了用户特别的 SSH public key。 这个public key是用户在安装ZStack的时候自动产生的，可以保证每个用户都是用不同的SSH key。 用户可以使用私有的 SSH private key从Virtual Router的管理网络登录。 该SSH private key 默认存放在管理节点： /usr/local/zstack/apache-tomcat/webapps/zstackWEB-INF/classes/ansible/rsaKeys/id_rsa&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;用户可以下载并替换原有VirtualRouter Image: http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2&lt;/p&gt;
-
-&lt;p&gt;替换原有VirtualRouter的方法是：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;从UI上下载最新的VirtualRouter image，例如命名为 zstack-vr-1.1-image&lt;/li&gt;
-&lt;li&gt;从镜像服务器删除老的VirtualRouter Image&lt;/li&gt;
-&lt;li&gt;删除老的VirtualRouter Offering&lt;/li&gt;
-&lt;li&gt;创建新的VirtualRouter Offering，并且选择新下载的zstack-vr-1.1-image做为VirtualRouter Offering的镜像。其他网络配置不变。&lt;/li&gt;
-&lt;li&gt;从UI面板的Virtual Router菜单中删除现有的VirtualRouter VM&lt;/li&gt;
-&lt;li&gt;选择使用VR的L3网络重新创建一个普通VM，ZStack就会使用新的Virtual Router镜像创建一个新的虚拟路由。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3 id=&quot;zstackimage&quot;&gt;6. 15M超小试用镜像--支持动态添加删除云盘和网络 &lt;/h3&gt;
-
-
-&lt;p&gt;在1.1我们为ZStack专门构建了一个只有15M的测试镜像，支持网络、SSHD，用户可以用它来做一些基本测试。相比于之前的1.0的测试镜像，该镜像支持了动态添加删除云盘和网络。下载链接：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;     http://download.zstack.org/templates/zstack-image-1.2.qcow2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;感谢Robert Yang(@linuxer)提供该镜像!&lt;/p&gt;
-
-&lt;h3 id=&quot;migration&quot;&gt; 7. 修复CentOS7.2 物理机无法热迁移VM的bug&lt;/h3&gt;
-
-
-&lt;p&gt;CentOS7.2 修改了热迁移VM的libvirt的相关代码，导致如果用户没有显示的设置物理机Hostname的情况下，云主机无法热迁移。ZStack以及给RedHat报告了问题。
-不过在ZStack 1.1中，我们做了特别的改动来避免CentOS7.2 的这个bug。&lt;/p&gt;
-
-&lt;h3 id=&quot;install&quot;&gt; 8. 安装 &lt;/h3&gt;
-
-
-&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/rc1/zstack-installer-1.1.0-rc1.bin -O zstack-installer-1.1.0-rc1.bin
-    bash zstack-installer-1.1.0-rc1.bin -R aliyun
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;upgrade&quot;&gt; 9. 升级 &lt;/h3&gt;
-
-
-&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/rc1/zstack-installer-1.1.0-rc1.bin -O zstack-installer-1.1.0-rc1.bin
-    bash zstack-installer-1.1.0-rc1.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&quot;upgradenetwork&quot;&gt; 10. 用Flat Network Provider替换Virtual Router Provider &lt;/h3&gt;
-
-
-&lt;p&gt;如果你的网络模式是扁平网络，并且使用的是Virtual Rotuer Provider作为网络提供商，你可以使用1.0的Flat Network Provider替换它，这样你就不再需要virtual router VM来充当DHCP服务器了。假定你要替换网络提供商的L3网络的UUID是1a82c2691978476fa6cefa36bb9d4bfd，参考以下步骤：&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;获得当前L3网络的网络提供商UUID&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
- {
-     &quot;inventories&quot;: [
-         {
-             &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-             &quot;networkServiceType&quot;: &quot;DNS&quot;
-         },
-         {
-             &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-             &quot;networkServiceType&quot;: &quot;DHCP&quot;
-         }
-     ],
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;从L3网络上卸载Virtual Router Provider&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;:[&quot;DHCP&quot;,&quot;DNS&quot;]}&#39;
- {
-     &quot;inventory&quot;: {
-         &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-         &quot;dns&quot;: [
-             &quot;8.8.8.8&quot;
-         ],
-         &quot;ipRanges&quot;: [
-             {
-                 &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                 &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                 &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                 &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                 &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                 &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                 &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                 &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-             }
-         ],
-         &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-         &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-         &quot;name&quot;: &quot;l3-etpz&quot;,
-         &quot;networkServices&quot;: [],
-         &quot;state&quot;: &quot;Enabled&quot;,
-         &quot;system&quot;: false,
-         &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-         &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-         &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-     },
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;blockquote&gt;&lt;p&gt;注意这里的参数networkServices是一个map， key是第一步里返回的networkServiceProviderUuid，value是第一步里返回的networkServiceType&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;获得Flat Network Provider的UUID&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceProvider type=Flat
- {
-     &quot;inventories&quot;: [
-         {
-             &quot;attachedL2NetworkUuids&quot;: [
-                 &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-             ],
-             &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-             &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-             &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-             &quot;networkServiceTypes&quot;: [
-                 &quot;DHCP&quot;,
-                 &quot;Userdata&quot;
-             ],
-             &quot;type&quot;: &quot;Flat&quot;,
-             &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-         }
-     ],
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;获得承载L3网络的L2网络的UUID&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
- {
-     &quot;inventories&quot;: [
-         {
-             &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-         }
-     ],
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;加载Flat Network Provider到L2网络&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
- {
-     &quot;inventory&quot;: {
-         &quot;attachedL2NetworkUuids&quot;: [
-             &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-         ],
-         &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-         &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-         &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-         &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-         &quot;networkServiceTypes&quot;: [
-             &quot;DHCP&quot;,
-             &quot;Userdata&quot;
-         ],
-         &quot;type&quot;: &quot;Flat&quot;,
-         &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-     },
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;加载Flat Network Provider的服务到三层网络&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;17864f985e584a9ba4cd81de215212ce&quot;:[&quot;DHCP&quot;,&quot;Userdata&quot;]}&#39;
- {
-     &quot;inventory&quot;: {
-         &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-         &quot;dns&quot;: [
-             &quot;8.8.8.8&quot;
-         ],
-         &quot;ipRanges&quot;: [
-             {
-                 &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                 &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                 &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                 &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                 &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                 &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                 &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                 &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-             }
-         ],
-         &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-         &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-         &quot;name&quot;: &quot;l3-etpz&quot;,
-         &quot;networkServices&quot;: [
-             {
-                 &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                 &quot;networkServiceType&quot;: &quot;DHCP&quot;
-             },
-             {
-                 &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                 &quot;networkServiceType&quot;: &quot;Userdata&quot;
-             }
-         ],
-         &quot;state&quot;: &quot;Enabled&quot;,
-         &quot;system&quot;: false,
-         &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-         &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-         &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-     },
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;删除virtualrouter ,删除virtual router offering&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;QueryVirtualRouterVm
- {
-     &quot;inventories&quot;: [
-         {
-             &quot;allVolumes&quot;: [
-                 {
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                     &quot;description&quot;: &quot;Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]&quot;,
-                     &quot;deviceId&quot;: 0,
-                     &quot;format&quot;: &quot;qcow2&quot;,
-                     &quot;installPath&quot;: &quot;/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:59 PM&quot;,
-                     &quot;name&quot;: &quot;ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;primaryStorageUuid&quot;: &quot;4bff4e2d266f480ead596752d14ff3b5&quot;,
-                     &quot;rootImageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-                     &quot;size&quot;: 467206656,
-                     &quot;state&quot;: &quot;Enabled&quot;,
-                     &quot;status&quot;: &quot;Ready&quot;,
-                     &quot;type&quot;: &quot;Root&quot;,
-                     &quot;uuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-                     &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                 }
-             ],
-             &quot;allocatorStrategy&quot;: &quot;LeastVmPreferredHostAllocatorStrategy&quot;,
-             &quot;applianceVmType&quot;: &quot;VirtualRouter&quot;,
-             &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-             &quot;cpuNum&quot;: 1,
-             &quot;cpuSpeed&quot;: 2,
-             &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-             &quot;defaultRouteL3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;hostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-             &quot;hypervisorType&quot;: &quot;KVM&quot;,
-             &quot;imageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-             &quot;instanceOfferingUuid&quot;: &quot;9cec7bd6324445a184351ffb7d32f970&quot;,
-             &quot;lastHostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:07:20 PM&quot;,
-             &quot;managementNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;memorySize&quot;: 536870912,
-             &quot;name&quot;: &quot;virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;platform&quot;: &quot;Linux&quot;,
-             &quot;publicNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-             &quot;rootVolumeUuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-             &quot;state&quot;: &quot;Running&quot;,
-             &quot;status&quot;: &quot;Connected&quot;,
-             &quot;type&quot;: &quot;ApplianceVm&quot;,
-             &quot;uuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;,
-             &quot;vmNics&quot;: [
-                 {
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                     &quot;deviceId&quot;: 0,
-                     &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                     &quot;ip&quot;: &quot;192.168.201.195&quot;,
-                     &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                     &quot;mac&quot;: &quot;fa:4c:01:68:77:00&quot;,
-                     &quot;metaData&quot;: &quot;7&quot;,
-                     &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                     &quot;uuid&quot;: &quot;c44e856aa88a42bc85ec30ce8c334c6c&quot;,
-                     &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                 }
-             ],
-             &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-         }
-     ],
-     &quot;success&quot;: true
- }
-
- &amp;gt;&amp;gt;&amp;gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
- {
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;重连所有有VM运行的host&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;QueryHost
- {
-     &quot;inventories&quot;: [
-         {
-             &quot;availableCpuCapacity&quot;: 7180,
-             &quot;availableMemoryCapacity&quot;: 1997570048,
-             &quot;clusterUuid&quot;: &quot;4282fb61aa55458ea160de138e130298&quot;,
-             &quot;createDate&quot;: &quot;Jan 30, 2016 2:51:13 PM&quot;,
-             &quot;hypervisorType&quot;: &quot;KVM&quot;,
-             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:20 PM&quot;,
-             &quot;managementIp&quot;: &quot;192.168.200.187&quot;,
-             &quot;name&quot;: &quot;host1&quot;,
-             &quot;state&quot;: &quot;Enabled&quot;,
-             &quot;status&quot;: &quot;Connected&quot;,
-             &quot;totalCpuCapacity&quot;: 7182,
-             &quot;totalMemoryCapacity&quot;: 2098233344,
-             &quot;username&quot;: &quot;root&quot;,
-             &quot;uuid&quot;: &quot;402f8304a50c410486e023512492316b&quot;,
-             &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-         },
-         {
-             &quot;availableCpuCapacity&quot;: 14363,
-             &quot;availableMemoryCapacity&quot;: 8321593344,
-             &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-             &quot;createDate&quot;: &quot;Jan 30, 2016 3:03:14 PM&quot;,
-             &quot;hypervisorType&quot;: &quot;KVM&quot;,
-             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:52 PM&quot;,
-             &quot;managementIp&quot;: &quot;192.168.200.150&quot;,
-             &quot;name&quot;: &quot;host2&quot;,
-             &quot;state&quot;: &quot;Enabled&quot;,
-             &quot;status&quot;: &quot;Connected&quot;,
-             &quot;totalCpuCapacity&quot;: 14364,
-             &quot;totalMemoryCapacity&quot;: 8371924992,
-             &quot;username&quot;: &quot;root&quot;,
-             &quot;uuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-             &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-         }
-     ],
-     &quot;success&quot;: true
- }
-
- &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=402f8304a50c410486e023512492316b
- {
-     &quot;success&quot;: true
- }
-
- &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=415fa093b34e4a3d873368104b127115
- {
-     &quot;success&quot;: true
- }
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-</description>
-        <pubDate>Sat, 26 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/v1.1-rc1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.1-rc1.html</guid>
         
         
         <category>cn_blog</category>
