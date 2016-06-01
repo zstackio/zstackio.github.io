@@ -5,9 +5,78 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 30 May 2016 16:20:42 +0800</pubDate>
-    <lastBuildDate>Mon, 30 May 2016 16:20:42 +0800</lastBuildDate>
+    <pubDate>Wed, 01 Jun 2016 14:02:23 +0800</pubDate>
+    <lastBuildDate>Wed, 01 Jun 2016 14:02:23 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.3.1 发布</title>
+        <description>&lt;h2&gt;ZStack 1.3.1 版本今天发布&lt;/h2&gt;
+
+&lt;p&gt;ZStack 1.3版本的第一个更新版本今天发布，请之前全新安装ZStack 1.3版本和Virtual Router(虚拟路由)的用户需要尽快升级。
+在该版中，我们修复了1.3版本中 Qemu 2.3 版本的一个缺陷。该缺陷会导致新创建的Virtual Router无法正确的获取IP地址。&lt;/p&gt;
+
+&lt;h2&gt;修复的缺陷&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;虚拟路由器无法获取IP地址&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;安装升级&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#offlineinstall&quot;&gt;离线安装&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;升级&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3 id=&quot;install&quot;&gt;1. 安装&lt;/h3&gt;
+
+
+&lt;p&gt;你可以通过下面方式安装：&lt;/p&gt;
+
+&lt;p&gt;   wget http://download.zstack.org/releases/1.3/1.3.1/zstack-installer-1.3.1.bin
+   bash zstack-installer-1.3.1.bin -R aliyun&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt;这里&lt;code&gt;-R aliyun&lt;/code&gt;参数指定使用阿里云的源进行安装，你也可以使用&lt;code&gt;-R 163&lt;/code&gt;使用网易的源。我们推荐使用阿里云的源&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;offlineinstall&quot;&gt;2. 离线安装&lt;/h3&gt;
+
+
+&lt;p&gt;针对内网用户,以及访问Internet速度较慢的用户.ZStack 1.3 提供了离线安装方式.
+用户若需要离线安装ZStack,需要在目标管理节点和计算节点上安装CentOS 7.2 ZStack社区版.&lt;/p&gt;
+
+&lt;p&gt;然后在下载了第8步中的 zstack-installer 之后,你可以通过下面方式快速完成离线安装：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bash zstack-installer-1.3.1.bin -o
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;具体的离线安装教程和CentOS 7.2 ZStack社区版请阅读: &lt;a href=&quot;./offline-install-zstack-from-custom-iso.html&quot;&gt;ZStack离线安装教程&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;upgrade&quot;&gt;3. 升级 &lt;/h3&gt;
+
+
+&lt;p&gt;一如既往的，我们支持一键无缝升级：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/1.3/1.3.1/zstack-installer-1.3.1.bin
+bash zstack-installer-1.3.1.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;多节点升级中的zstack.war文件可以从下面的链接下载：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;wget http://download.zstack.org/releases/1.3/1.3.1/zstack.war
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Wed, 01 Jun 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn_blog/v1.3.1.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn_blog/v1.3.1.html</guid>
+        
+        
+        <category>cn_blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.3 发布</title>
@@ -1789,154 +1858,6 @@ the below steps:&lt;/p&gt;
         
         
         <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack离线安装教程</title>
-        <description>&lt;h2&gt;ZStack离线安装教程&lt;/h2&gt;
-
-&lt;p&gt;针对无法访问互联网以及访问互联网速度较慢的用户，ZStack 提供了一个离线安装的方法。
-用户使用离线安装方法，首先需要在管理节点,镜像服务器和计算节点上安装CentOS 7.2的ZStack社区版，
-然后在安装ZStack的时候使用-o参数即可快速完成环境的搭建。&lt;/p&gt;
-
-&lt;p&gt;本文将会详细介绍如何把定制版ISO的刻录成U盘，如何使用U盘引导安装CentOS 7.2操作系统，
-以及如何离线安装ZStack系统的方法。&lt;/p&gt;
-
-&lt;h4&gt;CentOS 7.2 ZStack社区版ISO特性：&lt;/h4&gt;
-
-&lt;ol&gt;
-&lt;li&gt;基于CentOS-7-x86_64-1511.ISO深度定制；&lt;/li&gt;
-&lt;li&gt;包含ZStack需要的所有安装包，安装ZStack时，无须连接外网，也无须配置yum源，就可以实现ZStack的完全离线安装；&lt;/li&gt;
-&lt;li&gt;保留了CentOS7.2的官方yum源，支持官方yum更新；&lt;/li&gt;
-&lt;li&gt;默认设置了root密码为password，支持安装OS后修改密码；&lt;/li&gt;
-&lt;li&gt;网卡名称默认为ethX格式，例如eth0或eth1；&lt;/li&gt;
-&lt;li&gt;默认选项：时区--亚洲东八区，语言--English，键盘--English(United States)。&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;h3&gt;CentOS 7.2 ZStack 社区定制版系统安装教程：&lt;/h3&gt;
-
-&lt;h4&gt;1. 下载ZStack社区定制版CentOS7.2 ISO&lt;/h4&gt;
-
-&lt;p&gt;文件名称：ZStack-Community-x86_64-DVD-1.3.0.iso (1.7G)&lt;/p&gt;
-
-&lt;p&gt;MD5校验码：80a87506325702d7f3d453a54041ddcb&lt;/p&gt;
-
-&lt;p&gt;下载地址1：
-http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.3.0.iso&lt;/p&gt;
-
-&lt;p&gt;下载地址2：
-http://pan.baidu.com/s/1hsqCEfa&lt;/p&gt;
-
-&lt;h4&gt;2. 制作U盘安装盘&lt;/h4&gt;
-
-&lt;h5&gt;2.1   使用UltraISO打开ISO&lt;/h5&gt;
-
-&lt;p&gt;使用UltraISO，点击“文件”按钮，选择打开已下载好的CentOS7.2 ISO文件，如图1所示。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/use-UltraISO-open-custom-centos7.2-iso.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图1 选择UltraISO打开定制版CentOS7.2 ISO&lt;/em&gt;&lt;/p&gt;
-
-&lt;h5&gt;2.2   写入硬盘镜像&lt;/h5&gt;
-
-&lt;p&gt;点击“启动”按钮，选择“写入硬盘镜像”，如图2所示。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/click-write-to-diskimage.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图2 点击写入硬盘镜像&lt;/em&gt;&lt;/p&gt;
-
-&lt;h5&gt;2.3   将ISO写入硬盘镜像&lt;/h5&gt;
-
-&lt;p&gt;在硬盘驱动器列表选择相应的U盘进行刻录，如果系统只插了一个U盘，则默认以此U盘进行刻录和写入，在刻录前，注意备份U盘之前的内容。
-其他选项，按照默认设置，无须额外配置。点击“写入”按钮，如图3所示。在新界面中点击“是”按钮进行确认，UltraISO将会把此ISO刻录到U盘。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/choose-u-disk-to-write.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图3 选择U盘，点击写入按钮&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/choose-u-disk-to-write.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图4 确认写入&lt;/em&gt;&lt;/p&gt;
-
-&lt;h5&gt;2.4   刻录检查&lt;/h5&gt;
-
-&lt;p&gt;刻录成功的界面如图5所示，表示ZStack的定制版CentOS 7.2 可引导U盘已刻录成功。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/burn-check.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图5 刻录检查&lt;/em&gt;&lt;/p&gt;
-
-&lt;h4&gt;3. 使用U盘引导CentOS7.2&lt;/h4&gt;
-
-&lt;p&gt;此ISO支持Legacy模式引导，也支持UEFI模式引导。可根据需求，自定义选择安装。下面以Legacy模式引导安装举例。
-在BIOS启动选项列表，选择此U盘为第一启动设备，启动后，引导安装界面如图6所示：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/boot-from-U-disk.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图6 可引导U盘启动界面&lt;/em&gt;&lt;/p&gt;
-
-&lt;h4&gt;4. 硬盘分区&lt;/h4&gt;
-
-&lt;p&gt;安装过程中，只需进行分区，即可一键安装CentOS7.2操作系统，如图7所示的分区为根分区48G，swap分区为2G。也可根据存储及需求，提前设置好大容量分区。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/partition.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图7 安装分区界面&lt;/em&gt;&lt;/p&gt;
-
-&lt;h4&gt;5. 安装系统&lt;/h4&gt;
-
-&lt;p&gt;分区完毕后，点击“Begin Installation”按钮，开始安装。如图8所示。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/click-begin-installation.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图8 点击Begin Installation按钮&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;所有的安装包安装完毕后，点击“reboot”按钮，如图9所示，即可启动进入CentOS7.2系统。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;../images/blogs/offline_install/prepare-reboot.png&quot; &gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;em&gt;图9 点击reboot按钮&lt;/em&gt;&lt;/p&gt;
-
-&lt;h3&gt;离线安装ZStack：&lt;/h3&gt;
-
-&lt;p&gt;安装系统后，可通过以下方法离线安装ZStack。&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;下载ZStack离线安装包(e.g. wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin -O zstack-installer.bin)到任意目录(假定文件名为zstack-installer.bin)；&lt;/li&gt;
-&lt;li&gt;在此目录下执行“bash zstack-installer.bin -o”即可完成相应安装。如图10所示。&lt;/li&gt;
-&lt;li&gt;安装过程如果提示错误，可参考相应错误提示进行处理。如果无法正常安装可发送相应错误日志到官方讨论群寻求帮助。&lt;/li&gt;
-&lt;li&gt;安装完毕可参考相应的提示，访问对应的URL打开ZStack Web UI。
-&lt;img src=&quot;../images/blogs/offline_install/offline-install-zstack.png&quot; &gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-
-&lt;p&gt;&lt;em&gt;图10 离线安装ZStack&lt;/em&gt;&lt;/p&gt;
-
-&lt;h2&gt;配置用户内网独立yum源：&lt;/h2&gt;
-
-&lt;p&gt;如果用户自己在内部配置了统一的yum源,也可以不使用ZStack CentOS 7.2 社区版的ISO来安装系统。
-但是需要手动在每一台机器上(需要安装ZStack管理节点,镜像服务器以及计算节点的机器),编写如下的yum配置,把内部yum源配置到名为zstack-local的repository里:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#echo /etc/yum.repos.d/zstack-local.repo
-[zstack-local]
-name=ZStack Local Yum Repo
-baseurl=http://内部YUM源URL
-enabled=0
-gpgcheck=0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;需要注意的是该内部源内需要包含系统需要以来的各种标准库,包括epel里的库.&lt;/p&gt;
-
-&lt;p&gt;配置之后,就可以使用-o参数来安装ZStack.添加各种ZStack资源的时候,也会使用每台服务器上的该配置文件.&lt;/p&gt;
-</description>
-        <pubDate>Tue, 29 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn_blog/offline-install-zstack-from-custom-iso.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn_blog/offline-install-zstack-from-custom-iso.html</guid>
-        
-        
-        <category>cn_blog</category>
         
       </item>
     
