@@ -5,9 +5,269 @@
     <description>ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.</description>
     <link>http://zstack.org/</link>
     <atom:link href="http://zstack.org/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 01 Jun 2016 14:02:23 +0800</pubDate>
-    <lastBuildDate>Wed, 01 Jun 2016 14:02:23 +0800</lastBuildDate>
+    <pubDate>Mon, 06 Jun 2016 14:00:18 +0800</pubDate>
+    <lastBuildDate>Mon, 06 Jun 2016 14:00:18 +0800</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>ZStack v1.3 release</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.3 is released.&lt;/p&gt;
+
+&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#actualsize&quot;&gt;Supporting both virtual size and actual size for images and volumes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cpu&quot;&gt;CPU over-provisioning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#startvm&quot;&gt;Specifying target host or cluster when starting a VM&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#staticip&quot;&gt;Specifying static IP when attaching a L3 network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sshport&quot;&gt;Specifying SSH port when adding KVM hosts or SFTP backup storage&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#log&quot;&gt;Log collection tool&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#fusionstor&quot;&gt;Supporting fusionstor as primary and backup storage&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2 id=&quot;actualsize&quot;&gt; 1. Supporting Both Virtual Size And Actual Size For Images And Volumes&lt;/h2&gt;
+
+
+&lt;p&gt;ZStack uses thin-provisioning when creating VM volumes; a volume or image has two sizes, a virtual size indicating the
+max capacity and a actual size indicating the capacity allocated. In previous version, users can only see the actual
+size of a image and the virtual size of a volume. In this version, virtual size and actual size are all supported for images
+and volumes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;For volumes, a new API &lt;code&gt;SyncVolumeSize&lt;/code&gt; is added for users to get the volume&#39;s actual size at runtime.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;SyncVolumeSize uuid=e9fc82e23cd14d8aa33d1304cb1f5f87
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;cpu&quot;&gt;2. CPU over-provisioning&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a confusing term &lt;code&gt;cpu speed&lt;/code&gt; is removed from the VM instance and the instance offering. The VCPU usage is only
+counted by the VCPU number. Users can specify the over-provisioning ratio of VCPU by a global configuration.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;The default VCPU over-provisioning ratio is 10, which means one physical core(from Linux perspective) can be allocated as 10
+VCPUs.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;startvm&quot;&gt;3. Specifying the target host or cluster when starting a VM&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify the target host or cluster when starting a stopped VM.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 hostUuid=c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 clusterUuid==c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;This only works if the primary storage is network shared storage, for example, NFS. For local storage that
+volumes are allocated on hosts&#39; disk, a VM cannot start on any other hosts other than the one which its root
+volume is on.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;staticip&quot;&gt;4. Specifying static IP when attaching a L3 network&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify a static IP when attaching a L3 network to a VM.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;sshport&quot;&gt;5. Specifying SSH port when adding KVM hosts or SFTP backup storage&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify the SSH port that is used by Ansible when adding a KVM host or a SFTP backup storage.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;log&quot;&gt;6. Log collection tool&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a tool archiving various logs is added for users reporting bugs to ZStack community. The tool is implemented as
+a &lt;code&gt;zstack-ctl&lt;/code&gt; command and is easy to use.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;fusionstor&quot;&gt;6. Supporting fusionstor as primary and backup storage&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, HuaYunWangJi&#39;s commercial storage system &lt;em&gt;fusionstor&lt;/em&gt; is supported as primary storage and backup storage. It
+works just like Ceph, users can add it through ZStack&#39;s UI easily;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
+
+
+&lt;p&gt;You can install the 1.3 release by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
+
+
+&lt;p&gt;You can upgrade your previous ZStack to 1.3 by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Mon, 06 Jun 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/cn/blog/v1.3.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.3.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
+    
+      <item>
+        <title>ZStack v1.3 release</title>
+        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.3 is released.&lt;/p&gt;
+
+&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#actualsize&quot;&gt;Supporting both virtual size and actual size for images and volumes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#cpu&quot;&gt;CPU over-provisioning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#startvm&quot;&gt;Specifying target host or cluster when starting a VM&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#staticip&quot;&gt;Specifying static IP when attaching a L3 network&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#sshport&quot;&gt;Specifying SSH port when adding KVM hosts or SFTP backup storage&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#log&quot;&gt;Log collection tool&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#fusionstor&quot;&gt;Supporting fusionstor as primary and backup storage&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2 id=&quot;actualsize&quot;&gt; 1. Supporting Both Virtual Size And Actual Size For Images And Volumes&lt;/h2&gt;
+
+
+&lt;p&gt;ZStack uses thin-provisioning when creating VM volumes; a volume or image has two sizes, a virtual size indicating the
+max capacity and a actual size indicating the capacity allocated. In previous version, users can only see the actual
+size of a image and the virtual size of a volume. In this version, virtual size and actual size are all supported for images
+and volumes.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/1.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;For volumes, a new API &lt;code&gt;SyncVolumeSize&lt;/code&gt; is added for users to get the volume&#39;s actual size at runtime.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;SyncVolumeSize uuid=e9fc82e23cd14d8aa33d1304cb1f5f87
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;cpu&quot;&gt;2. CPU over-provisioning&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a confusing term &lt;code&gt;cpu speed&lt;/code&gt; is removed from the VM instance and the instance offering. The VCPU usage is only
+counted by the VCPU number. Users can specify the over-provisioning ratio of VCPU by a global configuration.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;The default VCPU over-provisioning ratio is 10, which means one physical core(from Linux perspective) can be allocated as 10
+VCPUs.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;startvm&quot;&gt;3. Specifying the target host or cluster when starting a VM&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify the target host or cluster when starting a stopped VM.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 hostUuid=c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;or&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 clusterUuid==c2025197915944acaf0435c0c1a44f96
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;&lt;p&gt;This only works if the primary storage is network shared storage, for example, NFS. For local storage that
+volumes are allocated on hosts&#39; disk, a VM cannot start on any other hosts other than the one which its root
+volume is on.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;staticip&quot;&gt;4. Specifying static IP when attaching a L3 network&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify a static IP when attaching a L3 network to a VM.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; &amp;gt;&amp;gt;&amp;gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;sshport&quot;&gt;5. Specifying SSH port when adding KVM hosts or SFTP backup storage&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, users can specify the SSH port that is used by Ansible when adding a KVM host or a SFTP backup storage.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/2.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/3.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;log&quot;&gt;6. Log collection tool&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, a tool archiving various logs is added for users reporting bugs to ZStack community. The tool is implemented as
+a &lt;code&gt;zstack-ctl&lt;/code&gt; command and is easy to use.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;fusionstor&quot;&gt;6. Supporting fusionstor as primary and backup storage&lt;/h2&gt;
+
+
+&lt;p&gt;In this version, HuaYunWangJi&#39;s commercial storage system &lt;em&gt;fusionstor&lt;/em&gt; is supported as primary storage and backup storage. It
+works just like Ceph, users can add it through ZStack&#39;s UI easily;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/1.3/5.png&quot; class=&quot;center-img img-responsive&quot;&gt;
+&lt;img src=&quot;/images/1.3/6.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
+
+
+&lt;p&gt;You can install the 1.3 release by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -R aliyun
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
+
+
+&lt;p&gt;You can upgrade your previous ZStack to 1.3 by:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -u
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+        <pubDate>Mon, 06 Jun 2016 00:00:00 +0800</pubDate>
+        <link>http://zstack.org/blog/v1.3.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v1.3.html</guid>
+        
+        
+        <category>blog</category>
+        
+      </item>
     
       <item>
         <title>ZStack v1.3.1 发布</title>
@@ -165,8 +425,6 @@ bash zstack-installer-1.3.1.bin -u
 &lt;p&gt;为了方便用户在调试zstack的时候收集日志，在1.3版本中我们新加了一个zstack-ctl collect_log命令用于自动收集并打包相关日志：&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/images/1.3/4.png&quot; class=&quot;center-img img-responsive&quot;&gt;&lt;/p&gt;
-
-&lt;p&gt;在1.2版本中，用户可以通过修改全局设置的来指定启动云主机时，KVM对云盘使用的缓存模式。支持三种模式：&lt;/p&gt;
 
 &lt;h3 id=&quot;qemu&quot;&gt;7. 社区版ISO安装升级到QEMU2.3版本&lt;/h3&gt;
 
@@ -366,8 +624,8 @@ will be unable to start a created VM or create a VM on your local storage.&lt;/p
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v1.2.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v1.2.html</guid>
+        <link>http://zstack.org/cn/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.2.html</guid>
         
         
         <category>blog</category>
@@ -504,8 +762,8 @@ will be unable to start a created VM or create a VM on your local storage.&lt;/p
 &lt;/code&gt;&lt;/pre&gt;
 </description>
         <pubDate>Wed, 04 May 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v1.2.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.2.html</guid>
+        <link>http://zstack.org/blog/v1.2.html</link>
+        <guid isPermaLink="true">http://zstack.org/blog/v1.2.html</guid>
         
         
         <category>blog</category>
@@ -1042,822 +1300,6 @@ optional arguments:
         
         
         <category>cn_blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.1 release</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
-announce that ZStack v1.1 is released.&lt;/p&gt;
-
-&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#ansible&quot;&gt;Ansible Optimization&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#consoleproxy&quot;&gt;Console Proxy APIs&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#apitimeout&quot;&gt;API Timeout Management&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#gc&quot;&gt;Garbage Collector&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#image&quot;&gt;15 Tiny Tryout Image&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#vr&quot;&gt;Virtual Router Image Upgrade&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgradevr&quot;&gt;Upgrade Virtual Router Provider To Flat Network Provider&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h2 id=&quot;ansible&quot;&gt; 1. Ansible Optimization &lt;/h2&gt;
-
-
-&lt;p&gt;In this version, we create customized deployers for all ZStack agents(i.e. kvmagent, backup storage agent) directly using Ansible SDK, instead of regular Ansible playbook YAML files. As the result, the speed of agent deployment gets significantly improved, because the deployer that is a Python application will try best to avoid unnecessary time-costing steps such as accessing YUM repo; the logging also gets better, each task will post messages to a logging URL before and after execution, and the error message will clearly state the error instead of flooding out all tasks status, which regular Ansible playbook YAML files normally do.&lt;/p&gt;
-
-&lt;h2 id=&quot;consoleproxy&quot;&gt;2. Console Proxy APIs &lt;/h2&gt;
-
-
-&lt;p&gt;Two new APIs are added for console proxy, &lt;code&gt;ReconnectConsoleProxyAgent&lt;/code&gt; and &lt;code&gt;QueryConsoleProxyAgent&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Users can use &lt;code&gt;ReconnectConsoleProxyAgent&lt;/code&gt; to redeploy console proxy agents:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;ReconnectConsoleProxyAgent 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or use &lt;code&gt;QueryConsoleProxyAgent&lt;/code&gt; to query agents&#39; status:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;       &amp;gt;&amp;gt;&amp;gt;QueryConsoleProxyAgent 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;apitimeout&quot;&gt;3. API Timeout Management&lt;/h2&gt;
-
-
-&lt;p&gt;As ZStack consists of a lot of microservices which communicate with each other through async-messages, it&#39;s very hard to control API timeout because the API has no idea about internal messages entailed by itself. In this version, we add a central API timeout management framework that can connect an API to all entailed internal messages and HTTP requests, and that can propagate the API&#39;s timeout to the descendants. All APIs have default configurations, users can change a configuration by editing the &lt;code&gt;zstack.properties&lt;/code&gt; file, for example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    ApiTimeout.org.zstack.header.image.APIAddImageMsg= org.zstack.header.storage.backup.DownloadImageMsg, org.zstack.storage.backup.sftp.SftpBackupStorageCommands$DownloadCmd, org.zstack.storage.ceph.backup.CephBackupStorageBase$DownloadCmd; 6h
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This example changes the timeout of API &lt;code&gt;org.zstack.header.image.APIAddImageMsg&lt;/code&gt; to six hours. However, this way is discouraged. In 1.2 version, we will allow users to configure APIs&#39; timeout through a new API.&lt;/p&gt;
-
-&lt;h2 id=&quot;gc&quot;&gt;4. Garbage Collector&lt;/h2&gt;
-
-
-&lt;p&gt;In this version, the VM related garbage collectors are enabled. Users can destroy a VM anytime no matter the connection status of the host. For example, you can delete a VM even the network connection to the host where the VM is running is lost. The garbage collector will save user operations which cannot be completed in current situation and re-execute them once the host&#39;s network connection recovers. The garbage collector can be triggered by time-based poll and events, for example, a host reconnect event and host delete event can both trigger a VM deleting garbage collector.&lt;/p&gt;
-
-&lt;h2 id=&quot;image&quot;&gt;5. 15M Tiny Tryout Image&lt;/h2&gt;
-
-
-&lt;p&gt;A new 15 tiny image is ready for quickly try out creating VMs. The image supports runtime attaching/detaching volumes and networks. The ACPID daemon is also included so you can gracefully shutdown a VM. You can download the image from:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    http://download.zstack.org/templates/zstack-image-1.2.qcow2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;vr&quot;&gt;6. New Virtual Router Image&lt;/h2&gt;
-
-
-&lt;p&gt;The virtual router image is upgraded to 1.1 version, you can download it from:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;NOTE: Users still using the old 0.9 version are not necessary to upgrade. However, we suggest all new users using the new version.&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
-
-
-&lt;p&gt;You can install the 1.1 release by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
-    bash zstack-installer-1.1.0.bin
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
-
-
-&lt;p&gt;To upgrade your ZStack to 1.1, do:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
-    bash zstack-installer-1.1.0.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;upgradevr&quot;&gt;9. Upgrade Virtual Router Provider To Flat Network Provider&lt;/h2&gt;
-
-
-&lt;p&gt;If you are currently using a flat network with a previous ZStack version, you can upgrade the L3 network using the flat network provider so
-you won&#39;t need the virtual router VM anymore. Assume the UUID of your L3 network is 1a82c2691978476fa6cefa36bb9d4bfd, please follow
-the below steps:&lt;/p&gt;
-
-&lt;h4&gt;1. Obtain the UUID of the virtual rotuer provider&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
-    {
-        &quot;inventories&quot;: [
-            {
-                &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-                &quot;networkServiceType&quot;: &quot;DNS&quot;
-            },
-            {
-                &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-                &quot;networkServiceType&quot;: &quot;DHCP&quot;
-            }
-        ],
-        &quot;success&quot;: true
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;2. Detach the virtual router provider from the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;:[&quot;DHCP&quot;,&quot;DNS&quot;]}&#39;
-         {
-             &quot;inventory&quot;: {
-                 &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-                 &quot;dns&quot;: [
-                     &quot;8.8.8.8&quot;
-                 ],
-                 &quot;ipRanges&quot;: [
-                     {
-                         &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                         &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                         &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                         &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                         &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                         &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                         &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                         &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                         &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-                     }
-                 ],
-                 &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-                 &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-                 &quot;name&quot;: &quot;l3-etpz&quot;,
-                 &quot;networkServices&quot;: [],
-                 &quot;state&quot;: &quot;Enabled&quot;,
-                 &quot;system&quot;: false,
-                 &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-                 &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-             },
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;the parameter &lt;code&gt;networkServices&lt;/code&gt; is a map where the key is a &lt;code&gt;networkServiceProviderUuid&lt;/code&gt; and the value is a list of &lt;code&gt;networkServiceType&lt;/code&gt;, which you obtain in the step 1&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h4&gt;3. Get the flat network provider UUID&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceProvider type=Flat
-        {
-            &quot;inventories&quot;: [
-                {
-                    &quot;attachedL2NetworkUuids&quot;: [
-                        &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-                    ],
-                    &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-                    &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-                    &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-                    &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-                    &quot;networkServiceTypes&quot;: [
-                        &quot;DHCP&quot;,
-                        &quot;Userdata&quot;
-                    ],
-                    &quot;type&quot;: &quot;Flat&quot;,
-                    &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-                }
-            ],
-            &quot;success&quot;: true
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Get L2 UUID for the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
-        {
-            &quot;inventories&quot;: [
-                {
-                    &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-                }
-            ],
-            &quot;success&quot;: true
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;5. Attach the flat network provider to the L2 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;       &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
-       {
-           &quot;inventory&quot;: {
-               &quot;attachedL2NetworkUuids&quot;: [
-                   &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-               ],
-               &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-               &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-               &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-               &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-               &quot;networkServiceTypes&quot;: [
-                   &quot;DHCP&quot;,
-                   &quot;Userdata&quot;
-               ],
-               &quot;type&quot;: &quot;Flat&quot;,
-               &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-           },
-           &quot;success&quot;: true
-       }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;6. Attach the flat network provider to the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;     &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;17864f985e584a9ba4cd81de215212ce&quot;:[&quot;DHCP&quot;,&quot;Userdata&quot;]}&#39;
-      {
-          &quot;inventory&quot;: {
-              &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-              &quot;dns&quot;: [
-                  &quot;8.8.8.8&quot;
-              ],
-              &quot;ipRanges&quot;: [
-                  {
-                      &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                      &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                      &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                      &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                      &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                      &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                      &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-                  }
-              ],
-              &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-              &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-              &quot;name&quot;: &quot;l3-etpz&quot;,
-              &quot;networkServices&quot;: [
-                  {
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                      &quot;networkServiceType&quot;: &quot;DHCP&quot;
-                  },
-                  {
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                      &quot;networkServiceType&quot;: &quot;Userdata&quot;
-                  }
-              ],
-              &quot;state&quot;: &quot;Enabled&quot;,
-              &quot;system&quot;: false,
-              &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-              &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-              &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-          },
-          &quot;success&quot;: true
-      }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;7. Delete the virtual router VM&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;QueryVirtualRouterVm
-         {
-             &quot;inventories&quot;: [
-                 {
-                     &quot;allVolumes&quot;: [
-                         {
-                             &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;description&quot;: &quot;Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]&quot;,
-                             &quot;deviceId&quot;: 0,
-                             &quot;format&quot;: &quot;qcow2&quot;,
-                             &quot;installPath&quot;: &quot;/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2&quot;,
-                             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:59 PM&quot;,
-                             &quot;name&quot;: &quot;ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                             &quot;primaryStorageUuid&quot;: &quot;4bff4e2d266f480ead596752d14ff3b5&quot;,
-                             &quot;rootImageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-                             &quot;size&quot;: 467206656,
-                             &quot;state&quot;: &quot;Enabled&quot;,
-                             &quot;status&quot;: &quot;Ready&quot;,
-                             &quot;type&quot;: &quot;Root&quot;,
-                             &quot;uuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-                             &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                         }
-                     ],
-                     &quot;allocatorStrategy&quot;: &quot;LeastVmPreferredHostAllocatorStrategy&quot;,
-                     &quot;applianceVmType&quot;: &quot;VirtualRouter&quot;,
-                     &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-                     &quot;cpuNum&quot;: 1,
-                     &quot;cpuSpeed&quot;: 2,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                     &quot;defaultRouteL3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;hostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;imageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-                     &quot;instanceOfferingUuid&quot;: &quot;9cec7bd6324445a184351ffb7d32f970&quot;,
-                     &quot;lastHostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:07:20 PM&quot;,
-                     &quot;managementNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;memorySize&quot;: 536870912,
-                     &quot;name&quot;: &quot;virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;platform&quot;: &quot;Linux&quot;,
-                     &quot;publicNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;rootVolumeUuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-                     &quot;state&quot;: &quot;Running&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;type&quot;: &quot;ApplianceVm&quot;,
-                     &quot;uuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;,
-                     &quot;vmNics&quot;: [
-                         {
-                             &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;deviceId&quot;: 0,
-                             &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                             &quot;ip&quot;: &quot;192.168.201.195&quot;,
-                             &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;mac&quot;: &quot;fa:4c:01:68:77:00&quot;,
-                             &quot;metaData&quot;: &quot;7&quot;,
-                             &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                             &quot;uuid&quot;: &quot;c44e856aa88a42bc85ec30ce8c334c6c&quot;,
-                             &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                         }
-                     ],
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 }
-             ],
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
-         {
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;8. Reconnect all hosts&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;         &amp;gt;&amp;gt;&amp;gt;QueryHost
-         {
-             &quot;inventories&quot;: [
-                 {
-                     &quot;availableCpuCapacity&quot;: 7180,
-                     &quot;availableMemoryCapacity&quot;: 1997570048,
-                     &quot;clusterUuid&quot;: &quot;4282fb61aa55458ea160de138e130298&quot;,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 2:51:13 PM&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:20 PM&quot;,
-                     &quot;managementIp&quot;: &quot;192.168.200.187&quot;,
-                     &quot;name&quot;: &quot;host1&quot;,
-                     &quot;state&quot;: &quot;Enabled&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;totalCpuCapacity&quot;: 7182,
-                     &quot;totalMemoryCapacity&quot;: 2098233344,
-                     &quot;username&quot;: &quot;root&quot;,
-                     &quot;uuid&quot;: &quot;402f8304a50c410486e023512492316b&quot;,
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 },
-                 {
-                     &quot;availableCpuCapacity&quot;: 14363,
-                     &quot;availableMemoryCapacity&quot;: 8321593344,
-                     &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:03:14 PM&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:52 PM&quot;,
-                     &quot;managementIp&quot;: &quot;192.168.200.150&quot;,
-                     &quot;name&quot;: &quot;host2&quot;,
-                     &quot;state&quot;: &quot;Enabled&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;totalCpuCapacity&quot;: 14364,
-                     &quot;totalMemoryCapacity&quot;: 8371924992,
-                     &quot;username&quot;: &quot;root&quot;,
-                     &quot;uuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 }
-             ],
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=402f8304a50c410486e023512492316b
-         {
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=415fa093b34e4a3d873368104b127115
-         {
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Wed, 30 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/blog/v1.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/blog/v1.1.html</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
-    
-      <item>
-        <title>ZStack v1.1 release</title>
-        <description>&lt;p&gt;Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
-announce that ZStack v1.1 is released.&lt;/p&gt;
-
-&lt;h1&gt;New Features And Enhancements&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#ansible&quot;&gt;Ansible Optimization&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#consoleproxy&quot;&gt;Console Proxy APIs&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#apitimeout&quot;&gt;API Timeout Management&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#gc&quot;&gt;Garbage Collector&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#image&quot;&gt;15 Tiny Tryout Image&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#vr&quot;&gt;Virtual Router Image Upgrade&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h1&gt;Installation And Upgrade&lt;/h1&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;#install&quot;&gt;Installation&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgrade&quot;&gt;Upgrade&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;#upgradevr&quot;&gt;Upgrade Virtual Router Provider To Flat Network Provider&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h2 id=&quot;ansible&quot;&gt; 1. Ansible Optimization &lt;/h2&gt;
-
-
-&lt;p&gt;In this version, we create customized deployers for all ZStack agents(i.e. kvmagent, backup storage agent) directly using Ansible SDK, instead of regular Ansible playbook YAML files. As the result, the speed of agent deployment gets significantly improved, because the deployer that is a Python application will try best to avoid unnecessary time-costing steps such as accessing YUM repo; the logging also gets better, each task will post messages to a logging URL before and after execution, and the error message will clearly state the error instead of flooding out all tasks status, which regular Ansible playbook YAML files normally do.&lt;/p&gt;
-
-&lt;h2 id=&quot;consoleproxy&quot;&gt;2. Console Proxy APIs &lt;/h2&gt;
-
-
-&lt;p&gt;Two new APIs are added for console proxy, &lt;code&gt;ReconnectConsoleProxyAgent&lt;/code&gt; and &lt;code&gt;QueryConsoleProxyAgent&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Users can use &lt;code&gt;ReconnectConsoleProxyAgent&lt;/code&gt; to redeploy console proxy agents:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;ReconnectConsoleProxyAgent 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;or use &lt;code&gt;QueryConsoleProxyAgent&lt;/code&gt; to query agents&#39; status:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;       &amp;gt;&amp;gt;&amp;gt;QueryConsoleProxyAgent 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;apitimeout&quot;&gt;3. API Timeout Management&lt;/h2&gt;
-
-
-&lt;p&gt;As ZStack consists of a lot of microservices which communicate with each other through async-messages, it&#39;s very hard to control API timeout because the API has no idea about internal messages entailed by itself. In this version, we add a central API timeout management framework that can connect an API to all entailed internal messages and HTTP requests, and that can propagate the API&#39;s timeout to the descendants. All APIs have default configurations, users can change a configuration by editing the &lt;code&gt;zstack.properties&lt;/code&gt; file, for example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    ApiTimeout.org.zstack.header.image.APIAddImageMsg= org.zstack.header.storage.backup.DownloadImageMsg, org.zstack.storage.backup.sftp.SftpBackupStorageCommands$DownloadCmd, org.zstack.storage.ceph.backup.CephBackupStorageBase$DownloadCmd; 6h
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This example changes the timeout of API &lt;code&gt;org.zstack.header.image.APIAddImageMsg&lt;/code&gt; to six hours. However, this way is discouraged. In 1.2 version, we will allow users to configure APIs&#39; timeout through a new API.&lt;/p&gt;
-
-&lt;h2 id=&quot;gc&quot;&gt;4. Garbage Collector&lt;/h2&gt;
-
-
-&lt;p&gt;In this version, the VM related garbage collectors are enabled. Users can destroy a VM anytime no matter the connection status of the host. For example, you can delete a VM even the network connection to the host where the VM is running is lost. The garbage collector will save user operations which cannot be completed in current situation and re-execute them once the host&#39;s network connection recovers. The garbage collector can be triggered by time-based poll and events, for example, a host reconnect event and host delete event can both trigger a VM deleting garbage collector.&lt;/p&gt;
-
-&lt;h2 id=&quot;image&quot;&gt;5. 15M Tiny Tryout Image&lt;/h2&gt;
-
-
-&lt;p&gt;A new 15 tiny image is ready for quickly try out creating VMs. The image supports runtime attaching/detaching volumes and networks. The ACPID daemon is also included so you can gracefully shutdown a VM. You can download the image from:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    http://download.zstack.org/templates/zstack-image-1.2.qcow2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;vr&quot;&gt;6. New Virtual Router Image&lt;/h2&gt;
-
-
-&lt;p&gt;The virtual router image is upgraded to 1.1 version, you can download it from:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;NOTE: Users still using the old 0.9 version are not necessary to upgrade. However, we suggest all new users using the new version.&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;install&quot;&gt;7. Installation&lt;/h2&gt;
-
-
-&lt;p&gt;You can install the 1.1 release by:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
-    bash zstack-installer-1.1.0.bin
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;upgrade&quot;&gt;8. Upgrade&lt;/h2&gt;
-
-
-&lt;p&gt;To upgrade your ZStack to 1.1, do:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;    wget http://download.zstack.org/releases/1.1/1.1.0/0331/zstack-installer-1.1.0-0331.bin -O zstack-installer-1.1.0.bin
-    bash zstack-installer-1.1.0.bin -u
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&quot;upgradevr&quot;&gt;9. Upgrade Virtual Router Provider To Flat Network Provider&lt;/h2&gt;
-
-
-&lt;p&gt;If you are currently using a flat network with a previous ZStack version, you can upgrade the L3 network using the flat network provider so
-you won&#39;t need the virtual router VM anymore. Assume the UUID of your L3 network is 1a82c2691978476fa6cefa36bb9d4bfd, please follow
-the below steps:&lt;/p&gt;
-
-&lt;h4&gt;1. Obtain the UUID of the virtual rotuer provider&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;    &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceL3NetworkRef l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd
-    {
-        &quot;inventories&quot;: [
-            {
-                &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-                &quot;networkServiceType&quot;: &quot;DNS&quot;
-            },
-            {
-                &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                &quot;networkServiceProviderUuid&quot;: &quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;,
-                &quot;networkServiceType&quot;: &quot;DHCP&quot;
-            }
-        ],
-        &quot;success&quot;: true
-    }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;2. Detach the virtual router provider from the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;DetachNetworkServiceFromL3Network  l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;5d21ea0f39c04d6fb68cfaf5a37db4ad&quot;:[&quot;DHCP&quot;,&quot;DNS&quot;]}&#39;
-         {
-             &quot;inventory&quot;: {
-                 &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-                 &quot;dns&quot;: [
-                     &quot;8.8.8.8&quot;
-                 ],
-                 &quot;ipRanges&quot;: [
-                     {
-                         &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                         &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                         &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                         &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                         &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                         &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                         &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                         &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                         &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-                     }
-                 ],
-                 &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-                 &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-                 &quot;name&quot;: &quot;l3-etpz&quot;,
-                 &quot;networkServices&quot;: [],
-                 &quot;state&quot;: &quot;Enabled&quot;,
-                 &quot;system&quot;: false,
-                 &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-                 &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                 &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-             },
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;blockquote&gt;&lt;p&gt;the parameter &lt;code&gt;networkServices&lt;/code&gt; is a map where the key is a &lt;code&gt;networkServiceProviderUuid&lt;/code&gt; and the value is a list of &lt;code&gt;networkServiceType&lt;/code&gt;, which you obtain in the step 1&lt;/p&gt;&lt;/blockquote&gt;
-
-&lt;h4&gt;3. Get the flat network provider UUID&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;QueryNetworkServiceProvider type=Flat
-        {
-            &quot;inventories&quot;: [
-                {
-                    &quot;attachedL2NetworkUuids&quot;: [
-                        &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-                    ],
-                    &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-                    &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-                    &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-                    &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-                    &quot;networkServiceTypes&quot;: [
-                        &quot;DHCP&quot;,
-                        &quot;Userdata&quot;
-                    ],
-                    &quot;type&quot;: &quot;Flat&quot;,
-                    &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-                }
-            ],
-            &quot;success&quot;: true
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;4. Get L2 UUID for the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;&amp;gt;QueryL3Network fields=l2NetworkUuid, uuid=1a82c2691978476fa6cefa36bb9d4bfd
-        {
-            &quot;inventories&quot;: [
-                {
-                    &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-                }
-            ],
-            &quot;success&quot;: true
-        }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;5. Attach the flat network provider to the L2 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;       &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceProviderToL2Network l2NetworkUuid=9ec8cad681d1424fa7eda2447edae142 networkServiceProviderUuid=17864f985e584a9ba4cd81de215212ce
-       {
-           &quot;inventory&quot;: {
-               &quot;attachedL2NetworkUuids&quot;: [
-                   &quot;9ec8cad681d1424fa7eda2447edae142&quot;
-               ],
-               &quot;createDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-               &quot;description&quot;: &quot;Flat Network Service Provider&quot;,
-               &quot;lastOpDate&quot;: &quot;Jan 30, 2016 11:56:32 AM&quot;,
-               &quot;name&quot;: &quot;Flat Network Service Provider&quot;,
-               &quot;networkServiceTypes&quot;: [
-                   &quot;DHCP&quot;,
-                   &quot;Userdata&quot;
-               ],
-               &quot;type&quot;: &quot;Flat&quot;,
-               &quot;uuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;
-           },
-           &quot;success&quot;: true
-       }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;6. Attach the flat network provider to the L3 network&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;     &amp;gt;&amp;gt;&amp;gt;AttachNetworkServiceToL3Network l3NetworkUuid=1a82c2691978476fa6cefa36bb9d4bfd networkServices=&#39;{&quot;17864f985e584a9ba4cd81de215212ce&quot;:[&quot;DHCP&quot;,&quot;Userdata&quot;]}&#39;
-      {
-          &quot;inventory&quot;: {
-              &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-              &quot;dns&quot;: [
-                  &quot;8.8.8.8&quot;
-              ],
-              &quot;ipRanges&quot;: [
-                  {
-                      &quot;createDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                      &quot;endIp&quot;: &quot;192.168.201.199&quot;,
-                      &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:04 PM&quot;,
-                      &quot;name&quot;: &quot;ipr-dk7p&quot;,
-                      &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                      &quot;startIp&quot;: &quot;192.168.201.180&quot;,
-                      &quot;uuid&quot;: &quot;ec5fd87dd80243fdabeeace847c04427&quot;
-                  }
-              ],
-              &quot;l2NetworkUuid&quot;: &quot;9ec8cad681d1424fa7eda2447edae142&quot;,
-              &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:01:03 PM&quot;,
-              &quot;name&quot;: &quot;l3-etpz&quot;,
-              &quot;networkServices&quot;: [
-                  {
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                      &quot;networkServiceType&quot;: &quot;DHCP&quot;
-                  },
-                  {
-                      &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                      &quot;networkServiceProviderUuid&quot;: &quot;17864f985e584a9ba4cd81de215212ce&quot;,
-                      &quot;networkServiceType&quot;: &quot;Userdata&quot;
-                  }
-              ],
-              &quot;state&quot;: &quot;Enabled&quot;,
-              &quot;system&quot;: false,
-              &quot;type&quot;: &quot;L3BasicNetwork&quot;,
-              &quot;uuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-              &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-          },
-          &quot;success&quot;: true
-      }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;7. Delete the virtual router VM&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;        &amp;gt;&amp;gt;QueryVirtualRouterVm
-         {
-             &quot;inventories&quot;: [
-                 {
-                     &quot;allVolumes&quot;: [
-                         {
-                             &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;description&quot;: &quot;Root volume for VM[uuid:c5a966cb87d644649952daf683f89e26]&quot;,
-                             &quot;deviceId&quot;: 0,
-                             &quot;format&quot;: &quot;qcow2&quot;,
-                             &quot;installPath&quot;: &quot;/zstack_ps/rootVolumes/acct-36c27e8ff05c4780bf6d2fa65700f22e/vol-8eeaa9cb4c1045a2825f8815fed69d72/8eeaa9cb4c1045a2825f8815fed69d72.qcow2&quot;,
-                             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:59 PM&quot;,
-                             &quot;name&quot;: &quot;ROOT-for-virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                             &quot;primaryStorageUuid&quot;: &quot;4bff4e2d266f480ead596752d14ff3b5&quot;,
-                             &quot;rootImageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-                             &quot;size&quot;: 467206656,
-                             &quot;state&quot;: &quot;Enabled&quot;,
-                             &quot;status&quot;: &quot;Ready&quot;,
-                             &quot;type&quot;: &quot;Root&quot;,
-                             &quot;uuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-                             &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                         }
-                     ],
-                     &quot;allocatorStrategy&quot;: &quot;LeastVmPreferredHostAllocatorStrategy&quot;,
-                     &quot;applianceVmType&quot;: &quot;VirtualRouter&quot;,
-                     &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-                     &quot;cpuNum&quot;: 1,
-                     &quot;cpuSpeed&quot;: 2,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                     &quot;defaultRouteL3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;hostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;imageUuid&quot;: &quot;7bed05aa8ace4e5e8d6c55b284b66fb5&quot;,
-                     &quot;instanceOfferingUuid&quot;: &quot;9cec7bd6324445a184351ffb7d32f970&quot;,
-                     &quot;lastHostUuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:07:20 PM&quot;,
-                     &quot;managementNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;memorySize&quot;: 536870912,
-                     &quot;name&quot;: &quot;virtualRouter.l3.1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;platform&quot;: &quot;Linux&quot;,
-                     &quot;publicNetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                     &quot;rootVolumeUuid&quot;: &quot;8eeaa9cb4c1045a2825f8815fed69d72&quot;,
-                     &quot;state&quot;: &quot;Running&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;type&quot;: &quot;ApplianceVm&quot;,
-                     &quot;uuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;,
-                     &quot;vmNics&quot;: [
-                         {
-                             &quot;createDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;deviceId&quot;: 0,
-                             &quot;gateway&quot;: &quot;192.168.200.1&quot;,
-                             &quot;ip&quot;: &quot;192.168.201.195&quot;,
-                             &quot;l3NetworkUuid&quot;: &quot;1a82c2691978476fa6cefa36bb9d4bfd&quot;,
-                             &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:06:50 PM&quot;,
-                             &quot;mac&quot;: &quot;fa:4c:01:68:77:00&quot;,
-                             &quot;metaData&quot;: &quot;7&quot;,
-                             &quot;netmask&quot;: &quot;255.255.252.0&quot;,
-                             &quot;uuid&quot;: &quot;c44e856aa88a42bc85ec30ce8c334c6c&quot;,
-                             &quot;vmInstanceUuid&quot;: &quot;c5a966cb87d644649952daf683f89e26&quot;
-                         }
-                     ],
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 }
-             ],
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;DestroyVmInstance uuid=c5a966cb87d644649952daf683f89e26
-         {
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h4&gt;8. Reconnect all hosts&lt;/h4&gt;
-
-&lt;pre&gt;&lt;code&gt;         &amp;gt;&amp;gt;&amp;gt;QueryHost
-         {
-             &quot;inventories&quot;: [
-                 {
-                     &quot;availableCpuCapacity&quot;: 7180,
-                     &quot;availableMemoryCapacity&quot;: 1997570048,
-                     &quot;clusterUuid&quot;: &quot;4282fb61aa55458ea160de138e130298&quot;,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 2:51:13 PM&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:20 PM&quot;,
-                     &quot;managementIp&quot;: &quot;192.168.200.187&quot;,
-                     &quot;name&quot;: &quot;host1&quot;,
-                     &quot;state&quot;: &quot;Enabled&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;totalCpuCapacity&quot;: 7182,
-                     &quot;totalMemoryCapacity&quot;: 2098233344,
-                     &quot;username&quot;: &quot;root&quot;,
-                     &quot;uuid&quot;: &quot;402f8304a50c410486e023512492316b&quot;,
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 },
-                 {
-                     &quot;availableCpuCapacity&quot;: 14363,
-                     &quot;availableMemoryCapacity&quot;: 8321593344,
-                     &quot;clusterUuid&quot;: &quot;10409d3e33b249c19746022930a541c7&quot;,
-                     &quot;createDate&quot;: &quot;Jan 30, 2016 3:03:14 PM&quot;,
-                     &quot;hypervisorType&quot;: &quot;KVM&quot;,
-                     &quot;lastOpDate&quot;: &quot;Jan 30, 2016 3:03:52 PM&quot;,
-                     &quot;managementIp&quot;: &quot;192.168.200.150&quot;,
-                     &quot;name&quot;: &quot;host2&quot;,
-                     &quot;state&quot;: &quot;Enabled&quot;,
-                     &quot;status&quot;: &quot;Connected&quot;,
-                     &quot;totalCpuCapacity&quot;: 14364,
-                     &quot;totalMemoryCapacity&quot;: 8371924992,
-                     &quot;username&quot;: &quot;root&quot;,
-                     &quot;uuid&quot;: &quot;415fa093b34e4a3d873368104b127115&quot;,
-                     &quot;zoneUuid&quot;: &quot;4a3a78b1b9f049948b79cf9e667f0af2&quot;
-                 }
-             ],
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=402f8304a50c410486e023512492316b
-         {
-             &quot;success&quot;: true
-         }
-
-         &amp;gt;&amp;gt;&amp;gt;ReconnectHost uuid=415fa093b34e4a3d873368104b127115
-         {
-             &quot;success&quot;: true
-         }
-&lt;/code&gt;&lt;/pre&gt;
-</description>
-        <pubDate>Wed, 30 Mar 2016 00:00:00 +0800</pubDate>
-        <link>http://zstack.org/cn/blog/v1.1.html</link>
-        <guid isPermaLink="true">http://zstack.org/cn/blog/v1.1.html</guid>
-        
-        
-        <category>blog</category>
         
       </item>
     

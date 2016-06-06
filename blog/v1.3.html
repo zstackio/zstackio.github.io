@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/images/zstack_text_icon_32x32.gif" type="image/gif">
+    <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
+    <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
+
+    <title>ZStack - ZStack v1.3 release</title>
+    <script type="text/javascript" src="/js/google_analytics.js"></script>
+    <link href="/css/bootstrap-3.3.1/css/bootstrap.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/code.css" rel="stylesheet">
+    <link href="/css/zstack.css?v=1.1" rel="stylesheet">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="http://zstack.org/" />
+    <meta name="twitter:title" content="ZStack" />
+    <meta name="twitter:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+    <meta name="twitter:site" content="@zstack_org" />
+
+    <!-- Facebook -->
+    <meta property="og:side_name" content="ZStack" />
+    <meta property="og:title" content="ZStack" />
+    <meta property="og:url" content="http://zstack.org/" />
+    <meta property="og:description" content="ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs." />
+
+</head>
+
+
+<body>
+
+
+<nav id="header" class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">ZStack</a>
+        </div>
+
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li id="navHome"><a href="/">Home</a></li>
+                <li id="navInstallation">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Installation <span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="/installation/">Quick Installation</a></li>
+                    <li><a href="/installation/manual.html">Manual Installation</a></li>
+                    <li><a href="/installation/multi-node.html">Multi-node Installation</a></li>
+                  </ul>
+                </li>
+                <li id="navTutorials"><a href="/tutorials">Tutorials</a></li>
+                <li id="navDocumentation"><a href="/documentation">Documentation</a></li>
+                <li id="navBlog"><a href="/blog">Blog</a></li>
+                <li id="navCommunity"><a href="/community">Community</a></li>
+                <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
+                <li id="navIssues"><a href="/cn">中文</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="container big-font">
+  <div class="row">
+    <div class="col-xs-12">
+    <div class="post">
+
+  <header class="post-header">
+    <h2 class="post-title">ZStack v1.3 release</h2>
+    <p class="post-meta"> by Frank Zhang on Jun 6, 2016</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
+
+
+  <article class="post-content">
+    <p>Hello everyone, I am Frank Zhang, the architect of ZStack. Today I am happy to
+announce that ZStack v1.3 is released.</p>
+
+<h1>New Features And Enhancements</h1>
+
+<ul>
+<li><a href="#actualsize">Supporting both virtual size and actual size for images and volumes</a></li>
+<li><a href="#cpu">CPU over-provisioning</a></li>
+<li><a href="#startvm">Specifying target host or cluster when starting a VM</a></li>
+<li><a href="#staticip">Specifying static IP when attaching a L3 network</a></li>
+<li><a href="#sshport">Specifying SSH port when adding KVM hosts or SFTP backup storage</a></li>
+<li><a href="#log">Log collection tool</a></li>
+<li><a href="#fusionstor">Supporting fusionstor as primary and backup storage</a></li>
+</ul>
+
+
+<h1>Installation And Upgrade</h1>
+
+<ul>
+<li><a href="#install">Installation</a></li>
+<li><a href="#upgrade">Upgrade</a></li>
+</ul>
+
+
+<h2 id="actualsize"> 1. Supporting Both Virtual Size And Actual Size For Images And Volumes</h2>
+
+
+<p>ZStack uses thin-provisioning when creating VM volumes; a volume or image has two sizes, a virtual size indicating the
+max capacity and a actual size indicating the capacity allocated. In previous version, users can only see the actual
+size of a image and the virtual size of a volume. In this version, virtual size and actual size are all supported for images
+and volumes.</p>
+
+<p><img src="/images/1.3/1.png" class="center-img img-responsive"></p>
+
+<p>For volumes, a new API <code>SyncVolumeSize</code> is added for users to get the volume's actual size at runtime.</p>
+
+<pre><code>&gt;&gt;&gt;SyncVolumeSize uuid=e9fc82e23cd14d8aa33d1304cb1f5f87
+</code></pre>
+
+<h2 id="cpu">2. CPU over-provisioning</h2>
+
+
+<p>In this version, a confusing term <code>cpu speed</code> is removed from the VM instance and the instance offering. The VCPU usage is only
+counted by the VCPU number. Users can specify the over-provisioning ratio of VCPU by a global configuration.</p>
+
+<pre><code>&gt;&gt;&gt;UpdateGlobalConfig category=host name=cpu.overProvisioning.ratio value=20
+</code></pre>
+
+<blockquote><p>The default VCPU over-provisioning ratio is 10, which means one physical core(from Linux perspective) can be allocated as 10
+VCPUs.</p></blockquote>
+
+<h2 id="startvm">3. Specifying the target host or cluster when starting a VM</h2>
+
+
+<p>In this version, users can specify the target host or cluster when starting a stopped VM.</p>
+
+<pre><code>&gt;&gt;&gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 hostUuid=c2025197915944acaf0435c0c1a44f96
+</code></pre>
+
+<p>or</p>
+
+<pre><code>&gt;&gt;&gt;StartVmInstance uuid=554d67a78c40475cbe4e8e0cdf6adc44 clusterUuid==c2025197915944acaf0435c0c1a44f96
+</code></pre>
+
+<blockquote><p>This only works if the primary storage is network shared storage, for example, NFS. For local storage that
+volumes are allocated on hosts' disk, a VM cannot start on any other hosts other than the one which its root
+volume is on.</p></blockquote>
+
+<h2 id="staticip">4. Specifying static IP when attaching a L3 network</h2>
+
+
+<p>In this version, users can specify a static IP when attaching a L3 network to a VM.</p>
+
+<pre><code> &gt;&gt;&gt;AttachL3NetworkToVm l3NetworkUuid=23e15a6acc80431fa0f1763ab45ae144 vmInstanceUuid=b7ba300853974189b7adc90f2c25e00b staticIp=192.168.1.10
+</code></pre>
+
+<h2 id="sshport">5. Specifying SSH port when adding KVM hosts or SFTP backup storage</h2>
+
+
+<p>In this version, users can specify the SSH port that is used by Ansible when adding a KVM host or a SFTP backup storage.</p>
+
+<p><img src="/images/1.3/2.png" class="center-img img-responsive">
+<img src="/images/1.3/3.png" class="center-img img-responsive"></p>
+
+<h2 id="log">6. Log collection tool</h2>
+
+
+<p>In this version, a tool archiving various logs is added for users reporting bugs to ZStack community. The tool is implemented as
+a <code>zstack-ctl</code> command and is easy to use.</p>
+
+<p><img src="/images/1.3/4.png" class="center-img img-responsive"></p>
+
+<h2 id="fusionstor">6. Supporting fusionstor as primary and backup storage</h2>
+
+
+<p>In this version, HuaYunWangJi's commercial storage system <em>fusionstor</em> is supported as primary storage and backup storage. It
+works just like Ceph, users can add it through ZStack's UI easily;</p>
+
+<p><img src="/images/1.3/5.png" class="center-img img-responsive">
+<img src="/images/1.3/6.png" class="center-img img-responsive"></p>
+
+<h2 id="install">7. Installation</h2>
+
+
+<p>You can install the 1.3 release by:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -R aliyun
+</code></pre>
+
+<h2 id="upgrade">8. Upgrade</h2>
+
+
+<p>You can upgrade your previous ZStack to 1.3 by:</p>
+
+<pre><code>    wget http://download.zstack.org/releases/1.3/1.3.0/zstack-installer-1.3.0.bin
+    bash zstack-installer-1.3.0.bin -u
+</code></pre>
+
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+</div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/jquery-1.9.1.js"></script>
+<script src="/css/bootstrap-3.3.1/js/bootstrap.js"></script>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    var path = window.location.pathname;
+    if (path == '/') {
+      $('#navHome').addClass('active');
+      return;
+    }
+
+    var paths = path.split("/");
+    var root = paths[1];
+    switch(root){
+      case 'installation':
+        $('#navInstallation').addClass('active');
+        break;
+      case 'tutorials':
+        $('#navTutorials').addClass('active');
+        break;
+      case 'documentation':
+        $('#navDocumentation').addClass('active');
+        break;
+      case 'community':
+        $('#navCommunity').addClass('active');
+        break;
+      case 'issues':
+        $('#navIssues').addClass('active');
+        break;
+      case 'license':
+        $('#navLicense').addClass('active');
+        break;
+      case 'blog':
+        $('#navBlog').addClass('active');
+        break;
+    }
+  });
+</script>
+
+
+<div id="footer">
+  <div class="container zstack-footer-before zstack-footer-after">
+    <div class="row zstack-footer-links">
+      <div class="col-sm-3 col-sm-offset-1">
+        <p class="footer-text-title">Community</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="https://groups.google.com/forum/#!forum/zstack"> Mailing List</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/community">Community</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/blog">Blog</a></li>
+          <li>Gitter</li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <p class="footer-text-title">Resources</p>
+        <ul class="footer-ul">
+          <li><a class="footer-text-link" href="http://www.zstack.org/installation">Intallation</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/tutorials">Tutorials</a></li>
+          <li><a class="footer-text-link" href="http://zstackdoc.readthedocs.org/en/latest/userManual/cli.html">zstack-cli</a></li>
+          <li><a class="footer-text-link" href="http://www.zstack.org/documentation">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-4">
+        <p class="footer-text-title">Connect Us</p>
+        <ul class="footer-ul">
+          <a title="Twitter" class="contact-icon contact-icon-size fa fa-twitter" href="https://twitter.com/zstack_org" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Facebook" class="contact-icon contact-icon-size fa fa-facebook" href="https://www.facebook.com/zstackorg" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Github" class="contact-icon contact-icon-size fa fa-github-alt" href="https://github.com/zstackorg/zstack" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Wechat" class="contact-icon contact-icon-size fa fa-weixin" href="../misc/wechat.html" target="_blank"></a>&nbsp;&nbsp;
+          <a title="Weibo" class="contact-icon contact-icon-size fa fa-weibo" href="http://weibo.com/zstack" target="_blank"></a>&nbsp;&nbsp;
+        </ul>
+        <ul class="footer-ul zstack-footer-before2">
+          <li><i>ZStack is open source IaaS software provided under the Apache 2.0 license.</i></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer-last">
+  <div>
+      <i><b>Your feedback is invaluable, please let us know your thoughts. &nbsp;&nbsp;<a title="Email" class="contact-icon fa fa-envelope" href="mailto:info@zstack.org"></a></b> <i>
+  </div>
+</div>
+
+</body>
+
+
+
+</html>
