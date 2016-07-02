@@ -26,7 +26,7 @@ author: Songtao Liu
 ### CentOS 7.2 ZStack 社区定制版系统安装教程：
 
 #### 1.	下载ZStack社区定制版CentOS7.2 ISO
-文件名称：ZStack-Community-x86_64-DVD-1.3.0.iso (1.7G)
+文件名称：{{site.zstack_centos7_name}} (1.8G)
 
 MD5校验码：{{site.zstack_centos7_md5}}
 
