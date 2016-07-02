@@ -18,6 +18,8 @@ if [ -z "$branch" ] || [ "$branch" != "master" ]; then
     branch='master'
 fi
 
+head_commit_msg=`git log -1 --pretty=%B|head -1`
+
 git checkout $branch
 if [ $? -ne 0 ]; then
     echo "checkout $branch failed. Maybe you forget to commit local changes in source branch."
@@ -54,7 +56,7 @@ echo " 1.'git add -A'
 
  or do it all in one line (don't forget use right comment):
 
- git add -A; git commit -a -m \"THE COMMENTS NEED TO BE REPLACED\"; git push --all origin; git checkout source
+ git add -A; git commit -a -m \"$head_commit_msg\"; git push --all origin; git checkout source
 
 "
 echo "----------"
