@@ -29,23 +29,23 @@ fill_default_content: true
 
 install_script_en: "http://download.zstack.org/releases/0.9/0.9.0/zstack-install.sh"
 vr_en: "http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2"
-all_in_one_en: "http://download.zstack.org/releases/1.5/1.5.0/zstack-installer-1.5.0.bin"
-war_en: "http://download.zstack.org/releases/1.5/1.5.0/zstack.war"
-tgz: "zstack-installer-1.5.0.bin"
+all_in_one_en: "http://download.zstack.org/releases/1.6/1.6.2/zstack-installer-1.6.2.bin"
+war_en: "http://download.zstack.org/releases/1.6/1.6.2/zstack.war"
+tgz: "zstack-installer-1.6.2.bin"
 
 install_script_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.1/1.1.0/zstack-install.sh"
 vr_ch: "http://download.zstack.org/templates/zstack-virtualrouter-1.1.0.qcow2"
-all_in_one_ch: "http://download.zstack.org/releases/1.5/1.5.0/zstack-installer-1.5.0.bin"
+all_in_one_ch: "http://download.zstack.org/releases/1.6/1.6.2/zstack-installer-1.6.2.bin"
 #all_in_one_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack-installer-1.0.1.bin"
 #war_ch: "http://7xi3lj.com1.z0.glb.clouddn.com/releases/1.0/1.0.1/zstack.war"
-war_ch: "http://download.zstack.org/releases/1.5/1.5.0/zstack.war"
-all_in_one_md5: "878ae11af2d73bb53e665a6c885bd150"
+war_ch: "http://download.zstack.org/releases/1.6/1.6.2/zstack.war"
+all_in_one_md5: "8ea7a3ebeece052638367a94b8d75360"
 
 zstack_image: "http://download.zstack.org/templates/zstack-image-1.4.qcow2"
 zstack_image_md5: "495c94a97c25c1290befb083f40181f0"
 
-zstack_centos7_name: "ZStack-Community-x86_64-DVD-1.4.0.iso"
-zstack_centos7_iso: "http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-1.4.0.iso"
-zstack_centos7_md5: "7bb842a260de4dd7eab1cfe10cbf9558"
+zstack_centos7_name: "ZStack-Community-x86_64-DVD-160827.iso "
+zstack_centos7_iso: "http://download.zstack.org/ISO/ZStack-Community-x86_64-DVD-160827.iso"
+zstack_centos7_md5: "62b0ca5cd1585b62feebf18790cc0a2c"
 
-zstack_centos7_iso_baidu: "http://pan.baidu.com/s/1boXRJxP"
+zstack_centos7_iso_baidu: "http://pan.baidu.com/s/1cn62ya"
