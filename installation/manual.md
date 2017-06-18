@@ -22,7 +22,7 @@ For machine to install ZStack management node, we recommend below hardware speci
   <tr>
     <td><b>Memory</b></td>
     <td>
-    <p>>= 4G</p>
+    <p>>= 8G</p>
    <div class="bs-callout bs-callout-info">
      <h4>The memory size depends on your environment</h4>
      The ZStack Java process consumes about 4G memory when serving 10,000 concurrent API requests. We recommend
@@ -56,7 +56,7 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
   <h4>Low disk capacity can cause RabbitMQ hang</h4>
   Please make sure your RabbitMQ machine has enough memory and free disk.
   When encountering low memory or disk capacity, RabbitMQ will enter <i>flow control mode</i> which will throttle
-  message delivery and lead to slow or paused ZStack management node.
+  message delivery and lead ZStack management node to slow or paused .
 </div>
 
 #### 1.1 Install ZStack management node:
@@ -68,15 +68,12 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
-sudo bash zstack-installer.bin -i -R aliyun</code></pre>
+sudo bash zstack-installer.bin -i -o</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
-sudo bash zstack-installer.bin -i -R aliyun</code></pre>
+sudo bash zstack-installer.bin -i -o</code></pre>
       
-      在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
-      如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
-      如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
       
       <div class="bs-callout bs-callout-danger">
         <h4>注意DNS劫持</h4>
@@ -96,12 +93,12 @@ sudo bash zstack-installer.bin -i -R aliyun</code></pre>
 ##### Use *curl*:
 
     curl -L {{site.all_in_one_en}} -o zstack-installer.bin
-    sudo bash zstack-installer.bin -i
+    sudo bash zstack-installer.bin -i -o
     
 #### Use *wget*:
 
     wget -O zstack-installer.bin {{site.all_in_one_en}}
-    sudo bash zstack-installer.bin -i
+    sudo bash zstack-installer.bin -i -o
 
 The md5sum of ztack-installer.bin is:
 
@@ -130,7 +127,37 @@ You can use `zstack-ctl` to install RabbitMQ message broker:
 <div class="bs-callout bs-callout-info">
   <h4>The command will update zstack.properties</h4>
   After installing, <code>zstack-ctl</code> will automatically update IP of RabbitMQ to zstack.properties file.
+  The address of the zstack.properties file can be obtained with <code> zstack-ctl status </code>. When you have successfully installed   RabbitMQ, you also need to create encrypted access for remote RabbitMQ access (you need to do the following on RabbitMQ's server):
 </div>
+
+    rabbitmqctl add_user username password
+    
+    Example: rabbitmqctl add_user zstack zstack123
+
+    rabbitmqctl set_user_tags username administrator
+
+    Example: rabbitmqctl set_user_tags zstack administrator
+
+    rabbitmqctl change_password username password
+
+    Example: rabbitmqctl change_password zstack zstack123
+
+    rabbitmqctl set_permissions -p / username ".*" ".*" ".*"
+
+    Example: rabbitmqctl set_permissions -p / zstack ".*" ".*" ".*"
+    
+In addition you also need to record RabbitMQ encrypted access configuration to zstack.properties (in the ZStack management node to do the following steps):
+
+    zstack-ctl configure CloudBus.rabbitmqUsername=rabbitmq_username
+
+    Example: zstack-ctl configure CloudBus.rabbitmqUsername=zstack
+
+    zstack-ctl configure CloudBus.rabbitmqPassword=rabbitmq_password
+
+    Example: zstack-ctl configure CloudBus.rabbitmqPassword=zstack123
+
+    zstack-ctl save_config
+
 
 #### 1.4 Install Web UI
 
@@ -160,8 +187,9 @@ use above steps to install all software on a single machine.
 
 ### 2. Full-manual Install 
 
-For curious users who want to install ZStack without help from any script/tool, as ZStack is a standard Java WAR file, you
-can follow below instructions.
+After you have finished installing ZStack, you can proceed with some of the necessary configurations. ZStack is installed into each ZStack management node by zstack-ctl, which you can use to control the local management node, or other management nodes.
+
+It is important to note that zstack.properties is the core configuration file for ZStack. It will be stored in each management node. zstack.properties file will store such as database URL, for the database to access the user name password, RabbitmMQ IP address and so on. The contents of the zstack.properties file on each management node are basically the same. Its path can be obtained through <code>zstack-ctl status</code>. If it is installed by default, it will be stored in /usr/local/zstack/apache-tomcat/webapps/zstack/WEB-INF/classes/zstack.properties. You can manually edit it. However, when the users use the 'zstack-ctl' command to install or deploy the corresponding service, 'zstack-ctl' will automatically complete the deployment.
 
 <div class="bs-callout bs-callout-info">
   <h4>All below instructions use a single machine</h4>
@@ -227,7 +255,7 @@ that may cause troubles. You can download and install Tomcat from the official s
 <div class="bs-callout bs-callout-info">
   <h4>We have tested Tomcat 7.0.35</h4>
   We specify Tomcat version to 7.0.35 only because it's the version we have tested. Any later Tomcat version should work fine as
-  well. You can download them from [Tomcat Download Page](http://tomcat.apache.org/download-70.cgi).
+  well. You can download them from [Tomcat Download Page](http://tomcat.apache.org/download-70.cgi/).
 </div>
     
 #### 2.6. Install ZStack WAR:
