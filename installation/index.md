@@ -36,15 +36,12 @@ you can build your first cloud with only one machine. Because of this, we recomm
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
+sudo bash zstack-installer.bin -o</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
-sudo bash zstack-installer.bin -a -R aliyun</code></pre>
+sudo bash zstack-installer.bin -o</code></pre>
       
-      在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
-      如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
-      如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
       
       
       <div class="bs-callout bs-callout-danger">
@@ -65,12 +62,12 @@ sudo bash zstack-installer.bin -a -R aliyun</code></pre>
 #### Use *curl*:
 
     curl -L {{site.all_in_one_en}} -o zstack-installer.bin
-    sudo bash zstack-installer.bin -a
-    
+    sudo bash zstack-installer.bin -o
+    
 #### Use *wget*:
 
     wget -O zstack-installer.bin {{site.all_in_one_en}}
-    sudo bash zstack-installer.bin -a
+    sudo bash zstack-installer.bin -o
     
 The md5sum of ztack-installer.bin is:
 
@@ -83,7 +80,7 @@ The md5sum of ztack-installer.bin is:
 </div>
 
     
-The script will install the machine with:
+The script will install in machine with:
 
 * Apache Tomcat 7 with zstack.war deployed
 * ZStack web UI
