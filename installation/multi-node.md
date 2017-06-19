@@ -20,7 +20,7 @@ For machine to install ZStack management node, we recommend below hardware speci
   <tr>
     <td><b>Memory</b></td>
     <td>
-    <p>>= 4G</p>
+    <p>>= 8G</p>
    <div class="bs-callout bs-callout-info">
      <h4>The memory size depends on your environment</h4>
      The ZStack Java process consumes about 4G memory when serving 10,000 concurrent API requests. We recommend
@@ -54,7 +54,7 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
   <h4>Low disk capacity can cause RabbitMQ hang</h4>
   Please make sure your RabbitMQ machine has enough memory and free disk.
   When encountering low memory or disk capacity, RabbitMQ will enter <i>flow control mode</i> which will throttle
-  message delivery and lead to slow or paused ZStack management node.
+  message delivery and lead ZStack management node to slow or paused.
 </div>
 
 ### 1. Install ZStack Management Node 1
@@ -66,15 +66,12 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
       
       <h4 style="margin-bottom:15px; margin-top:15px">Use <i>curl</i>:</h4>
       <pre><code>curl -L {{site.all_in_one_ch}} -o zstack-installer.bin
-sudo bash zstack-installer.bin -i -R aliyun</code></pre>
+sudo bash zstack-installer.bin -i -o</code></pre>
       
       <h4 style="margin-bottom:15px">Use <i>wget</i>:</h4>
       <pre><code>wget -O zstack-installer.bin {{site.all_in_one_ch}}
-sudo bash zstack-installer.bin -i -R aliyun</code></pre>
-      
-      在安装的过程中，脚本会从Linux发行商的repo里面安装需要的包。通过设置参数'-R aliyun'，ZStack会主动使用阿里云的yum镜像。用户也可以使用'-R 163'来指定163的yum镜像。
-      如果用户是内网环境，有内部yum源，或是有特殊的yum源，请先设置好内部yum源（包括epel的源），然后在安装的时候不使用参数'-R aliyun'。
-      如果使用Ubuntu的用户，最好也在安装前，把Ubuntu的apt-get的source list 预先配置速度最快的源。
+sudo bash zstack-installer.bin -i -o</code></pre>
+     
       
       <div class="bs-callout bs-callout-danger">
         <h4>注意DNS劫持</h4>
@@ -105,7 +102,7 @@ The md5sum of ztack-installer.bin is:
 
 {{site.all_in_one_md5}}
 
-Once you successfully installed the node, configure the IP into zstack.properties:
+Once you successfully installed the node, configure the IP into zstack.properties（Assume that the machine's IP address is 10.89.13.57）:
 
     zstack-ctl configure management.server.ip=ip_of_management_node1
 
@@ -185,15 +182,6 @@ you can repeat this step to install more nodes if needed.
 
 On the management node 1, you can use `zstack-ctl` to install web UI:
 
-<div class="bs-callout bs-callout-warning">
-  <h4>Install virtualenv 12.1.1</h4>
-
-  Please manually do install virtualenv 12.1.1 on the UI server before proceeding:
-
-  <pre><code>yum -y install python-pip && pip install  virtualenv==12.1.1 && mkdir -p /var/run/zstack/</code></pre>
-
-  This step will be automated in next version
-</div>
 
 #### 5.1 Install to local
 
