@@ -18,7 +18,7 @@ layout: homePage.cn
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1" style="padding-top: 10px">
-        <h3> <a href="http://www.zstack.io"> ZStack中文官网已经移至 http://www.zstack.io  </a></h3>
+        <h3> <a href="http://www.zstack.io"> ZStack官方网站已经移至 http://www.zstack.io  </a></h3>
       </div>
     </div>
   </div>
