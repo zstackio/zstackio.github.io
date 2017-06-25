@@ -18,6 +18,15 @@ layout: homePage
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1" style="padding-top: 10px">
+        <h2>中文用户请访问<a><href="http://zstack.io/"> www.zstack.io </a></h2>   
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="homepage-padding-odd">
+    <div class="row">
+      <div class="col-xs-10 col-xs-offset-1" style="padding-top: 10px">
         <h1>What Is ZStack</h1>
         <p>
           ZStack is open source IaaS(infrastructure as a service) software aiming to automate datacenters,
@@ -31,7 +40,7 @@ layout: homePage
 </div>
 
 
-<div class="homepage-padding-odd">
+<div class="homepage-padding-even">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1" style="padding-top: 10px">
@@ -52,7 +61,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-even">
+<div class="homepage-padding-odd">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1">
@@ -91,7 +100,7 @@ layout: homePage
  </div>
 </div>
 
-<div class="homepage-padding-odd">
+<div class="homepage-padding-even">
   <div class="container">
     <div class="row">
 
@@ -116,7 +125,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-even">
+<div class="homepage-padding-odd">
   <div class="container">
     <div class="row">
 
@@ -140,7 +149,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-odd">
+<div class="homepage-padding-even">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1">
@@ -167,7 +176,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-even">
+<div class="homepage-padding-odd">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1">
@@ -188,7 +197,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-odd">
+<div class="homepage-padding-even">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1">
@@ -216,7 +225,7 @@ layout: homePage
   </div>
 </div>
 
-<div class="homepage-padding-even">
+<div class="homepage-padding-odd">
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1">
