@@ -99,19 +99,10 @@ or use the service file in init.d/:
 <div class="bs-callout bs-callout-info">
   <h4>配置root用户的ssh登录能力</h4>
   管理节点需要root用户的SSH权限来调用Ansible安装系统包和consoleproxy。您需要提前配置root用户的SSH访问能力。
-  
-  <h5>CentOS:</h5>
+
   <pre><code>sudo su
 passwd root</code></pre>
 
-  <h5>Ubuntu:</h5>
-  您需要修改SSHD的配置文件：
-  <pre><code>1. sudo su
-2. passwd root
-3. 编辑/etc/ssh/sshd_config
-4. 注释掉 'PermitRootLogin without-password'
-5. 添加'PermitRootLogin yes'
-6. 重启 SSHD: 'service ssh restart'</code></pre>
 </div>
 
 #### 3.2 Start other nodes

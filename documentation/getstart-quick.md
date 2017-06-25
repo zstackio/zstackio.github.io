@@ -14,7 +14,7 @@ To access the web UI, open your browser with URL:
       
 To use command line tool, type `zstack-cli` on the machine that ZStack is installed:
 
-      root@ubuntu1404:~# zstack-cli
+      root@zstack:~# zstack-cli
       
 Now your ZStack environment is ready, please visit [Tutorials](../tutorials) to create your first cloud deployment
 using either web UI or command line tool, or check out [User Manual](http://zstackdoc.readthedocs.org/en/latest/) for a full reference.
