@@ -32,7 +32,7 @@ For machine to install ZStack management node, we recommend below hardware speci
   <tr>
     <td><b>OS</b></td>
     <td>
-      <p>ZStack customized ISO</p>
+      <p>ZStack OS</p>
     </td>
   </tr>
 </table>
@@ -49,33 +49,33 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
 ### 1. Install ZStack Management Node 1
 
 <div class="bs-callout bs-callout-success">
-  <h4 class="hand" data-toggle="collapse" data-target="#china">The Introduction of ZStack customized ISO </h4>
-  <div id="china" class="collapse">
-    <h4 style="margin-bottom:15px; margin-top:15px">The trait of <i>ZStack ISO</i>:</h4>
+
+  <h4 class="hand" data-toggle="collapse" data-target="#china">The Introduction of ZStack OS </h4>
+
       <ul>
-        <li>Based on CentOS-7-x86_64-Minimal-1511.ISO, friendly TUI management support a variety of system configuration.</li>
-        <li>Install ZStack don't need to connect to the external network and configure yum source, you can achieve to install ZStack offline.</li>
-        <li>Provide four installation modes: Enterprise management node mode, community management node mode, computing node mode, expert mode. The user can choose according to the demand. </li>
-        <li>Cancel the eth setting. Using the system default NIC naming rules. </li>
+        <li>ZStack OS is customized from CentOS 7.2, including required system libs, with friendly Terminal UI (TUI) and well tested by hundreds of cloud users.</li>
+        <li>ZStack OS ISO includes all ZStack required components. So installing ZStack OS does not need Internet connection. </li>
+        <li>Provide four installation modes: Enterprise management node mode, community management node mode, computing node mode, expert mode. </li>
       </ul>
       
       <h4 style="margin-bottom:15px">The Introduction of Four <i>Installation Modes</i>:</h4>
+  
       <table class="table table-striped table-bordered">
         <tr>
           <td><b>ZStack Enterprise management node</b></td>
-          <td>Install ZStack customized CentOS7.2 and ZStack Enterprise Management Node.</td>
+          <td>Install ZStack OS and ZStack Enterprise Management Node, which includes full Enterprise features (like VM HA, QoS, VM password resetting ...) with 1 free computing node license.</td>
         </tr>
         <tr>
           <td><b>ZStack Community Management Node</b></td>
-          <td>Install ZStack customized CentOS7.2 and ZStack Community Management Node.</td>
+          <td>Install ZStack OS and ZStack Community Management Node, which could add unlimited computing nodes.</td>
         </tr>
         <tr>
-          <td><b>ZStack Computer Node</b></td>
-          <td>Install ZStack customized CentOS7.2 and the Compute Node essential package.</td>
+          <td><b>ZStack Computing Node</b></td>
+          <td>Install ZStack OS and the computing node essential packages.</td>
         </tr>
         <tr>
           <td><b>ZStack Expert Node</b></td>
-          <td>Install ZStack customized CentOS7.2 and config the local yum. The user can customize the system  application.</td>
+          <td>Install ZStack OS and config the local yum. This is for advanced usage, e.g. installing multiple ZStack Management Nodes.</td>
         </tr>
       </table>
   </div>
@@ -85,7 +85,7 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
 
 <div class="bs-callout bs-callout-warning">
   <h4>Download ZStack iso</h4>
-  ZStack user should download the ZStack customized ISO {{site.zstack_iso_name}} and ZStack-installer package {{site.all_in_one_en_name}}.<br>
+  ZStack user should download the ZStack OS {{site.zstack_iso_name}} and ZStack-installer package {{site.all_in_one_en_name}}.<br>
   <h4>Download link :</h4>
     <ul>
       <li><b>ZStack ISO:</b>{{site.zstack_iso}}</li>
@@ -110,10 +110,12 @@ If you want to use multi-node Installation, please choose `ZStack Expert Mode`.
 
 <div class="bs-callout bs-callout-success">
 Please be patient, the installation will cost a moment. You can click the <i>root password</i> to set the password.<br>
-Depending on the completeness of the distribution and the networking speed, the process may take 15 ~ 20 minutes.
+Depending on the hardware performance, the process may take 5 ~ 15 minutes.
 </div>
 
 #### Use *wget*:
+
+    After ZStack OS expert mode is installed, please login System and do:
 
     wget {{site.all_in_one_en}}
     

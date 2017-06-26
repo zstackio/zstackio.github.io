@@ -30,7 +30,7 @@ fill_default_content: true
 vr_en: "http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2"
 all_in_one_en: "http://cdn.zstack.io/community/downloads/zstack/2.0/ZStack-installer-2.0.2.bin"
 all_in_one_en_name: "ZStack-installer-2.0.2.bin"
-war_en: "http://cdn.zstack.io/product_downloads/war/zstack-2.0.1.war"
+war_en: "http://cdn.zstack.io/product_downloads/war/zstack-2.0.2.war"
 war_en_name: "zstack-2.0.2.war"
 tgz: "ZStack-installer-2.0.2.bin"
 
