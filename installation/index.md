@@ -36,7 +36,6 @@ Installing ZStack must use the ZStack customized ISO and prepare the ZStack inst
     <li>Install ZStack don't need to connect to the external network and configure yum source, you can achieve to install ZStack offline.</li>
     <li>Provide four installation modes: Enterprise management node mode, community management node mode, computing node mode, expert mode. The user can choose according to the demand. </li>
     <li>Cancel the eth setting. Using the system default NIC naming rules. </li>
-    <li>Default options: DATE & TIME is East Asia, LANGUAGE is English and KEYBOARD is English (US). </li>
   </ul>
 </div>
 
@@ -92,12 +91,12 @@ The system has been pre-configured default options: DATE & TIME for the East Asi
   If you want to <i>Quick install</i>,please choose <i>ZStack Community Management mode</i>.
 </div>
 
-<img src="../images/Quick_Installation2.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation2.PNG" class="center-img img-responsive">
 
 Please be patient, the installation will cost a moment. You can click the <i>root password</i> to set the password.
 Depending on the completeness of the distribution and the networking speed, the process may take 5 ~ 15 minutes.
 
-<img src="../images/Quick_Installation3.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation3.PNG" class="center-img img-responsive">
 
 The iso will install the machine with:
 
