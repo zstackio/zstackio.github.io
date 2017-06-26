@@ -95,12 +95,12 @@ Please make sure the network is configed. The static IP configuration is preferr
   Please choose <i>ZStack Community Management mode</i>.
 </div>
 
-<img src="../images/Quick_Installation2.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation2.PNG" class="center-img img-responsive">
 
 You can click the <i>root password</i> to set the password.
 Depending on the hardware performance, the process may take 5 ~ 15 minutes.
 
-<img src="../images/Quick_Installation3.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation3.PNG" class="center-img img-responsive">
 
 After Operation System installed, please reboot the system. When the system boots up again, it will automatically install ZStack and start up ZStack TUI.
 
