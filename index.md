@@ -18,7 +18,7 @@ layout: homePage
   <div class="container">
     <div class="row">
       <div class="col-xs-10 col-xs-offset-1" style="padding-top: 10px">
-        <h2>中文用户请访问<a><href="http://zstack.io/"> www.zstack.io </a></h2>   
+        <h2>中文用户请访问<a href="http://zstack.io/"> www.zstack.io </a></h2>   
       </div>
     </div>
   </div>
