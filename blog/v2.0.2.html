@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack Download</title>
+    <title>ZStack - ZStack v2.0.2 release</title>
     <!--<script type="text/javascript" src="/js/google_analytics.js"></script>-->
     <script>
 var _hmt = _hmt || [];
@@ -81,150 +81,106 @@ var _hmt = _hmt || [];
 
 <div class="container big-font">
   <div class="row">
-      <h1 id="quickInstallation">Quick Installation</h1>
+    <div class="col-xs-12">
+    <div class="post">
 
-
-<p>For people wanting to try out ZStack quickly, the best way is to install all software including KVM on a single machine so
-you can build your first cloud with only one machine. Because of this, we recommend below hardware specification:</p>
-
-<table class="table table-striped table-bordered">
-  <tr>
-    <td><b>CPU</b></td>
-    <td>>= 4 Cores Intel/AMD CPUs supporting VT-x or SVM</td>
-  </tr>
-  <tr>
-    <td><b>Memory</b></td>
-    <td>>= 8G</td>
-  </tr>
-  <tr>
-    <td><b>Free Disk</b></td>
-    <td>>= 250G</td>
-  </tr>
-  <tr>
-    <td><b>OS</b></td>
-    <td>ZStack OS</td>
-  </tr>
-</table>
-
-
-<p>Installing ZStack must use the ZStack OS (http://cdn.zstack.io/community/downloads/iso/ZStack-x86_64-DVD-2.0.2.iso) and prepare the ZStack installation package.</p>
-
-<div class="bs-callout bs-callout-info">
-  <h4>The Introduction of ZStack OS</h4>
-  <ul>
-    <li>ZStack OS is customized from CentOS 7.2, including required system libs, with friendly Terminal UI (TUI) and well tested by hundreds of cloud users.</li>
-    <li>ZStack OS ISO includes all ZStack required components. So installing ZStack OS does not need Internet connection. </li>
-    <li>Provide four installation modes: Enterprise management node mode, community management node mode, computing node mode, expert mode. </li>
-    <li>Default options: DATE & TIME is East Asia, LANGUAGE is English and KEYBOARD is English (US). </li>
-  </ul>
-
-  <h4>ZStack OS Four Installation Modes</h4>
-  
-  <table class="table table-striped table-bordered">
-    <tr>
-      <td><b>ZStack Enterprise management node</b></td>
-      <td>Install ZStack OS and ZStack Enterprise Management Node, which includes full Enterprise features (like VM HA, QoS, VM password resetting ...) with 1 free computing node license.</td>
-    </tr>
-    <tr>
-      <td><b>ZStack Community Management Node</b></td>
-      <td>Install ZStack OS and ZStack Community Management Node, which could add unlimited computing nodes.</td>
-    </tr>
-    <tr>
-      <td><b>ZStack Computing Node</b></td>
-      <td>Install ZStack OS and the computing node essential packages.</td>
-    </tr>
-    <tr>
-      <td><b>ZStack Expert Node</b></td>
-      <td>Install ZStack OS and config the local yum. This is for advanced usage, e.g. installing multiple ZStack Management Nodes.</td>
-    </tr>
-  </table>
+  <header class="post-header">
+    <h2 class="post-title">ZStack v2.0.2 release</h2>
+    <p class="post-meta"> by Yongkang You on Jun 25, 2017</p>
+    <div style="margin-bottom: 15px">
+      
+<!--
+<div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save"></a>
 </div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+-->
+
+<!-- AddToAny BEGIN -->
+<div class="a2a_kit a2a_default_style">
+  <a class="a2a_button_facebook"></a>
+  <a class="a2a_button_twitter"></a>
+  <a class="a2a_button_google_plus"></a>
+  <a class="a2a_button_linkedin"></a>
+  <a class="a2a_button_reddit"></a>
+  <a class="a2a_button_hacker_news"></a>
+  <a class="a2a_button_sina_weibo"></a>
+  <span class="a2a_divider"></span>
+  <a class="a2a_dd" href="https://www.addtoany.com/share_save">Share</a>
+</div>
+<script type="text/javascript" src="//static.addtoany.com/menu/page.js"></script>
+<!-- AddToAny END -->
+
+    </div>
+  </header>
 
 
-<p>This manual will introduce the ZStack Community Management Node installation, which is easiest mode to build a private cloud.</p>
+  <article class="post-content">
+    <p>Hello everyone, I am Yongkang You, the COO of ZStack. Today I am happy to announce that ZStack v2.0.2 is released.</p>
 
-<h4>1.Download ZStack ISO</h4>
+<p>We did not update zstack.org for a long time, because we were continuing building much more powerful ZStack.
+We did a lot of things in the past 1 year, e.g. releasing ZStack Enterprise with multiple languages, launching new Chinese website http://www.zstack.io and also adding more network services like VxLAN, load balance and IP-SEC.</p>
 
-<p>ZStack user should download the ZStack OS ZStack-x86_64-DVD-2.0.2.iso.<br></p>
+<p>We got series A round funding from Alibaba Cloud and grew up with a bigger team.</p>
 
-<h4>Download link :</h4>
+<p>ZStack has built a firmed community in China. Hundreds of private clouds are using ZStack.
+ele.me (the biggest online food ordering company) has a ZStack environment managing more than 1400 physical servers,
+which supporting millions of orders every day.</p>
+
+<h1>New Features And Enhancements</h1>
 
 <ul>
-  <li><b>ZStack ISO:</b>http://cdn.zstack.io/community/downloads/iso/ZStack-x86_64-DVD-2.0.2.iso</li>
-  <li><b>The md5sum of ZStack ISO</b>:21208f60790e34cb7fe66d1290d6b291</li>
+<li>VxLAN</li>
+<li>New Enterprise UI</li>
+<li>New virtual router network service</li>
+<li>ZStack OS</li>
+<li>Performance mornitor (Enterprise feature)</li>
+<li>Billing (Enterprise feature)</li>
+<li>VPN(IP-Sec) (Enterprise feature)</li>
+<li>VM QoS (Enterprise feature)</li>
+<li>Memory/CPU/Storage Overprovision  (Enterprise feature)</li>
+<li>VM HA (Enterprise feature)</li>
+<li>LDAP (Enterprise feature)</li>
+<li>VCenter management (Enterprise feature)</li>
+<li>VM password resetting by QGA (Enterprise feature)</li>
+<li>VM console password (Enterprise feature)</li>
+<li>VM online cloning (Enterprise feature)</li>
+<li>VM CPU/Memory online hot-add (Enterprise feature)</li>
+<li>VM operation log (Enterprise feature)</li>
+<li>VM attach/detach ISO (Enterprise feature)</li>
 </ul>
 
 
-<h4>2. Burn ISO to USB:</h4>
+<h1>Installation And Upgrade</h1>
 
-<p>In the hard drive list select the USB to burn.</p>
+<p>You can follow <a href="../installation/index.md">Installation Manual</a> to install the 2.0.2 release.</p>
 
-<div class="bs-callout bs-callout-warning">
-  <h4>Precautions in using USB</h4>
-  If the system is only inserted a USB, which is the default USB to burn and write. Before burning, please backup USB content.
-  After the buring, the USB can be used as a boot disk.
+  </article>
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = 'zstackorg';
+
+  /* * * DON'T EDIT BELOW THIS LINE * * */
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
 </div>
 
-
-<h4>3.System Installation</h4>
-
-<p>The system has been pre-configured default options: DATE &amp; TIME for the East Asia Area, LANGUAGE is English, KEYBOARD is English (US). The administrator can change the configuration.</p>
-
-<p>Please make sure the network is configed. The static IP configuration is preferred.</p>
-
-<p><img src="../images/Quick_Installation1.png" class="center-img img-responsive"></p>
-
-<div class="bs-callout bs-callout-info">
-  <h4>Mode selection</h4>
-  Please choose <i>ZStack Community Management mode</i>.
-</div>
-
-
-<p><img src="../images/Quick_Installation2.png" class="center-img img-responsive"></p>
-
-<p>You can click the <i>root password</i> to set the password.
-Depending on the hardware performance, the process may take 5 ~ 15 minutes.</p>
-
-<p><img src="../images/Quick_Installation3.png" class="center-img img-responsive"></p>
-
-<p>After Operation System installed, please reboot the system. When the system boots up again, it will automatically install ZStack and start up ZStack TUI.</p>
-
-<p>The ISO will install the machine with:</p>
-
-<ul>
-<li>Apache Tomcat 7 with zstack.war deployed</li>
-<li>ZStack web UI</li>
-<li>ZStack command line tool (zstack-cli)</li>
-<li>ZStack control tool (zstack-ctl)</li>
-<li>MySQL(will set MySQL root password, if it is empty.)</li>
-<li>RabbitMQ server</li>
-<li>NFS server</li>
-<li>Apache HTTP server</li>
-</ul>
-
-
-<div class="bs-callout bs-callout-warning">
-  <h4>If failed to install ZStack</h4>
-  May be lack of NIC configuration or other causes lead to ZStack installation failure. The installation page will exit to the terminal.<br>
-  For example: <i>If the server does not have available IP when installing ISO, the ZStack management node can't be installed properly.</i>
-  <div class="bs-callout bs-callout-success">
-    <h4>After configuring the network, do the following command to install ZStack:</h4>
-      <pre><code>bash /opt/zstack*installer.bin</code></pre>
-  </div>
-</div>
-
-
-
-
-<div class="bs-callout bs-callout-info">
-  <h4>Default Credential</h4>
-
-  The default credential for UI login is admin/password.
-</div>
-
-
-<p>Now your ZStack is successfully installed, visit <a href="../documentation/getstart-quick.html">Getting started with quick installation</a> see how to access web UI and command line tool.</p>
-
+    </div>
   </div>
 </div>
 
@@ -312,5 +268,7 @@ Depending on the hardware performance, the process may take 5 ~ 15 minutes.</p>
 </div>
 
 </body>
+
+
 
 </html>
