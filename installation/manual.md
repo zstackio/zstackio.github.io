@@ -115,7 +115,7 @@ The administrator can change the configuration.
 
 If you use Manual Installation, please choose `ZStack Expert Mode`.
 
-<img src="../images/install-manual3.png" class="center-img img-responsive">
+<img src="../images/install-manual3.PNG" class="center-img img-responsive">
 
 <div class="bs-callout bs-callout-success">
   Please be patient, the installation will cost a moment. You can click the <i>root password</i> to set the password.<br>
@@ -129,7 +129,7 @@ Depending on the hardware performance, the process may take 5 ~ 15 minutes.
     bash {{site.all_in_one_en_name}} -i
 
 
-<img src="../images/install-manual2.png" class="center-img img-responsive">
+<img src="../images/install-manual2.PNG" class="center-img img-responsive">
 
 #### 1.2 Install MySQL
 

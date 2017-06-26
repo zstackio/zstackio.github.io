@@ -49,7 +49,9 @@ For machines to install MySQL and RabbitMQ message broker, please refer to their
 ### 1. Install ZStack Management Node 1
 
 <div class="bs-callout bs-callout-success">
-  <h4 class="hand" data-toggle="collapse" data-target="#china">The Introduction of ZStack OS (click here)</h4>
+
+  <h4 class="hand" data-toggle="collapse" data-target="#china">The Introduction of ZStack OS </h4>
+
       <ul>
         <li>ZStack OS is customized from CentOS 7.2, including required system libs, with friendly Terminal UI (TUI) and well tested by hundreds of cloud users.</li>
         <li>ZStack OS ISO includes all ZStack required components. So installing ZStack OS does not need Internet connection. </li>
@@ -104,7 +106,7 @@ The administrator can change the configuration.
   
 If you want to use multi-node Installation, please choose `ZStack Expert Mode`.
 
-<img src="../images/install-manual3.png" class="center-img img-responsive">
+<img src="../images/install-manual3.PNG" class="center-img img-responsive">
 
 <div class="bs-callout bs-callout-success">
 Please be patient, the installation will cost a moment. You can click the <i>root password</i> to set the password.<br>

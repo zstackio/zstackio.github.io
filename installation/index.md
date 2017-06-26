@@ -36,6 +36,7 @@ Installing ZStack must use the ZStack OS ({{site.zstack_iso}}) and prepare the Z
     <li>ZStack OS ISO includes all ZStack required components. So installing ZStack OS does not need Internet connection. </li>
     <li>Provide four installation modes: Enterprise management node mode, community management node mode, computing node mode, expert mode. </li>
     <li>Default options: DATE & TIME is East Asia, LANGUAGE is English and KEYBOARD is English (US). </li>
+
   </ul>
 
   <h4>ZStack OS Four Installation Modes</h4>
@@ -95,12 +96,12 @@ Please make sure the network is configed. The static IP configuration is preferr
   Please choose <i>ZStack Community Management mode</i>.
 </div>
 
-<img src="../images/Quick_Installation2.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation2.PNG" class="center-img img-responsive">
 
 You can click the <i>root password</i> to set the password.
 Depending on the hardware performance, the process may take 5 ~ 15 minutes.
 
-<img src="../images/Quick_Installation3.png" class="center-img img-responsive">
+<img src="../images/Quick_Installation3.PNG" class="center-img img-responsive">
 
 After Operation System installed, please reboot the system. When the system boots up again, it will automatically install ZStack and start up ZStack TUI.
 
