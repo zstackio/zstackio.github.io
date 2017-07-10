@@ -181,7 +181,11 @@ click 'PrimaryStorage' in the left slider to enter primary storage page:
 
 <hr>
 
+<<<<<<< HEAD
 click button 'Add PrimaryStorage' to open the dialog:
+=======
+click button 'Adc PrimaryStorage' to open the dialog:
+>>>>>>> 25a2384... update Amazon EC2
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
