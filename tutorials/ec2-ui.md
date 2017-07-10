@@ -181,7 +181,7 @@ click 'PrimaryStorage' in the left slider to enter primary storage page:
 
 <hr>
 
-click button 'Adc PrimaryStorage' to open the dialog:
+click button 'Add PrimaryStorage' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
