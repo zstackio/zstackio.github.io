@@ -353,10 +353,10 @@ Name the L3 network as 'L3Neywork-public' and select L2Network 'L2Network-privat
 <hr>
 
 1. choose method 'IP Range'
-3. input start IP as '10.121.9.20'
-4. input end IP as '10.121.9.200'
-5. input netmask as '255.0.0.0'
-6. input gateway as '10.0.0.1'
+2. input start IP as '10.121.9.20'
+3. input end IP as '10.121.9.200'
+4. input netmask as '255.0.0.0'
+5. input gateway as '10.0.0.1'
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network4.png">
 
