@@ -172,7 +172,7 @@ add KVM Host 'HOST1' under 'CLUSTER1' with correct host IP address and root user
 
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
-add Primary Storage 'PRIMARY-STORAGE1' with NFS URI '10.0.101.20:/usr/local/zstack/nfs_root' under zone 'ZONE1':
+add Primary Storage 'PRIMARY-STORAGE1' with url "/zstack_ps" under zone 'ZONE1':
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#7">Find UUID</button>
 
@@ -208,7 +208,7 @@ attach 'PRIMARY-STORAGE1' to 'CLUSTER1':
 
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
-add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):
+add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/zstack_bs'):
 
 	>>> AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=172.20.11.34 username=root password=password url=/zstack_bs
 
@@ -234,7 +234,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 
 <h4 id="addImage">9. Add Image</h4>
 
-add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
+add Image('image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
