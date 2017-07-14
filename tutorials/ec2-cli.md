@@ -24,8 +24,8 @@ sections:
     title: Create L2 Network
   - id: createL3publicNetwork
     title: Create L3 Public Network
-  - id: createInstanceOffering
-    title: Create Router Image
+  - id: create Instance Offering
+    title: Create Instance Offering
   - id: createVirtualRouterOffering
     title: Create Virtual Router Offering
   - id: createPN
@@ -251,32 +251,34 @@ this image will be used as user VM image.
 
 <hr>
 
-add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL({{site.vr_en}}) to backup storage ('BACKUP-STORAGE1'):
+Add another Image('VRImage') with format 'qcow2' and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
-
-<div id="9_2" class="collapse">
+<div id="9_1" class="collapse">
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
+
+<hr>
+
 
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
   由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
-  
+ 
   <pre><code>{{site.vr_ch}}</code></pre>
 </div>
 
-	>>> AddImage name=vrouter mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 
-<img class="img-responsive" src="/images/tutorials/t1/cliAddVRImage.png">
+	>>> AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 
-this image will be used as Virtual Router VM image.
+<img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png">
+
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
   The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
-  to store it and images created by yourself.
+  to storage it and images created by yourself.
 </div>
 
 <hr>
@@ -376,24 +378,7 @@ create IP Range for 'PUBLIC-MANAGEMENT-L3':
 
 <hr>
 
-<h4 id="createInstanceOffering">12. Create Router Image</h4>
-
-
-add Image('VRImage') with format 'qcow2' and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
-
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
-
-<div id="9_1" class="collapse">
-<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
-</div>
-
-	>>> AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
-
-<img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png">
-
-<hr>
-
-<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
+<h4 id="createVirtualRouterOffering">12. Create Virtual Router Offering</h4>
 
 create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':
 
@@ -412,7 +397,7 @@ create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB mem
 
 <hr>
 
-<h4 id="createPN">14. Create Private Network </h4>
+<h4 id="createPN">13. Create Private Network </h4>
 
 <hr>
 
