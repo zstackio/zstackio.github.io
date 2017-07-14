@@ -24,12 +24,14 @@ sections:
     title: Create L2 Network
   - id: createL3publicNetwork
     title: Create L3 Public Network
-  - id: createInstanceOffering
-    title: Create Router Image
-  - id: createVirtualRouterOffering
+  - id: createvri
+    title: Create Virtual Router Image
+ - id: createVirtualRouterOffering
     title: Create Virtual Router Offering
   - id: createPN
     title: Create Private Network 
+  - id: createIO
+    title: Create Instance Offering
   - id: createVM
     title: Create Virtual Machine
   - id: createEIP
@@ -269,31 +271,6 @@ this image will be used as user VM image.
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
 <hr>
-click 'Create Image' button again to add the virtual router image:
-
-1. name the image as 'VRouter'
-2. choose media type 'ISO'
-3. choose platform 'Linux'
-4.  input URL {{site.vr_en}}
-5.  choose BackupStorage 'BS1'
-8. click button 'OK'
-
-<div class="bs-callout bs-callout-success">
-  <h4>Fast link for users of Mainland China</h4>
-  .................................
-  
-  <pre><code>{{site.vr_ch}}</code></pre>
-</div>
-
-<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>Cache images in your local HTTP server</h4>
-  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
-  to storage it and images created by yourself.
-</div>
-
-<hr>
 
 <h4 id="createL2Network">10. Create L2 Network</h4>
 
@@ -384,7 +361,6 @@ click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter
 <img  class="img-responsive"  src="/images/tutorials/t1/ createrouterimage1.png">
 
 <hr>
-
 click button 'Add Virtual Router Image' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage2.png">
@@ -396,7 +372,22 @@ click button 'Add Virtual Router Image' to open the dialog:
 3. seclect  BackupStorage 'BS1'
 4. click button 'OK'
 
+<div class="bs-callout bs-callout-success">
+  <h4>Fast link for users of Mainland China</h4>
+  .................................
+  
+  <pre><code>{{site.vr_ch}}</code></pre>
+</div>
+
 <img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage3.png">
+
+<hr>
+
+<div class="bs-callout bs-callout-info">
+  <h4>Cache images in your local HTTP server</h4>
+  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
+  to storage it and images created by yourself.
+</div>
 
 <hr>
 
