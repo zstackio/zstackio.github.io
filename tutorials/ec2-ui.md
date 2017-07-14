@@ -85,8 +85,8 @@ Based on those requirements, we assume below setup information:
 + ethernet device name: eth0
 + eth0 IP: 172.20.11.45
 + free IP range: 192.168.0.230 ~ 192.168.0.240
-+ primary storage folder: /usr/local/zstack/nfs_root
-+ backup storage folder: /backupStorage
++ primary storage folder: /zstack_ps
++ backup storage folder: /zstack_bs
 
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
