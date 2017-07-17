@@ -26,7 +26,7 @@ sections:
     title: Create L3 Public Network
   - id: createvri
     title: Create Virtual Router Image
- - id: createVirtualRouterOffering
+  - id: createVirtualRouterOffering
     title: Create Virtual Router Offering
   - id: createPN
     title: Create Private Network 
