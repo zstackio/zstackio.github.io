@@ -92,7 +92,7 @@ Based on those requirements, we assume below setup information (you should chang
 
 + ethernet device names: eth0 (The default route will use eth0)
 + eth0 IP: 172.20.11.34
-+ free IP range: 10.0.101.100 ~ 10.0.101.150
++ free IP range: 10.121.9.40 ~ 10.121.9.100
 + primary storage folder: /zstack_ps
 + backup storage folder: /zstack_bs
   
@@ -481,12 +481,12 @@ attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'Eip' to 'PRIVATE-L3':
 
 <hr>
 
-<h4 id="createVM">15. Create Virtual Machine</h4>
+<h4 id="createVM">14. Create Virtual Machine</h4>
 
 create a new guest VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'zs-sample-image'
+2. image 'image'
 3. L3 network 'PRIVATE-L3'
 4. name 'VM1'
 
@@ -514,7 +514,7 @@ the new VM has 1 NIC ('3bda0c3b926a4f9e8b156bf0b3717be4') with IP address: 192.1
 
 <hr>
 
-<h4 id="createVIP">16. Create VIP</h4>
+<h4 id="createVIP">15. Create VIP</h4>
 
 create a new VIP 'VIP1' on 'PUBLIC-MANAGEMENT-L3':
 
@@ -532,7 +532,7 @@ once it finishes, you should be able to see the new IP address, which will be us
 
 <hr>
 
-<h4 id="createEIP">17. Create EIP</h4>
+<h4 id="createEIP">16. Create EIP</h4>
 
 create a new EIP 'EIP1' with 'VIP1' for 'VM1' NIC UUID '585bb3322f444f2296eb12f3f06e4f89': 
 
@@ -563,7 +563,7 @@ use on machine that can reach subnet 10.121.9.0/24 to SSH the IP '10.121.9.100',
 
 <hr>
 
-<h4 id="rebindEIP">18. Rebind The EIP To Another VM</h4>
+<h4 id="rebindEIP">17. Rebind The EIP To Another VM</h4>
 
 follow instructions in section <a href="#createVM">16. Create Virtual Machine</a> to create another VM(VM2) on the private
 L3 network:
