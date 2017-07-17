@@ -405,8 +405,6 @@ create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB mem
 
 <h4 id="createPN">13. Create Private Network </h4>
 
-<hr>
-
 on L2 network 'PRIVATE-L2', create a new guest VM L3 'PRIVATE-L3' with domain 'tutorials.zstack.org':
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_3">Find UUID</button>
@@ -475,7 +473,7 @@ attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'PortForwarding' to 'PRI
 
 	>>> AttachNetworkServiceToL3Network networkServices="{'61c6f0c18d0240398f29485d64a70e2d':['IPsec','DNS','SNAT','LoadBalancer','PortForwarding','Eip','DHCP']}" l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3
 
-<img class="img-responsive" src="/images/tutorials/t5/cliAttachNetworkServiceToL3.png">
+<img class="img-responsive" src="/images/tutorials/t1/cliAttachNetworkServiceToL3.png">
 
 <hr>
 
