@@ -405,7 +405,6 @@ go to vm instance page:
 1. click the button 'Volume Actions'
 2. select item 'Create Snapshot'
 <img class="img-responsive" src="/images/tutorials/t6/createSnapshot2.png">
-<img class="img-responsive" src="/images/tutorials/t6/createSnapshot3.png">
 
 <hr>
 
@@ -468,8 +467,6 @@ now start the VM again:
 1. select VM1
 2. click button 'VmInstance Actions'
 3. select item 'Start'
-
-<img class="img-responsive" src="/images/tutorials/t6/createSnapshot14.png">
 
 <hr>
 
