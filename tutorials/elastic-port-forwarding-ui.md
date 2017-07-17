@@ -1,4 +1,6 @@
-yout: tutorialDetailPage
+---
+title: ZStack Elastic Port Forwarding Tutorials
+layout: tutorialDetailPage
 sections:
   - id: overview 
     title: Overview
@@ -179,11 +181,7 @@ click 'PrimaryStorage' in the left slider to enter primary storage page:
 
 <hr>
 
-<<<<<<< HEAD
 click button 'Add PrimaryStorage' to open the dialog:
-=======
-click button 'Adc PrimaryStorage' to open the dialog:
->>>>>>> 25a2384... update Amazon EC2
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
@@ -379,7 +377,7 @@ Input DNS as '8.8.8.8' and click button 'OK'
 
 click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter virtual router image page:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/ createrouterimage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage1.png">
 
 <hr>
 
