@@ -1,4 +1,6 @@
-yout: tutorialDetailPage
+---
+title: ZStack Tutorials
+layout: tutorialDetailPage
 sections:
   - id: overview 
     title: Overview
