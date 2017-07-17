@@ -490,12 +490,12 @@ Select rule to open setting rules page:
 
 
 Click button 'OK':
-<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
 <hr>
 
+<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
-<h4 id="createInstanceOffering">13. Create Instance Offering</h4>
+<h4 id="createInstanceOffering">16. Create Instance Offering</h4>
 
 click 'Resource Pool' in the left sidebar and click 'InstanceOffering' to enter instance offering page:
 
@@ -519,7 +519,7 @@ click button 'Create InstanceOffering' to open the dialog:
 <hr>
 
 
-<h4 id="createInnerVM">14. Create INNER-VM</h4>
+<h4 id="createInnerVM">17. Create INNER-VM</h4>
 
 click 'Resource Pool' in the left sidebar and click 'VmInstance' to enter VM instance page:
 
@@ -553,7 +553,7 @@ click button 'Create VmInstance' to open the dialog:
 
 <hr>
 
-<h4 id="joinInnerVM">16. Join INNER-VM Into Security Group</h4>
+<h4 id="joinInnerVM">18. Join INNER-VM Into Security Group</h4>
 
 In security group page, select 'SECURITY-GROUP-1', then click button 
 'VmInstance Nic',click button 'Action' and select item 'Add Vm Nic':
@@ -571,7 +571,7 @@ In security group page, select 'SECURITY-GROUP-1', then click button
 
 <hr>
 
-<h4 id="createOuterVM">17. Create OUTER-VM</h4>
+<h4 id="createOuterVM">19. Create OUTER-VM</h4>
 
 go to vm instance page and click button 'Create VmInstance' again to create OUTER-VM:
 
@@ -593,7 +593,7 @@ go to vm instance page and click button 'Create VmInstance' again to create OUTE
 
 <hr>
 
-<h4 id="sshLogin">18. SSH Login INNER-VM From OUTER-VM</h4>
+<h4 id="sshLogin">20. SSH Login INNER-VM From OUTER-VM</h4>
 
 go to vm instance page:
 
@@ -647,7 +647,7 @@ Click button 'Delete'
 
 <hr>
 
-<h4 id="sshLoginFailure">20. Confirm Unable to SSH Login INNER-VM From OUTER-VM</h4>
+<h4 id="sshLoginFailure">21. Confirm Unable to SSH Login INNER-VM From OUTER-VM</h4>
 
 go back to VNC console of OUTER-VM; ping INNER-VM and ssh INNER-VM, it should ssuccess.
 
