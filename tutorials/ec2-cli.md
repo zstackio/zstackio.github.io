@@ -92,7 +92,7 @@ Based on those requirements, we assume below setup information (you should chang
 
 + ethernet device names: eth0 (The default route will use eth0)
 + eth0 IP: 172.20.11.34
-+ free IP range: 10.0.101.100 ~ 10.0.101.150
++ free IP range: 10.12.9.40 ~ 10.121.9.100
 + primary storage folder: /zstack_ps
 + backup storage folder: /zstack_bs
   
@@ -251,8 +251,8 @@ this image will be used as user VM image.
 
 <hr>
 
-add another Image('vrouter') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL({{site.vr_en}}) to backup storage ('BACKUP-STORAGE1'):
 
+add another Image('VRImage') with format 'qcow2' and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
 
@@ -267,9 +267,11 @@ add another Image('vrouter') with format 'qcow2', 'RootVolumeTemplate' type, 'Li
   <pre><code>{{site.vr_ch}}</code></pre>
 </div>
 
-	>>> AddImage name=vrouter mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
+	>>> AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 
-<img class="img-responsive" src="/images/tutorials/t1/cliAddVRImage.png">
+<img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png">
+
+<hr>
 
 this image will be used as Virtual Router VM image.
 
@@ -376,24 +378,7 @@ create IP Range for 'PUBLIC-MANAGEMENT-L3':
 
 <hr>
 
-<h4 id="createInstanceOffering">12. Create Router Image</h4>
-
-
-add Image('VRImage') with format 'qcow2' and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
-
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
-
-<div id="9_1" class="collapse">
-<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
-</div>
-
-	>>> AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
-
-<img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png">
-
-<hr>
-
-<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
+<h4 id="createVirtualRouterOffering">12. Create Virtual Router Offering</h4>
 
 create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':
 
@@ -496,12 +481,12 @@ attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'Eip' to 'PRIVATE-L3':
 
 <hr>
 
-<h4 id="createVM">15. Create Virtual Machine</h4>
+<h4 id="createVM">14. Create Virtual Machine</h4>
 
 create a new guest VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'zs-sample-image'
+2. image 'image'
 3. L3 network 'PRIVATE-L3'
 4. name 'VM1'
 
@@ -529,7 +514,7 @@ the new VM has 1 NIC ('3bda0c3b926a4f9e8b156bf0b3717be4') with IP address: 192.1
 
 <hr>
 
-<h4 id="createVIP">16. Create VIP</h4>
+<h4 id="createVIP">15. Create VIP</h4>
 
 create a new VIP 'VIP1' on 'PUBLIC-MANAGEMENT-L3':
 
@@ -547,7 +532,7 @@ once it finishes, you should be able to see the new IP address, which will be us
 
 <hr>
 
-<h4 id="createEIP">17. Create EIP</h4>
+<h4 id="createEIP">16. Create EIP</h4>
 
 create a new EIP 'EIP1' with 'VIP1' for 'VM1' NIC UUID '585bb3322f444f2296eb12f3f06e4f89': 
 
@@ -578,7 +563,7 @@ use on machine that can reach subnet 10.121.9.0/24 to SSH the IP '10.121.9.100',
 
 <hr>
 
-<h4 id="rebindEIP">18. Rebind The EIP To Another VM</h4>
+<h4 id="rebindEIP">17. Rebind The EIP To Another VM</h4>
 
 follow instructions in section <a href="#createVM">16. Create Virtual Machine</a> to create another VM(VM2) on the private
 L3 network:
