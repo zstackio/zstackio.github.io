@@ -1,6 +1,4 @@
----
-title: ZStack Security Group Tutorials
-layout: tutorialDetailPage
+yout: tutorialDetailPage
 sections:
   - id: overview 
     title: Overview
@@ -81,23 +79,15 @@ some other requirements:
   <pre><code>sudo su
 passwd root</code></pre>
 
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 Based on those requirements, we assume below setup information:
 
 + ethernet device name: eth0
-+ eth0 IP: 192.168.0.212 
++ eth0 IP: 172.20.11.45
 + free IP range: 192.168.0.230 ~ 192.168.0.240
-+ primary storage folder: /usr/local/zstack/nfs_root
-+ backup storage folder: /backupStorage
++ primary storage folder: /zstack_ps
++ backup storage folder: /zstack_bs
 
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
@@ -126,19 +116,19 @@ open browser with URL(http://your_machine_ip:5000/) and login with admin/passwor
 
 <h4 id="createZone">4. Create Zone</h4>
 
-click 'Zone' in the left sidebar to enter the zone page:
+click 'Hardware' in the left sidebar and then click 'Zone'to enter the zone page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png">
 
 <hr>
 
-click button 'New Zone' to open the dialog:
+click button 'Create Zone' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png">
 
 <hr>
 
-name your first zone as 'ZONE1' and click button 'Create':
+name your first zone as 'ZONE1' and click button 'OK':
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png">
 
@@ -152,31 +142,20 @@ click 'Cluster' in the left sidebar to enter the cluster page:
 
 <hr>
 
-click button 'New Cluster' to open the dialog:
+click button 'Create Cluster' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png">
 
 <hr>
 
-select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':
+name the cluster as 'CLUSTER1' then click button 'OK':
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png">
 
 <hr>
 
-for now you don't have any primary storage to attach, click button 'Next':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png">
-
-<hr>
-
-you don't have L2 network to attach either, click button 'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png">
-
-<hr>
-
 <h4 id="addHost">6. Add Host</h4>
+
 
 click 'Host' in the left sidebar to enter host page:
 
@@ -184,17 +163,18 @@ click 'Host' in the left sidebar to enter host page:
 
 <hr>
 
-click 'New Host' button to open the dialog:
+click 'Create Host' button to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png">
 
 <hr>
 
-1. select zone(ZONE1) and cluster(CLUSTER1) you just created
-2. name the host as 'HOST1'
-3. input the host IP(192.168.0.212)
-4. the most important thing: give **SSH credentials for user root**
-5. click 'add' button
+1. name the host as 'HOST1'
+2. select cluster(CLUSTER1) you just created
+3. input the host IP(172.20.11.45)
+4. input the ssh port(22)
+5. the most important thing: give **SSH credentials for user root**
+6. click 'OK' button
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addHost3.png">
 
@@ -205,38 +185,35 @@ click 'New Host' button to open the dialog:
 
 <hr>
 
+
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
-click 'Primary Storage' in the left slider to enter primary storage page:
+click 'PrimaryStorage' in the left slider to enter primary storage page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png">
 
 <hr>
 
-click button 'New Primary Storage' to open the dialog:
+click button 'Add PrimaryStorage' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
 <hr>
 
-1. select zone(ZONE1)
-2. name the primary storage as 'PRIMARY-STORAGE1'
-3. select type 'NFS'
-4. input NFS url(192.168.0.212:/usr/local/zstack/nfs_root)
-5. click button 'Next'
+1. name the primary storage as 'PS1'
+3. select type 'LocalStorge'
+4. input url(/zstack_ps)
+5. select cluster 'CLUSTER1' 
+6. click button 'OK'
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS3.png">
 
 <hr>
-
-select cluster(CLUSTER1) to attach, then click button 'Add':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png">
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -247,214 +224,252 @@ select cluster(CLUSTER1) to attach, then click button 'Add':
 
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
-click 'Backup Storage' in left sidebar to enter backup storage page:
+click 'BackupStorage' in left sidebar to enter backup storage page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png">
 
 <hr>
 
-click button 'New Backup Storage' to open the dialog:
+click button 'Add BackupStorage' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png">
 
 <hr>
 
-1. name the backup storage as 'BACKUP-STORAGE1'
-2. choose type 'SftpBackupStorage'
-3. input URL '/backupStorage' which is the folder that will store images
-4. input IP(192.168.0.212) in hostname
-5. input SSH credentials for user root
-6. click button 'Next'
+1. name the backup storage as 'BS1'
+2. choose type 'Sftp'
+3. input IP(172.20.11.45) in host IP
+4. input URL '/zstack_bs' which is the folder that will store images
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addBS3.png">
 
 <hr>
 
-select zone(ZONE1) to attach, and click button 'Add':
+
+Input ssh port(22), input SSH credentials for user root, and click button 'OK':
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png">
 
 <hr>
 
+
 <h4 id="addImage">9. Add Image</h4>
 
-click 'Image' in left sidebar to enter image page:
+click 'Resource Pool' in left sidebar and click 'Image' to enter image page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png">
 
 <hr>
 
-click button 'New Image' to open the dialog:
+click button 'Add Image' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png">
 
 <hr>
 
-1. select backup storage(BACKUP-STORAGE1)
-2. name the image as 'zs-sample-image'
-3. choose format 'qcow2'
-4. choose media type 'RootVolumeTemplate'
-5. choose platform 'Linux'
-6. input URL {{site.zstack_image}}
-7. click button 'Add'
+1. name the image as 'Image1'
+2. select media type 'Image'
+3. select platform 'Linux'
+4. input URL {{site.zstack_image}}
+5. select BackupStorage 'BS1'
+7. click button 'OK'
 
 this image will be used as user VM image.
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
-<hr>
-
-click 'New Image' button again to add the virtual router image:
-
-1. select backup storage(BACKUP-STORAGE1)
-2. name the image as 'VIRTUAL-ROUTER'
-3. choose format 'qcow2'
-4. choose media type 'RootVolumeTemplate'
-5. choose platform 'Linux'
-6. input URL {{site.vr_en}}
-7. **check 'System' checkbox**
-8. click button 'Add'
-
-<div class="bs-callout bs-callout-success">
-  <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
-  
-  <pre><code>{{site.vr_ch}}</code></pre>
-</div>
-
-<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>Cache images in your local HTTP server</h4>
-  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
-  to storage it and images created by yourself.
-</div>
-
-<hr>
+<hr
 
 <h4 id="createL2Network">10. Create L2 Network</h4>
 
-click 'L2 Network' in left sidebar to enter L2 network page:
+click 'Network' in left sidebar and click 'L2Network' to enter L2 network page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png">
 
 <hr>
 
-click button 'New L2 Network' to open the dialog:
+click button 'Create L2Network' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png">
 
 <hr>
 
-1. select zone(ZONE1)
-2. name the L2 network as 'FLAT-L2'
-3. choose type 'L2NoVlanNetwork'
-4. input physical interface as 'eth0'
-5. click button 'Next'
+1. name the L2 network as 'L2Network-public'
+2. choose type 'L2NoVlanNetwork'
+3. input physical interface as 'eth0'
+4. select cluster 'CLUSTER1'
+5. click button 'OK'
 
-<img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network3.png">
 
 <hr>
 
-select cluster(CLUSTER1) to attach, and click button 'Create':
+click 'Create L2Network' again to create the private L2 network:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png">
+1. name the L2 network as 'L2Network-private'
+2. **choose type 'L2VlanNetwork'**
+3. **input vlan as '100'**
+4. input physical interface as 'eth0'
+5. select cluster(CLUSTER1) to attach 
+6. click button 'OK':
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createL2Network5.png">
 
 <hr>
 
 <h4 id="createL3Network">11. Create L3 Network</h4>
 
-click 'L3 Network' in left sidebar to enter L3 network page:
+click 'L3Network' in left sidebar to enter L3 network page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
 
 <hr>
 
-click button 'New L3 Network' to open the dialog:
+click 'Public Network' in sidebar to enter L3 public network page:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png">
+<img class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network1.png">
 
-<hr>
+click button 'Create Public Network' to open the dialog:
 
-1. select zone(ZONE1)
-2. select L2 network(FLAT-L2)
-3. name the L3 network as FLAT-L3
-4. input domain as 'tutorials.zstack.org'
-5. choose type 'L3BasicNetwork'
-6. click button 'Next'
-
-<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network2.png">
 
 <hr>
 
-1. name the IP range as 'FLAT-IP-RANGE'
-2. choose method 'Add By IP Range'
-3. input start IP '192.168.0.230'
-4. input end IP '192.168.0.240'
-5. input netmask '255.255.255.0'
-6. input gateway '192.168.0.1'
-7. click button 'Add' to add the IP range
-8. click button 'Next'
+Name the L3 network as 'L3Neywork-public' and select L2Network 'L2Network-private'
 
-<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network4.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network3.png">
 
 <hr>
 
-1. input DNS '8.8.8.8'
-2. click button 'Add' to add the DNS
-3. click button 'Next'
+1. choose method 'IP Range'
+3. input start IP as '10.121.9.20'
+4. input end IP as '10.121.9.200'
+5. input netmask as '255.0.0.0'
+6. input gateway as '10.0.0.1'
 
-<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network4.png">
+
+<hr>
+Input DNS as '8.8.8.8' and click button 'OK'
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network5.png">
 
 <hr>
 
-1. select provider 'VirtualRouter'
-2. select service 'DHCP'
-3. click button 'Add' to add DHCP service
-4. repeat step 2~3 to add DNS service
+<div class="bs-callout bs-callout-info">
+  <h4>No network services needed for PUBLIC-MANAGEMENT-L3'</h4>
+  No user VMs will be created on the public L3 network in this tutorial, so we don't specify any network services for it.
+</div>
 
-<img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png">
+<hr>
+<h4 id="createInstanceOffering">12. Create Router Image</h4>
+
+click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter virtual router image page:
+
+<img  class="img-responsive"  src="/images/tutorials/t1/ createrouterimage1.png">
 
 <hr>
 
-1. select provider 'SecurityGroup'
-2. select service 'SecurityGroup'
-3. click button 'Add' to add security group service
-4. now you should have network services: DHCP, DNS, and SecurityGroup added
-5. click button 'Create'
+click button 'Add Virtual Router Image' to open the dialog:
 
-<img  class="img-responsive"  src="/images/tutorials/t4/createL3Network7.png">
-<img  class="img-responsive"  src="/images/tutorials/t4/createL3Network8.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage2.png">
 
 <hr>
 
-<h4 id="createSecurityGroup">12. Create Security Group</h4>
+1. name the virtual router image as 'Virtualrouterimage1'
+2. input URL where  latest cloud route mirroring is
+3. seclect  BackupStorage 'BS1'
+4. click button 'OK'
 
-click 'Security Group' in left sidebar to enter security group page:
+<img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage3.png">
+
+<hr>
+
+<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
+
+click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png">
+
+<hr>
+
+click 'Create Virtual Router Offering' to open the dialog:
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png">
+
+<hr>
+
+1. name the virtual router offering as 'VR-offering1'
+2. input CPU NUM as '2'
+3. input CPU speed as '2'
+4. choose image 'Virtualrouterimage1'
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png">
+
+<hr>
+
+Choose management L3 network 'L3Network-public' ,  choose public L3 network 'L3Network-public' and click button 'OK'
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering4.png">
+
+<hr>
+
+<h4 id="createPN">14. Create Private Network </h4>
+
+<hr>
+
+click 'Network' in the left sidebar, click 'L3Network' and click 'Private Network' to enter L3Network  private network page:
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createPN1.png">
+
+<hr>
+
+click 'Create Private Network' button again to create the private L3 network:
+
+1.  name the L3 network as 'L3Network-private'
+2.  choose L2Network 'L2Network-private'
+3.  choose type 'V Router'
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createPN2.png">
+
+<hr>
+
+1. choose Virtual Router Offering  'VR-offering1'
+2. choose method 'CIDR'
+3. input network CIDR as '192.168.1.0/24'
+4. input DNS as '8.8.8.8'
+5. click button 'OK'
+
+<img  class="img-responsive"  src="/images/tutorials/t1/createPN3.png">
+
+<hr>
+
+
+<h4 id="createSecurityGroup">15. Create Security Group</h4>
+
+click 'Network Services' in left sidebar and click 'Security Group' to enter security group page:
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup1.png">
 
 <hr>
 
-click button 'New Security Group' to open the dialog:
+click button 'Create Security Group' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup2.png">
 
 <hr>
 
-1. input name as 'SECURITY-GROUP-1'
-2. click button 'Next'
+Input name as 'SECURITY-GROUP-1' and select Network as 'L3Network-private':
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup3.png">
 
 <hr>
-
+Select rule to open setting rules page:
 1. select type 'Ingress'
-2. input start port as 22
-3. input end port as 22
-4. select protocol as 'TCP'
-5. click button 'Add'
-6. click button 'Next' 
+2. select protocol as 'TCP'
+3. input start port as 23
+4. input end port as 200
+5. click button 'OK'
 
 <div class="bs-callout bs-callout-info">
   <h4>This rule is world open</h4>
@@ -469,98 +484,63 @@ click button 'New Security Group' to open the dialog:
 </div>
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup4.png">
+
+
+Click button 'OK':
 <img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup5.png">
 
 <hr>
 
-1. select L3 network 'FLAT-L3'
-2. click button 'Create'
-
-<img  class="img-responsive"  src="/images/tutorials/t4/createSecurityGroup6.png">
-
-<hr>
 
 <h4 id="createInstanceOffering">13. Create Instance Offering</h4>
 
-click 'Instance Offering' in left sidebar to enter instance offering page:
+click 'Resource Pool' in the left sidebar and click 'InstanceOffering' to enter instance offering page:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png">
-
-<hr>
-
-click button 'New Instance Offering' to open the dialog:
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createIO1.png">
 
 <hr>
 
-1. name the instance offering as '512M-512HZ'
-2. input CPU NUM as 1
-3. input CPU speed as 512
-4. input memory as 512M
-5. click button 'create'
+click button 'Create InstanceOffering' to open the dialog:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createIO2.png">
 
 <hr>
 
-<h4 id="createVirtualRouterOffering">14. Create Virtual Router Offering</h4>
+1. input name as 'IO1'
+2. input CPU as '1'
+3. input Memory as '1'
+6. click button 'OK'
 
-click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png">
-
-<hr>
-
-click 'New Virtual Router Offering' to open the dialog:
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createIO3.png">
 
 <hr>
 
-1. select zone(ZONE1)
-2. name the virtual router offering as 'VR-OFFERING'
-3. input CPU NUM as '1'
-4. input CPU speed as '512'
-5. input memory as '512M'
-6. choose image 'VIRTUAL-ROUTER"
-7. choose management L3 network 'FLAT-L3'
-8. choose public L3 network 'PLAT-L3'
-9. check 'DEFAULT OFFERING' checkbox
-10. click button 'Create'
 
-<img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png">
+<h4 id="createInnerVM">14. Create INNER-VM</h4>
 
-<hr>
-
-<h4 id="createInnerVM">15. Create INNER-VM</h4>
-
-click 'Instance' in the left sidebar to enter VM instance page:
+click 'Resource Pool' in the left sidebar and click 'VmInstance' to enter VM instance page:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png">
 
 <hr>
 
-click button 'New VmInstance' to open the dialog:
+click button 'Create VmInstance' to open the dialog:
 
 <img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png">
 
 <hr>
 
-1. choose instance offering '512M-512HZ'
-2. choose image 'zs-sample-image'
-3. choose L3 network 'FLAT-L3'
-4. input name as 'INNER-VM'
-5. input host name as 'inner'
-6. click button 'Next'
+1. choose Type  'Single'
+2. input name as 'INNER-VM'
+3. choose instance offering 'IO1'
+4. choose image 'Image1'
+5.  choose  network 'L3Network-private'
+6. click button 'OK'
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createInnerVM3.png">
 
 <hr>
 
-click button 'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -572,29 +552,33 @@ click button 'Create':
 
 <h4 id="joinInnerVM">16. Join INNER-VM Into Security Group</h4>
 
-In security group page, select 'SECURITY-GROUP-1', then click button 'Action' and select item 'Add Vm Nic'.
+In security group page, select 'SECURITY-GROUP-1', then click button 
+'VmInstance Nic',click button 'Action' and select item 'Add Vm Nic':
 
 <img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup1.png">
-
-<hr>
-
-1. select the only nic of INNER-VM
-2. click button 'Add'
 
 <img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup2.png">
 
 <hr>
 
+1. select the only nic of INNER-VM
+2. click button 'OK'
+
+<img  class="img-responsive"  src="/images/tutorials/t4/joinSecurityGroup3.png">
+
+<hr>
+
 <h4 id="createOuterVM">17. Create OUTER-VM</h4>
 
-go to vm instance page and click button 'New VmInstance' again to create OUTER-VM:
+go to vm instance page and click button 'Create VmInstance' again to create OUTER-VM:
 
-1. choose instance offering '512M-512HZ'
-2. choose image 'zs-sample-image'
-3. choose L3 network 'FLAT-L3'
-4. input name as 'OUTER-VM'
-5. input host name as 'outer'
-6. click button 'Next'
+1. choose Type  'Single'
+2. input name as 'OUTER-VM'
+3. choose instance offering 'IO1'
+4. choose image 'Image1'
+5. choose  network 'L3Network-private'
+6. click button 'OK'
+
 
 <img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM1.png">
 
@@ -606,44 +590,34 @@ go to vm instance page and click button 'New VmInstance' again to create OUTER-V
 
 <hr>
 
-click button 'Create':
-
-<img  class="img-responsive"  src="/images/tutorials/t4/createOuterVM2.png">
-
-<hr>
-
 <h4 id="sshLogin">18. SSH Login INNER-VM From OUTER-VM</h4>
 
 go to vm instance page:
 
-1. double click 'INNER-VM'
-2. click tab 'Nic'
-3. you can see IP address of INNER-VM: 192.168.0.236
+Click 'INNER-VM' and you can see IP address of INNER-VM: 192.168.1.222
 
 <img  class="img-responsive"  src="/images/tutorials/t4/sshLogin1.png">
 
 <hr>
 
-click breadcrumb 'VM INSTANCE' on top of title bar 'INNER-VM' to go back vm instance page:
+Select OUTER-VM and  click button 'Action':
 
 <img  class="img-responsive"  src="/images/tutorials/t4/sshLogin2.png">
 
 <hr>
 
-1. select OUTER-VM
-2. click button 'Action'
-3. select item 'Console' to open VNC console
+Select item 'Console' to open VNC console
 
 <img  class="img-responsive"  src="/images/tutorials/t4/sshLogin3.png">
 
 <hr>
 
-in the popup window, login the VM by *username: root, password: password*.
+in the popup window, login the VM by *username: root.password:password*.
 
-1. ping INNER-VM (192.168.0.236), it should fail because we don't open ICMP rule in the security group 
-2. ssh INNER-VM, it should succeed
-3. after SSH login, run 'ifconfig', you should see IP (192.168.0.236) that is of INNER-VM
-4. type 'logout' then click enter to SSH logout
+1. ping INNER-VM(192.168.1.222),it should failed
+2. ssh INNER-VM(192.168.1.222), it should failed
+3. run 'ip r', you should see IP (192.168.1.219) that is of OUTER-VM
+
 
 <div class="bs-callout bs-callout-info">
   <h4>Using your IP to test</h4>
@@ -658,16 +632,13 @@ in the popup window, login the VM by *username: root, password: password*.
 
 go to security group page:
 
-1. select 'SECURITY-GROUP-1'
-2. click button 'Action'
-3. select item 'Delete Rule'
+Select 'SECURITY-GROUP-1' and click button 'More Action'
 
 <img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule1.png">
 
 <hr>
 
-1. select checkbox of rule 22
-2. click button 'Delete'
+Click button 'Delete'
 
 <img  class="img-responsive"  src="/images/tutorials/t4/deleteSecurityGroupRule2.png">
 
@@ -675,7 +646,7 @@ go to security group page:
 
 <h4 id="sshLoginFailure">20. Confirm Unable to SSH Login INNER-VM From OUTER-VM</h4>
 
-go back to VNC console of OUTER-VM; ssh INNER-VM, it should fail.
+go back to VNC console of OUTER-VM; ping INNER-VM and ssh INNER-VM, it should ssuccess.
 
 <img  class="img-responsive"  src="/images/tutorials/t4/sshLoginFailure1.png">
 

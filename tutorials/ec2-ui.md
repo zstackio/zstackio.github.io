@@ -269,31 +269,6 @@ this image will be used as user VM image.
 <img  class="img-responsive"  src="/images/tutorials/t1/addImage3.png">
 
 <hr>
-click 'Create Image' button again to add the virtual router image:
-
-1. name the image as 'VRouter'
-2. choose media type 'ISO'
-3. choose platform 'Linux'
-4.  input URL {{site.vr_en}}
-5.  choose BackupStorage 'BS1'
-8. click button 'OK'
-
-<div class="bs-callout bs-callout-success">
-  <h4>Fast link for users of Mainland China</h4>
-  .................................
-  
-  <pre><code>{{site.vr_ch}}</code></pre>
-</div>
-
-<img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png">
-
-<div class="bs-callout bs-callout-info">
-  <h4>Cache images in your local HTTP server</h4>
-  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
-  to storage it and images created by yourself.
-</div>
-
-<hr>
 
 <h4 id="createL2Network">10. Create L2 Network</h4>
 
@@ -392,11 +367,25 @@ click button 'Add Virtual Router Image' to open the dialog:
 <hr>
 
 1. name the virtual router image as 'Virtualrouterimage1'
-2. input URL where  latest cloud route mirroring is
+2. input URL {{site.vr_en}}
 3. seclect  BackupStorage 'BS1'
 4. click button 'OK'
 
+<div class="bs-callout bs-callout-success">
+  <h4>Fast link for users of Mainland China</h4>
+  .................................
+  
+  <pre><code>{{site.vr_ch}}</code></pre>
+</div>
+
 <img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage3.png">
+
+
+<div class="bs-callout bs-callout-info">
+  <h4>Cache images in your local HTTP server</h4>
+  The virtual router image is about 432M that takes a little of time to download. We suggest you use a local HTTP server
+  to storage it and images created by yourself.
+</div>
 
 <hr>
 
