@@ -295,7 +295,7 @@ click button 'Create L2Network' to open the dialog:
 4. select cluster 'CLUSTER1'
 5. click button 'OK'
 
-<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network3.png">
+<img  class="img-responsive"  src="/images/tutorials/t3/createL2Network3.png">
 
 <hr>
 
@@ -305,7 +305,7 @@ click button 'Create L2Network' to open the dialog:
 
 click 'L3 Network' in left sidebar to enter L3 network page:
 
-<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png">
 
 <hr>
 
@@ -341,7 +341,7 @@ Name the L3 network as 'PUBLIC-MANAGEMENT-L3' and select L2Network 'PUBLIC-MANAG
 
 click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter virtual router image page:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/ createrouterimage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage1.png">
 
 <hr>
 click button 'Add Virtual Router Image' to open the dialog:
