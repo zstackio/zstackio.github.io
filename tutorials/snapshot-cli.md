@@ -1,5 +1,5 @@
 ---
-title:ZStack Tutorials
+title: ZStack Tutorials
 layout: tutorialDetailPage
 sections:
   - id: overview 
@@ -33,6 +33,7 @@ sections:
   - id: createSnapshotTree1
     title: Create Volume Snapshot
 ---
+
 
 ### Volume Snapshot
 
