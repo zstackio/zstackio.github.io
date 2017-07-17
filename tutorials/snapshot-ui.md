@@ -193,11 +193,7 @@ click 'PrimaryStorage' in the left slider to enter primary storage page:
 
 <hr>
 
-<<<<<<< HEAD
 click button 'Add PrimaryStorage' to open the dialog:
-=======
-click button 'Adc PrimaryStorage' to open the dialog:
->>>>>>> 25a2384... update Amazon EC2
 
 <img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png">
 
@@ -423,7 +419,6 @@ go to vm instance page:
 repeat above two steps to create two more snapshots: sp2 and sp3:
 
 <img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot7.png">
-<img  class="img-responsive"  src="/images/tutorials/t6/createSnapshot8.png">
 
 <hr>
 
