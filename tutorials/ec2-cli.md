@@ -102,8 +102,8 @@ Based on those requirements, we assume below setup information (you should chang
     because the VM image doesn't support ACPID that receives KVM's shutdown event, ZStack has to
     wait for 60 seconds timeout then destroy it. It's not a problem for regular Linux distributions which have ACPID installed.
 </div>
-e   
-ehr>
+
+<hr>
 
 <h4 id="login">3. LogIn</h4>
 
@@ -208,7 +208,7 @@ attach 'PRIMARY-STORAGE1' to 'CLUSTER1':
 
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
-add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):
+add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/zstack_bs'):
 
 	>>> AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=172.20.11.34 username=root password=password url=/zstack_bs
 
@@ -234,7 +234,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 
 <h4 id="addImage">9. Add Image</h4>
 
-add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
+add Image('image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
@@ -251,7 +251,7 @@ this image will be used as user VM image.
 
 <hr>
 
-add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL({{site.vr_en}}) to backup storage ('BACKUP-STORAGE1'):
+add another Image('vrouter') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL({{site.vr_en}}) to backup storage ('BACKUP-STORAGE1'):
 
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
