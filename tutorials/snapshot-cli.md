@@ -368,7 +368,7 @@ we need to get available network service provider UUID, before add any virtual r
 
 	>>> QueryNetworkServiceProvider
 
-<img class="img-responsive" src="/images/tutorials/t4/cliQueryNetworkServiceProvider.png">
+<img class="img-responsive" src="/images/tutorials/t2/cliQueryNetworkServiceProvider.png">
 
 there are 2 available network service providers. The 'VirtualRouter' could provide 'DHCP', 'SNAT', 'DNS', 'PortForwarding' and 'Eip' services. The 'SecurityGroup' could provide 'SecurityGroup' service. 
 
@@ -391,7 +391,7 @@ attach VirtualRouter services 'DHCP', 'DNS' to 'FLAT-L3':
 
 	>>> AttachNetworkServiceToL3Network networkServices="{'1b93ca42c7bb47d9a6295e58ad8ef1b7':['Userdata','DHCP','Eip']}" l3NetworkUuid=23f3a0fde8744a699f86b27899be3183
 
-<img class="img-responsive" src="/images/tutorials/t6/cliAttachNetworkService.png">
+<img class="img-responsive" src="/images/tutorials/t2/cliAttachNetworkServiceToL3.png">
 
 <hr>
 
@@ -401,7 +401,7 @@ create a guest VM instance offering 'small-instance' with 1 512Mhz CPU and 128MB
 
 	>>> CreateInstanceOffering name=small-instance memorySize=134217728 cpuNum=1
 
-<img class="img-responsive" src="/images/tutorials/t1/cliCreateInstanceOffering.png">
+<img class="img-responsive" src="/images/tutorials/t2/cliCreateInstanceOffering.png">
 
 <hr>
 
@@ -419,7 +419,7 @@ create a new guest VM instance with instance offering 'small-instance', image 'z
 
 	>>> CreateVmInstance name=VM1 instanceOfferingUuid=ce994286008d41f6be75e0f804bce47c imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=23f3a0fde8744a699f86b27899be3183
 
-<img class="img-responsive" src="/images/tutorials/t6/cliCreateVm.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliCreateVm.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
