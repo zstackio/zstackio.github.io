@@ -388,7 +388,7 @@ create a guest VM instance offering 'small-instance' with 1 512Mhz CPU and 128MB
 
 <hr>
 
-<h4 id="createVM">14. Create Virtual Machine</h4>
+<h4 id="createVM">13. Create Virtual Machine</h4>
 
 create a new guest VM instance with instance offering 'small-instance', image 'zs-sample-image', L3 network 'FLAT-L3', name 'VM1' and hostname 'vm1'
 
