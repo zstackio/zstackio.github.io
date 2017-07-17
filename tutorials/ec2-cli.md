@@ -397,7 +397,7 @@ create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB mem
 
 <hr>
 
-<h4 id="createPN">14. Create Private Network </h4>
+<h4 id="createPN">13. Create Private Network </h4>
 
 <hr>
 
