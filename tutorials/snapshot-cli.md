@@ -46,11 +46,7 @@ to create at most one snapshot chain, ZStack allows users to create a snapshot t
 In this example, we will create a snapshot tree with two branches from a VM's root volume.
 
 <div class="bs-callout bs-callout-warning">
-  <h4>Only Ubuntu14.04 supports live snapshot, CentOS doesn't</h4>
-  For Linux distributions (CentOS6.x, CentOS7, and Ubuntu14.04) we have tested, only Ubuntu14.04 supports live
-  snapshot. If you use a Linux other than Ubuntu14.04, you have to stop the VM before taking every snapshot. 
-  Assuming you use Ubuntu14.04, this tutorial doesn't contain instructions to stop VM before taking snapshot. However, reverting snapshot
-  always requires to stop VM no matter what Linux distributions in use.
+  <h4>Only CentOS supports live snapshot, Ubuntu doesn't</h4>
 </div>
 
 <hr>
