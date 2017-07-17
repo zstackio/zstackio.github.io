@@ -89,24 +89,15 @@ some other requirements:
   <h5>CentOS:</h5>
   <pre><code>sudo su
 passwd root</code></pre>
-
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 Based on those requirements, we assume below setup information (you should change the IP address and other configurations to align with your local environment.):
 
 + ethernet device names: eth0 
-+ eth0 IP: 10.0.101.20
++ eth0 IP: 172.20.11.34
 + free IP range: 10.0.101.100 ~ 10.0.101.150 (these IPs can access the internet)
-+ primary storage folder: 10.0.101.1:/home/nfs
-+ backup storage folder: /home/sftpBackupStorage
++ primary storage folder: /zstack_ps
++ backup storage folder: /zstack_bs
 
 <div class="bs-callout bs-callout-warning">
   <h4>Slow VM stopping due to lack of ACPID:</h4>
@@ -156,7 +147,7 @@ create a cluster with name 'CLUSTER1' and hypervisorType 'KVM' under zone 'ZONE1
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
-	>>> CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=69b5be02a15742a08c1b7518e32f442a
+	>>> CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=b5ba18197f7843308cd26f87eab933c5
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateCluster.png">
 
@@ -172,7 +163,8 @@ add KVM Host 'HOST1' under 'CLUSTER1' with correct host IP address and root user
 <pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
 </div>
 
-	>>> AddKVMHost name=HOST1 managementIp=10.0.101.20 username=root password=password clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+	>>> AddKVMHost name=HOST1 managementIp=172.20.11.34 username=root password=password clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
+
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateHost.png">
 
@@ -185,7 +177,7 @@ add KVM Host 'HOST1' under 'CLUSTER1' with correct host IP address and root user
 
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
-add Primary Storagei 'PRIMAYR-STORAGE1' with NFS URI '10.0.101.20:/usr/local/zstack/nfs_root' under zone 'ZONE1':
+add Primary Storagei 'PRIMAYR-STORAGE1' with URI '/zstack_ps' under zone 'ZONE1':
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#7">Find UUID</button>
 
@@ -193,12 +185,12 @@ add Primary Storagei 'PRIMAYR-STORAGE1' with NFS URI '10.0.101.20:/usr/local/zst
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
-	>>> AddNfsPrimaryStorage name=PRIMARY-STORAGE1 url=10.0.101.20:/usr/local/zstack/nfs_root zoneUuid=69b5be02a15742a08c1b7518e32f442a
+	>>> AddLocalPrimaryStorage name=PRIMARY-STORAGE1 url=/zstack_ps zoneUuid=b5ba18197f7843308cd26f87eab933c5
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddPrimaryStorage.png">
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
@@ -214,7 +206,7 @@ attach 'PRIMARY-STORAGE1' to 'CLUSTER1':
 <pre><code>QueryPrimaryStorage fields=uuid, name=PRIMARY-STORAGE1</code></pre>
 </div>
 
-	>>> AttachPrimaryStorageToCluster primaryStorageUuid=35405cbbb25d497c94b8484e487f2496 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+	>>> AttachPrimaryStorageToCluster primaryStorageUuid=1b952f1e74a747dfb89ef3bdb9e8a821 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAttachPrimaryStorageToCluster.png">
 
@@ -222,9 +214,10 @@ attach 'PRIMARY-STORAGE1' to 'CLUSTER1':
 
 <h4 id="addBackupStorage">9. Add Backup Storage</h4>
 
-add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('10.0.101.20'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):
+add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):
 
-	>>> AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=10.0.101.20 username=root password=password url=/home/sftpBackupStorage
+	>>> AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=172.20.11.34 username=root password=password url=/zstack_bs
+
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddBackupStorage.png">
 
@@ -241,7 +234,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
 
-	>>> AttachBackupStorageToZone backupStorageUuid=e5dfe0824d8a4503bbc1b6b51782b5a3 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+	>>> AttachBackupStorageToZone backupStorageUuid=ccc8214bfc2344e5a58c2ec23de3b348 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAttachBackupStorageToZone.png">
 
@@ -253,7 +246,7 @@ attach new created Backup Storage('BACKUP-STORAGE1') to zone('ZONE1'):
 
 <h4 id="addImage">11. Add Image</h4>
 
-add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
+add Image('image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
@@ -261,7 +254,7 @@ add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Li
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
 
-	>>> AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url={{site.zstack_image}} backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+	>>> AddImage name=image mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-image-1.4.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png">
 
@@ -269,27 +262,29 @@ this image will be used as user VM image.
 
 <hr>
 
-add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL({{site.vr_en}}) to backup storage ('BACKUP-STORAGE1'):
+Add another Image('VRImage') with format 'qcow2' and image URL('{{site.zstack_image}}') to backup storage ('BACKUP-STORAGE1'):
 
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button>
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button>
 
-<div id="9_2" class="collapse">
+<div id="9_1" class="collapse">
 <pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
 </div>
 
+<hr>
+
+
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
-  
+  .................................
+ 
   <pre><code>{{site.vr_ch}}</code></pre>
 </div>
 
-	>>> AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url={{site.vr_en}} backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
 
+	>>> AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 
-<img class="img-responsive" src="/images/tutorials/t1/cliAddVRImage.png">
+<img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png">
 
-this image will be used as Virtual Router VM image.
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
@@ -309,7 +304,7 @@ create No Vlan L2 Network 'PUBLIC-MANAGEMENT-L2' with physical interface as 'eth
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
-	>>> CreateL2NoVlanNetwork name=PUBLIC-MANAGEMENT-L2 physicalInterface=eth0 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+	>>> CreateL2NoVlanNetwork name=PUBLIC-MANAGEMENT-L2 physicalInterface=eth0 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateL2NoVlan.png">
 
@@ -324,7 +319,7 @@ attach 'PUBLIC-MANAGEMENT-L2' to 'CLUSTER1':
 <pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
 </div>
 
-	>>> AttachL2NetworkToCluster l2NetworkUuid=fb76e28e60844dfca1fb71caff37baf2 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+	>>> AttachL2NetworkToCluster l2NetworkUuid=b4b611280afe4d289c8e3f66aee0393d clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAttachNoVlanL2toCluster.png">
 
@@ -338,7 +333,7 @@ create new private Vlan L2 network 'PRIVATE-L2' with physical interface as 'eth0
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
-	>>> CreateL2VlanNetwork name=PRIVATE-L2 physicalInterface=eth0 vlan=100 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+	>>> CreateL2VlanNetwork name=PRIVATE-L2 physicalInterface=eth0 vlan=100 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateL2Vlan.png">
 
@@ -353,7 +348,7 @@ attach 'PRIVATE-L2' to 'CLUSTER1':
 <pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
 </div>
 
-	>>> AttachL2NetworkToCluster l2NetworkUuid=426017fa734d435bbf3fb99ad5f1b807 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+	>>> AttachL2NetworkToCluster l2NetworkUuid=b052b4e080c840f6984c29581b167644 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAttachVlanL2toCluster.png">
 
@@ -369,7 +364,7 @@ on L2 'PUBLIC-MANAGEMENT-L2', create Public Management L3 'PUBLIC-MANAGEMENT-L3'
 <pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
 </div>
 
-	>>> CreateL3Network name=PUBLIC-MANAGEMENT-L3 l2NetworkUuid=fb76e28e60844dfca1fb71caff37baf2
+	>>> CreateL3Network name=PUBLIC-MANAGEMENT-L3 l2NetworkUuid=b4b611280afe4d289c8e3f66aee0393d system=true
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateL3NoVlan.png">
 
@@ -383,9 +378,32 @@ create IP Range for 'PUBLIC-MANAGEMENT-L3':
 <pre><code>QueryL3Network fields=uuid, name=PUBLIC-MANAGEMENT-L3</code></pre>
 </div>
 
-	>>> AddIpRange name=PUBLIC-IP-RANGE l3NetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 startIp=10.0.101.100 endIp=10.0.101.150 netmask=255.255.255.0 gateway=10.0.101.1
+	>>> AddIpRange name=PUBLIC-IP-RANGE l3NetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 startIp=10.121.9.40 endIp=10.121.9.100 netmask=255.0.0.0 gateway=10.0.0.1
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddIpRange1.png">
+
+<hr>
+
+<h4 id="createVirtualRouterOffering">12. Create Virtual Router Offering</h4>
+
+create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button>
+
+<div id="13" class="collapse">
+<pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
+<pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,PRIVATE-L3</code></pre>
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+	>>> CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 imageUuid=090906b0e7de4bf890c677b3bc8f680b managementNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 publicNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 zoneUuid=b5ba18197f7843308cd26f87eab933c5 memorySize=536870912
+
+
+<img class="img-responsive" src="/images/tutorials/t1/cliCreateVirtualRouterOffering.png">
+
+<hr>
+
+<h4 id="createPN">13. Create Private Network </h4>
 
 <hr>
 
@@ -397,7 +415,7 @@ on L2 network 'PRIVATE-L2', create a new guest VM L3 'PRIVATE-L3' with domain 't
 <pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
 </div>
 
-	>>> CreateL3Network name=PRIVATE-L3 l2NetworkUuid=426017fa734d435bbf3fb99ad5f1b807 dnsDomain=tutorials.zstack.org
+	>>> CreateL3Network name=PRIVATE-L3 l2NetworkUuid=b052b4e080c840f6984c29581b167644
 
 <img class="img-responsive" src="/images/tutorials/t1/cliCreateL3Vlan.png">
 
@@ -411,7 +429,7 @@ create IP Range for 'PRIVATE-L3':
 <pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
-	>>> AddIpRange name=PRIVATE-RANGE l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d startIp=10.0.0.2 endIp=10.0.0.254 netmask=255.255.255.0 gateway=10.0.0.1
+	>>> AddIpRange name=PRIVATE-RANGE l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3 startIp=192.168.2.2 endIp=192.168.2.254 netmask=255.255.255.0 gateway=192.168.2.1
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddIpRange2.png">
 
@@ -425,7 +443,7 @@ add DNS for 'PRIVATE-L3':
 <pre><code>QueryL3Network fields=uuid name=PRIVATE-L3</code></pre>
 </div>
 
-	>>> AddDnsToL3Network l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d dns=8.8.8.8
+	>>> AddDnsToL3Network l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3 dns=8.8.8.8
 
 <img class="img-responsive" src="/images/tutorials/t1/cliAddDns.png">
 
@@ -455,7 +473,7 @@ attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'PortForwarding' to 'PRI
   It's a JSON object of map that key is UUID of network service provider and value is a list of network service types.
 </div>
 
-	>>> AttachNetworkServiceToL3Network networkServices="{'96c5fbe222ad4b6586d35086b67ec07a':['DHCP','DNS','SNAT','PortForwarding']}" l3NetworkUuid=ca17c4f3425e44ff9d77b9817b76aa7d 
+	>>> AttachNetworkServiceToL3Network networkServices="{'61c6f0c18d0240398f29485d64a70e2d':['IPsec','DNS','SNAT','LoadBalancer','PortForwarding','Eip','DHCP']}" l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3
 
 <img class="img-responsive" src="/images/tutorials/t5/cliAttachNetworkServiceToL3.png">
 
@@ -465,36 +483,19 @@ attach VirtualRouter services 'DHCP', 'SNAT', 'DNS' and 'PortForwarding' to 'PRI
 
 create a guest VM instance offering 'small-instance' with 1 512Mhz CPU and 128MB memory:
 
-	>>> CreateInstanceOffering name=small-instance cpuNum=1 cpuSpeed=512 memorySize=134217728
+	>>> CreateInstanceOffering name=small-instance memorySize=134217728 cpuNum=1
 
-<img class="img-responsive" src="/images/tutorials/t1/cliCreateInstanceOffering.png">
-
-<hr>
-
-<h4 id="createVirtualRouterOffering">15. Create Virtual Router Offering</h4>
-
-create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':
-
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button>
-
-<div id="13" class="collapse">
-<pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
-<pre><code>QueryL3Network fields=uuid name=PUBLIC-MANAGEMENT-L3</code></pre>
-<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
-</div>
-
-	>>> CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 cpuSpeed=512 memorySize=536870912 imageUuid=854801a869e149b092281e0ef65585f9 managementNetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 publicNetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9 isDefault=True zoneUuid=69b5be02a15742a08c1b7518e32f442a	
-
-<img class="img-responsive" src="/images/tutorials/t1/cliCreateVirtualRouterOffering.png">
+<img class="img-responsive" src="/images/tutorials/t2/cliCreateInstanceOffering.png">
 
 <hr>
+
 
 <h4 id="createVM">16. Create Virtual Machine</h4>
 
 create a new guest VM instance with configuration:
 
 1. instance offering 'small-instance'
-2. image 'zs-sample-image'
+2. image 'image'
 3. L3 network 'PRIVATE-L3'
 4. name 'VM1'
 
@@ -508,11 +509,11 @@ create a new guest VM instance with configuration:
 <pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
-	>>> CreateVmInstance name=VM1 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=ca17c4f3425e44ff9d77b9817b76aa7d systemTags=hostname::vm1
+	>>> CreateVmInstance name=VM1 instanceOfferingUuid=ce994286008d41f6be75e0f804bce47c imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=6a73fdfffb104c79919179af28cba3e3
 
-<img class="img-responsive" src="/images/tutorials/t1/cliVmCreation.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliCreateVM.png">
 
-the new VM has 1 NIC ('585bb3322f444f2296eb12f3f06e4f89') and assigned IP address: 10.0.0.210
+the new VM has 1 NIC ('585bb3322f444f2296eb12f3f06e4f89') and assigned IP address: 192.168.2.246
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -532,11 +533,11 @@ create a new VIP 'VIP1' on 'PUBLIC-MANAGEMENT-L3':
 <pre><code>QueryL3Network fields=uuid, name=PUBLIC-MANAGEMENT-L3</code></pre>
 </div>
 
-	>>> CreateVip name=VIP1 l3NetworkUuid=4f38ba9a57a44efa8f3f575c08dce3d9
+	>>> CreateVip name=VIP1 l3NetworkUuid=5bda71a3ebbd48a5947e325dd24665e5
 
-<img class="img-responsive" src="/images/tutorials/t1/cliCreateVip.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliCreateVip.png">
 
-once it finishes, you should be able to see the new IP address, which will be used in Port Forwarding; in our case, the VIP is '10.0.101.138'.
+once it finishes, you should be able to see the new IP address, which will be used in Port Forwarding; in our case, the VIP is '10.121.9.98'.
 
 <hr>
 
@@ -557,7 +558,7 @@ create a new Port Forwarding 'PORT-FORWARDING1' with 'VIP1' for 'VM1' NIC UUID '
 
 <hr>
 
-use a machine that can reach subnet 10.0.101.0/24 to SSH the IP '10.0.101.138', you should be able to login the VM and see its internal IP address:
+use a machine that can reach subnet 10.0.101.0/24 to SSH the IP '10.121.9.98', you should be able to login the VM and see its internal IP address:
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#18_1">Find VIP of the port forwarding rule</button>
 
@@ -565,9 +566,9 @@ use a machine that can reach subnet 10.0.101.0/24 to SSH the IP '10.0.101.138', 
 <pre><code>QueryVip fields=ip portForwarding.vipPortStart=22</code></pre>
 </div>
 
-	# ssh 10.0.101.138 /sbin/ifconfig
+	# ssh 10.121.9.98 
 
-<img class="img-responsive" src="/images/tutorials/t1/cliSshEip.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliSshEip.png">
 
 <hr>
 
@@ -584,9 +585,9 @@ L3 network:
 <pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
-	>>> CreateVmInstance name=VM2 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=ca17c4f3425e44ff9d77b9817b76aa7d systemTags=hostname::vm2
+	>>> CreateVmInstance name=VM2 instanceOfferingUuid=ce994286008d41f6be75e0f804bce47c imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=6a73fdfffb104c79919179af28cba3e3
 
-<img class="img-responsive" src="/images/tutorials/t1/cliVmCreation2.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliVmCreation2.png">
 
 <hr>
 
@@ -598,7 +599,7 @@ then detach 'PORT-FORWARDING1':
 <pre><code>QueryPortForwardingRule fields=uuid name=PORT-FORWARDING1</code></pre>
 </div>
 
-	>>> DetachPortForwardingRule uuid=42f4646b75fc43db9431728fd033e813
+	>>> DetachPortForwardingRule uuid=304a788f6b4d48f79713084802b52402
 
 <img class="img-responsive" src="/images/tutorials/t5/cliDetachPF.png">
 
@@ -613,7 +614,7 @@ after detaching, attach the 'PORT-FORWARDING1' to VM2 NIC:
 <pre><code>QueryVmNic fields=uuid vmInstance.name=VM2</code></pre>
 </div>
 
-	>>> AttachPortForwardingRule ruleUuid=42f4646b75fc43db9431728fd033e813 vmNicUuid=8faf3fcf62f34c33b67d4f03f1a2ea7d
+	>>> AttachPortForwardingRule ruleUuid=304a788f6b4d48f79713084802b52402 vmNicUuid=0fb8e2c2c8a7493bb219811e7344adef
 
 <img class="img-responsive" src="/images/tutorials/t5/cliAttachPF.png">
 
@@ -625,9 +626,9 @@ SSH login to the '10.0.101.138' again and run command 'hostname; ifconfig', you 
 <pre><code>QueryVip fields=ip portForwarding.vipPortStart=22</code></pre>
 </div>
 
-	# ssh 10.0.101.138
+	# ssh 10.121.9.98
 
-<img class="img-responsive" src="/images/tutorials/t1/cliSshEip2.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliSshEip2.png">
 
 <hr>
 
@@ -642,7 +643,7 @@ create a new Port Forwarding 'PORT-FORWARDING2' with 'VIP1' for 'VM1' NIC UUID '
 <pre><code>QueryVmNic fields=uuid vmInstance.name=VM1</code></pre>
 </div>
 
-	>>> CreatePortForwardingRule name=PORT-FORWARDING2 vipUuid=2bad3299657544418d1cb776cac4493b vmNicUuid=585bb3322f444f2296eb12f3f06e4f89 protocolType=TCP privatePortStart=22 privatePortEnd=22 vipPortStart=2222 vipPortEnd=2222
+	>>> CreatePortForwardingRule name=PORT-PORWARDING2 vipUuid=2be82f9f494d4cebb021624563848d6b vmNicUuid=fd05e78c633943b3b9c6836826396571 protocolType=TCP privatePortStart=22 privatePortEnd=22 vipPortStart=2222 vipPortEnd=2222
 
 <img class="img-responsive" src="/images/tutorials/t5/cliCreatePF2.png">
 
@@ -658,13 +659,13 @@ then PORT-FORWARDING1 and PORT-FORWARDING2 are sharing same VIP1 10.0.101.138 bu
 
 When ssh 22 port, it will be routed to VM2:
 
-	# ssh root@10.0.101.138
+	# ssh root@10.121.9.98
 
-<img class="img-responsive" src="/images/tutorials/t1/cliSshEip2.png">
+<img class="img-responsive" src="/images/tutorials/t5/cliSshEip2.png">
 
  when ssh 2222 port, it will be routed to VM1:
 
-	# ssh root@10.0.101.138 -p 2222
+	# ssh root@10.121.9.98 -p 2222
 
 <img class="img-responsive" src="/images/tutorials/t5/cliSshPF2.png">
 
@@ -673,3 +674,6 @@ When ssh 22 port, it will be routed to VM2:
 In this tutorial, we showed you how to create port forwarding rules that allow public traffic to reach
 specific ports of VMs on the private L3 network. For more details, please visit
 [Elastic Port Forwarding in user manual](http://zstackdoc.readthedocs.org/en/latest/userManual/portForwarding.html).
+
+
+  [1]: http://markdown.xiaoshujiang.com/img/spinner.gif "[[[1500268843696]]]"
