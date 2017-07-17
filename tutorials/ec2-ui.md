@@ -352,7 +352,7 @@ Input DNS as '8.8.8.8' and click button 'OK'
 
 click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter virtual router image page:
 
-<img  class="img-responsive"  src="/images/tutorials/t1/ createrouterimage1.png">
+<img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage1.png">
 
 <hr>
 
