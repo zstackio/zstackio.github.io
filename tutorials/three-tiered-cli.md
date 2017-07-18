@@ -648,10 +648,10 @@ create a new Application VM instance with configuration:
 <div id="19_1" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
 <pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
-<pre><code>QueryL3Network fields=uuid,name, name?=APPLICATION-L3,DATABASE-L3</code></pre>
+<pre><code>QueryL3Network fields=uuid,name, name?=APPLICATION-L3</code></pre>
 </div>
 
-	>>> CreateVmInstance name=APPLICATION-VM1 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=12e3b797f903436cb7a13f33b6cc561e,ca289521b7e0443abfb42cd1b669f548 defaultL3NetworkUuid=12e3b797f903436cb7a13f33b6cc561e systemTags=hostname::application
+	>>> CreateVmInstance name=APPLICATION-VM1 instanceOfferingUuid=f1d4dec1d6d04ca4b18344ecbbc70605 imageUuid=f2c48071c4ab46f09d8d4d31edbc026d l3NetworkUuids=bbedc6c8fb774c24a6d9244e89fe16e8 
 
 <img src="/images/tutorials/t3/cliAppVM1.png">
 
@@ -682,7 +682,7 @@ create a new Application VM instance with configuration:
 <pre><code>QueryL3Network fields=uuid,name, name=DATABASE-L3</code></pre>
 </div>
 
-	>>> CreateVmInstance name=DATABASE-VM1 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=ca289521b7e0443abfb42cd1b669f548 systemTags=hostname::database
+	>>> CreateVmInstance name=DATABASE-VM1 instanceOfferingUuid=f1d4dec1d6d04ca4b18344ecbbc70605 imageUuid=f2c48071c4ab46f09d8d4d31edbc026d l3NetworkUuids=0f51431b2d7d46edb52359c07766a5d9
 
 <img src="/images/tutorials/t3/cliDBVM1.png">
 
@@ -690,7 +690,13 @@ create a new Application VM instance with configuration:
 
 <h4 id="testVM">21. Confirm Network Connectivity</h4>
 
-use a machine that can reach subnet 10.0.101.0/24 to SSH IP '10.0.101.147', you should be able to login the WEB-VM1(username:root, password:password) and see 2 IP addresses:
+use a machine that can reach login the WEB-VM1(username:root, password:password) and see 2 IP addresses:
+
+after login into WEB-VM1, you could ping 'www.google.com', then ping IP '192.168.0.158', which is APPLICATION-VM1:
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_2">Find IP</button>
+
+<div id="21_2" class="collapse">
 
 <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_1">Find IP</button>
 
@@ -698,43 +704,9 @@ use a machine that can reach subnet 10.0.101.0/24 to SSH IP '10.0.101.147', you 
 <pre><code>QueryVmNic fields=ip vmInstance.name=WEB-VM1 l3Network.name=PUBLIC-MANAGEMENT-L3</code></pre>
 </div>
 
-	# ssh root@10.0.101.147
+	# ping 192.168.0.158
 
 <img src="/images/tutorials/t3/cliSshVM1.png">
-
-<hr>
-
-after login into WEB-VM1, you could ping 'www.w3.org', then ssh IP '192.168.0.244', which is APPLICATION-VM1:
-
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_2">Find IP</button>
-
-<div id="21_2" class="collapse">
-<pre><code>QueryVmNic fields=ip vmInstance.name=APPLICATION-VM1 l3Network.name=APPLICATION-L3</code></pre>
-</div>
-
-	# ssh root@192.168.0.244
-
-<img src="/images/tutorials/t3/cliSshVM2.png">
-
-<hr>
-
-through APPLICATION-VM1, you can also ping 'www.w3.org', then ssh IP '192.168.10.208', which is DATABASE-VM1:
-
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_3">Find IP</button>
-
-<div id="21_3" class="collapse">
-<pre><code>QueryVmNic fields=ip vmInstance.name=DATABASE-VM1 l3Network.name=DATABASE-L3</code></pre>
-</div>
-
-	# ssh root@192.168.10.208
-
-<img src="/images/tutorials/t3/cliSshVM4.png">
-
-<hr>
-
-in DATABASE-VM1, you can reach 'www.w3.org', WEB-VM1 ('10.0.101.147') and APPLICATION-VM1 ('192.168.10.208'):
-
-<img src="/images/tutorials/t3/cliSshVM5.png">
 
 <hr>
 
