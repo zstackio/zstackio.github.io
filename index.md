@@ -1,5 +1,5 @@
 ---
-title: ZStack Home
+title: ZStack Open Source IaaS Home
 layout: homePage
 ---
 <div class="home-slogan-background">
