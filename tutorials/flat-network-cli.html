@@ -72,7 +72,7 @@ var _hmt = _hmt || [];
                 <li id="navBlog"><a href="/blog">Blog</a></li>
                 <li id="navCommunity"><a href="/community">Community</a></li>
                 <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
-                <li id="navIssues"><a href="http://zstack.io">中文</a></li>
+                <li id="navIssues"><a href="http://www.zstack.io">中文</a></li>
             </ul>
         </div>
     </div>
@@ -108,8 +108,6 @@ var _hmt = _hmt || [];
           <li><a href="#createL3Network">Create L3 Network</a></li>
           
           <li><a href="#createInstanceOffering">Create Instance Offering</a></li>
-          
-          <li><a href="#createVirtualRouterOffering">Create Virtual Router Offering</a></li>
           
           <li><a href="#createVM">Create Virtual Machine</a></li>
           
@@ -172,15 +170,6 @@ some other requirements:</p>
   <h5>CentOS:</h5>
   <pre><code>sudo su
 passwd root</code></pre>
-
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 
@@ -188,10 +177,10 @@ passwd root</code></pre>
 
 <ul>
 <li>ethernet device name: eth0</li>
-<li>eth0 IP: 10.0.101.20</li>
+<li>eth0 IP: 172.20.11.34</li>
 <li>free IP range: 10.0.101.100 ~ 10.0.101.150 (these IPs can access the internet)</li>
-<li>primary storage folder: 10.0.101.1:/home/nfs</li>
-<li>backup storage folder: /home/sftpBackupStorage</li>
+<li>primary storage folder: /zstack_ps</li>
+<li>backup storage folder: /zstack_bs</li>
 </ul>
 
 
@@ -274,7 +263,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliCreateCluster.png"></p>
@@ -296,7 +285,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddKVMHost name=HOST1 managementIp=10.0.101.20 username=root password=password clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+<pre><code>&gt;&gt;&gt; AddKVMHost name=HOST1 managementIp=172.20.11.34 username=root password=password clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliCreateHost.png"></p>
@@ -326,13 +315,13 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddNfsPrimaryStorage name=PRIMARY-STORAGE1 url=10.0.101.20:/usr/local/zstack/nfs_root zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; AddLocalPrimaryStorage name=PRIMARY-STORAGE1 url=/zstack_ps zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddPrimaryStorage.png"></p>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
@@ -352,7 +341,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachPrimaryStorageToCluster primaryStorageUuid=35405cbbb25d497c94b8484e487f2496 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+<pre><code>&gt;&gt;&gt; AttachPrimaryStorageToCluster primaryStorageUuid=1b952f1e74a747dfb89ef3bdb9e8a821 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAttachPrimaryStorageToCluster.png"></p>
@@ -365,9 +354,9 @@ passwd root</code></pre>
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
 
-<p>add sftp Backup Storage 'BACKUP-STORAGE1' with its IP address('10.0.101.20'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):</p>
+<p>add sftp Backup Storage 'BACKUP-STORAGE1' with its IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/zstack_bs'):</p>
 
-<pre><code>&gt;&gt;&gt; AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=10.0.101.20 username=root password=password url=/home/sftpBackupStorage
+<pre><code>&gt;&gt;&gt; AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=172.20.11.34 username=root password=password url=/zstack_bs
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddBackupStorage.png"></p>
@@ -385,7 +374,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachBackupStorageToZone backupStorageUuid=e5dfe0824d8a4503bbc1b6b51782b5a3 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; AttachBackupStorageToZone backupStorageUuid=ccc8214bfc2344e5a58c2ec23de3b348 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAttachBackupStorageToZone.png"></p>
@@ -398,7 +387,7 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
+<p>add Image('image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button></p>
 
@@ -407,7 +396,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+<pre><code>&gt;&gt;&gt; AddImage name=image mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-image-1.4.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png"></p>
@@ -417,7 +406,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL(http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2) to backup storage ('BACKUP-STORAGE1'):</p>
+<p>add another Image('vrouter') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL(http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2) to backup storage ('BACKUP-STORAGE1'):</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button></p>
 
@@ -430,13 +419,13 @@ passwd root</code></pre>
 
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  .................................
   
   <pre><code>http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+<pre><code>&gt;&gt;&gt; AddImage name=vrouter mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddVRImage.png"></p>
@@ -469,7 +458,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateL2NoVlanNetwork name=FLAT-L2 physicalInterface=eth0 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; CreateL2NoVlanNetwork name=FLAT-L2 physicalInterface=eth0 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliCreateL2NoVlan.png"></p>
@@ -487,7 +476,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachL2NetworkToCluster l2NetworkUuid=7a7d82f840da4fe6855546befd666b99 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+<pre><code>&gt;&gt;&gt; AttachL2NetworkToCluster l2NetworkUuid=ea5d8266bd4e4c2bb3ebf5cf5509b136 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliAttachL2NoVlanToCluster.png"></p>
@@ -504,7 +493,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateL3Network name=FLAT-L3 l2NetworkUuid=7a7d82f840da4fe6855546befd666b99 dnsDomain=tutorials.zstack.org
+<pre><code>&gt;&gt;&gt; CreateL3Network name=FLAT-L3 l2NetworkUuid=ea5d8266bd4e4c2bb3ebf5cf5509b136
 </code></pre>
 
 <p><img src="/images/tutorials/t2/cliCreateL3Network.png"></p>
@@ -521,7 +510,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddIpRange name=FLAT-IP-RANGE l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 startIp=10.0.101.100 endIp=10.0.101.150 netmask=255.255.255.0 gateway=10.0.101.1
+<pre><code>&gt;&gt;&gt; AddIpRange name=FLAT-IP-RANGE l3NetworkUuid=23f3a0fde8744a699f86b27899be3183 startIp=10.0.101.100 endIp=10.0.101.150 netmask=255.255.255.0 gateway=10.0.101.1
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliAddIpRange.png"></p>
@@ -538,7 +527,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddDnsToL3Network l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 dns=8.8.8.8
+<pre><code>&gt;&gt;&gt; AddDnsToL3Network l3NetworkUuid=23f3a0fde8744a699f86b27899be3183 dns=8.8.8.8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliAddDns.png"></p>
@@ -553,12 +542,12 @@ passwd root</code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliQueryNetworkServiceProvider.png"></p>
 
-<p>there are 2 available network service providers. In this tutorial, we just need the 'Virtual Router', which could provide 'DHCP', 'SNAT', 'DNS', 'PortForwarding' and 'Eip'.</p>
+<p>there are 2 available network service providers. In this tutorial, we just need the 'FLAT', which could provide 'Userdata', 'DHCP' and 'Eip'.</p>
 
 <hr>
 
 
-<p>attach VirtualRouter services 'DHCP' and 'DNS' to 'FLAT-L3':</p>
+<p>attach flat network services 'DHCP', 'Eip' and 'Userdata' to 'FLAT-L3':</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_6">Find UUID</button></p>
 
@@ -568,7 +557,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachNetworkServiceToL3Network networkServices="{'96c5fbe222ad4b6586d35086b67ec07a':['DHCP','DNS']}" l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5
+<pre><code>&gt;&gt;&gt; AttachNetworkServiceToL3Network networkServices="{'1b93ca42c7bb47d9a6295e58ad8ef1b7':['Userdata','DHCP','Eip']}" l3NetworkUuid=23f3a0fde8744a699f86b27899be3183
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliAttachNetworkServiceToL3.png"></p>
@@ -591,34 +580,10 @@ passwd root</code></pre>
 
 <p>create a guest VM instance offering 'small-instance' with 1 512Mhz CPU and 128MB memory:</p>
 
-<pre><code>&gt;&gt;&gt; CreateInstanceOffering name=small-instance cpuNum=1 cpuSpeed=512 memorySize=134217728
+<pre><code>&gt;&gt;&gt; CreateInstanceOffering name=small-instance memorySize=134217728 cpuNum=1  
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateInstanceOffering.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
-
-
-<p>create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 512MB memory, management L3 network 'FLAT-L3', public L3 network 'FLAT-L3', image 'VIRTUAL-ROUTER' and isDefault 'True':</p>
-
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button></p>
-
-<div id="13" class="collapse">
-<pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
-<pre><code>QueryL3Network fields=uuid,name, name=FLAT-L3</code></pre>
-<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
-</div>
-
-
-<pre><code>&gt;&gt;&gt; CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 cpuSpeed=512 memorySize=536870912 imageUuid=854801a869e149b092281e0ef65585f9 managementNetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 publicNetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 isDefault=True zoneUuid=69b5be02a15742a08c1b7518e32f442a
-</code></pre>
-
-<p><img class="img-responsive" src="/images/tutorials/t2/cliCreateVirtualRouterOffering.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t2/cliCreateInstanceOffering.png"></p>
 
 <hr>
 
@@ -639,7 +604,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateVmInstance name=VM1 instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=8677b5e8d66c477a9b34fbf5bbef84d5 systemTags=hostname::vm1
+<pre><code>&gt;&gt;&gt; CreateVmInstance name=VM1 instanceOfferingUuid=ce994286008d41f6be75e0f804bce47c imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=23f3a0fde8744a699f86b27899be3183
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t2/cliVmCreation.png"></p>
@@ -651,7 +616,7 @@ passwd root</code></pre>
 </div>
 
 
-<p>from VM creation result, you can get the new created VM IP address is 10.0.101.124</p>
+<p>from VM creation result, you can get the new created VM IP address is 10.0.101.126</p>
 
 <hr>
 
@@ -665,20 +630,13 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>#ssh root@10.0.101.124
+<pre><code>#ssh root@10.0.101.126
 </code></pre>
 
 <p><img src="/images/tutorials/t2/cliSshVm1.png"></p>
 
 <hr>
 
-
-<p>you can also reach internet in the VM:</p>
-
-<pre><code># ssh root@10.0.101.124 "/sbin/ifconfig;ping -c3 www.alibaba.com"
-</code></pre>
-
-<p><img src="/images/tutorials/t2/cliSshVm2.png"></p>
 
 <h3>Summary</h3>
 

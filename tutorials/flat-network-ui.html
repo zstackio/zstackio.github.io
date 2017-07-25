@@ -9,7 +9,7 @@
     <meta name="description" content="ZStack : ZStack is open source IaaS software managing resources of compute, storage, networking throughout a datacenter all by APIs.">
     <meta name="keywords" content="ZStack, OpenStack, CloudStack, IaaS, Docker, Open Source">
 
-    <title>ZStack - ZStack Flat Network Tutorials</title>
+    <title>ZStack - ZStack Tutorials</title>
     <!--<script type="text/javascript" src="/js/google_analytics.js"></script>-->
     <script>
 var _hmt = _hmt || [];
@@ -72,7 +72,7 @@ var _hmt = _hmt || [];
                 <li id="navBlog"><a href="/blog">Blog</a></li>
                 <li id="navCommunity"><a href="/community">Community</a></li>
                 <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
-                <li id="navIssues"><a href="http://zstack.io">中文</a></li>
+                <li id="navIssues"><a href="http://www.zstack.io">中文</a></li>
             </ul>
         </div>
     </div>
@@ -106,10 +106,6 @@ var _hmt = _hmt || [];
           <li><a href="#createL2Network">Create L2 Network</a></li>
           
           <li><a href="#createL3Network">Create L3 Network</a></li>
-          
-          <li><a href="#createInstanceOffering">Create Instance Offering</a></li>
-          
-          <li><a href="#createVirtualRouterOffering">Create Virtual Router Offering</a></li>
           
           <li><a href="#createVM">Create Virtual Machine</a></li>
           
@@ -163,15 +159,6 @@ some other requirements:</p>
   <h5>CentOS:</h5>
   <pre><code>sudo su
 passwd root</code></pre>
-
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 
@@ -179,10 +166,10 @@ passwd root</code></pre>
 
 <ul>
 <li>ethernet device name: eth0</li>
-<li>eth0 IP: 192.168.0.212</li>
+<li>eth0 IP: 172.20.11.45</li>
 <li>free IP range: 192.168.0.230 ~ 192.168.0.240</li>
-<li>primary storage folder: /usr/local/zstack/nfs_root</li>
-<li>backup storage folder: /backupStorage</li>
+<li>primary storage folder: /zstack_ps</li>
+<li>backup storage folder: /zstack_bs</li>
 </ul>
 
 
@@ -226,21 +213,21 @@ passwd root</code></pre>
 <h4 id="createZone">4. Create Zone</h4>
 
 
-<p>click 'Zone' in the left sidebar to enter the zone page:</p>
+<p>click 'Hardware' in the left sidebar and then click 'Zone'to enter the zone page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Zone' to open the dialog:</p>
+<p>click button 'Create Zone' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png"></p>
 
 <hr>
 
 
-<p>name your first zone as 'ZONE1' and click button 'Create':</p>
+<p>name your first zone as 'ZONE1' and click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png"></p>
 
@@ -259,30 +246,16 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click button 'New Cluster' to open the dialog:</p>
+<p>click button 'Create Cluster' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png"></p>
 
 <hr>
 
 
-<p>select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':</p>
+<p>name the cluster as 'CLUSTER1' then click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png"></p>
-
-<hr>
-
-
-<p>for now you don't have any primary storage to attach, click button 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png"></p>
-
-<hr>
-
-
-<p>you don't have L2 network to attach either, click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png"></p>
 
 <hr>
 
@@ -299,7 +272,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click 'New Host' button to open the dialog:</p>
+<p>click 'Create Host' button to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png"></p>
 
@@ -307,11 +280,12 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1) and cluster(CLUSTER1) you just created</li>
 <li>name the host as 'HOST1'</li>
-<li>input the host IP(192.168.0.212)</li>
+<li>select cluster(CLUSTER1) you just created</li>
+<li>input the host IP(172.20.11.45)</li>
+<li>input the ssh port(22)</li>
 <li>the most important thing: give <strong>SSH credentials for user root</strong></li>
-<li>click 'add' button</li>
+<li>click 'OK' button</li>
 </ol>
 
 
@@ -333,14 +307,14 @@ passwd root</code></pre>
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
 
-<p>click 'Primary Storage' in the left slider to enter primary storage page:</p>
+<p>click 'PrimaryStorage' in the left slider to enter primary storage page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Primary Storage' to open the dialog:</p>
+<p>click button 'Add PrimaryStorage' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png"></p>
 
@@ -348,16 +322,16 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1)</li>
-<li>name the primary storage as 'PRIMARY-STORAGE1'</li>
-<li>select type 'NFS'</li>
-<li>input NFS url(192.168.0.212:/usr/local/zstack/nfs_root)</li>
-<li>click button 'Next'</li>
+<li>name the primary storage as 'PS1'</li>
+<li>select type 'LocalStorge'</li>
+<li>input url(/zstack_ps)</li>
+<li>select cluster 'CLUSTER1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
@@ -367,9 +341,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>select cluster(CLUSTER1) to attach, then click button 'Add':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png"></p>
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -387,14 +359,14 @@ passwd root</code></pre>
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
 
-<p>click 'Backup Storage' in left sidebar to enter backup storage page:</p>
+<p>click 'BackupStorage' in left sidebar to enter backup storage page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Backup Storage' to open the dialog:</p>
+<p>click button 'Add BackupStorage' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png"></p>
 
@@ -402,12 +374,10 @@ passwd root</code></pre>
 
 
 <ol>
-<li>name the backup storage as 'BACKUP-STORAGE1'</li>
-<li>choose type 'SftpBackupStorage'</li>
-<li>input URL '/backupStorage' which is the folder that will store images</li>
-<li>input IP(192.168.0.212) in hostname</li>
-<li>input SSH credentials for user root</li>
-<li>click button 'Next'</li>
+<li>name the backup storage as 'BS1'</li>
+<li>choose type 'Sftp'</li>
+<li>input IP(172.20.11.45) in host IP</li>
+<li>input URL '/zstack_bs' which is the folder that will store images</li>
 </ol>
 
 
@@ -416,7 +386,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>select zone(ZONE1) to attach, and click button 'Add':</p>
+<p>Input ssh port(22), input SSH credentials for user root, and click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png"></p>
 
@@ -428,14 +398,14 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>click 'Image' in left sidebar to enter image page:</p>
+<p>click 'Resource Pool' in left sidebar and click 'Image' to enter image page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Image' to open the dialog:</p>
+<p>click button 'Add Image' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png"></p>
 
@@ -443,13 +413,12 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select backup storage(BACKUP-STORAGE1)</li>
-<li>name the image as 'zs-sample-image'</li>
-<li>choose format 'qcow2'</li>
-<li>choose media type 'RootVolumeTemplate'</li>
-<li>choose platform 'Linux'</li>
+<li>name the image as 'Image1'</li>
+<li>select media type 'Image'</li>
+<li>select platform 'Linux'</li>
 <li>input URL http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2</li>
-<li>click button 'Add'</li>
+<li>select BackupStorage 'BS1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
@@ -460,23 +429,21 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click 'New Image' button again to add the virtual router image:</p>
+<p>click 'Create Image' button again to add the virtual router image:</p>
 
 <ol>
-<li>select backup storage(BACKUP-STORAGE1)</li>
-<li>name the image as 'VIRTUAL-ROUTER'</li>
-<li>choose format 'qcow2'</li>
-<li>choose media type 'RootVolumeTemplate'</li>
+<li>name the image as 'VRouter'</li>
+<li>choose media type 'ISO'</li>
 <li>choose platform 'Linux'</li>
 <li>input URL http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</li>
-<li><strong>check 'System' checkbox</strong></li>
-<li>click button 'Add'</li>
+<li>choose BackupStorage 'BS1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  .................................
   
   <pre><code>http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</code></pre>
 </div>
@@ -501,14 +468,14 @@ passwd root</code></pre>
 <h4 id="createL2Network">10. Create Flat L2 Network</h4>
 
 
-<p>click 'L2 Network' in left sidebar to enter L2 network page:</p>
+<p>click 'Network' in left sidebar and click 'L2Network' to enter L2 network page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png"></p>
 
 <hr>
 
 
-<p>click button 'New L2 Network' to open the dialog:</p>
+<p>click button 'Create L2Network' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png"></p>
 
@@ -516,22 +483,15 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1)</li>
 <li>name the L2 network as 'FLAT-L2'</li>
 <li>choose type 'L2NoVlanNetwork'</li>
 <li>input physical interface as 'eth0'</li>
-<li>click button 'Next'</li>
+<li>select cluster 'CLUSTER1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <p><img  class="img-responsive"  src="/images/tutorials/t2/createL2Network3.png"></p>
-
-<hr>
-
-
-<p>select cluster(CLUSTER1) to attach, and click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network4.png"></p>
 
 <hr>
 
@@ -548,22 +508,14 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click button 'New L3 Network' to open the dialog:</p>
+<p>click button 'Private Network' to open the dialog:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createPN1.png"></p>
 
 <hr>
 
 
-<ol>
-<li>select zone(ZONE1)</li>
-<li>select L2 network(FLAT-L2)</li>
-<li>name the L3 network as FLAT-L3</li>
-<li>input domain as 'tutorials.zstack.org'</li>
-<li>choose type 'L3BasicNetwork'</li>
-<li>click button 'Next'</li>
-</ol>
-
+<p>Name the L3 network as 'FLAT-L3' , select L2 network(FLAT-L2) and choose  'Flat Network ':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network3.png"></p>
 
@@ -571,14 +523,11 @@ passwd root</code></pre>
 
 
 <ol>
-<li>name the IP range as 'FLAT-IP-RANGE'</li>
-<li>choose method 'Add By IP Range'</li>
+<li>choose method 'IP Range'</li>
 <li>input start IP '192.168.0.230'</li>
 <li>input end IP '192.168.0.240'</li>
 <li>input netmask '255.255.255.0'</li>
 <li>input gateway '192.168.0.1'</li>
-<li>click button 'Add' to add the IP range</li>
-<li>click button 'Next'</li>
 </ol>
 
 
@@ -587,111 +536,26 @@ passwd root</code></pre>
 <hr>
 
 
-<ol>
-<li>input DNS '8.8.8.8'</li>
-<li>click button 'Add' to add the DNS</li>
-<li>click button 'Next'</li>
-</ol>
-
+<p>input DNS '8.8.8.8' and click button 'OK' to add the IP range:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network5.png"></p>
 
 <hr>
 
 
-<ol>
-<li>select provider 'VirtualRouter'</li>
-<li>select service 'DHCP'</li>
-<li>click button 'Add' to add DHCP service</li>
-<li>repeat step 2~3 to add DNS service</li>
-<li>click button 'Create'</li>
-</ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createL3Network6.png"></p>
-
-<hr>
+<h4 id="createVM">12. Create Virtual Machine</h4>
 
 
-
-
-<h4 id="createInstanceOffering">12. Create Instance Offering</h4>
-
-
-<p>click 'Instance Offering' in left sidebar to enter instance offering page:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png"></p>
-
-<hr>
-
-
-<p>click button 'New Instance Offering' to open the dialog:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>name the instance offering as '512M-512HZ'</li>
-<li>input CPU NUM as 1</li>
-<li>input CPU speed as 512</li>
-<li>input memory as 512M</li>
-<li>click button 'create'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
-
-
-<p>click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering1.png"></p>
-
-<hr>
-
-
-<p>click 'New Virtual Router Offering' to open the dialog:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>name the virtual router offering as 'VR-OFFERING'</li>
-<li>input CPU NUM as '1'</li>
-<li>input CPU speed as '512'</li>
-<li>input memory as '512M'</li>
-<li>choose image 'VIRTUAL-ROUTER"</li>
-<li>choose management L3 network 'FLAT-L3'</li>
-<li>choose public L3 network 'PLAT-L3'</li>
-<li>check 'DEFAULT OFFERING' checkbox</li>
-<li>click button 'Create'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVirtualRouterOffering3.png"></p>
-
-<h4 id="createVM">14. Create Virtual Machine</h4>
-
-
-<p>click 'Instance' in the left sidebar to enter VM instance page:</p>
+<p>click 'Resource Pool' in the left sidebar and click 'VmInstance' to enter VM instance page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png"></p>
 
 <hr>
 
 
-<p>click button 'New VmInstance' to open the dialog:</p>
+<p>click button 'Create VmInstance' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png"></p>
 
@@ -699,12 +563,12 @@ passwd root</code></pre>
 
 
 <ol>
-<li>choose instance offering '512M-512HZ'</li>
-<li>choose image 'zs-sample-image'</li>
-<li>choose L3 network 'FLAT-L3'</li>
+<li>choose Type  'Single'</li>
 <li>input name as 'VM1'</li>
-<li>input host name as 'vm1'</li>
-<li>click button 'Next'</li>
+<li>choose instance offering 'IO1'</li>
+<li>choose image 'Image1'</li>
+<li>choose  network 'FLAT-L3'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
@@ -713,9 +577,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click button 'Create':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM4.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -733,8 +595,8 @@ passwd root</code></pre>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVM5.png"></p>
 
-<p>in the popup window, login the VM by <em>username: root, password: password</em>; run command 'hostname', you should see the hostname
-'vm1'; and command 'ifconfig' should show the IP address which is in the flat network.</p>
+<p>in the popup window, login the VM by <em>username: root</em>; run command 'hostname', you should see the hostname
+'zstack''; and command 'ifconfig' should show the IP address which is in the flat network.</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t2/createVM6.png"></p>
 
@@ -743,7 +605,7 @@ passwd root</code></pre>
 
 <p>ping google.com, it should succeed:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t2/createVM7.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM6.png"></p>
 
 <hr>
 

@@ -72,7 +72,7 @@ var _hmt = _hmt || [];
                 <li id="navBlog"><a href="/blog">Blog</a></li>
                 <li id="navCommunity"><a href="/community">Community</a></li>
                 <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
-                <li id="navIssues"><a href="http://zstack.io">中文</a></li>
+                <li id="navIssues"><a href="http://www.zstack.io">中文</a></li>
             </ul>
         </div>
     </div>
@@ -180,15 +180,6 @@ some other requirements:</p>
   <h5>CentOS:</h5>
   <pre><code>sudo su
 passwd root</code></pre>
-
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 
@@ -196,10 +187,10 @@ passwd root</code></pre>
 
 <ul>
 <li>ethernet device name: eth0</li>
-<li>eth0 IP: 192.168.0.212</li>
-<li>free IP range: 192.168.0.230 ~ 192.168.0.240</li>
-<li>primary storage folder: /usr/local/zstack/nfs_root</li>
-<li>backup storage folder: /backupStorage</li>
+<li>eth0 IP: 172.20.11.34</li>
+<li>free IP range: 10.121.10.20 ~ 10.121.10.200</li>
+<li>primary storage folder: /zstack_ps</li>
+<li>backup storage folder: /zstack_bs</li>
 </ul>
 
 
@@ -233,21 +224,21 @@ passwd root</code></pre>
 <h4 id="createZone">4. Create Zone</h4>
 
 
-<p>click 'Zone' in the left sidebar to enter the zone page:</p>
+<p>click 'Hardware' in the left sidebar and then click 'Zone'to enter the zone page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Zone' to open the dialog:</p>
+<p>click button 'Create Zone' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone2.png"></p>
 
 <hr>
 
 
-<p>name your first zone as 'ZONE1' and click button 'Create':</p>
+<p>name your first zone as 'ZONE1' and click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createZone3.png"></p>
 
@@ -266,30 +257,16 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click button 'New Cluster' to open the dialog:</p>
+<p>click button 'Create Cluster' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster2.png"></p>
 
 <hr>
 
 
-<p>select the zone(ZONE1) you just created; name the cluster as 'CLUSTER1'; select hypervisor 'KVM' then click button 'Next':</p>
+<p>name the cluster as 'CLUSTER1' then click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster3.png"></p>
-
-<hr>
-
-
-<p>for now you don't have any primary storage to attach, click button 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster4.png"></p>
-
-<hr>
-
-
-<p>you don't have L2 network to attach either, click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createCluster5.png"></p>
 
 <hr>
 
@@ -306,7 +283,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click 'New Host' button to open the dialog:</p>
+<p>click 'Create Host' button to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addHost2.png"></p>
 
@@ -314,11 +291,12 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1) and cluster(CLUSTER1) you just created</li>
 <li>name the host as 'HOST1'</li>
-<li>input the host IP(192.168.0.212)</li>
+<li>select cluster(CLUSTER1) you just created</li>
+<li>input the host IP(172.20.11.45)</li>
+<li>input the ssh port(22)</li>
 <li>the most important thing: give <strong>SSH credentials for user root</strong></li>
-<li>click 'add' button</li>
+<li>click 'OK' button</li>
 </ol>
 
 
@@ -340,14 +318,14 @@ passwd root</code></pre>
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
 
-<p>click 'Primary Storage' in the left slider to enter primary storage page:</p>
+<p>click 'PrimaryStorage' in the left slider to enter primary storage page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addPS1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Primary Storage' to open the dialog:</p>
+<p>click button 'Add PrimaryStorage' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addPS2.png"></p>
 
@@ -355,16 +333,16 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1)</li>
-<li>name the primary storage as 'PRIMARY-STORAGE1'</li>
-<li>select type 'NFS'</li>
-<li>input NFS url(192.168.0.212:/usr/local/zstack/nfs_root)</li>
-<li>click button 'Next'</li>
+<li>name the primary storage as 'PS1'</li>
+<li>select type 'LocalStorge'</li>
+<li>input url(/zstack_ps)</li>
+<li>select cluster 'CLUSTER1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
@@ -374,9 +352,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>select cluster(CLUSTER1) to attach, then click button 'Add':</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/addPS4.png"></p>
 
 <div class="bs-callout bs-callout-info">
   <h4>It's actually multiple API calls</h4>
@@ -394,14 +370,14 @@ passwd root</code></pre>
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
 
-<p>click 'Backup Storage' in left sidebar to enter backup storage page:</p>
+<p>click 'BackupStorage' in left sidebar to enter backup storage page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Backup Storage' to open the dialog:</p>
+<p>click button 'Add BackupStorage' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS2.png"></p>
 
@@ -409,12 +385,10 @@ passwd root</code></pre>
 
 
 <ol>
-<li>name the backup storage as 'BACKUP-STORAGE1'</li>
-<li>choose type 'SftpBackupStorage'</li>
-<li>input URL '/backupStorage' which is the folder that will store images</li>
-<li>input IP(192.168.0.212) in hostname</li>
-<li>input SSH credentials for user root</li>
-<li>click button 'Next'</li>
+<li>name the backup storage as 'BS1'</li>
+<li>choose type 'Sftp'</li>
+<li>input IP(172.20.11.45) in host IP</li>
+<li>input URL '/zstack_bs' which is the folder that will store images</li>
 </ol>
 
 
@@ -423,7 +397,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>select zone(ZONE1) to attach, and click button 'Add':</p>
+<p>Input ssh port(22), input SSH credentials for user root, and click button 'OK':</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addBS4.png"></p>
 
@@ -435,14 +409,14 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>click 'Image' in left sidebar to enter image page:</p>
+<p>click 'Resource Pool' in left sidebar and click 'Image' to enter image page:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addImage1.png"></p>
 
 <hr>
 
 
-<p>click button 'New Image' to open the dialog:</p>
+<p>click button 'Add Image' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/addImage2.png"></p>
 
@@ -450,13 +424,12 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select backup storage(BACKUP-STORAGE1)</li>
-<li>name the image as 'zs-sample-image'</li>
-<li>choose format 'qcow2'</li>
-<li>choose media type 'RootVolumeTemplate'</li>
-<li>choose platform 'Linux'</li>
+<li>name the image as 'Image1'</li>
+<li>select media type 'Image'</li>
+<li>select platform 'Linux'</li>
 <li>input URL http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2</li>
-<li>click button 'Add'</li>
+<li>select BackupStorage 'BS1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
@@ -467,29 +440,125 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click 'New Image' button again to add the virtual router image:</p>
+
+
+<h4 id="createPublicL2Network">10. Create  Public L2 Network</h4>
+
+
+<p>click 'Network' in left sidebar and click 'L2Network' to enter L2 network page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network1.png"></p>
+
+<hr>
+
+
+<p>click button 'Create L2Network' to open the dialog:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL2Network2.png"></p>
+
+<hr>
+
 
 <ol>
-<li>select backup storage(BACKUP-STORAGE1)</li>
-<li>name the image as 'VIRTUAL-ROUTER'</li>
-<li>choose format 'qcow2'</li>
-<li>choose media type 'RootVolumeTemplate'</li>
-<li>choose platform 'Linux'</li>
-<li>input URL http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</li>
-<li><strong>check 'System' checkbox</strong></li>
-<li>click button 'Add'</li>
+<li>name the L2 network as 'PUBLIC-MANAGEMENT-L2'</li>
+<li>choose type 'L2NoVlanNetwork'</li>
+<li>input physical interface as 'eth0'</li>
+<li>select cluster 'CLUSTER1'</li>
+<li>click button 'OK'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createL2Network3.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createPublicL3Network">11. Create Public L3 Network</h4>
+
+
+<p>click 'L3 Network' in left sidebar to enter L3 network page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network1.png"></p>
+
+<hr>
+
+
+<p>click 'Public Network' in sidebar to enter L3 public network page:</p>
+
+<p><img class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network1.png"></p>
+
+<p>click button 'Create Public Network' to open the dialog:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createpublicL3Network2.png"></p>
+
+<hr>
+
+
+<p>Name the L3 network as 'PUBLIC-MANAGEMENT-L3' and select L2Network 'PUBLIC-MANAGEMENT-L2'</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>choose method 'IP Range'</li>
+<li>input start IP as '10.121.10.20'</li>
+<li>input end IP as '10.121.10.200'</li>
+<li>input netmask as '255.0.0.0'</li>
+<li>input gateway as '10.0.0.1'</li>
+<li>click the button 'OK'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createL3Network4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createInstanceOffering">12. Create Virtual Router Image</h4>
+
+
+<p>click 'Virtual Router' in left sidebar and click 'Virtual Router Image' to enter virtual router image page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage1.png"></p>
+
+<hr>
+
+
+<p>click button 'Add Virtual Router Image' to open the dialog:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>name the virtual router image as 'Virtualrouterimage1'</li>
+<li>input URL where  latest cloud route mirroring is</li>
+<li>seclect  BackupStorage 'BS1'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  .................................
   
   <pre><code>http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</code></pre>
 </div>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t1/addImage4.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createrouterimage3.png"></p>
+
+<hr>
+
+
+
 
 <div class="bs-callout bs-callout-info">
   <h4>Cache images in your local HTTP server</h4>
@@ -505,343 +574,7 @@ passwd root</code></pre>
 
 
 
-<h4 id="createPublicL2Network">10. Create Public L2 Network</h4>
-
-
-<p>click 'L2 Network' in left sidebar to enter L2 network page:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network1.png"></p>
-
-<hr>
-
-
-<p>click button 'New L2 Network' to open the dialog:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>name the L2 network as 'PUBLIC-MANAGEMENT-L2'</li>
-<li>choose type 'L2NoVlanNetwork'</li>
-<li>input physical interface as 'eth0'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network3.png"></p>
-
-<hr>
-
-
-<p>select cluster(CLUSTER1) to attach, and click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL2Network4.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createPublicL3Network">11. Create Public L3 Network</h4>
-
-
-<p>click 'L3 Network' in left sidebar to enter L3 network page:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network1.png"></p>
-
-<hr>
-
-
-<p>click button 'New L3 Network' to open the dialog:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>select L2 network(PUBLIC-MANAGEMENT-L2)</li>
-<li>name the L3 network as 'PUBLIC-MANAGEMENT-L3'</li>
-<li>choose type 'L3BasicNetwork'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png"></p>
-
-<hr>
-
-
-<ol>
-<li>name the IP range as 'PUBLIC-IP-RANGE'</li>
-<li>choose method 'Add By Range'</li>
-<li>input start IP as '192.168.0.230'</li>
-<li>input end IP as '192.168.0.240'</li>
-<li>input netmask as '255.255.255.0'</li>
-<li>input gateway as '192.168.0.1'</li>
-<li>click button 'Add' to add the IP range</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createL3Network4.png"></p>
-
-<hr>
-
-
-<p>input DNS as '8.8.8.8' then click button 'Add' to add the DNS, then click button 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network3.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network4.png"></p>
-
-<hr>
-
-
-<ol>
-<li>choose provider 'VirtualRouter'</li>
-<li>choose service 'DHCP'</li>
-<li>click button 'Add' to add the network service</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network6.png"></p>
-
-<hr>
-
-
-<p>repeat the above three steps to add 'DNS' service, then click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network7.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createApplicationL2Network">12. Create Application L2 Network</h4>
-
-
-<p>click button 'New L2 Network' again to create the application L2 network:</p>
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>name the L2 network as 'APPLICATION-L2'</li>
-<li>choose type 'L2VlanNetwork'</li>
-<li>input vlan as '100'</li>
-<li>input physical interface as 'eth0'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network3.png"></p>
-
-<hr>
-
-
-<p>select cluster(CLUSTER1) to attach, and click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createApplicationL3Network">13. Create Application L3 Network</h4>
-
-
-<p>click 'New L3 Network' button again to create the application L3 network:</p>
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>select L2 network(APPLICATION-L2)</li>
-<li>name the L3 network as 'APPLICATION-L3'</li>
-<li>choose type 'L3BasicNetwork'</li>
-<li>input domain as 'application.zstack.org'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network1.png"></p>
-
-<hr>
-
-
-<ol>
-<li>name the IP range as 'APPLICATION-IP-RANGE'</li>
-<li>choose method 'Add BY CIDR'</li>
-<li>input network CIDR '10.0.0.0/24'</li>
-<li>click button 'Add' to add the IP range</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network2.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network3.png"></p>
-
-<hr>
-
-
-<p>input DNS as '8.8.8.8' then click button 'Add' to add the DNS, then click button 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network4.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network5.png"></p>
-
-<hr>
-
-
-<ol>
-<li>choose provider 'VirtualRouter'</li>
-<li>choose service 'DHCP'</li>
-<li>click button 'Add' to add the network service</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network6.png"></p>
-
-<hr>
-
-
-<p>repeat the above three steps to add network services: DNS, SNAT, then click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network7.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createDatabaseL2Network">14. Create Database L2 Network</h4>
-
-
-<p>click button 'New L2 Network' again to create database L2 network:</p>
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>name the L2 network as 'DATABASE-L2'</li>
-<li>choose type 'L2VlanNetwork'</li>
-<li>input vlan as '101'</li>
-<li>input physical interface as 'eth0'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network3.png"></p>
-
-<hr>
-
-
-<p>select cluster(CLUSTER1) to attach, and click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createDatabaseL3Network">15. Create Database L3 Network</h4>
-
-
-<p>click 'New L3 Network' button again to create the database L3 network:</p>
-
-<ol>
-<li>select zone(ZONE1)</li>
-<li>select L2 network(DATABASE-L2)</li>
-<li>name the L3 network as 'DATABASE-L3'</li>
-<li>choose type 'L3BasicNetwork'</li>
-<li>input domain as 'database.zstack.org'</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network1.png"></p>
-
-<hr>
-
-
-<ol>
-<li>name the IP range as 'DATABASE-IP-RANGE'</li>
-<li>choose method 'Add BY CIDR'</li>
-<li>input network CIDR '172.16.1.0/24'</li>
-<li>click button 'Add' to add the IP range</li>
-<li>click button 'Next'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network2.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network3.png"></p>
-
-<hr>
-
-
-<p>input DNS as '8.8.8.8' then click button 'Add' to add the DNS, then click button 'Next':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network4.png">
-<img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network5.png"></p>
-
-<hr>
-
-
-<ol>
-<li>choose provider 'VirtualRouter'</li>
-<li>choose service 'DHCP'</li>
-<li>click button 'Add' to add the network service</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network6.png"></p>
-
-<hr>
-
-
-<p>repeat the above three steps to add network services: DNS, SNAT, then click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network7.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createInstanceOffering">16. Create Instance Offering</h4>
-
-
-<p>click 'Instance Offering' in left sidebar to enter instance offering page:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering1.png"></p>
-
-<hr>
-
-
-<p>click button 'New Instance Offering' to open the dialog:</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering2.png"></p>
-
-<hr>
-
-
-<ol>
-<li>name the instance offering as '512M-512HZ'</li>
-<li>input CPU NUM as 1</li>
-<li>input CPU speed as 512</li>
-<li>input memory as 512M</li>
-<li>click button 'create'</li>
-</ol>
-
-
-<p><img  class="img-responsive"  src="/images/tutorials/t1/createInstanceOffering3.png"></p>
-
-<hr>
-
-
-
-
-<h4 id="createVirtualRouterOffering">17. Create Virtual Router Offering</h4>
+<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
 
 
 <p>click 'Virtual Router Offering' in the left sidebar to enter virtual router offering page:</p>
@@ -851,7 +584,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>click 'New Virtual Router Offering' to open the dialog:</p>
+<p>click 'Create Virtual Router Offering' to open the dialog:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering2.png"></p>
 
@@ -859,20 +592,179 @@ passwd root</code></pre>
 
 
 <ol>
-<li>select zone(ZONE1)</li>
-<li>name the virtual router offering as 'VR-OFFERING'</li>
-<li>input CPU NUM as '1'</li>
-<li>input CPU speed as '512'</li>
-<li>input memory as '512M'</li>
-<li>choose image 'VIRTUAL-ROUTER"</li>
-<li>choose management L3 network 'PUBLIC-MANAGEMENT-L3'</li>
-<li>choose public L3 network 'PUBLIC-MANAGEMENT-L3'</li>
-<li>check 'DEFAULT OFFERING' checkbox</li>
-<li>click button 'Create'</li>
+<li>name the virtual router offering as 'VR-offering1'</li>
+<li>input CPU NUM as '2'</li>
+<li>input CPU speed as '2'</li>
+<li>choose image 'Virtualrouterimage1'</li>
 </ol>
 
 
 <p><img  class="img-responsive"  src="/images/tutorials/t1/createVirtualRouterOffering3.png"></p>
+
+<hr>
+
+
+<p>Choose management L3 network 'PUBLIC-MANAGEMENT-L3' ,  choose public L3 network 'PUBLIC-MANAGEMENT-L3' and click button 'OK'</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createVirtualRouterOffering4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createApplicationL2Network">14. Create  Application L2 Network</h4>
+
+
+<p>click button 'New L2 Network' again to create the application L2 network:</p>
+
+<ol>
+<li>name the L2 network as 'APPLICATION-L2'</li>
+<li>choose type 'L2VlanNetwork'</li>
+<li>input vlan as '2017'</li>
+<li>input physical interface as 'eth0'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network3.png"></p>
+
+<p>choose cluster 'CLUSTER1' and click button 'OK'</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL2Network4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createApplicationL3Network">15. Create Application L3 Network</h4>
+
+
+<p>click 'Network' in the left sidebar, click 'L3Network' and click 'Private Network' to enter L3Network  private network page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createPN1.png"></p>
+
+<hr>
+
+
+<p>click 'Create Private Network' button again to create the private L3 network:</p>
+
+<ol>
+<li>name the L3 network as  'APPLICATION-L3'</li>
+<li>choose L2Network 'APPLICATION-L2'</li>
+<li>choose type 'V Router'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createPublicL3Network2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>choose Virtual Router Offering  'VR-offering1'</li>
+<li>choose method 'CIDR'</li>
+<li>input network CIDR as '192.0.0.0/24'</li>
+<li>input DNS as '8.8.8.8'</li>
+<li>click button 'OK'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationL3Network3.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createDatabaseL2Network">16. Create Database L2 Network</h4>
+
+
+<p>click button 'New L2 Network' again to create the database L2 network:</p>
+
+<ol>
+<li>name the L2 network as 'DATABASE-L2'</li>
+<li>choose type 'L2VlanNetwork'</li>
+<li>input vlan as '2018'</li>
+<li>input physical interface as 'eth0'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network3.png"></p>
+
+<hr>
+
+
+<p>select cluster(CLUSTER1) to attach, and click button 'OK':</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL2Network4.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createDatabaseL3Network">17. Create Database L3 Network</h4>
+
+
+<p>click 'Network' in the left sidebar, click 'L3Network' and click 'Private Network' to enter L3Network  private network page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createPN1.png"></p>
+
+<hr>
+
+
+<p>click 'Create Private Network' button again to create the private L3 network:</p>
+
+<ol>
+<li>name the L3 network as  'DATABASE-L3'</li>
+<li>choose L2Network 'DATABASE-L2'</li>
+<li>choose type 'V Router'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network1.png"></p>
+
+<hr>
+
+
+<ol>
+<li>choose Virtual Router Offering  'VR-offering1'</li>
+<li>choose method 'CIDR'</li>
+<li>input network CIDR as '172.16.1.0/24'</li>
+<li>input DNS as '8.8.8.8'</li>
+<li>click button 'OK'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseL3Network2.png"></p>
+
+<h4 id="createInstanceOffering">18. Create Instance Offering</h4>
+
+
+<p>click 'Resource Pool' in the left sidebar and click 'InstanceOffering' to enter instance offering page:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createIO1.png"></p>
+
+<hr>
+
+
+<p>click button 'Create InstanceOffering' to open the dialog:</p>
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createIO2.png"></p>
+
+<hr>
+
+
+<ol>
+<li>input name as 'IO1'</li>
+<li>input CPU as '1'</li>
+<li>input Memory as '1'</li>
+<li>click button 'OK'</li>
+</ol>
+
+
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createIO3.png"></p>
 
 <hr>
 
@@ -882,40 +774,32 @@ passwd root</code></pre>
 <h4 id="createWebVM">18. Create WEB VM</h4>
 
 
-<p>click 'Instance' in the left sidebar to enter VM instance page:</p>
+<p>click 'Resource Pool' in the left sidebar and click 'VmInstance' to enter VM instance page:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM1.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM1.png"></p>
 
 <hr>
 
 
-<p>click button 'New VmInstance' to open the dialog:</p>
+<p>click button 'Create VmInstance' to open the dialog:</p>
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t1/createVM2.png"></p>
 
 <hr>
 
 
 <ol>
-<li>choose instance offering '512M-512HZ'</li>
-<li>choose image 'zs-sample-image'</li>
-<li>choose L3 network 'PUBLIC-MANAGEMENT-L3'</li>
-<li>choose L3 network 'APPLICATION-L3'</li>
-<li>select default L3 network as 'PUBLIC-MANAGEMENT-L3'</li>
+<li>choose Type  'Single'</li>
 <li>input name as 'WEB-VM'</li>
-<li>input host name as 'web'</li>
-<li>click button 'Next'</li>
+<li>choose instance offering 'IO1'</li>
+<li>choose image 'Image1'</li>
+<li>choose L3 network 'WEB-L3' and set it as default web</li>
+<li>choose L3 network 'APPLICATION-L3'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM3.png"></p>
-
-<hr>
-
-
-<p>click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createWebVM4.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>The first user VM takes more time to create</h4>
@@ -934,31 +818,23 @@ passwd root</code></pre>
 <h4 id="createApplicationVM">19. Create Application VM</h4>
 
 
-<p>click button 'New VmInstance' to open the dialog again:</p>
+<p>click button 'Create VmInstance' to open the dialog:</p>
 
 <hr>
 
 
 <ol>
-<li>choose instance offering '512M-512HZ'</li>
-<li>choose image 'zs-sample-image'</li>
-<li>choose L3 network 'APPLICATION-L3'</li>
-<li>choose L3 network 'DATABASE-L3'</li>
-<li>select default L3 network as 'APPLICATION-L3'</li>
+<li>choose Type  'Single'</li>
 <li>input name as 'APPLICATION-VM'</li>
-<li>input host name as 'application'</li>
-<li>click button 'Next'</li>
+<li>choose instance offering 'IO1'</li>
+<li>choose image 'Image1'</li>
+<li>choose L3 network 'WEB-L3'</li>
+<li>choose L3 network 'APPLICATION-L3' and set it as default web</li>
+<li>click button 'OK'</li>
 </ol>
 
 
 <p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM1.png"></p>
-
-<hr>
-
-
-<p>click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>Again, slow because of creating the virtual router VM</h4>
@@ -977,26 +853,19 @@ passwd root</code></pre>
 <h4 id="createDatabaseVM">20. Create Database VM</h4>
 
 
-<p>click button 'New VmInstance' to open the dialog again:</p>
+<p>click button 'Create VmInstance' to open the dialog again:</p>
 
 <ol>
-<li>choose instance offering '512M-512HZ'</li>
-<li>choose image 'zs-sample-image'</li>
-<li>choose L3 network 'DATABASE-L3'</li>
+<li>choose Type  'Single'</li>
 <li>input name as 'DATABASE-VM'</li>
-<li>input host name as 'database'</li>
-<li>click button 'Next'</li>
+<li>choose instance offering 'IO1'</li>
+<li>choose image 'Image1'</li>
+<li>choose L3 network 'Database-L3'</li>
+<li>click button 'OK'</li>
 </ol>
 
 
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createDatabaseVM1.png"></p>
-
-<hr>
-
-
-<p>click button 'Create':</p>
-
-<p><img  class="img-responsive"  src="/images/tutorials/t3/createApplicationVM2.png"></p>
+<p><img  class="img-responsive"  src="/images/tutorials/t3/creationDatabasevm.png"></p>
 
 <hr>
 
@@ -1006,7 +875,7 @@ passwd root</code></pre>
 <h4 id="testVM">21. Confirm Network Connectivity</h4>
 
 
-<p>select WEB-VM, click button 'Action' then click item 'Console' to open VM's console:</p>
+<p>select WEB-VM, click button 'VmInstance Actions' then click item 'Console' to open VM's console:</p>
 
 <p><img  class="img-responsive"  src="/images/tutorials/t3/webVMConsole1.png"></p>
 
@@ -1017,8 +886,8 @@ passwd root</code></pre>
 
 <ol>
 <li>ping google.com, it should succeed.</li>
-<li>ping APPLICATION-VM, it should succeed.</li>
-<li>ping DATABASE-VM, it should fail.</li>
+<li>ping DATABASE-VM, it should succeed.</li>
+<li>ping APPLICATION-VM, it should failed.</li>
 </ol>
 
 
@@ -1049,8 +918,8 @@ passwd root</code></pre>
 
 <ol>
 <li>ping google.com, it should succeed.</li>
-<li>ping APPLICATION-VM, it should succeed.</li>
-<li>ping WEB-VM, it should fail.</li>
+<li>ping WEB-VM, it should succeed.</li>
+<li>ping APPLICATION-VM, it should fail.</li>
 </ol>
 
 

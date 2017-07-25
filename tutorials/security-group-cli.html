@@ -72,7 +72,7 @@ var _hmt = _hmt || [];
                 <li id="navBlog"><a href="/blog">Blog</a></li>
                 <li id="navCommunity"><a href="/community">Community</a></li>
                 <li id="navIssues"><a href="https://github.com/zstackorg/zstack/issues">Issues</a></li>
-                <li id="navIssues"><a href="http://zstack.io">中文</a></li>
+                <li id="navIssues"><a href="http://www.zstack.io">中文</a></li>
             </ul>
         </div>
     </div>
@@ -185,14 +185,6 @@ some other requirements:</p>
   <pre><code>sudo su
 passwd root</code></pre>
 
-  <h5>Ubuntu:</h5>
-  You need to also enable root user in SSHD configuration.
-  <pre><code>1. sudo su
-2. passwd root
-3. edit /etc/ssh/sshd_config
-4. comment out 'PermitRootLogin without-password'
-5. add 'PermitRootLogin yes'
-6. restart SSH: 'service ssh restart'</code></pre>
 </div>
 
 
@@ -200,10 +192,10 @@ passwd root</code></pre>
 
 <ul>
 <li>ethernet device names: eth0</li>
-<li>eth0 IP: 10.0.101.20</li>
-<li>free IP range: 10.0.101.100 ~ 10.0.101.150 (these IPs can access the internet)</li>
-<li>primary storage folder: 10.0.101.1:/home/nfs</li>
-<li>backup storage folder: /home/sftpBackupStorage</li>
+<li>eth0 IP: 172.20.11.34</li>
+<li>free IP range: 10.121.9.40 ~ 10.121.9.200 (these IPs can access the internet)</li>
+<li>primary storage folder: /zstack_ps</li>
+<li>backup storage folder: /zstack_bs</li>
 </ul>
 
 
@@ -286,7 +278,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; CreateCluster name=CLUSTER1 hypervisorType=KVM zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliCreateCluster.png"></p>
@@ -308,7 +300,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddKVMHost name=HOST1 managementIp=10.0.101.20 username=root password=password clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+<pre><code>&gt;&gt;&gt; AddKVMHost name=HOST1 managementIp=172.20.11.34 username=root password=password clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliCreateHost.png"></p>
@@ -329,7 +321,7 @@ passwd root</code></pre>
 <h4 id="addPrimaryStorage">7. Add Primary Storage</h4>
 
 
-<p>add Primary Storage 'PRIMAYR-STORAGE1' with NFS URI '10.0.101.20:/usr/local/zstack/nfs_root' under zone 'ZONE1':</p>
+<p>add Primary Storage 'PRIMAYR-STORAGE1' with URL '/zstack_ps' under zone 'ZONE1':</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#7">Find UUID</button></p>
 
@@ -338,13 +330,13 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddNfsPrimaryStorage name=PRIMARY-STORAGE1 url=10.0.101.20:/usr/local/zstack/nfs_root zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; AddLocalPrimaryStorage name=PRIMARY-STORAGE1 url=/zstack_ps zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddPrimaryStorage.png"></p>
 
 <div class="bs-callout bs-callout-info">
-  <h4>Format of NFS URL</h4>
+  <h4>Format of URL</h4>
   The format of URL is exactly the same to the one used by Linux <i>mount</i> command.
 </div>
 
@@ -364,7 +356,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachPrimaryStorageToCluster primaryStorageUuid=35405cbbb25d497c94b8484e487f2496 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
+<pre><code>&gt;&gt;&gt; AttachPrimaryStorageToCluster primaryStorageUuid=1b952f1e74a747dfb89ef3bdb9e8a821 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAttachPrimaryStorageToCluster.png"></p>
@@ -377,9 +369,9 @@ passwd root</code></pre>
 <h4 id="addBackupStorage">8. Add Backup Storage</h4>
 
 
-<p>add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('10.0.101.20'), root username('root'), password('password') and sftp folder path('/home/sftpBackupStorage'):</p>
+<p>add sftp Backup Storage 'BACKUP-STORAGE1' with backup storage host IP address('172.20.11.34'), root username('root'), password('password') and sftp folder path('/zstack_bs'):</p>
 
-<pre><code>&gt;&gt;&gt; AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=10.0.101.20 username=root password=password url=/home/sftpBackupStorage
+<pre><code>&gt;&gt;&gt; AddSftpBackupStorage name=BACKUP-STORAGE1 hostname=172.20.11.34 username=root password=password url=/zstack_bs
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddBackupStorage.png"></p>
@@ -397,7 +389,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachBackupStorageToZone backupStorageUuid=e5dfe0824d8a4503bbc1b6b51782b5a3 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; AttachBackupStorageToZone backupStorageUuid=ccc8214bfc2344e5a58c2ec23de3b348 zoneUuid=b5ba18197f7843308cd26f87eab933c5
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAttachBackupStorageToZone.png"></p>
@@ -410,7 +402,7 @@ passwd root</code></pre>
 <h4 id="addImage">9. Add Image</h4>
 
 
-<p>add Image('zs-sample-image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
+<p>add Image('image') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL('http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button></p>
 
@@ -419,7 +411,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=zs-sample-image format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
+<pre><code>&gt;&gt;&gt; AddImage name=image mediaType=RootVolumeTemplate platform=Linux url=http://192.168.200.100/mirror/diskimages/zstack-image-1.4.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t1/cliAddImage.png"></p>
@@ -429,29 +421,154 @@ passwd root</code></pre>
 <hr>
 
 
-<p>add another Image('VIRTUAL-ROUTER') with format 'qcow2', 'RootVolumeTemplate' type, 'Linux' platform and image URL(http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2) to backup storage ('BACKUP-STORAGE1'):</p>
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_2">Find UUID</button></p>
 
-<div id="9_2" class="collapse">
-<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
+<h4 id="createL2Network">10. Create L2 Network</h4>
+
+
+<p>create No Vlan L2 Network 'PUBLIC-MANAGEMENT-L2' with physical interface as 'eth0' under 'ZONE1':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_1">Find UUID</button></p>
+
+<div id="10_1" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; CreateL2NoVlanNetwork name=PUBLIC-MANAGEMENT-L2 physicalInterface=eth0 zoneUuid=b5ba18197f7843308cd26f87eab933c5
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateL2NoVlan.png"></p>
+
+<hr>
+
+
+<p>attach 'PUBLIC-MANAGEMENT-L2' to 'CLUSTER1':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_2">Find UUID</button></p>
+
+<div id="10_2" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+<pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; AttachL2NetworkToCluster l2NetworkUuid=b4b611280afe4d289c8e3f66aee0393d clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAttachNoVlanL2toCluster.png"></p>
+
+<hr>
+
+
+<p>create new private Vlan L2 network 'PRIVATE-L2' with physical interface as 'eth0' and vlan '100' under 'ZONE1':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_3">Find UUID</button></p>
+
+<div id="10_3" class="collapse">
+<pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; CreateL2VlanNetwork name=PRIVATE-L2 physicalInterface=eth0 vlan=100 zoneUuid=b5ba18197f7843308cd26f87eab933c5
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateL2Vlan.png"></p>
+
+<hr>
+
+
+<p>attach 'PRIVATE-L2' to 'CLUSTER1':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_4">Find UUID</button></p>
+
+<div id="10_4" class="collapse">
+<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
+<pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; AttachL2NetworkToCluster l2NetworkUuid=b052b4e080c840f6984c29581b167644 clusterUuid=e630ebdb5f7742f3818fd998e91d35a8
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAttachVlanL2toCluster.png"></p>
+
+<hr>
+
+
+
+
+<h4 id="createL3Network">11. Create L3 Network</h4>
+
+
+<p>on L2 'PUBLIC-MANAGEMENT-L2', create a Public Management L3 'PUBLIC-MANAGEMENT-L3' with system set to 'True':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_1">Find UUID</button></p>
+
+<div id="11_1" class="collapse">
+<pre><code>QueryL2Network fields=uuid, name=PUBLIC-MANAGEMENT-L2</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; CreateL3Network name=PUBLIC-MANAGEMENT-L3 l2NetworkUuid=b4b611280afe4d289c8e3f66aee0393d system=true
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateL3NoVlan.png"></p>
+
+<hr>
+
+
+<p>create IP Range for 'PUBLIC-MANAGEMENT-L3':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_2">Find UUID</button></p>
+
+<div id="11_2" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PUBLIC-MANAGEMENT-L3</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; AddIpRange name=PUBLIC-IP-RANGE l3NetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 startIp=10.121.9.40 endIp=10.121.9.100 netmask=255.0.0.0 gateway=10.0.0.1
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAddIpRange1.png"></p>
+
+<div class="bs-callout bs-callout-info">
+  <h4>No network services needed for PUBLIC-MANAGEMENT-L3'</h4>
+  No user VMs will be created on the public L3 network in this tutorial, so we don't specify any network services for it.
 </div>
 
 
 
 
+<hr>
+
+
+
+
+<h4 id="createInstanceOffering">12. Create Router Image</h4>
+
+
+<p>add Image('VRImage') with format 'qcow2' and image URL('http://cdn.zstack.io/product_downloads/images/zstack-image.qcow2') to backup storage ('BACKUP-STORAGE1'):</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#9_1">Find UUID</button></p>
+
+<div id="9_1" class="collapse">
+<pre><code>QueryBackupStorage fields=uuid, name=BACKUP-STORAGE1</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; AddImage name=VRImage url=http://192.168.200.100/mirror/diskimages/zstack-vrouter-latest.qcow2 backupStorageUuids=ccc8214bfc2344e5a58c2ec23de3b348 format=qcow2
+</code></pre>
+
 <div class="bs-callout bs-callout-success">
   <h4>Fast link for users of Mainland China</h4>
-  由于国内访问我们位于美国的服务器速度较慢，国内用户请使用以下链接：
+  .................................
   
   <pre><code>http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddImage name=VIRTUAL-ROUTER format=qcow2 mediaType=RootVolumeTemplate platform=Linux url=http://cdn.zstack.io/product_downloads/vrouter/zstack-vrouter-2.0.0.qcow2 backupStorageUuids=e5dfe0824d8a4503bbc1b6b51782b5a3
-</code></pre>
-
-<p><img class="img-responsive" src="/images/tutorials/t1/cliAddVRImage.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAddVRouterImage.png"></p>
 
 <p>this image will be used as Virtual Router VM image.</p>
 
@@ -469,108 +586,105 @@ passwd root</code></pre>
 
 
 
-<h4 id="createL2Network">10. Create L2 Network</h4>
+<h4 id="createVirtualRouterOffering">13. Create Virtual Router Offering</h4>
 
 
-<p>create No Vlan L2 Network 'FLAT-L2' with physical interface as 'eth0' under 'ZONE1':</p>
+<p>create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':</p>
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_1">Find UUID</button></p>
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button></p>
 
-<div id="10_1" class="collapse">
+<div id="13" class="collapse">
+<pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
+<pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,PRIVATE-L3</code></pre>
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateL2NoVlanNetwork name=FLAT-L2 physicalInterface=eth0 zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 imageUuid=090906b0e7de4bf890c677b3bc8f680b managementNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 publicNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 zoneUuid=b5ba18197f7843308cd26f87eab933c5 memorySize=536870912
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t2/cliCreateL2NoVlan.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateVirtualRouterOffering.png"></p>
 
 <hr>
 
 
-<p>attach 'FLAT-L2' to 'CLUSTER1':</p>
-
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#10_2">Find UUID</button></p>
-
-<div id="10_2" class="collapse">
-<pre><code>QueryCluster fields=uuid, name=CLUSTER1</code></pre>
-<pre><code>QueryL2Network fields=uuid, name=FLAT-L2</code></pre>
-</div>
 
 
-<pre><code>&gt;&gt;&gt; AttachL2NetworkToCluster l2NetworkUuid=7a7d82f840da4fe6855546befd666b99 clusterUuid=2e88755b7dd0411f9dfc5362fc752b88
-</code></pre>
-
-<p><img class="img-responsive" src="/images/tutorials/t2/cliAttachL2NoVlanToCluster.png"></p>
-
-<h4 id="createL3Network">11. Create L3 Network</h4>
+<h4 id="createPN">14. Create Private Network </h4>
 
 
-<p>create 'FLAT-L3' L3 network on FLAT-L2 L2 network:</p>
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_1">Find UUID</button></p>
-
-<div id="11_1" class="collapse">
-<pre><code>QueryL2Network fields=uuid, name=FLAT-L2</code></pre>
-</div>
-
-
-<pre><code>&gt;&gt;&gt; CreateL3Network name=FLAT-L3 l2NetworkUuid=7a7d82f840da4fe6855546befd666b99 dnsDomain=tutorials.zstack.org
-</code></pre>
-
-<p><img src="/images/tutorials/t2/cliCreateL3Network.png"></p>
 
 <hr>
 
 
-<p>create IP Range for 'FLAT-L3':</p>
+<p>on L2 network 'PRIVATE-L2', create a new guest VM L3 'PRIVATE-L3':</p>
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_2">Find UUID</button></p>
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_3">Find UUID</button></p>
 
-<div id="11_2" class="collapse">
-<pre><code>QueryL3Network fields=uuid, name=FLAT-L3</code></pre>
+<div id="11_3" class="collapse">
+<pre><code>QueryL2Network fields=uuid, name=PRIVATE-L2</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddIpRange name=FLAT-IP-RANGE l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 startIp=10.0.101.100 endIp=10.0.101.150 netmask=255.255.255.0 gateway=10.0.101.1
+<pre><code>&gt;&gt;&gt; CreateL3Network name=PRIVATE-L3 l2NetworkUuid=b052b4e080c840f6984c29581b167644
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t2/cliAddIpRange.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateL3Vlan.png"></p>
 
 <hr>
 
 
-<p>add DNS for 'FLAT-L3':</p>
+<p>create an IP Range for 'PRIVATE-L3':</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_4">Find UUID</button></p>
 
 <div id="11_4" class="collapse">
-<pre><code>QueryL3Network fields=uuid, name=FLAT-L3</code></pre>
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddDnsToL3Network l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 dns=8.8.8.8
+<pre><code>&gt;&gt;&gt;AddIpRange name=PRIVATE-RANGE l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3 startIp=192.168.2.2 endIp=192.168.2.254 netmask=255.255.255.0 gateway=192.168.2.1
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t2/cliAddDns.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAddIpRange2.png"></p>
 
 <hr>
 
 
-<p>we need to get UUIDs of available network service providers, before attaching any virtual router services to L3 network:</p>
+<p>add DNS for 'PRIVATE-L3':</p>
+
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_5">Find UUID</button></p>
+
+<div id="11_5" class="collapse">
+<pre><code>QueryL3Network fields=uuid name=PRIVATE-L3</code></pre>
+</div>
+
+
+<pre><code>&gt;&gt;&gt; AddDnsToL3Network l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3 dns=8.8.8.8
+</code></pre>
+
+<p><img class="img-responsive" src="/images/tutorials/t1/cliAddDns.png"></p>
+
+<hr>
+
+
+<p>we need to get available network service provider UUID, before add any virtual router service to L3 network:</p>
 
 <pre><code>&gt;&gt;&gt; QueryNetworkServiceProvider
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t4/cliQueryNetworkServiceProvider.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliQueryNetworkServiceProvider.png"></p>
 
-<p>there are 2 available network service providers. The 'VirtualRouter' could provide 'DHCP', 'SNAT', 'DNS', 'PortForwarding' and 'Eip' services. The 'SecurityGroup' could provide 'SecurityGroup' service.</p>
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_6">Find UUID</button></p>
 
-<hr>
+<div id="11_6" class="collapse">
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
+<pre><code>QueryNetworkServiceProvider fields=uuid, name=VirtualRouter</code></pre>
+</div>
 
 
-<p>attach VirtualRouter services 'DHCP', 'DNS' and SecurityGrpup service 'SecurityGroup' to 'FLAT-L3':</p>
+<p>attach  SecurityGroup services to 'FLAT-L3':</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#11_6">Find UUID</button></p>
 
@@ -588,7 +702,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachNetworkServiceToL3Network networkServices="{'f5c4ac07e0eb48739aefe2d5134614e6':['DHCP','DNS'], 'd48e98920d2c4e7489ad97d9440afa2f':['SecurityGroup']}" l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5
+<pre><code>&gt;&gt;&gt; AttachNetworkServiceToL3Network networkServices="{'90df78d13d8d4f7a99b2b0465b3ea1ba':['SecurityGroup']}" l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t4/cliAttachNetworkService.png"></p>
@@ -615,8 +729,8 @@ passwd root</code></pre>
 
 <ol>
 <li>type: 'Ingress'</li>
-<li>start port: as 22</li>
-<li>end port: 22</li>
+<li>start port: as 23</li>
+<li>end port: 25</li>
 <li>protocol: 'TCP'</li>
 <li>CIDR: 0.0.0.0/0</li>
 </ol>
@@ -632,7 +746,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddSecurityGroupRule securityGroupUuid=29a0f801f77b4b4f866fb4c9503d0fe9 rules="[{'type':'Ingress', 'protocol':'TCP', 'startPort':'22', 'endPort':'22', 'allowedCidr':'0.0.0.0/0'}]"
+<pre><code>&gt;&gt;&gt; AddSecurityGroupRule securityGroupUuid=72f3e24f0b7c4d588810c25075524954 rules="[{'type':'Ingress','protocol':'TCP','startPort':'25','endPort':'22'}]"
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliCreateSGRule1.png"></p>
@@ -640,17 +754,17 @@ passwd root</code></pre>
 <hr>
 
 
-<p>attach 'SECURITY-GROUP-1' to 'FLAT-L3':</p>
+<p>attach 'SECURITY-GROUP-1' to 'PRIVATE-L3':</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#12_2">Find UUID</button></p>
 
 <div id="12_2" class="collapse">
 <pre><code>QuerySecurityGroup fields=uuid, name=SECURITY-GROUP-1</code></pre>
-<pre><code>QueryL3Network fields=uuid, name=FLAT-L3</code></pre>
+<pre><code>QueryL3Network fields=uuid, name=PRIVATE-L3</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AttachSecurityGroupToL3Network securityGroupUuid=29a0f801f77b4b4f866fb4c9503d0fe9 l3NetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5
+<pre><code>&gt;&gt;&gt; AttachSecurityGroupToL3Network securityGroupUuid=72f3e24f0b7c4d588810c25075524954 l3NetworkUuid=6a73fdfffb104c79919179af28cba3e3
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliAttachSG.png"></p>
@@ -678,21 +792,21 @@ passwd root</code></pre>
 <h4 id="createVirtualRouterOffering">14. Create Virtual Router Offering</h4>
 
 
-<p>create a Virtual Router VM instance offering 'VR-OFFERING' with 1 512Mhz CPU, 512MB memory, management L3 network 'FLAT-L3', public L3 network 'FLAT-L3', image 'VIRTUAL-ROUTER' and isDefault 'True':</p>
+<p>create a Virtual Router VM instance offering 'VR-OFFERING' with 1 CPU, 512MB memory, management L3 network 'PUBLIC-MANAGEMENT-L3', public L3 network 'PUBLIC-MANAGEMENT-L3' and isDefault 'True':</p>
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#14">Find UUID</button></p>
+<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#13">Find UUID</button></p>
 
-<div id="14" class="collapse">
+<div id="13" class="collapse">
 <pre><code>QueryImage fields=uuid, name=VIRTUAL-ROUTER</code></pre>
-<pre><code>QueryL3Network fields=uuid,name, name=FLAT-L3</code></pre>
+<pre><code>QueryL3Network fields=uuid,name, name?=PUBLIC-MANAGEMENT-L3,PRIVATE-L3</code></pre>
 <pre><code>QueryZone fields=uuid, name=ZONE1</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 cpuSpeed=512 memorySize=536870912 imageUuid=854801a869e149b092281e0ef65585f9 managementNetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 publicNetworkUuid=8677b5e8d66c477a9b34fbf5bbef84d5 isDefault=True zoneUuid=69b5be02a15742a08c1b7518e32f442a
+<pre><code>&gt;&gt;&gt; CreateVirtualRouterOffering name=VR-OFFERING cpuNum=1 imageUuid=090906b0e7de4bf890c677b3bc8f680b managementNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 publicNetworkUuid=5bda71a3ebbd48a5947e325dd24665e5 zoneUuid=b5ba18197f7843308cd26f87eab933c5 memorySize=536870912
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t2/cliCreateVirtualRouterOffering.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t1/cliCreateVirtualRouterOffering.png"></p>
 
 <hr>
 
@@ -702,18 +816,18 @@ passwd root</code></pre>
 <h4 id="createInnerVM">15. Create INNER-VM</h4>
 
 
-<p>create a new guest VM instance with instance offering 'small-instance', image 'zs-sample-image', L3 network 'FLAT-L3', name 'INNER-VM' and hostname 'inner'</p>
+<p>create a new guest VM instance with instance offering 'small-instance', image 'zs-sample-image', L3 network 'PRIVATE-L3', name 'INNER-VM' and hostname 'inner'</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#15">Find UUID</button></p>
 
 <div id="15" class="collapse">
 <pre><code>QueryInstanceOffering fields=uuid, name=small-instance</code></pre>
-<pre><code>QueryImage fields=uuid, name=zs-sample-image</code></pre>
+<pre><code>QueryImage fields=uuid, name=image</code></pre>
 <pre><code>QueryL3Network fields=uuid, name=FLAT-L3</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateVmInstance name=INNER-VM instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=8677b5e8d66c477a9b34fbf5bbef84d5 systemTags=hostname::inner
+<pre><code>&gt;&gt;&gt; CreateVmInstance name=INNER-VM instanceOfferingUuid=025d33f751e241a5b89862e3da2dac47 imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=6a73fdfffb104c79919179af28cba3e3
 </code></pre>
 
 <div class="bs-callout bs-callout-warning">
@@ -725,7 +839,7 @@ passwd root</code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t4/cliCreateVm1.png"></p>
 
-<p>from VM creation result, you can get the new created VM IP address is 10.0.101.131</p>
+<p>from VM creation result, you can get the new created VM IP address is 192.168.2.199</p>
 
 <hr>
 
@@ -745,7 +859,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; AddVmNicToSecurityGroup vmNicUuids=69abb7ce95e34a63992cee90a1e14cda securityGroupUuid=29a0f801f77b4b4f866fb4c9503d0fe9
+<pre><code>&gt;&gt;&gt; AddVmNicToSecurityGroup vmNicUuids=715b1051e8dc4bc69302865179c31d4b securityGroupUuid=72f3e24f0b7c4d588810c25075524954
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliAddNicToSG.png"></p>
@@ -758,7 +872,7 @@ passwd root</code></pre>
 <h4 id="createOuterVM">17. Create OUTER-VM</h4>
 
 
-<p>create a new guest VM instance with instance offering 'small-instance', image 'zs-sample-image', L3 network 'FLAT-L3', name 'OUTER-VM' and hostname 'outer'</p>
+<p>create a new guest VM instance with instance offering 'small-instance', image 'zs-sample-image', L3 network 'PRIVATE-L3', name 'OUTER-VM' and hostname 'outer'</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#17">Find UUID</button></p>
 
@@ -769,12 +883,12 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; CreateVmInstance name=OUTER-VM instanceOfferingUuid=328d52eae4ff4ba0a685101c3116020a imageUuid=62cf76d08c944288a92de98af1405289 l3NetworkUuids=8677b5e8d66c477a9b34fbf5bbef84d5 systemTags=hostname::outer
+<pre><code>&gt;&gt;&gt; CreateVmInstance name=OUTER-VM instanceOfferingUuid=025d33f751e241a5b89862e3da2dac47 imageUuid=6874474809df4d2292d3503884e0096e l3NetworkUuids=6a73fdfffb104c79919179af28cba3e3
 </code></pre>
 
 <p><img class="img-responsive" src="/images/tutorials/t4/cliCreateVm2.png"></p>
 
-<p>from VM creation result, you can get the new created VM IP address is 10.0.101.137</p>
+<p>from VM creation result, you can get the new created VM IP address is 192.168.2.241</p>
 
 <hr>
 
@@ -784,7 +898,7 @@ passwd root</code></pre>
 <h4 id="sshLogin">18. SSH Login INNER-VM From OUTER-VM</h4>
 
 
-<p>use a machine that can reach subnet 10.0.101.0/24 to SSH the OUTER-VM's IP '10.0.101.137'</p>
+<p>use a machine that can reach subnet 192.168.2.0/24 to SSH the OUTER-VM's IP '192.168.2.241'</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#18_1">Find IP of OUTER-VM</button></p>
 
@@ -793,7 +907,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>#ssh root@10.0.101.137
+<pre><code>#ssh root@192.168.2.241
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliSshVM1.png"></p>
@@ -801,7 +915,7 @@ passwd root</code></pre>
 <hr>
 
 
-<p>in OUTER-VM, ssh INNER-VM's IP '10.0.101.131', it should success:</p>
+<p>in OUTER-VM, ssh INNER-VM's IP '192.168.2.199', it should failed:</p>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#18_2">Find IP of INNER-VM</button></p>
 
@@ -810,21 +924,10 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>#ssh root@10.0.101.131
+<pre><code>#ssh root@192.168.2.199
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliSshVM2.png"></p>
-
-<p>after SSH login, run 'ifconfig', you should see IP (10.0.101.131) that is of INNER-VM</p>
-
-<p>type 'exit' to quit INNER-VM and return to OUTER-VM.</p>
-
-<hr>
-
-
-<p>in OUTER-VM, ping INNER-VM (10.0.101.131), it should fail because we don't open ICMP rule in the security group . ping gateway (10.0.101.1) should successful:</p>
-
-<p><img src="/images/tutorials/t4/cliSshVM3.png"></p>
 
 <hr>
 
@@ -843,7 +946,7 @@ passwd root</code></pre>
 </div>
 
 
-<pre><code>&gt;&gt;&gt; DeleteSecurityGroupRule ruleUuids=e52bba7584d64653891cefe4615826b8
+<pre><code>&gt;&gt;&gt; DeleteSecurityGroupRule ruleUuids=5d1ebed51795467b894ca2f77f9293cd
 </code></pre>
 
 <p><img src="/images/tutorials/t4/cliDeleteSGRule.png"></p>
@@ -856,7 +959,7 @@ passwd root</code></pre>
 <h4 id="sshLoginFailure">20. Confirm Unable to SSH Login INNER-VM From OUTER-VM</h4>
 
 
-<p>go back to OUTER-VM and ssh INNER-VM again, it should fail.</p>
+<p>go back to OUTER-VM and ssh INNER-VM again, it should success.</p>
 
 <p><img src="/images/tutorials/t4/cliSshVM4.png"></p>
 
