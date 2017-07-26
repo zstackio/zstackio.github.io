@@ -297,7 +297,7 @@ passwd root</code></pre>
 <pre><code>&gt;&gt;&gt; AddKVMHost name=HOST1 managementIp=172.20.11.34 username=root password=password clusterUuid=05c689492f0944c7ad73945743d8d8ca
 </code></pre>
 
-<p><img class="img-responsive" src="/images/tutorials/t5/cliCreateHost.png"></p>
+<p><img class="img-responsive" src="/images/tutorials/t3/cliCreateHost.png"></p>
 
 <div class="bs-callout bs-callout-warning">
   <h4>A little slow when first time adding a host</h4>
@@ -991,20 +991,19 @@ passwd root</code></pre>
 
 <p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_2">Find IP</button></p>
 
-<p><div id="21_2" class="collapse"></p>
+<div id="21_2" class="collapse">
 
-<p><button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_1">Find IP</button></p>
-
-<p><div id="21_1" class="collapse">
 <pre><code>QueryVmNic fields=ip vmInstance.name=WEB-VM1 l3Network.name=PUBLIC-MANAGEMENT-L3</code></pre>
-</div></p>
+</div>
+
 
 <pre><code># ping 192.168.0.158
 </code></pre>
 
 <p><img src="/images/tutorials/t3/cliSshVM1.png"></p>
 
-<p><hr></p>
+<hr>
+
 
 <h3>Summary</h3>
 
