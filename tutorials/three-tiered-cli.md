@@ -169,7 +169,7 @@ add KVM Host 'HOST1' under 'CLUSTER1' with correct host IP address and root user
 
 	>>> AddKVMHost name=HOST1 managementIp=172.20.11.34 username=root password=password clusterUuid=05c689492f0944c7ad73945743d8d8ca
 
-<img class="img-responsive" src="/images/tutorials/t5/cliCreateHost.png">
+<img class="img-responsive" src="/images/tutorials/t3/cliCreateHost.png">
 
 <div class="bs-callout bs-callout-warning">
   <h4>A little slow when first time adding a host</h4>
@@ -698,9 +698,6 @@ after login into WEB-VM1, you could ping 'www.google.com', then ping IP '192.168
 
 <div id="21_2" class="collapse">
 
-<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#21_1">Find IP</button>
-
-<div id="21_1" class="collapse">
 <pre><code>QueryVmNic fields=ip vmInstance.name=WEB-VM1 l3Network.name=PUBLIC-MANAGEMENT-L3</code></pre>
 </div>
 
